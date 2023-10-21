@@ -1,10 +1,19 @@
 10/20 會議
 
 一. 決定先做人工智慧還是多人協作
+    A: 人工智慧
+
 二. 前置任務: 選擇新模組替換過時模組(react-sortable-hoc)
     新模組選項
-    1. react-beatiful-dnd
+    1. react-beatiful-dnd (A)
     2. dnd-kit
     3. react-dnd
+
 三. 決定前置任務完成日期
+    A: 暫時無法決定
+
 四. 了解學長的程式碼
+    1. 了解react
+    2. 了解ant-design
+    3. 了解flask
+    4. 了解之前程式碼
