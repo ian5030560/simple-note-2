@@ -10,7 +10,7 @@ const App = () => {
   const [showLine, setShowLine] = useState(true);
   const [showIcon, setShowIcon] = useState(false);
   const [showLeafIcon, setShowLeafIcon] = useState(true);
-  const [selectedKeys, setSeletedKeys] = useState();
+  const [selectedKeys, setSeletedKeys] = useState(['0-0-0']);
   
   const onSelect = (selectedKeys, info) => {
     console.log("selected", selectedKeys, info);
