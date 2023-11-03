@@ -1,7 +1,6 @@
 import React from "react";
+import Editor from "./editor/editor";
 
 export default function App(){
-    return <React.StrictMode>
-        
-    </React.StrictMode>
+    return <Editor/>
 }
