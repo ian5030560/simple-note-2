@@ -1,24 +1,15 @@
 import React, { useState, useRef, useCallback } from "react";
 import { createReactEditorJS } from "react-editor-js";
 import DragDrop from "editorjs-drag-drop";
-import { tools } from "./toollist";
+import { tools } from "./editList";
 
 const ReactEditorJS = createReactEditorJS();
 
-const Editor = () => {
-    
+const Editor = ({data}) => {
+
     const editorRef = useRef();
 
-    const [blocks, setBlocks] = useState([
-        {
-            id: "sheNwCUP5A",
-            type: "header",
-            data: {
-                text: "Editor.js",
-                level: 2
-            }
-        }
-    ]);
+    const [blocks, setBlocks] = useState([]);
 
     const handleInitialize = useCallback((instance) => {
         editorRef.current = instance;
