@@ -1,14 +1,12 @@
-import React, { useState, useRef, useCallback } from "react"; 
-import {createReactEditorJS} from "react-editor-js";
+import React, { useState, useRef, useCallback } from "react";
+import { createReactEditorJS } from "react-editor-js";
 import DragDrop from "editorjs-drag-drop";
 import { tools } from "./toollist";
 
 const ReactEditorJS = createReactEditorJS();
 
 const Editor = () => {
-    /**
-     * @type {React.MutableRefObject<EditorCore>}
-     */
+    
     const editorRef = useRef();
 
     const [blocks, setBlocks] = useState([
@@ -16,37 +14,38 @@ const Editor = () => {
             id: "sheNwCUP5A",
             type: "header",
             data: {
-              text: "Editor.js",
-              level: 2
+                text: "Editor.js",
+                level: 2
             }
         }
     ]);
 
     const handleInitialize = useCallback((instance) => {
         editorRef.current = instance;
+        console.log("Initialize");
     }, [])
 
     const handleReady = () => {
         new DragDrop(editorRef.current._editorJS);
+        console.log("Ready");
     }
 
-    const handleSave = async () => {
+    const handleChange = async () => {
         const savedData = await editorRef.current.save();
-        console.log(savedData);
+        setBlocks(prev => savedData["blocks"]);
+        console.log("Saved data: " + savedData);
     }
 
-    return <div>
-        <ReactEditorJS
-        tools={tools} 
+    return <ReactEditorJS
+        tools={tools}
         defaultValue={{
             time: new Date().getTime(),
             blocks: blocks
         }}
         onInitialize={handleInitialize}
         onReady={handleReady}
-        
-        />
-    </div>
+        onChange={handleChange}
+    />
 }
 
 export default Editor;
