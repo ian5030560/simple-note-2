@@ -39,12 +39,7 @@ const App = () => {
 
   const addNode = () => {
     // console.log('addNode');
-    if(!selectedKeys){
-      setSeletedKeys([['.....']]);
-      selectedKeys[0][0] = "0";
-      selectedKeys[0][2] = "0";
-      selectedKeys[0][4] = "0";
-    }
+    
 
     // console.log(selectedKeys[0][0]);
     // console.log(selectedKeys[0][2]);
