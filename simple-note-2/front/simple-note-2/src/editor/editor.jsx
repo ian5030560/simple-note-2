@@ -5,11 +5,16 @@ import { tools } from "./editList";
 
 const ReactEditorJS = createReactEditorJS();
 
-const Editor = ({data}) => {
+/**
+ * 
+ * @param {{initlizeData: []}} param0 
+ * @returns 
+ */
+const Editor = ({initlizeData}) => {
 
     const editorRef = useRef();
 
-    const [blocks, setBlocks] = useState([]);
+    const [blocks, setBlocks] = useState(initlizeData);
 
     const handleInitialize = useCallback((instance) => {
         editorRef.current = instance;
@@ -24,7 +29,7 @@ const Editor = ({data}) => {
     const handleChange = async () => {
         const savedData = await editorRef.current.save();
         setBlocks(prev => savedData["blocks"]);
-        console.log("Saved data: " + savedData);
+        console.log(savedData["blocks"]);
     }
 
     return <ReactEditorJS
