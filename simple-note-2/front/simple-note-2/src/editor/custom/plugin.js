@@ -23,7 +23,7 @@ export class Image {
         this.wrapper = document.createElement("div");
         this.wrapper.className = "wrapper";
         const root = createRoot(this.wrapper);
-        root.render(<ImageDialog src="" onSelect={this.handleSelect} />);
+        root.render(<ImageDialog onSelect={this.handleSelect} />);
         return this.wrapper;
     }
 

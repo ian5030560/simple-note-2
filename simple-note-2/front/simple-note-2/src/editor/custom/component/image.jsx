@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Button, Image as ImageView } from "antd";
 import { FileAddOutlined } from "@ant-design/icons";
 
-const ImageDialog = ({ src = "", onSelect }) => {
+const ImageDialog = ({ onSelect }) => {
 
-    const [value, setValue] = useState(src);
+    const [value, setValue] = useState("");
 
     const handleClick = () => {
         const dialog = document.createElement("input");

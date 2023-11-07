@@ -48,7 +48,6 @@
     ]
   },
   "devDependencies": {
-    "@editorjs/delimiter": "^1.3.0",
-    "@editorjs/marker": "^1.3.0"
+    "@editorjs/delimiter": "^1.3.0"
   }
 }
