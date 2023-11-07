@@ -26,18 +26,19 @@ const Editor = ({initlizeData}) => {
         console.log("Ready");
     }
 
-    const handleChange = async () => {
-        const savedData = await editorRef.current.save();
-        setBlocks(prev => savedData["blocks"]);
-        console.log(savedData["blocks"]);
+    const handleChange = () => {
+        editorRef.current.save().then((output) => {
+            setBlocks(output["blocks"]);
+            console.log(output);
+        }).catch(e => {
+            console.log(e);
+        });
     }
 
     return <ReactEditorJS
         tools={tools}
-        defaultValue={{
-            time: new Date().getTime(),
-            blocks: blocks
-        }}
+        holder="editor"
+        defaultValue={blocks}
         onInitialize={handleInitialize}
         onReady={handleReady}
         onChange={handleChange}

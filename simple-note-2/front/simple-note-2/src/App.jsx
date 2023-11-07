@@ -4,6 +4,6 @@ import Editor from "./editor/editor"
 
 export default function App() {
     return (<>
-        <Editor initlizeData={[]} />
+        <Editor initlizeData={[{time: new Date().getTime(), blocks: []}]} />
     </>)
 }
