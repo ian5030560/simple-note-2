@@ -16,6 +16,8 @@ const App = () => {
   const onSelect = (selectedKeys, info) => {
     console.log("selected", selectedKeys, info);
     setSeletedKeys(selectedKeys);
+    const number = treeData[0]?.children?.length || 0;
+    handleNodeKeyChange(selectedKeys + "-" + number)
   };
 
   //icon
@@ -37,8 +39,8 @@ const App = () => {
   };
 
   //更改key
-  const handleNodeKeyChange = (e) => {
-    setKey(e.target.value);
+  const handleNodeKeyChange = (temp) => {
+    setKey(temp);
   };
 
   // 利用長度判斷是新增leaf或是folder
