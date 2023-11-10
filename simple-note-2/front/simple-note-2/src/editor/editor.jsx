@@ -2,6 +2,7 @@ import React, { useState, useRef, useCallback } from "react";
 import { createReactEditorJS } from "react-editor-js";
 import DragDrop from "editorjs-drag-drop";
 import { tools } from "./editList";
+import Toolbar from "../Toolbar";
 
 const ReactEditorJS = createReactEditorJS();
 
@@ -32,16 +33,20 @@ const Editor = ({initlizeData}) => {
         console.log(savedData["blocks"]);
     }
 
-    return <ReactEditorJS
-        tools={tools}
-        defaultValue={{
-            time: new Date().getTime(),
-            blocks: blocks
-        }}
-        onInitialize={handleInitialize}
-        onReady={handleReady}
-        onChange={handleChange}
-    />
+    return <>
+        <Toolbar/>
+        <ReactEditorJS
+            tools={tools}
+            defaultValue={{
+                time: new Date().getTime(),
+                blocks: blocks
+            }}
+            onInitialize={handleInitialize}
+            onReady={handleReady}
+            onChange={handleChange}
+        />
+    </>
+
 }
 
 export default Editor;
