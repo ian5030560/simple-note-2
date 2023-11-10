@@ -38,6 +38,7 @@ const Toolbar = ({
           shape="circle"
           icon={<ItalicOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={handleItalicClick}
         ></Button>
       </Tooltip>
       <Tooltip title="文字底線">
@@ -102,22 +103,86 @@ const Toolbar = ({
 
 export default Toolbar;
 
+const ToolbarClickEvent = ({
+  onBoldClick,
+  onItalicClick,
+  onUnderlineClick,
+  onFontSizeClick,
+  onAlignLeftClick,
+  onAlignCenterClick,
+  onAlignRightClick,
+  onHighlightClick,
+  onTextColorsClick,
+}) => {
+  // 處理加粗按鈕點擊事件的函數
+  const handleBoldClick = () => {
+    // // 獲取當前的文字選擇範圍
+    // const selection = window.getSelection();
+    onBoldClick();
+    // // 檢查是否有選擇的範圍
+    // if (selection.rangeCount > 0) {
+    //   // 獲取選擇範圍對象
+    //   const range = selection.getRangeAt(0);
+    //   // 獲取選擇的文字
+    //   const selectedText = range.toString();
+    //   // 檢查選擇的文字是否為非空
+    //   if (selectedText.length > 0) {
+    //     // 創建一個包裝選擇文字的 <b> 元素
+    //     const boldElement = document.createElement('b');
+    //     // 在 <b> 元素中添加選擇的文字內容
+    //     boldElement.appendChild(document.createTextNode(selectedText));
 
-const handleBoldClick = () => {
-  const selection = window.getSelection();
-  
-  if (selection.rangeCount > 0) {
-    const range = selection.getRangeAt(0);
-    const selectedText = range.toString();
+    //     // 將選擇範圍內的內容替換為新創建的 <b> 元素
+    //     range.deleteContents();
+    //     range.insertNode(boldElement);
+    //   }
+    // }
+  };
 
-    if (selectedText.length > 0) {
-      // 創建一個包裝選擇文字的 <b> 元素
-      const boldElement = document.createElement('b');
-      boldElement.appendChild(document.createTextNode(selectedText));
+  // 處理斜體按鈕點擊事件的函數
+  const handleItalicClick = () => {
+    onItalicClick();
+    // // 獲取當前的文字選擇範圍
+    // const selection = window.getSelection();
+    // // 檢查是否有選擇的範圍
+    // if (selection.rangeCount > 0) {
+    //   // 獲取選擇範圍對象
+    //   const range = selection.getRangeAt(0);
+    //   // 獲取選擇的文字
+    //   const selectedText = range.toString();
 
-      // 將選擇範圍內的內容替換為新創建的 <b> 元素
-      range.deleteContents();
-      range.insertNode(boldElement);
-    }
-  }
+    //   // 檢查選擇的文字是否為非空
+    //   if (selectedText.length > 0) {
+    //     // 創建一個包裝選擇文字的 <i> 元素
+    //     const italicElement = document.createElement("i");
+    //     // 在 <i> 元素中添加選擇的文字內容
+    //     italicElement.appendChild(document.createTextNode(selectedText));
+
+    //     // 將選擇範圍內的內容替換為新創建的 <i> 元素
+    //     range.deleteContents();
+    //     range.insertNode(italicElement);
+    //   }
+    // }
+  };
+  const handleUnderlineClick = () => {
+    onUnderlineClick();
+  };
+  const handleFontSizeClick = () => {
+    onFontSizeClick();
+  };
+  const handleAlignLeftClick = () => {
+    onAlignLeftClick();
+  };
+  const handleAlignCenterClick = () => {
+    onAlignCenterClick();
+  };
+  const handleAlignRightClick = () => {
+    onAlignRightClick();
+  };
+  const handleHighlightClick = () => {
+    onHighlightClick();
+  };
+  const handleTextColorsClick = () => {
+    onTextColorsClick();
+  };
 };
