@@ -4,3 +4,5 @@
 3.優化左側頁面瀏覽的功能，完善他。
 4.左側頁面剩下刪除功能
 5.toolbar如果react無法跟undo使用，考慮是否刪掉toolbar直接使用editor的工具列就好。
+6.註解左側頁面瀏覽的功能。
+7.研究socketio、Flask-SocketIO
