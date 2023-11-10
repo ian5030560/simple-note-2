@@ -2,7 +2,7 @@
 1.把工具列的功能變得可以動起來，可以跟文字互動。
 2.文字選取聯動工具列。
 3.優化左側頁面瀏覽的功能，完善他。
-4.左側頁面剩下刪除功能
+4.左側頁面剩下刪除功能。
 5.toolbar如果react無法跟undo使用，考慮是否刪掉toolbar直接使用editor的工具列就好。
 6.註解左側頁面瀏覽的功能。
-7.研究socketio、Flask-SocketIO
+7.研究socketio、Flask-SocketIO。
