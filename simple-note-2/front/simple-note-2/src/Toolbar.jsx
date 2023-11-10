@@ -49,6 +49,7 @@ const Toolbar = ({
           shape="circle"
           icon={<UnderlineOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onUnderlineClick}
         ></Button>
       </Tooltip>
       <Tooltip title="文字大小">
@@ -57,6 +58,7 @@ const Toolbar = ({
           shape="circle"
           icon={<FontSizeOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onFontSizeClick}
         ></Button>
       </Tooltip>
       <Tooltip title="置左">
@@ -65,6 +67,7 @@ const Toolbar = ({
           shape="circle"
           icon={<AlignLeftOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onAlignLeftClick}
         ></Button>
       </Tooltip>
       <Tooltip title="置中">
@@ -73,6 +76,7 @@ const Toolbar = ({
           shape="circle"
           icon={<AlignCenterOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onAlignCenterClick}
         ></Button>
       </Tooltip>
       <Tooltip title="置右">
@@ -81,6 +85,7 @@ const Toolbar = ({
           shape="circle"
           icon={<AlignRightOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onAlignRightClick}
         ></Button>
       </Tooltip>
       <Tooltip title="螢光筆">
@@ -89,6 +94,7 @@ const Toolbar = ({
           shape="circle"
           icon={<HighlightOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onHighlightClick}
         ></Button>
       </Tooltip>
       <Tooltip title="文字顏色">
@@ -97,6 +103,7 @@ const Toolbar = ({
           shape="circle"
           icon={<BgColorsOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onTextColorsClick}
         ></Button>
       </Tooltip>
     </Flex>
