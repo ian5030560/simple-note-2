@@ -3,6 +3,7 @@ import { createReactEditorJS } from "react-editor-js";
 import DragDrop from "editorjs-drag-drop";
 import { tools } from "./editList";
 import Toolbar from "../Toolbar";
+import Undo from 'editorjs-undo';
 
 const ReactEditorJS = createReactEditorJS();
 
@@ -24,6 +25,7 @@ const Editor = ({initlizeData}) => {
 
     const handleReady = () => {
         new DragDrop(editorRef.current._editorJS);
+        new Undo(editorRef.current._editorJS.editor);
         console.log("Ready");
     }
 

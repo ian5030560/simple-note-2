@@ -6,8 +6,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 export default function App() {
     return (<BrowserRouter>
         <Routes>
-            <Route index element={<Editor />} />
-            <Route path='tree' element={<Tree />} />
+            <Route index element={<Editor initlizeData={[]}/>} />
+            <Route path='tree' element={<Tree defaultData={[]}/>} />
         </Routes>
     </BrowserRouter>)
 }

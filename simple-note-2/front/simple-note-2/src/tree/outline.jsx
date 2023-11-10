@@ -6,7 +6,19 @@ import {
 } from "@ant-design/icons";
 import { Select, Switch, Tree, Input } from "antd";
 
-const App = () => {
+/**
+ * 
+ * @param {{defaultData: [
+ *  {
+ *  title: string,
+ *  key: string,
+ *  icon: JSX.Element,
+ *  children: JSX.Element
+ * }
+ * ]}} param0 
+ * @returns 
+ */
+const App = ({ defaultData }) => {
   const [showLine, setShowLine] = useState(true);
   const [showIcon, setShowIcon] = useState(false);
   const [showLeafIcon, setShowLeafIcon] = useState(true);
@@ -138,81 +150,86 @@ const App = () => {
     }
   };
 
-  const [treeData, setTreeData] = useState([
-    {
-      title: "parent 1",
-      key: "0-0",
-      icon: <CarryOutOutlined />,
-      children: [
-        {
-          title: "parent 1-0",
-          key: "0-0-0",
-          icon: <CarryOutOutlined />,
-          children: [
-            {
-              title: "leaf",
-              key: "0-0-0-0",
-              icon: <CarryOutOutlined />,
-            },
-          ],
-        },
-        {
-          title: "parent 1-1",
-          key: "0-0-1",
-          icon: <CarryOutOutlined />,
-          children: [
-            {
-              title: "leaf",
-              key: "0-0-1-0",
-              icon: <CarryOutOutlined />,
-            },
-          ],
-        },
-        {
-          title: "parent 1-2",
-          key: "0-0-2",
-          icon: <CarryOutOutlined />,
-          children: [
-            {
-              title: "leaf",
-              key: "0-0-2-0",
-              icon: <CarryOutOutlined />,
-            },
-            {
-              title: "leaf",
-              key: "0-0-2-1",
-              icon: <CarryOutOutlined />,
-              switcherIcon: <FormOutlined />,
-            },
-          ],
-        },
-      ],
-    },
-    {
-      title: "parent 2",
-      key: "0-1",
-      icon: <CarryOutOutlined />,
-      children: [
-        {
-          title: "parent 2-0",
-          key: "0-1-0",
-          icon: <CarryOutOutlined />,
-          children: [
-            {
-              title: "leaf",
-              key: "0-1-0-0",
-              icon: <CarryOutOutlined />,
-            },
-            {
-              title: "leaf",
-              key: "0-1-0-1",
-              icon: <CarryOutOutlined />,
-            },
-          ],
-        },
-      ],
-    },
-  ]);
+  const [treeData, setTreeData] = useState(!(defaultData) ? [{
+    title: "parent 1",
+    key: "0-0",
+    icon: <CarryOutOutlined />,
+    children: []
+  }] : defaultData);
+  //   {
+  //     title: "parent 1",
+  //     key: "0-0",
+  //     icon: <CarryOutOutlined />,
+  //     children: [
+  //       {
+  //         title: "parent 1-0",
+  //         key: "0-0-0",
+  //         icon: <CarryOutOutlined />,
+  //         children: [
+  //           {
+  //             title: "leaf",
+  //             key: "0-0-0-0",
+  //             icon: <CarryOutOutlined />,
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         title: "parent 1-1",
+  //         key: "0-0-1",
+  //         icon: <CarryOutOutlined />,
+  //         children: [
+  //           {
+  //             title: "leaf",
+  //             key: "0-0-1-0",
+  //             icon: <CarryOutOutlined />,
+  //           },
+  //         ],
+  //       },
+  //       {
+  //         title: "parent 1-2",
+  //         key: "0-0-2",
+  //         icon: <CarryOutOutlined />,
+  //         children: [
+  //           {
+  //             title: "leaf",
+  //             key: "0-0-2-0",
+  //             icon: <CarryOutOutlined />,
+  //           },
+  //           {
+  //             title: "leaf",
+  //             key: "0-0-2-1",
+  //             icon: <CarryOutOutlined />,
+  //             switcherIcon: <FormOutlined />,
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     title: "parent 2",
+  //     key: "0-1",
+  //     icon: <CarryOutOutlined />,
+  //     children: [
+  //       {
+  //         title: "parent 2-0",
+  //         key: "0-1-0",
+  //         icon: <CarryOutOutlined />,
+  //         children: [
+  //           {
+  //             title: "leaf",
+  //             key: "0-1-0-0",
+  //             icon: <CarryOutOutlined />,
+  //           },
+  //           {
+  //             title: "leaf",
+  //             key: "0-1-0-1",
+  //             icon: <CarryOutOutlined />,
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // ]);
 
   return (
     <div>
@@ -243,8 +260,8 @@ const App = () => {
         showLine={
           showLine
             ? {
-                showLeafIcon,
-              }
+              showLeafIcon,
+            }
             : false
         }
         showIcon={showIcon}
