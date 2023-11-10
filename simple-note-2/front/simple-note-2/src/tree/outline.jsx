@@ -12,11 +12,13 @@ const App = () => {
   const [showLeafIcon, setShowLeafIcon] = useState(true);
   const [selectedKeys, setSeletedKeys] = useState(['0-0-0']);
   
+  //點擊folder後將select改成當前路徑(key)
   const onSelect = (selectedKeys, info) => {
     console.log("selected", selectedKeys, info);
     setSeletedKeys(selectedKeys);
   };
 
+  //icon
   const handleLeafIconChange = (value) => {
     if (value === "custom") {
       return setShowLeafIcon(<CheckOutlined />);
@@ -27,16 +29,21 @@ const App = () => {
     return setShowLeafIcon(false);
   };
 
+  //輸入節點(folder,leaf)的名稱
   const [Name, setName] = useState(""); // 新节点名称
   const [Key, setKey] = useState(""); // 新节点键值
   const handleNodeNameChange = (e) => {
     setName(e.target.value);
   };
 
+  //更改key
   const handleNodeKeyChange = (e) => {
     setKey(e.target.value);
   };
+
+  // 利用長度判斷是新增leaf或是folder
   const length = (e) => {
+
     if (selectedKeys.length === 3) {
       addNode();
     } else {
@@ -45,14 +52,8 @@ const App = () => {
   };  
   
   const addNode = () => {
-    // console.log('addNode');
-    
-
-    // console.log(selectedKeys[0][0]);
-    // console.log(selectedKeys[0][2]);
-    // console.log(selectedKeys[0][4]);
     if (Name && Key) {
-      // 创建新节点对象
+      // 创建新节点
       const newNode = {
         title: Name,
         key: Key,
@@ -61,7 +62,7 @@ const App = () => {
 
       // 更新树形数据
       const updatedTreeData = [...treeData];
-      // 这里可以根据需要添加到合适的位置，示例中将新节点添加到第一个父节点下
+      //新增節點到對應folder下
       updatedTreeData[selectedKeys[0][2]].children[
         selectedKeys[0][4]
       ].children.push(newNode);
@@ -86,7 +87,7 @@ const App = () => {
 
       // 更新树形数据
       const updatedTreeData = [...treeData];
-      // 这里可以根据需要添加到合适的位置，示例中将新节点添加到第一个父节点下
+      //新增folder到對應folder下
       updatedTreeData[selectedKeys[0][2]].children.push(newFolder);
 
       // 清空输入框
