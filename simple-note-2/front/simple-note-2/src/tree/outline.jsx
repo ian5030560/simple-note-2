@@ -4,10 +4,10 @@ import {
   CheckOutlined,
   FormOutlined,
 } from "@ant-design/icons";
-import { Select, Switch, Tree, Input } from "antd";
+import { Button, Modal, Select, Switch, Tree, Input } from "antd";
 
 /**
- * 
+ *
  * @param {{defaultData: [
  *  {
  *  title: string,
@@ -15,8 +15,8 @@ import { Select, Switch, Tree, Input } from "antd";
  *  icon: JSX.Element,
  *  children: JSX.Element
  * }
- * ]}} param0 
- * @returns 
+ * ]}} param0
+ * @returns
  */
 const App = ({ defaultData }) => {
   const [showLine, setShowLine] = useState(true);
@@ -150,12 +150,30 @@ const App = ({ defaultData }) => {
     }
   };
 
-  const [treeData, setTreeData] = useState(!(defaultData) ? [{
-    title: "parent 1",
-    key: "0-0",
-    icon: <CarryOutOutlined />,
-    children: []
-  }] : defaultData);
+  const [treeData, setTreeData] = useState(
+    !defaultData
+      ? [
+          {
+            title: "parent 1",
+            key: "0-0",
+            icon: <CarryOutOutlined />,
+            children: [],
+          },
+        ]
+      : defaultData
+  );
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   //   {
   //     title: "parent 1",
   //     key: "0-0",
@@ -233,35 +251,47 @@ const App = ({ defaultData }) => {
 
   return (
     <div>
-      <div
-        style={{
-          marginBottom: 16,
-        }}
-      >
-        showLine: <Switch checked={!!showLine} onChange={setShowLine} />
-        <br />
-        <br />
-        showIcon: <Switch checked={showIcon} onChange={setShowIcon} />
-        <br />
-        <br />
-        showLeafIcon:{" "}
-        <Select defaultValue="true" onChange={handleLeafIconChange}>
-          <Select.Option value="true">True</Select.Option>
-          <Select.Option value="false">False</Select.Option>
-          <Select.Option value="custom">Custom icon</Select.Option>
-        </Select>
-      </div>
+      <>
+        <Button type="primary" onClick={showModal}>
+          Open Modal
+        </Button>
+        <Modal
+          title="Basic Modal"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+        >
+          <div
+            style={{
+              marginBottom: 16,
+            }}
+          >
+            showLine: <Switch checked={!!showLine} onChange={setShowLine} />
+            <br />
+            <br />
+            showIcon: <Switch checked={showIcon} onChange={setShowIcon} />
+            <br />
+            <br />
+            showLeafIcon:{" "}
+            <Select defaultValue="true" onChange={handleLeafIconChange}>
+              <Select.Option value="true">True</Select.Option>
+              <Select.Option value="false">False</Select.Option>
+              <Select.Option value="custom">Custom icon</Select.Option>
+            </Select>
+          </div>
+        </Modal>
+      </>
+
       {/* 名稱輸入框 */}
       <Input placeholder="Name" value={Name} onChange={handleNodeNameChange} />
-      {/* 新节点键值输入框 */}
-      <Input placeholder="Key" value={Key} onChange={handleNodeKeyChange} />
+
       <button onClick={length}>Add Node or Folder</button>
       <Tree
         showLine={
           showLine
             ? {
-              showLeafIcon,
-            }
+                showLeafIcon,
+              }
             : false
         }
         showIcon={showIcon}
