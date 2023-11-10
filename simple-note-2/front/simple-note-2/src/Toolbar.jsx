@@ -11,16 +11,18 @@ import { BgColorsOutlined } from "@ant-design/icons";
 import { Button, Flex, Tooltip } from "antd";
 
 const Toolbar = ({
-  boldFont,
-  italics,
-  underline,
-  fontSize,
-  alignLeft,
-  alignCenter,
-  alignRight,
-  highlight,
-  textColors,
-}) => (
+  onBoldClick,
+  onItalicClick,
+  onUnderlineClick,
+  onFontSizeClick,
+  onAlignLeftClick,
+  onAlignCenterClick,
+  onAlignRightClick,
+  onHighlightClick,
+  onTextColorsClick,
+}) => {
+
+  return (
   <Flex gap="small" vertical>
     <Flex wrap="wrap" gap="small">
       <Tooltip title="字體加粗">
@@ -29,7 +31,7 @@ const Toolbar = ({
           shape="circle"
           icon={<BoldOutlined />}
           style={{ backgroundColor: "black" }}
-          onClick={handleBoldClick}
+          onClick={onBoldClick}
         ></Button>
       </Tooltip>
       <Tooltip title="斜體">
@@ -38,7 +40,7 @@ const Toolbar = ({
           shape="circle"
           icon={<ItalicOutlined />}
           style={{ backgroundColor: "black" }}
-          onClick={handleItalicClick}
+          onClick={onItalicClick}
         ></Button>
       </Tooltip>
       <Tooltip title="文字底線">
@@ -47,6 +49,7 @@ const Toolbar = ({
           shape="circle"
           icon={<UnderlineOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onUnderlineClick}
         ></Button>
       </Tooltip>
       <Tooltip title="文字大小">
@@ -55,6 +58,7 @@ const Toolbar = ({
           shape="circle"
           icon={<FontSizeOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onFontSizeClick}
         ></Button>
       </Tooltip>
       <Tooltip title="置左">
@@ -63,6 +67,7 @@ const Toolbar = ({
           shape="circle"
           icon={<AlignLeftOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onAlignLeftClick}
         ></Button>
       </Tooltip>
       <Tooltip title="置中">
@@ -71,6 +76,7 @@ const Toolbar = ({
           shape="circle"
           icon={<AlignCenterOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onAlignCenterClick}
         ></Button>
       </Tooltip>
       <Tooltip title="置右">
@@ -79,6 +85,7 @@ const Toolbar = ({
           shape="circle"
           icon={<AlignRightOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onAlignRightClick}
         ></Button>
       </Tooltip>
       <Tooltip title="螢光筆">
@@ -87,6 +94,7 @@ const Toolbar = ({
           shape="circle"
           icon={<HighlightOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onHighlightClick}
         ></Button>
       </Tooltip>
       <Tooltip title="文字顏色">
@@ -95,11 +103,12 @@ const Toolbar = ({
           shape="circle"
           icon={<BgColorsOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={onTextColorsClick}
         ></Button>
       </Tooltip>
     </Flex>
   </Flex>
-);
+)};
 
 export default Toolbar;
 
