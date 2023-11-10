@@ -253,10 +253,10 @@ const App = ({ defaultData }) => {
     <div>
       <>
         <Button type="primary" onClick={showModal}>
-          Open Modal
+          設定列
         </Button>
         <Modal
-          title="Basic Modal"
+          title="設定"
           open={isModalOpen}
           onOk={handleOk}
           onCancel={handleCancel}
@@ -266,17 +266,17 @@ const App = ({ defaultData }) => {
               marginBottom: 16,
             }}
           >
-            showLine: <Switch checked={!!showLine} onChange={setShowLine} />
+            顯示檔案圖示: <Switch checked={!!showLine} onChange={setShowLine} />
             <br />
             <br />
-            showIcon: <Switch checked={showIcon} onChange={setShowIcon} />
+            顯示完成: <Switch checked={showIcon} onChange={setShowIcon} />
             <br />
             <br />
-            showLeafIcon:{" "}
+            切換檔案連接方式:{" "}
             <Select defaultValue="true" onChange={handleLeafIconChange}>
-              <Select.Option value="true">True</Select.Option>
-              <Select.Option value="false">False</Select.Option>
-              <Select.Option value="custom">Custom icon</Select.Option>
+              <Select.Option value="true">收縮</Select.Option>
+              <Select.Option value="false">線條</Select.Option>
+              <Select.Option value="custom">自訂</Select.Option>
             </Select>
           </div>
         </Modal>
