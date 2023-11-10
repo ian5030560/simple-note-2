@@ -25,30 +25,32 @@ const App = ({ defaultData }) => {
   const [showLeafIcon, setShowLeafIcon] = useState(true);
   const [selectedKeys, setSeletedKeys] = useState(["0-0-0"]);
 
-  //點擊folder後將selectedKeys改成當前路徑(key)
+  /** 點擊folder後將selectedKeys改成當前路徑(key) */
   const onSelect = (selectedKeys, info) => {
     console.log("selected", selectedKeys, info);
     setSeletedKeys(selectedKeys);
 
     if (selectedKeys.length === 1) {
-      // 通過 selectedKeys[0] 獲取選擇的父節點的key
+      /** 通過 selectedKeys[0] 獲取選擇的父節點的key */
       const selectedParentKey = selectedKeys[0];
-      // 在 treeData 中找到選中的父節點
+
+      /** 在 treeData 中找到選中的父節點 */
       const selectedParent = findNodeByKey(treeData, selectedParentKey);
-      // 獲取選中的父節點的子節點數量
+
+      /** 獲取選中的父節點的子節點數量 */
       const numberOfChildren = selectedParent?.children?.length || 0;
 
-      // 檢查選到的children
+      /** 檢查選到的children */
       console.log(
         `Number of children for ${selectedParent.title}: ${numberOfChildren}`
       );
 
-      //更改要新增的檔案的key
+      /** 更改要新增的檔案的key */
       handleNodeKeyChange(selectedKeys + "-" + numberOfChildren);
     }
   };
 
-  // 輔助函數，根據 key 在樹型數據中找到對應的節點
+  /** 輔助函數，根據 key 在樹型數據中找到對應的節點 */
   const findNodeByKey = (data, key) => {
     for (let i = 0; i < data.length; i++) {
       const node = data[i];
@@ -65,7 +67,7 @@ const App = ({ defaultData }) => {
     return null;
   };
 
-  //icon的更改
+  /** icon的更改 */
   const handleLeafIconChange = (value) => {
     if (value === "custom") {
       return setShowLeafIcon(<CheckOutlined />);
@@ -76,19 +78,19 @@ const App = ({ defaultData }) => {
     return setShowLeafIcon(false);
   };
 
-  //輸入節點(folder,leaf)的名稱
+  /** 輸入節點(folder,leaf)的名稱 */
   const [Name, setName] = useState(""); // 新節點名
   const [Key, setKey] = useState(""); // 新節點值(key)
   const handleNodeNameChange = (e) => {
     setName(e.target.value);
   };
 
-  //更改key
+  /** 更改key */
   const handleNodeKeyChange = (temp) => {
     setKey(temp);
   };
 
-  // 利用長度判斷是新增leaf或是folder
+  /** 利用長度判斷是新增leaf或是folder */
   const length = (e) => {
     if (selectedKeys.length === 5) {
       addNode();
@@ -99,60 +101,60 @@ const App = ({ defaultData }) => {
 
   const addNode = () => {
     if (Name && Key) {
-      // 獲取選中的父節點的 key
+      /** 獲取選中的父節點的 key */
       const selectedParentKey = selectedKeys[0];
-      // 在 treeData 中找到選中的父節點
+      /** 在 treeData 中找到選中的父節點 */
       const selectedParent = findNodeByKey(treeData, selectedParentKey);
 
       if (selectedParent) {
-        // 新增新節點
+        /** 新增新節點 */
         const newNode = {
           title: Name,
           key: Key,
           icon: <CarryOutOutlined />,
         };
 
-        // 新增節點到選中的父節點下
+        /** 新增節點到選中的父節點下 */
         selectedParent.children.push(newNode);
 
-        // 清空輸入框
+        /** 清空輸入框 */
         setName("");
         setKey("");
         setSeletedKeys([]);
-        setTreeData([...treeData]); // 更新樹型數據
+        setTreeData([...treeData]); /** 更新樹型數據 */
       }
     }
   };
 
   const addFolder = () => {
     if (Name && Key) {
-      // 獲取選中的父節點的 key
+      /** 獲取選中的父節點的 key */
       const selectedParentKey = selectedKeys[0];
-      // 在 treeData 中找到選中的父節點
+      /** 在 treeData 中找到選中的父節點 */
       const selectedParent = findNodeByKey(treeData, selectedParentKey);
 
       if (selectedParent) {
-        // 新增新資料夾對象
+        /** 新增新資料夾對象 */
         const newFolder = {
           title: Name,
           key: Key,
           icon: <CarryOutOutlined />,
-          children: [], // 新增 folder 需要初始化 children 數據
+          children: [] /** 新增 folder 需要初始化 children 數據 */,
         };
 
-        // 新增 folder 到選中的父節點下
+        /** 新增 folder 到選中的父節點下 */
         selectedParent.children.push(newFolder);
 
-        // 清空輸入框
+        /** 清空輸入框 */
         setName("");
         setKey("");
         setSeletedKeys([]);
-        setTreeData([...treeData]); // 更新新樹型數據
+        setTreeData([...treeData]); /** 更新新樹型數據 */
       }
     }
   };
 
-  //預設的第一個資料夾
+  /** 預設的第一個資料夾 */
   const [treeData, setTreeData] = useState(
     !defaultData
       ? [
@@ -166,7 +168,7 @@ const App = ({ defaultData }) => {
       : defaultData
   );
 
-  //設定的彈出視窗
+  /** 設定的彈出視窗 */
   const [isModalOpen, setIsModalOpen] = useState(false);
   const showModal = () => {
     setIsModalOpen(true);
@@ -285,9 +287,12 @@ const App = ({ defaultData }) => {
           </div>
         </Modal>
       </>
+
       {/* 名稱輸入框 */}
       <Input placeholder="Name" value={Name} onChange={handleNodeNameChange} />
+
       <button onClick={length}>Add Node or Folder</button>
+
       <Tree
         showLine={
           showLine
