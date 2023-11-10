@@ -12,7 +12,7 @@ function App() {
 }
 
 export const Tree = App;
-// const root = createRoot(document.getElementById("root"));
-// root.render(<App />);
+const root = createRoot(document.getElementById("root"));
+root.render(<App />);
 
 export default App;
