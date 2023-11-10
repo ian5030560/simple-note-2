@@ -10,7 +10,7 @@ import { HighlightOutlined } from "@ant-design/icons";
 import { BgColorsOutlined } from "@ant-design/icons";
 import { Button, Flex, Tooltip } from "antd";
 
-const App = ({
+const Toolbar = ({
   boldFont,
   italics,
   underline,
@@ -29,6 +29,7 @@ const App = ({
           shape="circle"
           icon={<BoldOutlined />}
           style={{ backgroundColor: "black" }}
+          onClick={handleBoldClick}
         ></Button>
       </Tooltip>
       <Tooltip title="斜體">
@@ -99,4 +100,24 @@ const App = ({
   </Flex>
 );
 
-export default App;
+export default Toolbar;
+
+
+const handleBoldClick = () => {
+  const selection = window.getSelection();
+  
+  if (selection.rangeCount > 0) {
+    const range = selection.getRangeAt(0);
+    const selectedText = range.toString();
+
+    if (selectedText.length > 0) {
+      // 創建一個包裝選擇文字的 <b> 元素
+      const boldElement = document.createElement('b');
+      boldElement.appendChild(document.createTextNode(selectedText));
+
+      // 將選擇範圍內的內容替換為新創建的 <b> 元素
+      range.deleteContents();
+      range.insertNode(boldElement);
+    }
+  }
+};
