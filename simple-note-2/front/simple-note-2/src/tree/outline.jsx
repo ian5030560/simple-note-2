@@ -195,13 +195,13 @@ const App = () => {
       </div>
       {/* 名稱輸入框 */}
       <Input
-        placeholder="Node Name"
+        placeholder="Name"
         value={Name}
         onChange={handleNodeNameChange}
       />
       {/* 新节点键值输入框 */}
       <Input
-        placeholder="Node Key"
+        placeholder="Key"
         value={Key}
         onChange={handleNodeKeyChange}
       />
