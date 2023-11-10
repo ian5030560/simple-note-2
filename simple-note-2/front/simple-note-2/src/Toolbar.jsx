@@ -11,16 +11,18 @@ import { BgColorsOutlined } from "@ant-design/icons";
 import { Button, Flex, Tooltip } from "antd";
 
 const Toolbar = ({
-  boldFont,
-  italics,
-  underline,
-  fontSize,
-  alignLeft,
-  alignCenter,
-  alignRight,
-  highlight,
-  textColors,
-}) => (
+  onBoldClick,
+  onItalicClick,
+  onUnderlineClick,
+  onFontSizeClick,
+  onAlignLeftClick,
+  onAlignCenterClick,
+  onAlignRightClick,
+  onHighlightClick,
+  onTextColorsClick,
+}) => {
+
+  return (
   <Flex gap="small" vertical>
     <Flex wrap="wrap" gap="small">
       <Tooltip title="字體加粗">
@@ -29,7 +31,7 @@ const Toolbar = ({
           shape="circle"
           icon={<BoldOutlined />}
           style={{ backgroundColor: "black" }}
-          onClick={handleBoldClick}
+          onClick={onBoldClick}
         ></Button>
       </Tooltip>
       <Tooltip title="斜體">
@@ -38,7 +40,7 @@ const Toolbar = ({
           shape="circle"
           icon={<ItalicOutlined />}
           style={{ backgroundColor: "black" }}
-          onClick={handleItalicClick}
+          onClick={onItalicClick}
         ></Button>
       </Tooltip>
       <Tooltip title="文字底線">
@@ -99,7 +101,7 @@ const Toolbar = ({
       </Tooltip>
     </Flex>
   </Flex>
-);
+)};
 
 export default Toolbar;
 

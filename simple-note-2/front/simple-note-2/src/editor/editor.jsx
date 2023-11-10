@@ -36,7 +36,7 @@ const Editor = ({initlizeData}) => {
     }
 
     return <>
-        <Toolbar/>
+        <Toolbar />
         <ReactEditorJS
             tools={tools}
             defaultValue={{
