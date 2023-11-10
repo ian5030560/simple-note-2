@@ -4,6 +4,6 @@ import Tree from './tree/tree'
 
 export default function App() {
     return (<>
-        <Editor initlizeData={[]} />
+        <><Tree/></>
     </>)
 }

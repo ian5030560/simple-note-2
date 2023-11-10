@@ -27,16 +27,23 @@ const App = () => {
     return setShowLeafIcon(false);
   };
 
-  const [nodeName, setNodeName] = useState(""); // 新节点名称
-  const [nodeKey, setNodeKey] = useState(""); // 新节点键值
+  const [Name, setName] = useState(""); // 新节点名称
+  const [Key, setKey] = useState(""); // 新节点键值
   const handleNodeNameChange = (e) => {
-    setNodeName(e.target.value);
+    setName(e.target.value);
   };
 
   const handleNodeKeyChange = (e) => {
-    setNodeKey(e.target.value);
+    setKey(e.target.value);
   };
-
+  const length = (e) => {
+    if (selectedKeys.length === 3) {
+      addNode();
+    } else {
+      addFolder();
+    }
+  };  
+  
   const addNode = () => {
     // console.log('addNode');
     
@@ -44,11 +51,11 @@ const App = () => {
     // console.log(selectedKeys[0][0]);
     // console.log(selectedKeys[0][2]);
     // console.log(selectedKeys[0][4]);
-    if (nodeName && nodeKey) {
+    if (Name && Key) {
       // 创建新节点对象
       const newNode = {
-        title: nodeName,
-        key: nodeKey,
+        title: Name,
+        key: Key,
         icon: <CarryOutOutlined />,
       };
 
@@ -60,8 +67,31 @@ const App = () => {
       ].children.push(newNode);
 
       // 清空输入框
-      setNodeName("");
-      setNodeKey("");
+      setName("");
+      setKey("");
+      setSeletedKeys("");
+      setTreeData(updatedTreeData); // 更新树形数据
+    }
+  };
+
+  const addFolder = () => {
+    console.log(selectedKeys);
+    if (Name && Key) {
+      // 创建新节点对象
+      const newFolder = {
+        title: Name,
+        key: Key,
+        icon: <CarryOutOutlined />,
+      };
+
+      // 更新树形数据
+      const updatedTreeData = [...treeData];
+      // 这里可以根据需要添加到合适的位置，示例中将新节点添加到第一个父节点下
+      updatedTreeData[selectedKeys[0][2]].children.push(newFolder);
+
+      // 清空输入框
+      setName("");
+      setKey("");
       setSeletedKeys("");
       setTreeData(updatedTreeData); // 更新树形数据
     }
@@ -166,16 +196,16 @@ const App = () => {
       {/* 名稱輸入框 */}
       <Input
         placeholder="Node Name"
-        value={nodeName}
+        value={Name}
         onChange={handleNodeNameChange}
       />
       {/* 新节点键值输入框 */}
       <Input
         placeholder="Node Key"
-        value={nodeKey}
+        value={Key}
         onChange={handleNodeKeyChange}
       />
-      <button onClick={addNode}>Add Node</button>
+      <button onClick={length}>Add Node or Folder</button>
       <Tree
         showLine={
           showLine

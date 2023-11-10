@@ -5,7 +5,7 @@ import PageNavigation from "./outline.jsx";
 function App() {
   return (
     <div className="app">
-      {<li>index1</li>}
+      {<li>檔案列</li>}
       <PageNavigation />
     </div>
   );
