@@ -1,4 +1,8 @@
 from flask import Flask
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -6,5 +10,4 @@ app = Flask(__name__)
 def index():
     return "Hello"
 
-if __name__ == "__main__":
-    app.run(debug=True)
+# open venv mode and type "flask run" in terminal to execute
