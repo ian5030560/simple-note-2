@@ -17,7 +17,6 @@
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "antd": "^5.10.3",
-    "editorjs-drag-drop": "^1.1.13",
     "jquery": "^3.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -52,6 +51,7 @@
   },
   "devDependencies": {
     "@editorjs/delimiter": "^1.3.0",
+    "editorjs-drag-drop": "^1.1.13",
     "editorjs-undo": "^2.0.26"
   }
 }
