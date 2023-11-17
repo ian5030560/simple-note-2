@@ -1,7 +1,8 @@
+# urls.py
 from django.urls import path
-from . import views
+from .views import receive_data
 
 urlpatterns = [
-    path("", views.index, name="index"),
-    # 可以添加其他路径定义
+    # 其他路径...
+    path("receive_data/", receive_data, name="receive_data"),
 ]
