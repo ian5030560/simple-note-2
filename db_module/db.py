@@ -1,8 +1,10 @@
 import pymysql as sql
 import typing
-
+from pymysql import cursors
 
 class DB:
+    
+    tableName = ""
     
     __settings = {
         "host": "sql12.freesqldatabase.com",
@@ -17,28 +19,30 @@ class DB:
     @classmethod
     def __connectDB(cls) -> bool:
         try:
-            cls.__conn = sql.Connection(**cls.__settings)
+            cls.__conn = sql.connect(**cls.__settings)
             return True
         except Exception as e:
             return False
     
     @classmethod
-    def __execute(cls, func: typing.Callable[[any], any]) -> bool:
+    def __execute(cls, func: typing.Callable[[cursors.Cursor], any]) -> bool:
         
         if(not cls.__connectDB()): return False
-
+        
         try:
             with cls.__conn.cursor() as cursor:
                 func(cursor)
                 return True
         except Exception as e:
-            print(e)
             return False
-        
+    
+    
     @classmethod
-    def delete(cls, table: str, condition: str = "TRUE") -> bool:
+    def delete(cls, condition: str = "TRUE", table = None) -> bool:
         
-        def innerDelete(cursor):
+        if(not table): table = cls.tableName
+        
+        def innerDelete(cursor: cursors.Cursor):
             cursor.execute("DELETE FROM `{}` WHERE {};".format(table, condition))
             cls.__conn.commit()
             
@@ -48,29 +52,33 @@ class DB:
     def query(cls, command: str) -> "tuple | None":
         
         data: tuple = None
-        def innerQuery(cursor):
+        def innerQuery(cursor: cursors.Cursor):
             nonlocal data
             
             cursor.execute(command)
             data = cursor.fetchall()
-        
+            
         if (not cls.__execute(innerQuery)): return None
         
         return data
     
     @classmethod
-    def insert(cls, table: str, data: list[tuple]) -> bool:
+    def insert(cls, data: list, table: str = None) -> bool:
+        if(not table): table = cls.tableName
         
-        def innerInsert(cursor):
+        def innerInsert(cursor: cursors.Cursor):
             cursor.execute("INSERT INTO `{}` VALUES {}".format(table, *data))
             cls.__conn.commit()
             
         return cls.__execute(innerInsert)
     
+    
     @classmethod
-    def update(cls, table: str, setting: str, condition: str = "TRUE") -> bool:
+    def update(cls, setting: str, condition: str = "TRUE", table = None) -> bool:
         
-        def innerUpdate(cursor):
+        if(not table): table = cls.tableName
+        
+        def innerUpdate(cursor: cursors.Cursor):
             cursor.execute("UPDATE `{}` SET {} WHERE {}".format(table, setting, condition))
             cls.__conn.commit()
             
@@ -87,3 +95,9 @@ class DB:
         
         except Exception as e:
             return False
+
+# class UserDB(DB):
+#     tableName = "user"
+    
+# print(UserDB.delete())
+# UserDB.close()
