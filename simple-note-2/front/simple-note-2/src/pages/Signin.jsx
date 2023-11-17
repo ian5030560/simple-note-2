@@ -2,22 +2,11 @@ import { Menu, Form, Container, Message } from "semantic-ui-react";
 import axios from "axios";
 import React, { useState } from "react";
 
-function Example() {
-  // Declare a new state variable, which we'll call "count"
-  const [count, setCount] = useState(0);
-
-  return (
-    <div>
-      <p>You clicked {count} times</p>
-      <button onClick={() => setCount(count + 1)}>Click me</button>
-    </div>
-  );
-}
-
 function Signin() {
   const [activeItem, setActiveItem] = React.useState("register");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [responseData, setResponseData] = useState("");
 
   return (
     <Container>

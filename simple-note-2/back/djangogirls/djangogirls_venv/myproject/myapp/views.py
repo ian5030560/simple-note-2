@@ -1,10 +1,12 @@
-from django.shortcuts import render
+# views.py
 from rest_framework.views import APIView
-from .models import *
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializer import *
-
-# Create your views here.
+from django.http import JsonResponse
+from rest_framework.request import Request
+from .models import React
+from .serializer import ReactSerializer
+from .db_module.db import DB
 
 
 class ReactView(APIView):
