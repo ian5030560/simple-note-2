@@ -87,7 +87,3 @@ class DB:
         
         except Exception as e:
             return False
-        
-        
-print(DB.delete("user"))
-DB.close()
