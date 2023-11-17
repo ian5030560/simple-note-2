@@ -1,14 +1,14 @@
 import React from "react";
-import { Menu, Form, Container } from "semantic-ui-react";
-import { Tabs } from 'antd';
+import { Menu, Form, Container,Message } from "semantic-ui-react";
 
 function Signin() {
   const [activeItem, setActiveItem] = React.useState("register");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+
   return (
     <Container>
-          <Menu widths="2">
+      <Menu widths="2">
         <Menu.Item
           active={activeItem === "register"}
           onClick={() => setActiveItem("register")}
@@ -41,8 +41,9 @@ function Signin() {
           {activeItem === "signin" && "登入"}
         </Form.Button>
       </Form>
-    </Container>
+    </Container>    
   );
+  
 }
 
 export default Signin;
