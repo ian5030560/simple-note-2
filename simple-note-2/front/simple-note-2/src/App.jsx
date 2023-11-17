@@ -1,13 +1,19 @@
-import React from "react"
-import Editor from "./editor/editor"
-import Tree from './tree/tree'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Header from "./Header";
+import Signin from "./pages/Signin";
 
-export default function App() {
-    return (<BrowserRouter>
-        <Routes>
-            <Route index element={<Editor initlizeData={[]}/>} />
-            <Route path='tree' element={<Tree defaultData={[]}/>} />
-        </Routes>
-    </BrowserRouter>)
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Header/>
+      <Routes>
+      <Route path="/" element="首頁"></Route>
+      <Route path="/signin" element={<Signin />} ></Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
+
+export default App;
