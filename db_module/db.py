@@ -23,7 +23,7 @@ class DB:
             return False
     
     @classmethod
-    def __init(cls, func: typing.Callable[[any], any]) -> bool:
+    def __execute(cls, func: typing.Callable[[any], any]) -> bool:
         
         if(not cls.__connectDB()): return False
 
@@ -42,7 +42,7 @@ class DB:
             cursor.execute("DELETE FROM `{}` WHERE {};".format(table, condition))
             cls.__conn.commit()
             
-        return cls.__init(innerDelete)
+        return cls.__execute(innerDelete)
     
     @classmethod
     def query(cls, command: str) -> "tuple | None":
@@ -54,7 +54,7 @@ class DB:
             cursor.execute(command)
             data = cursor.fetchall()
         
-        if (not cls.__init(innerQuery)): return None
+        if (not cls.__execute(innerQuery)): return None
         
         return data
     
@@ -65,7 +65,7 @@ class DB:
             cursor.execute("INSERT INTO `{}` VALUES {}".format(table, *data))
             cls.__conn.commit()
             
-        return cls.__init(innerInsert)
+        return cls.__execute(innerInsert)
     
     @classmethod
     def update(cls, table: str, setting: str, condition: str = "TRUE") -> bool:
@@ -74,7 +74,7 @@ class DB:
             cursor.execute("UPDATE `{}` SET {} WHERE {}".format(table, setting, condition))
             cls.__conn.commit()
             
-        return cls.__init(innerUpdate)
+        return cls.__execute(innerUpdate)
     
     @classmethod
     def close(cls) -> bool:
