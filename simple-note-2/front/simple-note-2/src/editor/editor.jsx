@@ -8,7 +8,6 @@ import Undo from 'editorjs-undo';
 const ReactEditorJS = createReactEditorJS();
 
 /**
- * 
  * @param {{initlizeData: []}} param0 
  * @returns 
  */
@@ -23,11 +22,13 @@ const Editor = ({initlizeData}) => {
         console.log("Initialize");
     }, [])
 
-    const handleReady = () => {
-        new DragDrop(editorRef.current._editorJS);
-        new Undo(editorRef.current._editorJS.editor);
+    const handleReady = useCallback(() => {
+        const editor = editorRef.current._editorJS;
+        new Undo({ editor });
+        new DragDrop(editor);
+        
         console.log("Ready");
-    }
+    },[])
 
     const handleChange = async () => {
         const savedData = await editorRef.current.save();
@@ -36,7 +37,7 @@ const Editor = ({initlizeData}) => {
     }
 
     return <>
-        <Toolbar />
+        <Toolbar onAlignCenterClick={{}}/>
         <ReactEditorJS
             tools={tools}
             defaultValue={{

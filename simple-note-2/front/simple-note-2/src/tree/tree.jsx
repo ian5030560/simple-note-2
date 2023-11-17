@@ -1,5 +1,4 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
 import PageNavigation from "./outline.jsx";
 
 function App() {
@@ -12,7 +11,5 @@ function App() {
 }
 
 export const Tree = App;
-const root = createRoot(document.getElementById("root"));
-root.render(<App />);
 
 export default App;
