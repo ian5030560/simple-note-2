@@ -2,24 +2,32 @@ import pymysql as sql
 import typing
 from pymysql import cursors
 
+
 class DB:
+
+    """
+    Property:\n
+    \tsettings (dict): {
+    \t    "host": your host,
+    \t    "port": your port,
+    \t    "user": your username,
+    \t    "password": your password,
+    \t    "db": your database
+    \t}\n
+    \ttableName (str): your table name
+    """
     
     tableName = ""
     
-    __settings = {
-        "host": "sql12.freesqldatabase.com",
-        "port": 3306,
-        "user": "sql12662871",
-        "password": "ATaMjgMM4k",
-        "db": "sql12662871",
-    }
+    settings = {}
     
     __conn: sql.Connection = None
     
     @classmethod
     def __connectDB(cls) -> bool:
+
         try:
-            cls.__conn = sql.connect(**cls.__settings)
+            cls.__conn = sql.connect(**cls.settings)
             return True
         except Exception as e:
             return False
@@ -39,7 +47,7 @@ class DB:
     
     @classmethod
     def delete(cls, condition: str = "TRUE", table = None) -> bool:
-        
+
         if(not table): table = cls.tableName
         
         def innerDelete(cursor: cursors.Cursor):
@@ -64,6 +72,7 @@ class DB:
     
     @classmethod
     def insert(cls, data: list, table: str = None) -> bool:
+        
         if(not table): table = cls.tableName
         
         def innerInsert(cursor: cursors.Cursor):
@@ -98,6 +107,6 @@ class DB:
 
 # class UserDB(DB):
 #     tableName = "user"
-    
+ 
 # print(UserDB.delete())
 # UserDB.close()
