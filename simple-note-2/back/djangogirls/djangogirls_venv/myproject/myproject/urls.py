@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", ReactView.as_view(), name="anything"),
+    # path("", ReactView.as_view(), name="anything"),
     path("signin/", include("signin.urls")),
     path("", RedirectView.as_view(url="/signin/", permanent=True)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
