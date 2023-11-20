@@ -13,8 +13,6 @@ from db_module.db import DB
 
 
 class ReactView(APIView):
-    serializer_class = ReactSerializer
-
     def get(self, request):
         output = [
             {"employee": output.employee, "department": output.department}
@@ -23,7 +21,12 @@ class ReactView(APIView):
         return Response(output)
 
     def post(self, request):
-        serializer = ReactSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+        try:
+            email = request.POST["email"]
+        except KeyError:
+            email = None
+        if email == #DB比對路徑:
+
+            return Response(True)
+        else:
+            return Response(False)

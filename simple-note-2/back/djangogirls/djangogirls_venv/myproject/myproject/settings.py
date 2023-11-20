@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "myapp",
     "rest_framework",
     "corsheaders",
+    "signin",
 ]
 
 MIDDLEWARE = [

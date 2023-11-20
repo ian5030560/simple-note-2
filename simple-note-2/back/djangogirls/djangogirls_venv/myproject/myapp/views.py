@@ -11,7 +11,7 @@ from .models import React
 from .serializer import ReactSerializer
 from db_module.db import DB
 
-
+"""
 class ReactView(APIView):
     serializer_class = ReactSerializer
 
@@ -27,3 +27,4 @@ class ReactView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+"""
