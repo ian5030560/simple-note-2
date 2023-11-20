@@ -158,3 +158,42 @@ class UserTable(DB):
     \tuser_pwd(str): user password, length <= 30\n
     """
     tableName = "user"
+    
+    @staticmethod
+    def accountExist(account: str) -> bool:
+        """
+        check if account exists\n
+        Args:
+            account (str): account name
+
+        Raises:
+            Exception: error from database
+
+        Returns:
+            bool: whether account exists
+        """
+        data = UserTable.query("SELECT `user_acct` FROM `user` WHERE `user_acct` = `{}`".format(account))
+        
+        if(not data): raise Exception("There is an error from database")
+        
+        return len(data) != 0
+    
+    @staticmethod
+    def validate(account: str, password: str) -> bool:
+        """
+            validates the given account and password
+        Args:
+            account (str): account name
+            password (str): password text
+
+        Raises:
+            Exception: error from database
+
+        Returns:
+            bool: True if the account and password is valid
+        """
+        data = UserTable.query("SELECT * FROM `user` WHERE `user_acct` = `{}` AND `user_pwd` = `{}`".format(account, password))
+        
+        if(not data): raise Exception("There is an error from database")
+        
+        return len(data) == 1
