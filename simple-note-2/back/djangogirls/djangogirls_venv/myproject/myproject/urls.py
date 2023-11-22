@@ -23,6 +23,6 @@ from signin.views import SigninView  # 要加新功能添加這行
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("signin/", SigninView.as_view(), name="signin"),  # 使用新的 import
+    path("signin/", SigninView, name="signin"),  # 使用新的 import
     path("", RedirectView.as_view(url="/signin/", permanent=True)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
