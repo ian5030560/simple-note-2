@@ -2,7 +2,6 @@ import React, { useState, useRef, useCallback } from "react";
 import { createReactEditorJS } from "react-editor-js";
 import DragDrop from "editorjs-drag-drop";
 import { tools } from "./editList";
-import Toolbar from "../Toolbar";
 import Undo from 'editorjs-undo';
 
 const ReactEditorJS = createReactEditorJS();
@@ -36,9 +35,7 @@ const Editor = ({initlizeData}) => {
         console.log(savedData["blocks"]);
     }
 
-    return <>
-        <Toolbar onAlignCenterClick={{}}/>
-        <ReactEditorJS
+    return <ReactEditorJS
             tools={tools}
             defaultValue={{
                 time: new Date().getTime(),
@@ -48,8 +45,6 @@ const Editor = ({initlizeData}) => {
             onReady={handleReady}
             onChange={handleChange}
         />
-    </>
-
 }
 
 export default Editor;

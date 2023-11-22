@@ -8,7 +8,7 @@ const LogIn = ({ onChange }) => {
 
     return <AuthForm
         form={form}
-        url="http://172.16.7.55/signin"
+        url="http://localhost:8000/signin"
         title="登入"
         changeText="註冊"
         onChange={onChange}
@@ -54,7 +54,7 @@ const SignUp = ({ onChange }) => {
 
     return <AuthForm
         form={form}
-        url="http://172.16.7.55/signin"
+        url="http://localhost:8000/signin"
         title="註冊"
         changeText="登入"
         onChange={onChange}
@@ -96,12 +96,12 @@ const Authenticate = () => {
 
     const [current, setCurrent] = useState(0);
     const { token } = theme.useToken();
-
+    
     return <Flex
         justify="center"
-        align="center"
         style={{
             backgroundColor: token.colorBgBase,
+            height: "85%"
         }}>
         {(current === 0) && <LogIn onChange={() => { setCurrent(1) }} />}
         {(current === 1) && <SignUp onChange={() => { setCurrent(0) }} />}

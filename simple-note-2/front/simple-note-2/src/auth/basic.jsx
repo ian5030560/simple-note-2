@@ -150,8 +150,9 @@ const AuthForm = ({
         postData(
             url,
             onSubmit(),
-            () => {
+            (res) => {
                 setState("success");
+                console.log(res);
                 // onSuccess(res);
             },
             (e) => {

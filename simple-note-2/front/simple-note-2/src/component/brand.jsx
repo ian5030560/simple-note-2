@@ -1,12 +1,15 @@
 import React from "react";
-import {Typography, Image, Flex} from "antd";
-import TitleImage from "../resource/ac25e66df5b7e9c767f6f87eb9b2cf3e749fcf08.png@942w_1500h_progressive.png";
+import {Typography, Flex} from "antd";
+import Icon from "@ant-design/icons";
+import {ReactComponent as Note} from "../resource/notebook.svg";
 const {Title} = Typography;
 
+const NoteIcon = (prop) => <Icon component={Note}  {...prop}/>
+
 const Brand = () => {
-    return <Flex align="center" gap="middle">
-        <Image src={TitleImage} width={32} preview={false}/>
-        <Title level={2} style={{fontFamily: "monospace"}} italic>Simple Note 2</Title>
+    return <Flex align="center" gap="small">
+        <NoteIcon style={{fontSize: "64px"}}/>
+        <Title level={2} style={{fontFamily: "monospace", color: "#FFFFFF"}} italic>Simple Note 2</Title>
     </Flex>
 }
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Menu } from "antd";
-import { GithubOutlined, StarFilled } from "@ant-design/icons";
+import { Button, Menu, Flex, Switch, Typography } from "antd";
+import { GithubOutlined, StarFilled, RobotOutlined } from "@ant-design/icons";
+const {Text} = Typography;
 
 const WelcomeTopBar = ({
     onIntroClick,
@@ -34,16 +35,16 @@ const WelcomeTopBar = ({
             key: "team",
             children: [
                 {
-                    label: <a href="https://www.instagram.com/0z3.1415926/">林立山</a>,
+                    label: <a href="https://www.instagram.com/0z3.1415926/"><Text>林立山</Text></a>,
                     key: "leader",
-                    icon: <StarFilled />
+                    icon: <StarFilled style={{color: "black"}}/>,
                 },
                 {
-                    label: <a href="https://www.instagram.com/itsuki_f6/">蔡岳哲</a>,
+                    label: <a href="https://www.instagram.com/itsuki_f6/"><Text>蔡岳哲</Text></a>,
                     key: "mate1",
                 },
                 {
-                    label: "李泓逸",
+                    label: <Text>李泓逸</Text>,
                     key: "mate2",
                 }
             ]
@@ -64,7 +65,21 @@ const WelcomeTopBar = ({
         mode="horizontal"
         onClick={handleClick}
         selectedKeys={current}
-        style={{ justifyContent: "flex-end" }}/>
+        style={{ 
+            justifyContent: "flex-end"
+            }} />
 }
 
-export {WelcomeTopBar}
+const FunctionTopBar = () => {
+    return <Flex
+        justify="end"
+        align="center"
+        gap="large"
+        style={{width: "100%"}}>
+        <Switch checkedChildren="明亮" unCheckedChildren="陰暗" defaultChecked />
+        <Button type="primary" shape="circle" icon=<RobotOutlined /> />
+        <Button type="primary" size="middle">export</Button>
+    </Flex>
+}
+
+export { WelcomeTopBar, FunctionTopBar }

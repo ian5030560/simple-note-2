@@ -1,35 +1,17 @@
 import React, { useState } from "react";
-import {WelcomeTopBar} from "../component/topbar";
+import { WelcomeTopBar } from "../component/topbar";
 import Brand from "../component/brand";
-import { Flex, ConfigProvider, FloatButton } from "antd";
+import { Flex, ConfigProvider, FloatButton, theme } from "antd";
 import Authenticate from "../auth/auth";
-import {AlertFilled, AlertOutlined} from "@ant-design/icons";
+import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 
-const lightTheme = {
-    colorPrimary: "#0080FF",
-    colorBgBase: "#FFFFFF",
-    colorBorder: "#00FFFF",
-    colorTextBase: "#000000"
-}
-
-const darkTheme = {
-    colorPrimary: "#000000",
-    colorBgBase: "#000000",
-    colorBorder: "#FF5809",
-    colorTextBase: "#FFFFFF",
-    Input: {
-        addonBg: "#000000",
-        activeBorderColor: "#FF5809",
-        hoverBorderColor: "#FF5809"
-    }
-}
-
-const Header = ({backgroundColor, onIntroClick, onAuthClick}) => {
+const Header = ({ backgroundColor, onIntroClick, onAuthClick }) => {
     return <Flex
         justify="space-around"
         align="center"
         style={{
             backgroundColor: backgroundColor,
+            height: "15%"
         }}>
         <Brand />
         <WelcomeTopBar
@@ -38,13 +20,9 @@ const Header = ({backgroundColor, onIntroClick, onAuthClick}) => {
     </Flex>
 }
 
-// const Footer = () => {
+const BulbButton = ({ lighten, onClick }) => {
 
-// }
-
-const BulbButton = ({lighten, onClick}) => {
-
-    return <FloatButton icon={lighten ? <AlertOutlined/>: <AlertFilled/>} onClick={onClick}/>
+    return <FloatButton icon={lighten ? <AlertFilled /> : <AlertOutlined />} onClick={onClick} />
 }
 
 const Welcome = () => {
@@ -58,16 +36,29 @@ const Welcome = () => {
 
     return <ConfigProvider
         theme={{
-            token: darken ? darkTheme : lightTheme,
+            token: {
+                colorPrimary: "#9DA9B8",
+                colorBgBase: darken? "#3C3C3C":"#FFFCEC"
+            },
+            components: {
+                Menu: {
+                    itemBg: "#9DA9B8",
+                    itemColor: "#FFFFFF",
+                    itemHoverColor: "#FFFFFF",
+                    horizontalItemSelectedColor: "#FFFFFF",
+                }
+            },
+            algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
+
         }}
     >
         <Header
-            backgroundColor={darken ? darkTheme.colorBgBase : lightTheme.colorBgBase}
-            onAuthClick={() => setContent(<Authenticate/>)}
+            backgroundColor="#9DA9B8"
+            onAuthClick={() => setContent(<Authenticate />)}
             onIntroClick={() => setContent()}
         />
         {content}
-        <BulbButton lighten={!darken} onClick={handleClick}/>
+        <BulbButton lighten={!darken} onClick={handleClick} />
     </ConfigProvider>
 }
 
