@@ -1,4 +1,21 @@
-import pymysql as sql
+import sqlite3
+
+dbfile = "db_modules\\pydb.db"
+
+conn = sqlite3.connect(dbfile)
+
+
+class SigninData:
+    rows = conn.execute("select * from signinData;")
+    for row in rows:
+        for field in row:
+            print("{}\t".format(field), end="")
+        print()
+
+
+conn.close()
+
+'''import pymysql as sql
 import typing
 from pymysql import cursors
 
@@ -9,7 +26,7 @@ class DB:
     Property:\n
     \ttableName (str): your table name
     Example:\n
-    \t(1)\n 
+    \t(1)\n
     \tDB.tableName = your table name\n
     \tDB.delete("col1 = 1")\n
     \tDB.insert([("abc123", 100000)])\n
@@ -67,8 +84,11 @@ class DB:
         Returns:
             bool: True if successful else False
         """
+
         def innerDelete(cursor: cursors.Cursor):
-            cursor.execute("DELETE FROM `{}` WHERE {};".format(cls.tableName, condition))
+            cursor.execute(
+                "DELETE FROM `{}` WHERE {};".format(cls.tableName, condition)
+            )
             cls.__conn.commit()
 
         return cls.__execute(innerDelete)
@@ -106,6 +126,7 @@ class DB:
         Returns:
             bool: True if successful else False
         """
+
         def innerInsert(cursor: cursors.Cursor):
             cursor.execute("INSERT INTO `{}` VALUES {}".format(cls.tableName, *data))
             cls.__conn.commit()
@@ -123,6 +144,7 @@ class DB:
         Returns:
             bool: True if successful else False
         """
+
         def innerUpdate(cursor: cursors.Cursor):
             cursor.execute(
                 "UPDATE `{}` SET {} WHERE {}".format(cls.tableName, setting, condition)
@@ -157,8 +179,9 @@ class UserTable(DB):
     \tuser_acct(str, primary): user account, length <= 320\n
     \tuser_pwd(str): user password, length <= 30\n
     """
+
     tableName = "user"
-    
+
     @staticmethod
     def accountExist(account: str) -> bool:
         """
@@ -172,12 +195,15 @@ class UserTable(DB):
         Returns:
             bool: whether account exists
         """
-        data = UserTable.query("SELECT `user_acct` FROM `user` WHERE `user_acct` = `{}`".format(account))
-        
-        if(not data): raise Exception("There is an error from database")
-        
+        data = UserTable.query(
+            "SELECT `user_acct` FROM `user` WHERE `user_acct` = `{}`".format(account)
+        )
+
+        if not data:
+            raise Exception("There is an error from database")
+
         return len(data) != 0
-    
+
     @staticmethod
     def validate(account: str, password: str) -> bool:
         """
@@ -192,8 +218,16 @@ class UserTable(DB):
         Returns:
             bool: True if the account and password is valid
         """
-        data = UserTable.query("SELECT * FROM `user` WHERE `user_acct` = `{}` AND `user_pwd` = `{}`".format(account, password))
-        
-        if(not data): raise Exception("There is an error from database")
-        
+        data = UserTable.query(
+            "SELECT * FROM `user` WHERE `user_acct` = `{}` AND `user_pwd` = `{}`".format(
+                account, password
+            )
+        )
+
+        if not data:
+            raise Exception("There is an error from database")
+
         return len(data) == 1
+
+    print(DB.query("SELECT * FROM `user`"))
+'''

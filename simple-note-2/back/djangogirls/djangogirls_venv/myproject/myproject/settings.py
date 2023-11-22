@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-82qibhz^s@_di4f=405%)ndjhj5h_j-+amkut0$+@c42z9ylx3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -38,10 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "myapp",
-    "rest_framework",
-    "corsheaders",
     "signin",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -89,6 +87,12 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+        # "ENGINE": "django.db.backends.mysql",
+        # "NAME": "sql12662871",
+        # "USER": "sql12662871",
+        # "PASSWORD": "ATaMjgMM4k",
+        # "HOST": "sql12.freesqldatabase.com",
+        # "PORT": "3306",
     }
 }
 

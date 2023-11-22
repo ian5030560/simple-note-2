@@ -1,7 +1,7 @@
 # views.py
 import sys
 
-sys.path.append("..db_module")
+sys.path.append("..db_modules")
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -9,10 +9,11 @@ from django.http import JsonResponse
 from rest_framework.request import Request
 from .models import React
 from .serializer import ReactSerializer
-from db_module.db import DB
+from db_modules.db import SigninData  # 資料庫來的檔案
 
 """
 class ReactView(APIView):
+
     serializer_class = ReactSerializer
 
     def get(self, request):

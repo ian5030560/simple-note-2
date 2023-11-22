@@ -15,15 +15,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include, re_path, include
-from myapp.views import *
+from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+from signin.views import ReactView as SigninReactView  # 要加新功能添加這行
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    # path("", ReactView.as_view(), name="anything"),
-    path("signin/", include("signin.urls")),
+    path("signin/", SigninReactView.as_view(), name="signin"),  # 使用新的 import
     path("", RedirectView.as_view(url="/signin/", permanent=True)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
