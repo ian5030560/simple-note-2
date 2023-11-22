@@ -19,10 +19,10 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
-from signin.views import ReactView as SigninReactView  # 要加新功能添加這行
+from signin.views import SigninView  # 要加新功能添加這行
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("signin/", SigninReactView.as_view(), name="signin"),  # 使用新的 import
+    path("signin/", SigninView.as_view(), name="signin"),  # 使用新的 import
     path("", RedirectView.as_view(url="/signin/", permanent=True)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
