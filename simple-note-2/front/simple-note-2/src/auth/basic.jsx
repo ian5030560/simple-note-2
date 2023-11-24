@@ -30,7 +30,7 @@ function postData(url, path, data, onReceive, onError) {
     fetch(url + path, formdata,
         {
             url: url,
-            mode: "no-cors",
+            mode: "cors",
             method: "POST",
             headers: {
                 "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
