@@ -202,7 +202,8 @@ const AuthForm = ({
       },
       (e) => {
         setState("failure");
-        console.log(e);
+        console.log(e.message);
+
         // onFailure(e);
       }
     );
