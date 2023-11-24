@@ -1,10 +1,12 @@
 import sqlite3
+from os import mkdir
 
-dbfile = (
-    "simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\db_modules\\pydb.db"
-)
-
-conn = sqlite3.connect(dbfile)
+try:
+    conn = sqlite3.connect("db_modules/pydb.db")
+except sqlite3.OperationalError:
+    mkdir("db_modules")
+finally:
+    conn = sqlite3.connect("db_modules/pydb.db")
 
 
 class DB:
@@ -15,6 +17,7 @@ class DB:
         cursor.execute("SELECT * FROM users WHERE username = ? AND user_password = ?;", (username, user_password))
         # 檢索結果
         row = cursor.fetchone()
+        cursor.close()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
 
@@ -25,6 +28,7 @@ class DB:
         cursor.execute("SELECT * FROM users WHERE username = ?;", (username,))
         # 檢索結果
         row = cursor.fetchone()
+        cursor.close()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
 
@@ -34,18 +38,34 @@ class DB:
         cursor.execute("SELECT * FROM users WHERE user_email = ?;", (user_email,))
         # 檢索結果
         row = cursor.fetchone()
+        cursor.close()
         # 如果有相同的資料，回傳 True；否則回傳 False
-        return bool(row)                
+        return bool(row)
     
-        
-    def fetch_user_register_data(self):
-        # 查詢並列印 User_Register_Data 表格的資料
+    def insert_into_User_Register_Data(self,username, user_password, user_email):
         cursor = conn.cursor()
-        rows = cursor.execute("SELECT * FROM User_Register_Data;")
-        for row in rows:
-            for field in row:
-                print("{}\t".format(field), end="")
-            print()
+        try:
+            # 新增資料到 User_Register_Data 表格
+            user_data = (username, user_email, user_password)
+            cursor.execute("INSERT INTO User_Register_Data (username, user_email, user_password) VALUES (?, ?, ?);", user_data)
+            conn.commit()
+            return("資料插入成功！")
 
+        except sqlite3.Error as e:
+            return("插入資料失敗:", e)
+        
+        finally:
+        # 關閉游標和資料庫連接
+            cursor.close()
+        
+            
+            
+    cursor = conn.cursor()
+    rows = cursor.execute("SELECT * FROM User_Register_Data;")
+    for row in rows:
+        for field in row:
+            print("{}\t".format(field), end="")
+        print()
+        cursor.close()
     
 conn.close()
