@@ -20,16 +20,14 @@ const { Title, Link } = Typography;
  * @param {(error) => void} onError
  */
 function postData(url, path, data, onReceive, onError) {
-
-    let formdata = new FormData();
-    
-    for(let key in data){
-        formdata.append(key, data[key]);
-    }
-    
-    axios.post(url + path, formdata)
-        .then(res => onReceive(res))
-        .catch(e => onError(e))
+  // let formdata = new FormData();
+  // for (let key in data) {
+  //   formdata.append(key, data[key]);
+  // }
+  // axios
+  //   .post(url + path, formdata)
+  //   .then((res) => onReceive(res))
+  //   .catch((e) => onError(e));
 }
 
 // eslint-disable-next-line no-unused-vars

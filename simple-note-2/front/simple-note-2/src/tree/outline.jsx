@@ -23,7 +23,7 @@ const App = ({ defaultData }) => {
   const [showLine, setShowLine] = useState(true);
   const [showIcon, setShowIcon] = useState(false);
   const [showLeafIcon, setShowLeafIcon] = useState(true);
-  const [selectedKeys, setSeletedKeys] = useState(["0-0-0"]);
+  const [selectedKeys, setSeletedKeys] = useState(["0-0-0"]); //預設路徑的key
 
   /** 點擊folder後將selectedKeys改成當前路徑(key) */
   const onSelect = (selectedKeys, info) => {
