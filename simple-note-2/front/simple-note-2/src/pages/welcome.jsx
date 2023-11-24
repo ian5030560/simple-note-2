@@ -17,7 +17,8 @@ const Header = ({ backgroundColor, onIntroClick, onAuthClick }) => {
         <Brand />
         <WelcomeTopBar
             onIntroClick={onIntroClick}
-            onAuthClick={onAuthClick} />
+            onAuthClick={onAuthClick}   
+        />
     </Flex>
 }
 

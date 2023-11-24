@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Flex, Form, Space, Typography, Result, Modal } from "antd";
+import { Button, Flex, Form, Space, Typography, Result, Modal, Input } from "antd";
 const { Title, Link } = Typography;
 /**
  * 
@@ -8,21 +8,24 @@ const { Title, Link } = Typography;
  * @param {(response: Response) => void} onReceive 
  * @param {(error) => void} onError 
  */
-function postData(url, data, onReceive, onError) {
-    fetch(url, {
-        body: data,
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-            "content-type": "application/json",
-        },
-    })
+function postData(url, path, data, onReceive, onError) {
+    console.log(path);
+    console.log(url + path);
+    fetch(url + path, data,
+        {
+            url: url,
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                "content-type": "application/json",
+            },
+        })
         .then(res => {
             onReceive(res);
         })
         .catch(e => {
-            onError(e);
+            onError?.(e);
         })
 }
 
@@ -46,6 +49,38 @@ const failureType = {
      * @param {Error} e
      */
     onFailure: (e) => { }
+}
+
+const forgetPwdType = {
+
+}
+
+const ForgetPwdModal = ({ open, onCancel }) => {
+    return <Modal
+        title="尋找密碼"
+        open={open}
+        footer={[]}
+        onCancel={onCancel}
+    >
+        <Form>
+            <Form.Item
+                rules={[{
+                    required: true,
+                    message: "Please enter an email address"
+                },
+                {
+                    type: "email",
+                    message: "email address is not available"
+                }]}
+            >
+                <Input type="email" placeholder="輸入你的email" />
+            </Form.Item>
+            <Form.Item>
+                <Button type="primary" htmlType="submit">submit</Button>
+            </Form.Item>
+        </Form>
+
+    </Modal>
 }
 
 const AuthModal = ({
@@ -75,7 +110,7 @@ const AuthModal = ({
             open={failureOpen}
             closeIcon={null}
             footer={[
-                <Button type="primary" onClick={() => {onFailure()}} key="f-ok">
+                <Button type="primary" onClick={() => { onFailure() }} key="f-ok">
                     ok
                 </Button>
             ]}>
@@ -83,6 +118,19 @@ const AuthModal = ({
         </Modal>
     </>
 }
+
+const validateMessages = {
+    // eslint-disable-next-line no-template-curly-in-string
+    required: 'Please enter the ${label}',
+    types: {
+        // eslint-disable-next-line no-template-curly-in-string
+        email: '${label} is not correct',
+    },
+    number: {
+        // eslint-disable-next-line no-template-curly-in-string
+        range: "${label} must be between ${min} and ${max}"
+    }
+};
 
 /**
  * 
@@ -99,6 +147,7 @@ const AuthForm = ({
     success,
     failure,
     url,
+    path
 }) => {
 
     const [submittable, setSubmittable] = React.useState(false);
@@ -120,19 +169,6 @@ const AuthForm = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [values]);
 
-    const validateMessages = {
-        // eslint-disable-next-line no-template-curly-in-string
-        required: 'Please enter the ${label}',
-        types: {
-            // eslint-disable-next-line no-template-curly-in-string
-            email: '${label} is not correct',
-        },
-        number: {
-            // eslint-disable-next-line no-template-curly-in-string
-            range: "${label} must be between ${min} and ${max}"
-        }
-    };
-
     const {
         title: successTitle,
         subtitle: successSubtitle,
@@ -149,10 +185,10 @@ const AuthForm = ({
         setState("loading");
         postData(
             url,
+            path,
             onSubmit(),
             (res) => {
                 setState("success");
-                console.log(res);
                 // onSuccess(res);
             },
             (e) => {
@@ -168,6 +204,12 @@ const AuthForm = ({
             size="large"
             validateMessages={validateMessages}
             labelWrap
+            labelCol={{
+                span: 4,
+            }}
+            wrapperCol={{
+                // span: 16,
+            }}
             style={{ width: "40%" }}
             autoComplete="on"
         >
@@ -175,7 +217,11 @@ const AuthForm = ({
                 {title}
             </Title>
             {children}
-            <Form.Item>
+            <Form.Item
+                wrapperCol={{
+                    offset: 4,
+                }}
+            >
                 <Flex justify="space-between">
                     <Space>
                         <Button
@@ -197,7 +243,7 @@ const AuthForm = ({
                     </Space>
                     <Space>
                         <Link onClick={() => { onChange?.() }}>{changeText}</Link>
-                        <Link>忘記密碼</Link>
+                        <Link >忘記密碼</Link>
                     </Space>
                 </Flex>
             </Form.Item>
@@ -206,12 +252,13 @@ const AuthForm = ({
             successTitle={successTitle}
             successSubtitle={successSubtitle}
             successOpen={state === "success"}
-            onSuccess={() => {setState(); onSuccess();}}
+            onSuccess={() => { setState(); onSuccess(); }}
             failureTitle={failTitle}
             failSubtitle={failSubtitle}
             failureOpen={state === "failure"}
-            onFailure={() => {setState(); onFailure();}}
+            onFailure={() => { setState(); onFailure(); }}
         />
+        {/* <ForgetPwdModal open={} onCancel={}/> */}
     </>
 }
 
