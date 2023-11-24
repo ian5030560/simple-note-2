@@ -30,7 +30,7 @@ function postData(url, path, data, onReceive, onError) {
     fetch(url + path, formdata,
         {
             url: url,
-            mode: "cors",
+            mode: "no-cors",
             method: "POST",
             credentials: "include",
             headers: {
