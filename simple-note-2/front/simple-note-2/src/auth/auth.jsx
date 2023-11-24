@@ -8,7 +8,8 @@ const LogIn = ({ onChange }) => {
 
     return <AuthForm
         form={form}
-        url="http://localhost:8000/signin"
+        url="http://172.16.11.21:8000"
+        path="/signin"
         title="登入"
         changeText="註冊"
         onChange={onChange}
@@ -26,7 +27,7 @@ const LogIn = ({ onChange }) => {
     >
         <Form.Item
             label="username"
-            name="name"
+            name="username"
             rules={[{
                 required: true,
             }]}
@@ -53,7 +54,8 @@ const SignUp = ({ onChange }) => {
 
     return <AuthForm
         form={form}
-        url="http://localhost:8000/signin"
+        url="http://172.16.11.21:8000"
+        path="/signin"
         title="註冊"
         changeText="登入"
         onChange={onChange}
@@ -70,7 +72,7 @@ const SignUp = ({ onChange }) => {
         }}>
         <Form.Item
             label="username"
-            name="name"
+            name="username"
             rules={[{
                 required: true
             }]}
