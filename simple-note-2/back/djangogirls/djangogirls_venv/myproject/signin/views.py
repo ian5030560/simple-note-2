@@ -47,7 +47,6 @@ class SigninView:
                     )  # email重複，不能註冊
 
                 elif check_email == False:
+                    print(DB.insert_into_User_Register_Data(username, password, email))
                     return Response(status=status.HTTP_201_CREATED)  # email不重複，可以註冊
-
-        print(email, password, username, id)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        DB.close_connection()
