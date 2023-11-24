@@ -16,6 +16,7 @@ import {
     RobotOutlined
 } from "@ant-design/icons";
 import {FiletypeJson} from "react-bootstrap-icons";
+import { ChatDrawer } from "./drawer";
 
 const { Text } = Typography;
 
@@ -91,6 +92,7 @@ const WelcomeTopBar = ({
 const ToolBar = ({onThemeClick}) => {
 
     const {token} = theme.useToken();
+    const [open, setOpen] = useState(false);
 
     const items = [
         {
@@ -115,14 +117,19 @@ const ToolBar = ({onThemeClick}) => {
             padding: token.padding
         }}>
         <Switch checkedChildren="明亮" unCheckedChildren="陰暗" defaultChecked onClick={onThemeClick}/>
-        <Button type="primary" shape="circle" icon=<RobotOutlined/> />
+        <Button 
+        type="primary" 
+        shape="circle" 
+        icon=<RobotOutlined/> 
+        onClick={() => setOpen(true)}
+        />
         <Dropdown
             trigger="click"
             menu={{ items }}
         >
             <Button type="primary">export<DownOutlined/></Button>
         </Dropdown>
-        
+        <ChatDrawer open={open} onClose={() => setOpen(false)}/>
     </Flex>
 }
 

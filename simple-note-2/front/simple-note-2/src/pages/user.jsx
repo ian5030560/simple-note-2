@@ -33,13 +33,13 @@ const Index = ({onThemeClick}) => {
         backgroundColor: token.colorBgBase
     }}>
         <Col
-            span={6}
+            span={4}
             style={{
                 backgroundColor: token.colorBgBase,
             }}>
             <SideBar />
         </Col>
-        <Col span={18}>
+        <Col span={20}>
             <Flex style={{ width: "100%" }} vertical>
                 <ToolBar onThemeClick={onThemeClick} />
                 <Editor />

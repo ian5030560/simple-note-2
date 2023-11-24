@@ -7,7 +7,7 @@ import {
     theme
 } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-const { Text } = Typography;
+const { Text, Title } = Typography;
 
 const UserProfile = ({ username, src }) => {
     
@@ -26,7 +26,7 @@ const UserProfile = ({ username, src }) => {
             icon={src ? null : <UserOutlined />}
             src={src}
         />
-        <Text>{username}</Text>
+        <Title level={3}>{username}</Title>
     </Flex>
 }
 
