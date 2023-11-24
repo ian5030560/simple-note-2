@@ -61,8 +61,4 @@ class DB:
         cursor.close()
         conn.close()
 
-    rows = cursor.execute("SELECT * FROM User_Register_Data;")
-    for row in rows:
-        for field in row:
-            print("{}\t".format(field), end="")
-        print()
+    
