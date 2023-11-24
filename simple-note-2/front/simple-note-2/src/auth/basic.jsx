@@ -27,9 +27,19 @@ function postData(url, path, data, onReceive, onError) {
         formdata.append(key, data[key]);
     }
     
-    axios.post(url + path, formdata)
-        .then(res => onReceive(res))
-        .catch(e => onError(e))
+    fetch(url + path, formdata,
+        {
+            url: url,
+            mode: "no-cors",
+            method: "POST",
+            headers: {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                "content-type": "application/json",
+            },
+        }
+    )
+    .then((res) => onReceive(res))
+    .catch((error) => onError(error))
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -204,7 +214,8 @@ const AuthForm = ({
       },
       (e) => {
         setState("failure");
-        console.log(e);
+        console.log(e.message);
+
         // onFailure(e);
       }
     );
