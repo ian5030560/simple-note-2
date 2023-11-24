@@ -51,10 +51,10 @@ class DB:
                 user_data,
             )
             conn.commit()
-            return "資料插入成功！"
+            return True
 
         except sqlite3.Error as e:
-            return ("插入資料失敗:", e)
+            return False
         
     def close_connection(self):
     # 關閉游標和資料庫連接
