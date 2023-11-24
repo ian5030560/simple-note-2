@@ -4,6 +4,7 @@ import Brand from "../component/brand";
 import { Flex, ConfigProvider, FloatButton, theme } from "antd";
 import Authenticate from "../auth/auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
+import defaultTheme from "../theme/default";
 
 const Header = ({ backgroundColor, onIntroClick, onAuthClick }) => {
     return <Flex
@@ -26,8 +27,6 @@ const BulbButton = ({ lighten, onClick }) => {
 }
 
 const Welcome = () => {
-
-    const [content, setContent] = useState();
     const [darken, setDarken] = useState(false);
 
     const handleClick = () => {
@@ -36,30 +35,28 @@ const Welcome = () => {
 
     return <ConfigProvider
         theme={{
-            token: {
-                colorPrimary: "#9DA9B8",
-                colorBgBase: darken? "#3C3C3C":"#FFFCEC"
-            },
-            components: {
-                Menu: {
-                    itemBg: "#9DA9B8",
-                    itemColor: "#FFFFFF",
-                    itemHoverColor: "#FFFFFF",
-                    horizontalItemSelectedColor: "#FFFFFF",
-                }
-            },
+            ...defaultTheme(darken),
             algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
-
         }}
     >
+        <Index darken={darken} onDarken={handleClick}/>
+    </ConfigProvider>
+}
+
+const Index = ({darken, onDarken}) => {
+
+    const [content, setContent] = useState();
+    const {token} = theme.useToken();
+
+    return <>
         <Header
-            backgroundColor="#9DA9B8"
+            backgroundColor={token.colorPrimary}
             onAuthClick={() => setContent(<Authenticate />)}
             onIntroClick={() => setContent()}
         />
         {content}
-        <BulbButton lighten={!darken} onClick={handleClick} />
-    </ConfigProvider>
+        <BulbButton lighten={!darken} onClick={onDarken} />
+    </>
 }
 
 export default Welcome;

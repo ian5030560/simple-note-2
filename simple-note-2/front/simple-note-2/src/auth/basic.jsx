@@ -195,7 +195,10 @@ const AuthForm = ({
                             clear
                         </Button>
                     </Space>
-                    <Link onClick={() => { onChange?.() }}>{changeText}</Link>
+                    <Space>
+                        <Link onClick={() => { onChange?.() }}>{changeText}</Link>
+                        <Link>忘記密碼</Link>
+                    </Space>
                 </Flex>
             </Form.Item>
         </Form>

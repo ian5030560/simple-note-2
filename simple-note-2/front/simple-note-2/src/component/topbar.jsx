@@ -1,7 +1,23 @@
 import React, { useState } from "react";
-import { Button, Menu, Flex, Switch, Typography } from "antd";
-import { GithubOutlined, StarFilled, RobotOutlined } from "@ant-design/icons";
-const {Text} = Typography;
+import { 
+    Button, 
+    Menu, 
+    Flex, 
+    Switch, 
+    Typography, 
+    Dropdown,
+    theme
+} from "antd";
+import { 
+    GithubOutlined, 
+    StarFilled, 
+    DownOutlined,
+    FileWordOutlined,
+    RobotOutlined
+} from "@ant-design/icons";
+import {FiletypeJson} from "react-bootstrap-icons";
+
+const { Text } = Typography;
 
 const WelcomeTopBar = ({
     onIntroClick,
@@ -9,7 +25,7 @@ const WelcomeTopBar = ({
 ) => {
 
     const [current, setCurrent] = useState([]);
-    // const {token} = theme.useToken();
+    const {token} = theme.useToken();
 
     const handleClick = (e) => {
         switch (e.key) {
@@ -37,7 +53,7 @@ const WelcomeTopBar = ({
                 {
                     label: <a href="https://www.instagram.com/0z3.1415926/"><Text>林立山</Text></a>,
                     key: "leader",
-                    icon: <StarFilled style={{color: "black"}}/>,
+                    icon: <StarFilled style={{ color: "black" }} />,
                 },
                 {
                     label: <a href="https://www.instagram.com/itsuki_f6/"><Text>蔡岳哲</Text></a>,
@@ -64,22 +80,50 @@ const WelcomeTopBar = ({
         items={items}
         mode="horizontal"
         onClick={handleClick}
+        triggerSubMenuAction="click"
         selectedKeys={current}
-        style={{ 
-            justifyContent: "flex-end"
-            }} />
+        style={{
+            justifyContent: "flex-end",
+            backgroundColor: token.colorPrimary
+        }} />
 }
 
-const FunctionTopBar = () => {
+const ToolBar = ({onThemeClick}) => {
+
+    const {token} = theme.useToken();
+
+    const items = [
+        {
+            label: <Text>json</Text>,
+            key: "json",
+            icon: <FiletypeJson/>
+        },
+        {
+            label: <Text>word</Text>,
+            key: "word",
+            icon: <FileWordOutlined/>
+        }
+    ]
+
     return <Flex
         justify="end"
         align="center"
         gap="large"
-        style={{width: "100%"}}>
-        <Switch checkedChildren="明亮" unCheckedChildren="陰暗" defaultChecked />
-        <Button type="primary" shape="circle" icon=<RobotOutlined /> />
-        <Button type="primary" size="middle">export</Button>
+        style={{ 
+            width: "100%",
+            backgroundColor: token.colorPrimary,
+            padding: token.padding
+        }}>
+        <Switch checkedChildren="明亮" unCheckedChildren="陰暗" defaultChecked onClick={onThemeClick}/>
+        <Button type="primary" shape="circle" icon=<RobotOutlined/> />
+        <Dropdown
+            trigger="click"
+            menu={{ items }}
+        >
+            <Button type="primary">export<DownOutlined/></Button>
+        </Dropdown>
+        
     </Flex>
 }
 
-export { WelcomeTopBar, FunctionTopBar }
+export { WelcomeTopBar, ToolBar }
