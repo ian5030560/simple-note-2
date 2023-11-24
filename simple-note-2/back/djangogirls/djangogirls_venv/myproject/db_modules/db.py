@@ -10,18 +10,21 @@ finally:
 
 
 class DB:
-    #check_signin
+    # check_signin
     def check_signin(self, username, user_password):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱和密碼
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ? AND user_password = ?;", (username, user_password))
+        cursor.execute(
+            "SELECT * FROM users WHERE username = ? AND user_password = ?;",
+            (username, user_password),
+        )
         # 檢索結果
         row = cursor.fetchone()
         cursor.close()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
 
-    #check_register
+    # check_register
     def check_register_username(self, username):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱
         cursor = conn.cursor()
