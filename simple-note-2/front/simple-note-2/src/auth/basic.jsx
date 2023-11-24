@@ -20,14 +20,26 @@ const { Title, Link } = Typography;
  * @param {(error) => void} onError
  */
 function postData(url, path, data, onReceive, onError) {
-  // let formdata = new FormData();
-  // for (let key in data) {
-  //   formdata.append(key, data[key]);
-  // }
-  // axios
-  //   .post(url + path, formdata)
-  //   .then((res) => onReceive(res))
-  //   .catch((e) => onError(e));
+
+    let formdata = new FormData();
+    
+    for(let key in data){
+        formdata.append(key, data[key]);
+    }
+    
+    fetch(url + path, formdata,
+        {
+            url: url,
+            mode: "no-cors",
+            method: "POST",
+            headers: {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                "content-type": "application/json",
+            },
+        }
+    )
+    .then((res) => onReceive(res))
+    .catch((error) => onError(error))
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -203,7 +215,7 @@ const AuthForm = ({
       (e) => {
         setState("failure");
         console.log(e.name);
-        console.log(1);
+        console.log(1)
         // onFailure(e);
       }
     );
