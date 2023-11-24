@@ -25,10 +25,9 @@ const LogIn = ({ onChange }) => {
         }}
     >
         <Form.Item
-            label="email"
-            name="email"
+            label="username"
+            name="name"
             rules={[{
-                type: "email",
                 required: true,
             }]}
         >
@@ -69,6 +68,15 @@ const SignUp = ({ onChange }) => {
             subtitle: "註冊失敗請重新輸入",
             onFailure: () => { }
         }}>
+        <Form.Item
+            label="username"
+            name="name"
+            rules={[{
+                required: true
+            }]}
+        >
+            <Input/>
+        </Form.Item>
         <Form.Item
             label="email"
             name="email"

@@ -1,18 +1,48 @@
-import React from "react";
-import {Col, Row, Flex} from "antd";
-import InfoSideBar from "../component/info";
-import { FunctionTopBar } from "../component/topbar";
+import React, { useState } from "react";
+import { Col, Row, Flex, ConfigProvider, theme } from "antd";
+import SideBar from "../component/sidebar";
+import { ToolBar } from "../component/topbar";
 import Editor from "../editor/editor";
+import {userTheme} from "../theme/default";   
 
 const UserPage = () => {
-    return <Row style={{height: "100%", padding: "10px"}}>
-        <Col span={6}>
-            <InfoSideBar/>
+
+    const [darken, setDarken] = useState(false);
+
+    const handleThemeClick = () => {
+        setDarken(!darken);
+    }
+
+    return <ConfigProvider
+        theme={{
+            ...userTheme(darken),
+            algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm
+        }}
+    >
+        <Index onThemeClick={handleThemeClick}/>
+    </ConfigProvider>
+
+}
+
+const Index = ({onThemeClick}) => {
+    
+    const {token} = theme.useToken();
+
+    return <Row style={{
+        height: "100%",
+        backgroundColor: token.colorBgBase
+    }}>
+        <Col
+            span={6}
+            style={{
+                backgroundColor: token.colorBgBase,
+            }}>
+            <SideBar />
         </Col>
         <Col span={18}>
-            <Flex style={{width: "100%"}} vertical>
-                <FunctionTopBar/>
-                <Editor/>
+            <Flex style={{ width: "100%" }} vertical>
+                <ToolBar onThemeClick={onThemeClick} />
+                <Editor />
             </Flex>
         </Col>
     </Row>
