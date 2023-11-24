@@ -15,7 +15,22 @@ class DB:
         conn.close()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
-    # def check_register():
+    
+    def check_register(self,username):
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE username = ?;",(username))
+        row = cursor.fetchone()
+        conn.close()
+        return bool(row)
+    
+    def check_register(self,user_password):
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users WHERE user_password = ?;",(user_password))
+        row = cursor.fetchone()
+        conn.close()
+        return bool(row)
+        
+        
         
         
     rows = conn.execute("select * from User_Register_Data;")
