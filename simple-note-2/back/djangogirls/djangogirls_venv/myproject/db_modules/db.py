@@ -1,6 +1,8 @@
 import sqlite3
 
-dbfile = "simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\db_modules\\pydb.db"
+dbfile = (
+    "simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\db_modules\\pydb.db"
+)
 
 conn = sqlite3.connect(dbfile)
 
@@ -45,4 +47,3 @@ class DB:
 
     
 conn.close()
-

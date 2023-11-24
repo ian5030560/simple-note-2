@@ -25,7 +25,3 @@ class SigninView:
             account = None
             password = None
         return Response(status=status.HTTP_200_OK)
-        """if UserTable.validate(account, password) == True:
-            return Response(True)
-        else:
-            return Response(False)"""
