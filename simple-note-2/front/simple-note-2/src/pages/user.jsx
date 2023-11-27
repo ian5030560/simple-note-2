@@ -29,7 +29,7 @@ const Index = ({onThemeClick}) => {
     const {token} = theme.useToken();
 
     return <Row style={{
-        height: "100%",
+        minHeight: "100%",
         backgroundColor: token.colorBgBase
     }}>
         <Col

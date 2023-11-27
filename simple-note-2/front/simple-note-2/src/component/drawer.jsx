@@ -8,7 +8,7 @@ const ChatDrawer = ({ open, onClose }) => {
         open={open}
         placement="right"
         onClose={onClose}>
-
+                
     </Drawer>
 }
 

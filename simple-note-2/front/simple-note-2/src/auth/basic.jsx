@@ -9,7 +9,6 @@ import {
   Modal,
   Input,
 } from "antd";
-import axios from "axios";
 const { Title, Link } = Typography;
 
 /**
@@ -19,26 +18,19 @@ const { Title, Link } = Typography;
  * @param {(response: Response) => void} onReceive
  * @param {(error) => void} onError
  */
-function postData(url, path, data, onReceive, onError) {
+function postData(url, data, onReceive, onError) {
 
-    let formdata = new FormData();
-    
-    for(let key in data){
-        formdata.append(key, data[key]);
+  fetch(url,
+    {
+      body: data,
+      mode: "no-cors",
+      method: "POST",
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "content-type": "application/json",
+      },
     }
-    
-    fetch(url + path, formdata,
-        {
-            url: url,
-            mode: "no-cors",
-            method: "POST",
-            credentials: "include",
-            headers: {
-                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-                "content-type": "application/json",
-            },
-        }
-    )
+  )
     .then((res) => onReceive(res))
     .catch((error) => onError(error))
 }
@@ -51,7 +43,7 @@ const successType = {
    *
    * @param {Response} res
    */
-  onSuccess: (res) => {},
+  onSuccess: (res) => { },
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -62,7 +54,7 @@ const failureType = {
    *
    * @param {Error} e
    */
-  onFailure: (e) => {},
+  onFailure: (e) => { },
 };
 
 const forgetPwdType = {};
@@ -86,7 +78,10 @@ const ForgetPwdModal = ({ open, onCancel }) => {
           <Input type="email" placeholder="輸入你的email" />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button
+            type="primary"
+            htmlType="submit"
+            style={{ minWidth: "100%" }}>
             submit
           </Button>
         </Form.Item>
@@ -149,19 +144,6 @@ const AuthModal = ({
   );
 };
 
-const validateMessages = {
-  // eslint-disable-next-line no-template-curly-in-string
-  required: "Please enter the ${label}",
-  types: {
-    // eslint-disable-next-line no-template-curly-in-string
-    email: "${label} is not correct",
-  },
-  number: {
-    // eslint-disable-next-line no-template-curly-in-string
-    range: "${label} must be between ${min} and ${max}",
-  },
-};
-
 /**
  *
  * @param {{success: successType, failure: failureType}} param0
@@ -173,11 +155,10 @@ const AuthForm = ({
   children,
   changeText,
   onChange,
-  onSubmit,
   success,
   failure,
   url,
-  path,
+  id
 }) => {
   const [submittable, setSubmittable] = React.useState(false);
   const [state, setState] = useState();
@@ -203,23 +184,43 @@ const AuthForm = ({
 
   const { title: failTitle, subtitle: failSubtitle, onFailure } = failure;
 
-  const handleClick = () => {
+  const handleFinished = (values) => {
     setState("loading");
+
+    values = {
+      ...values,
+      id: id
+    }
+
+
     postData(
       url,
-      path,
-      onSubmit(),
+      JSON.stringify(values),
       (res) => {
         setState("success");
+        console.log(res);
         // onSuccess(res);
       },
       (e) => {
         setState("failure");
         console.log(e.name);
-        console.log(1)
+        console.log(e.message);
         // onFailure(e);
       }
     );
+  };
+
+  const validateMessages = {
+    // eslint-disable-next-line no-template-curly-in-string
+    required: "Please enter the ${label}",
+    types: {
+      // eslint-disable-next-line no-template-curly-in-string
+      email: "${label} is not correct",
+    },
+    number: {
+      // eslint-disable-next-line no-template-curly-in-string
+      range: "${label} must be between ${min} and ${max}",
+    },
   };
 
   return (
@@ -232,13 +233,9 @@ const AuthForm = ({
         labelCol={{
           span: 4,
         }}
-        wrapperCol={
-          {
-            // span: 16,
-          }
-        }
         style={{ width: "40%" }}
         autoComplete="on"
+        onFinish={handleFinished}
       >
         <Title>{title}</Title>
         {children}
@@ -253,17 +250,13 @@ const AuthForm = ({
                 type="primary"
                 htmlType="submit"
                 disabled={!submittable}
-                onClick={handleClick}
                 loading={state === "loading"}
               >
                 submit
               </Button>
               <Button
                 type="primary"
-                htmlType="button"
-                onClick={() => {
-                  form.resetFields();
-                }}
+                htmlType="reset"
               >
                 clear
               </Button>
@@ -276,7 +269,7 @@ const AuthForm = ({
               >
                 {changeText}
               </Link>
-              <Link>忘記密碼</Link>
+              <Link onClick={() => setState("forget")}>忘記密碼</Link>
             </Space>
           </Flex>
         </Form.Item>
@@ -297,7 +290,11 @@ const AuthForm = ({
           onFailure();
         }}
       />
-      {/* <ForgetPwdModal open={} onCancel={}/> */}
+      <ForgetPwdModal
+        open={state === "forget"}
+        onCancel={() => {
+          setState();
+        }} />
     </>
   );
 };

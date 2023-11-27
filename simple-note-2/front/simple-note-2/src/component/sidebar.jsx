@@ -3,10 +3,10 @@ import {
     Flex, 
     Avatar, 
     Typography, 
-    Menu, 
-    theme
+    theme,
 } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import {ThemeMenu, FileMenu} from "./menu";
 const { Text, Title } = Typography;
 
 const UserProfile = ({ username, src }) => {
@@ -26,52 +26,8 @@ const UserProfile = ({ username, src }) => {
             icon={src ? null : <UserOutlined />}
             src={src}
         />
-        <Title level={3}>{username}</Title>
+        <Title level={3} style={{color: "white"}}>{username}</Title>
     </Flex>
-}
-
-const FileMenu = ({ style }) => {
-
-    const items = [
-        {
-            label: "個人筆記",
-            key: "indiviual",
-            children: [
-
-            ]
-        },
-        {
-            label: "多人協作",
-            key: "multiple",
-            children: [
-
-            ]
-        }
-    ]
-
-    return <Menu
-        expandIcon={null}
-        mode="inline"
-        items={items}
-        style={style}
-    />
-}
-
-const ThemeMenu = ({ style }) => {
-    const items = [
-        {
-            label: "我的主題",
-            key: "theme",
-            children: [
-
-            ]
-        }
-    ]
-    return <Menu
-        mode="vertical"
-        items={items}
-        style={style}
-    />
 }
 
 const SideBar = ({ files }) => {
@@ -83,14 +39,13 @@ const SideBar = ({ files }) => {
         justify="space-between"
         style={{
             height: "100%",
-            backgroundColor: token.colorBgBase,
+            backgroundColor: token.colorPrimary,
             borderRight: `${token.lineWidth}px solid ${token.colorBorder}`
         }}>
         <Flex vertical>
             <UserProfile username="username" />
-            <FileMenu style={{
-                borderRadius: token.Menu.itemBorderRadius
-            }} />
+            <FileMenu title="個人筆記" menuKey="indiviual" />
+            <FileMenu title="多人協作" menuKey="multiple"/>
         </Flex>
         <ThemeMenu style={{
             borderRadius: token.Menu.itemBorderRadius

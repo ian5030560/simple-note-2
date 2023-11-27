@@ -8,12 +8,11 @@ const LogIn = ({ onChange }) => {
   return (
     <AuthForm
       form={form}
-      url="http://localhost:8000"
-      path="/signin"
+      id="sign-in"
+      url="http://localhost:8000/signin/"
       title="登入"
       changeText="註冊"
       onChange={onChange}
-      onSubmit={() => ({ id: "sign-in", ...form.getFieldsValue() })}
       success={{
         title: "登入成功",
         subtitle: "登入成功請返回主頁",
@@ -34,7 +33,7 @@ const LogIn = ({ onChange }) => {
           },
         ]}
       >
-        <Input />
+        <Input/>
       </Form.Item>
       <Form.Item
         label="password"
@@ -55,16 +54,15 @@ const LogIn = ({ onChange }) => {
 
 const SignUp = ({ onChange }) => {
   const [form] = Form.useForm();
-
+        
   return (
     <AuthForm
       form={form}
-      url="http://172.16.11.21:8000"
-      path="/signin"
+      id="register"
+      url="http://localhost:8000/signin/"
       title="註冊"
       changeText="登入"
       onChange={onChange}
-      onSubmit={() => ({ id: "register", ...form.getFieldsValue() })}
       success={{
         title: "註冊成功",
         subtitle: "註冊成功請返回首頁登入",
@@ -92,11 +90,12 @@ const SignUp = ({ onChange }) => {
         name="email"
         rules={[
           {
+            type: "email",
             required: true,
           },
         ]}
       >
-        <Input />
+        <Input type="email"/>
       </Form.Item>
       <Form.Item
         label="password"
@@ -124,7 +123,7 @@ const Authenticate = () => {
       justify="center"
       style={{
         backgroundColor: token.colorBgBase,
-        height: "85%",
+        minHeight: "85%",
       }}
     >
       {current === 0 && (

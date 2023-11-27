@@ -26,7 +26,10 @@ const userTheme = (dark) => {
         components: {
             Menu: {
                 ...dt.components.Menu,
-                // itemBorderRadius: 8
+            },
+
+            Collapse: {
+                headerPadding: 0,
             }
         }
     }

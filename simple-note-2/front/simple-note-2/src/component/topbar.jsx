@@ -113,7 +113,6 @@ const ToolBar = ({onThemeClick}) => {
         gap="large"
         style={{ 
             width: "100%",
-            backgroundColor: token.colorPrimary,
             padding: token.padding
         }}>
         <Switch checkedChildren="明亮" unCheckedChildren="陰暗" defaultChecked onClick={onThemeClick}/>
