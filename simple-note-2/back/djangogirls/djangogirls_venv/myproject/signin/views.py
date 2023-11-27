@@ -6,8 +6,10 @@ from rest_framework.response import Response
 from .models import Signin
 from db_modules.db import DB  # 資料庫來的檔案
 from rest_framework import status
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
+@ensure_csrf_cookie
 class SigninView:
     """
     def get(self, request, format=None):

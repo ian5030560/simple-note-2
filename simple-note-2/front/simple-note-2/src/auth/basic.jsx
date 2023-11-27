@@ -19,20 +19,19 @@ const { Title, Link } = Typography;
  * @param {(error) => void} onError
  */
 function postData(url, data, onReceive, onError) {
-
-  fetch(url,
-    {
-      body: data,
-      mode: "no-cors",
-      method: "POST",
-      headers: {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        "content-type": "application/json",
-      },
-    }
-  )
+  fetch(url, {
+    credentials: "include",
+    body: data,
+    mode: "no-cors",
+    method: "POST",
+    headers: {
+      "user-agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+      "content-type": "application/json",
+    },
+  })
     .then((res) => onReceive(res))
-    .catch((error) => onError(error))
+    .catch((error) => onError(error));
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -43,7 +42,7 @@ const successType = {
    *
    * @param {Response} res
    */
-  onSuccess: (res) => { },
+  onSuccess: (res) => {},
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -54,7 +53,7 @@ const failureType = {
    *
    * @param {Error} e
    */
-  onFailure: (e) => { },
+  onFailure: (e) => {},
 };
 
 const forgetPwdType = {};
@@ -78,10 +77,7 @@ const ForgetPwdModal = ({ open, onCancel }) => {
           <Input type="email" placeholder="輸入你的email" />
         </Form.Item>
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            style={{ minWidth: "100%" }}>
+          <Button type="primary" htmlType="submit" style={{ minWidth: "100%" }}>
             submit
           </Button>
         </Form.Item>
@@ -158,7 +154,7 @@ const AuthForm = ({
   success,
   failure,
   url,
-  id
+  id,
 }) => {
   const [submittable, setSubmittable] = React.useState(false);
   const [state, setState] = useState();
@@ -189,9 +185,8 @@ const AuthForm = ({
 
     values = {
       ...values,
-      id: id
-    }
-
+      id: id,
+    };
 
     postData(
       url,
@@ -254,10 +249,7 @@ const AuthForm = ({
               >
                 submit
               </Button>
-              <Button
-                type="primary"
-                htmlType="reset"
-              >
+              <Button type="primary" htmlType="reset">
                 clear
               </Button>
             </Space>
@@ -294,7 +286,8 @@ const AuthForm = ({
         open={state === "forget"}
         onCancel={() => {
           setState();
-        }} />
+        }}
+      />
     </>
   );
 };
