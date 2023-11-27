@@ -145,3 +145,5 @@ STATICFILES_DIRS = [
         "C:\\Users\\USER\\Documents\\GitHub\\simple-note-2\\simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\myapp\\static",
     ),
 ]
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
