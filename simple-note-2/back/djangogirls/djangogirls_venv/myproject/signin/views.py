@@ -1,16 +1,32 @@
 # views.py
 import sys
+from typing import Any
 
 sys.path.append("..db_modules")
+from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Signin
 from db_modules.db import DB  # 資料庫來的檔案
 from rest_framework import status
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_protect
+
+"""@csrf_exempt"""
 
 
-@ensure_csrf_cookie
-class SigninView:
+"""@csrf_protect"""
+
+
+class SigninView(APIView):
+    """
+    @classmethod
+    def as_view(cls, **initkwargs):
+        view = super(SigninView, cls).as_view(**initkwargs)
+        return csrf_exempt(view)"""
+
     """
     def get(self, request, format=None):
         output = [
@@ -52,3 +68,11 @@ class SigninView:
                     print(DB.insert_into_User_Register_Data(username, password, email))
                     return Response(status=status.HTTP_201_CREATED)  # email不重複，可以註冊
         DB.close_connection()
+
+
+def csrf(self, request):
+    return JsonResponse({"csrfToken": get_token(request)})
+
+
+def ping(self, request):
+    return JsonResponse({"result": "OK"})
