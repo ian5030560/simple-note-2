@@ -4,18 +4,14 @@ import json
 
 sys.path.append("..db_modules")
 
-from typing import Any
-from django.http import JsonResponse
-from django.middleware.csrf import get_token
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.csrf import ensure_csrf_cookie
 from .serializers import *
 from .models import Signin
 from db_modules.db import DB  # 資料庫來的檔案
 from rest_framework import status
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.middleware.csrf import get_token
 
 """@csrf_exempt"""
 """@csrf_protect"""
