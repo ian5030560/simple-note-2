@@ -106,7 +106,6 @@ const FileMenu = ({ i_data, m_data }) => {
             let target = findTargetByKey(parent, prev);
 
             let i = parseInt(nodeKey.charAt(nodeKey.length - 1));
-            console.log(i);
             target.splice(i, 1);
 
             function changeSubtreeKey(t, p){
