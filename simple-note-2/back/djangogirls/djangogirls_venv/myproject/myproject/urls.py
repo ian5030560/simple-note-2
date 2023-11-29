@@ -17,14 +17,11 @@ Including another URLconf
 import sys
 
 sys.path.append("..signin")
-from django.contrib import admin
-from django.urls import path, include, re_path
-from django.views.generic import RedirectView
-from django.conf import settings
-from django.conf.urls.static import static
-from signin.views import SigninView
 from signin import views
-from django.urls import re_path as url
+from django.urls import path
+from django.contrib import admin
+from signin.views import SigninView
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),

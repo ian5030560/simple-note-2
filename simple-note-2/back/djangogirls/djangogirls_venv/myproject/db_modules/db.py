@@ -12,7 +12,6 @@ class DB:
             self.conn = sqlite3.connect("db_modules/pydb.db")
         self.cursor = self.conn.cursor()
 
-    # @staticmethod
     def check_signin(self, username, user_password):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱和密碼
         self.cursor.execute(

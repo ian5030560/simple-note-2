@@ -2,7 +2,6 @@ import sys
 
 sys.path.append("..db_modules")
 from django.db import models
-from db_modules.db import DB  # 資料庫來的檔案
 
 
 # Create your models here.
