@@ -1,44 +1,48 @@
 import sqlite3
 from os import mkdir
 
-try:
-    conn = sqlite3.connect("db_modules/pydb.db")
-except sqlite3.OperationalError:
-    mkdir("db_modules")
-finally:
-    conn = sqlite3.connect("db_modules/pydb.db")
-
-cursor = conn.cursor()
-
 
 class DB:
-    # check_signin
+    def __init__(self):
+        try:
+            self.conn = sqlite3.connect("db_modules/pydb.db")
+        except sqlite3.OperationalError:
+            mkdir("db_modules")
+        finally:
+            self.conn = sqlite3.connect("db_modules/pydb.db")
+        self.cursor = self.conn.cursor()
+
+    # @staticmethod
     def check_signin(self, username, user_password):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱和密碼
-        cursor.execute(
-            "SELECT * FROM users WHERE username = ? AND user_password = ?;",
+        self.cursor.execute(
+            "SELECT * FROM User_Register_Data WHERE username = ? AND user_password = ?;",
             (username, user_password),
         )
         # 檢索結果
-        row = cursor.fetchone()
+        row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
 
     # check_register
     def check_register_username(self, username):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱
-        cursor.execute("SELECT * FROM users WHERE username = ?;", (username,))
+        self.cursor.execute(
+            "SELECT * FROM User_Register_Data WHERE username = ?;", (username,)
+        )
         # 檢索結果
-        row = cursor.fetchone()
+        row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
 
     def check_register_user_email(self, user_email):
         # 使用 SQL 查詢檢查是否有相同的使用者電子郵件
 
-        cursor.execute("SELECT * FROM users WHERE user_email = ?;", (user_email,))
+        self.cursor.execute(
+            "SELECT * FROM User_Register_Data WHERE user_email = ?;", (user_email,)
+        )
         # 檢索結果
-        row = cursor.fetchone()
+        row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
 
@@ -46,19 +50,17 @@ class DB:
         try:
             # 新增資料到 User_Register_Data 表格
             user_data = (username, user_email, user_password)
-            cursor.execute(
+            self.cursor.execute(
                 "INSERT INTO User_Register_Data (username, user_email, user_password) VALUES (?, ?, ?);",
                 user_data,
             )
-            conn.commit()
+            self.conn.commit()
             return True
 
         except sqlite3.Error as e:
             return False
-        
-    def close_connection(self):
-    # 關閉游標和資料庫連接
-        cursor.close()
-        conn.close()
 
-    
+    def close_connection(self):
+        # 關閉游標和資料庫連接
+        self.cursor.close()
+        self.conn.close()
