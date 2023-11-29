@@ -106,16 +106,15 @@ const FileMenu = ({ i_data, m_data }) => {
             let target = findTargetByKey(parent, prev);
 
             let i = parseInt(nodeKey.charAt(nodeKey.length - 1));
-            console.log(i);
             target.splice(i, 1);
 
             function changeSubtreeKey(t, p){
                 
                 for (let index in t) {
-                    let key = `${p}-${index}`
+                    let key = `${p}-${index}`;
                     
-                    for(let c = 0; c < t.length; c++) {
-                        changeSubtreeKey(t[c], key);
+                    for(let c = 0; c < t.length; c ++) {
+                        changeSubtreeKey(t[c].children, key);
                     }
 
                     target[index].key = key;

@@ -21,8 +21,6 @@ const { Title, Link } = Typography;
 function postData(url, data, onReceive, onError) {
   fetch(url, {
     credentials: "include",
-    //body: data,
-    //mode: "no-cors",
     body: JSON.stringify(data),
     method: "POST",
     headers: {
