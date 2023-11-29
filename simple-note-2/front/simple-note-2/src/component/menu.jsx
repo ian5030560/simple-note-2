@@ -39,7 +39,7 @@ const Node = ({ text, nodeKey, onAdd, onDelete }) => {
  */
 function findTargetByKey(key, origin) {
     let indice = key.split("-");
-    
+
     let tmp = origin;
     for (let i of indice.slice(1)) {
         tmp = tmp[i].children
@@ -56,7 +56,7 @@ function getParentKey(key) {
     let indice = key.split("-");
 
     let result = indice[0]
-    for (let i in indice.slice(0, -2)) {
+    for (let i of indice.slice(1, -1)) {
         result = `${result}-${i}`
     }
 
@@ -75,7 +75,7 @@ const FileMenu = ({ i_data, m_data }) => {
     const [m_children, setM_Children] = useState(m_data ? m_data : []);
 
     const handleAdd = (nodeKey, setMethod) => {
-        
+
         setMethod(prev => {
             let target = findTargetByKey(nodeKey, prev);
 
@@ -100,33 +100,29 @@ const FileMenu = ({ i_data, m_data }) => {
      * @param {string} nodeKey 
      */
     const handleDelete = (nodeKey, setMethod) => {
-        
+
         setMethod(prev => {
+            
             let parent = getParentKey(nodeKey);
             let target = findTargetByKey(parent, prev);
-
             let i = parseInt(nodeKey.charAt(nodeKey.length - 1));
             target.splice(i, 1);
 
-            function changeSubtreeKey(t, p){
+            function changeSubtreeKey(t, p) {
                 
                 for (let index in t) {
-                    
                     let key = `${p}-${index}`;
-                    
-                    for(let c = 0; c < t.length; c ++) {
-                        changeSubtreeKey(t[c].children, key);
-                    }
 
-                    target[index].key = key;
-                    target[index].title = <Node
+                    t[index].key = key;
+                    t[index].title = <Node
                         text={key}
                         nodeKey={key}
                         onAdd={(k) => handleAdd(k, setMethod)}
                         onDelete={(k) => handleDelete(k, setMethod)}
                     />
 
-                }                
+                    changeSubtreeKey(t[index].children, key);
+                }
             }
 
             changeSubtreeKey(target, parent);
@@ -161,6 +157,7 @@ const FileMenu = ({ i_data, m_data }) => {
     return <Tree
         treeData={rootData}
         rootStyle={{ backgroundColor: token.colorPrimary }}
+    // onSelect={(key) => console.log(key)}
     />
 }
 
