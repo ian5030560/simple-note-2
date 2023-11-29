@@ -111,6 +111,7 @@ const FileMenu = ({ i_data, m_data }) => {
             function changeSubtreeKey(t, p){
                 
                 for (let index in t) {
+                    
                     let key = `${p}-${index}`;
                     
                     for(let c = 0; c < t.length; c ++) {
