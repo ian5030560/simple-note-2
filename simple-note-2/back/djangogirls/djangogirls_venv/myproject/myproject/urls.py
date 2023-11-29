@@ -28,7 +28,7 @@ from django.urls import re_path as url
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    re_path(r"signin/", views.SigninView.as_view(), name="signin"),
+    path("signin/", SigninView.as_view(), name="signin"),
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]

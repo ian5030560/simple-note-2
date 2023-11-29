@@ -190,7 +190,7 @@ const AuthForm = ({
 
     postData(
       url,
-      JSON.stringify(values),
+      values,
       (res) => {
         setState("success");
         console.log(res);

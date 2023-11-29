@@ -37,10 +37,10 @@ class SigninView(APIView):
 
     def post(self, request, format=None):
         try:
-            email = request.POST["email"]
-            password = request.POST["password"]
-            username = request.POST["username"]
-            id = request.POST["id"]
+            email = request.data.get("email")
+            password = request.data.get("password")
+            username = request.data.get("username")
+            id = request.data.get("id")
         except KeyError:
             email = None
             password = None
@@ -67,6 +67,8 @@ class SigninView(APIView):
                 elif check_email == False:
                     print(DB.insert_into_User_Register_Data(username, password, email))
                     return Response(status=status.HTTP_201_CREATED)  # email不重複，可以註冊
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)  # exception
         DB.close_connection()
 
 
