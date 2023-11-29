@@ -37,10 +37,10 @@ class SigninView(APIView):
 
     def post(self, request, format=None):
         try:
-            email = request.data.get("email")
-            password = request.data.get("password")
-            username = request.data.get("username")
-            id = request.data.get("id")
+            email = request.POST("email")
+            password = request.POST("password")
+            username = request.POST("username")
+            id = request.POST("id")
         except KeyError:
             email = None
             password = None
