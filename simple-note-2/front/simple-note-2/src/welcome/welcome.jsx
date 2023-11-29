@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { WelcomeTopBar } from "../component/topbar";
-import Brand from "../component/brand";
+import TopBar from "./component/topbar";
+import Brand from "./component/brand";
 import { Flex, ConfigProvider, FloatButton, theme } from "antd";
-import Authenticate from "../auth/auth";
+import Authenticate from "./component/auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import defaultTheme from "../theme/default";
 
@@ -15,7 +15,7 @@ const Header = ({ backgroundColor, onIntroClick, onAuthClick }) => {
             height: "15%"
         }}>
         <Brand />
-        <WelcomeTopBar
+        <TopBar
             onIntroClick={onIntroClick}
             onAuthClick={onAuthClick}   
         />

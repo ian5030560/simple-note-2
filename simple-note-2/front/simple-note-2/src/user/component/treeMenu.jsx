@@ -157,7 +157,7 @@ const FileMenu = ({ i_data, m_data }) => {
     return <Tree
         treeData={rootData}
         rootStyle={{ backgroundColor: token.colorPrimary }}
-    // onSelect={(key) => console.log(key)}
+        // onSelect={(key) => console.log(key)}
     />
 }
 

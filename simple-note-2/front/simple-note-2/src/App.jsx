@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Welcome from "./pages/welcome";
+import Welcome from "./welcome/welcome";
 import "./resource/root.css";
-import UserPage from "./pages/user";
+import UserPage from "./user/user";
 
 function App() {
   return (

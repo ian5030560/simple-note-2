@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Col, Row, Flex, ConfigProvider, theme } from "antd";
-import SideBar from "../component/sidebar";
-import { ToolBar } from "../component/topbar";
-import Editor from "../editor/editor";
+import SideBar from "./component/sidebar";
+import ToolBar from "./component/toolbar";
+import Editor from "./component/editor/editor";
 import {userTheme} from "../theme/default";   
 
 const UserPage = () => {
