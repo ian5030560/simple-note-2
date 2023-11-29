@@ -9,6 +9,3 @@ from db_modules.db import DB  # 資料庫來的檔案
 class Signin(models.Model):
     account = models.CharField(max_length=100)
     password = models.CharField(max_length=100)
-
-    class Meta:
-        app_label = "signin"
