@@ -1,31 +1,66 @@
 import React, { useState } from "react"
-import { Collapse, Menu, Flex, Typography } from "antd";
+import { Tree, Menu, Flex, Typography, theme } from "antd";
 import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
 const { Text } = Typography;
 
-const ToolLine = ({ onDelete, onAdd }) => {
+const ToolLine = ({ nodeKey, onDelete, onAdd }) => {
 
     return <Flex>
         <DeleteOutlined
             onClick={(e) => {
                 e.stopPropagation();;
-                onDelete?.();
+                onDelete?.(nodeKey);
             }} />
         <PlusOutlined
             onClick={(e) => {
                 e.stopPropagation();;
-                onAdd?.();
+                onAdd?.(nodeKey);
             }}
         />
     </Flex>
 }
 
-const NodeMenu = ({ items }) => {
+const Node = ({ text, nodeKey, onAdd, onDelete }) => {
 
-    return <Collapse
-        items={items}
-        ghost
-    />
+    return <Flex gap={"large"}>
+        <Text ellipsis>{text}</Text>
+        <ToolLine
+            nodeKey={nodeKey}
+            onAdd={onAdd}
+            onDelete={onDelete}
+        />
+    </Flex>
+}
+
+/**
+ * 
+ * @param {string} key 
+ * @param {Array} origin 
+ */
+function findTargetByKey(key, origin) {
+    let indice = key.split("-");
+    
+    let tmp = origin;
+    for (let i of indice.slice(1)) {
+        tmp = tmp[i].children
+    }
+
+    return tmp;
+}
+
+/**
+ * 
+ * @param {string} key 
+ */
+function getParentKey(key) {
+    let indice = key.split("-");
+
+    let result = indice[0]
+    for (let i in indice.slice(0, -2)) {
+        result = `${result}-${i}`
+    }
+
+    return result;
 }
 
 /**
@@ -33,64 +68,99 @@ const NodeMenu = ({ items }) => {
  * @param {{data: Array}} param0 
  * @returns 
  */
-const FileMenu = ({ title, menuKey, data }) => {
+const FileMenu = ({ i_data, m_data }) => {
 
-    // const [children, setChildren] = useState(data ? data: []);
+    const { token } = theme.useToken();
+    const [i_children, setI_Children] = useState(i_data ? i_data : []);
+    const [m_children, setM_Children] = useState(m_data ? m_data : []);
 
-    // const handleAdd = () => {
+    const handleAdd = (nodeKey, setMethod) => {
+        
+        setMethod(prev => {
+            let target = findTargetByKey(nodeKey, prev);
 
-    //     setChildren(prev => {
+            let key = `${nodeKey}-${target.length}`;
+            target.push({
+                key: key,
+                title: <Node
+                    text={key}
+                    nodeKey={key}
+                    onAdd={(k) => handleAdd(k, setMethod)}
+                    onDelete={(k) => handleDelete(k, setMethod)}
+                />,
+                children: []
+            })
 
-    //         return [
-    //             ...prev,
-    //             {
-    //                 key: `${menuKey}-${prev.length}`,
-    //                 label: title,
-    //                 extra: <ToolLine onAdd={handleAdd} onDelete={handleDelete}/>,
-    //                 children: <NodeMenu items={[]}/>
-    //             }
-    //         ]
-    //     })
-    // }
+            return [...prev]
+        })
+    }
 
-    // const handleDelete = () => {
+    /**
+     * 
+     * @param {string} nodeKey 
+     */
+    const handleDelete = (nodeKey, setMethod) => {
+        
+        setMethod(prev => {
+            let parent = getParentKey(nodeKey);
+            let target = findTargetByKey(parent, prev);
 
-    // }
+            let i = parseInt(nodeKey.charAt(nodeKey.length - 1));
+            console.log(i);
+            target.splice(i, 1);
 
-    // const items = [
-    //     {
-    //         key: menuKey,
-    //         label: title,
-    //         extra: <ToolLine onAdd={handleAdd} onDelete={handleDelete}/>,
-    //         children: <NodeMenu items={children}/>
-    //     }
-    // ]
+            function changeSubtreeKey(t, p){
+                
+                for (let index in t) {
+                    let key = `${p}-${index}`
+                    
+                    for(let c = 0; c < t.length; c++) {
+                        changeSubtreeKey(t[c], key);
+                    }
 
-    // return <Collapse
-    //     items={items}
-    //     ghost
-    //     style={{ marginLeft: "16px" }}
-    // />
+                    target[index].key = key;
+                    target[index].title = <Node
+                        text={key}
+                        nodeKey={key}
+                        onAdd={(k) => handleAdd(k, setMethod)}
+                        onDelete={(k) => handleDelete(k, setMethod)}
+                    />
 
-    const items = [
+                }                
+            }
+
+            changeSubtreeKey(target, parent);
+
+            return [...prev];
+        })
+    }
+
+    const rootData = [
         {
-            key: menuKey,
-            label: <Flex
-                gap={"small"}
-                justify="space-between">
-                {title}
-                <ToolLine />
-            </Flex>,
-            children: [
-
-            ]
+            key: "individual",
+            title: <Node
+                text={"個人筆記"}
+                nodeKey={"individual"}
+                onAdd={(key) => handleAdd(key, setI_Children)}
+                onDelete={(key) => handleDelete(key, setI_Children)}
+            />,
+            children: i_children
+        },
+        {
+            key: "multiple",
+            title: <Node
+                text={"多人協作"}
+                nodeKey={"multiple"}
+                onAdd={(key) => handleAdd(key, setM_Children)}
+                onDelete={(key) => handleDelete(key, setM_Children)}
+            />,
+            children: m_children
         }
     ]
 
-    return <Menu
-        items={items}
-        mode="inline"
-        expandIcon = {null}
+    return <Tree
+        treeData={rootData}
+        rootStyle={{ backgroundColor: token.colorPrimary }}
     />
 }
 
