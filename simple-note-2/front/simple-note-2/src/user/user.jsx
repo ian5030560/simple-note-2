@@ -1,32 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Col, Row, Flex, ConfigProvider, theme } from "antd";
 import SideBar from "./component/sidebar";
 import ToolBar from "./component/toolbar";
 import Editor from "./component/editor/editor";
-import {userTheme} from "../theme/default";   
+import defaultTheme from "../theme/default";
+import changeEditorStyle from "./change";
 
 const UserPage = () => {
 
     const [darken, setDarken] = useState(false);
 
+    useEffect(() => {
+        changeEditorStyle(darken);
+    }, [darken]);
+
+    useEffect(() => {
+        const listener = () => {
+            changeEditorStyle(darken);
+        }
+        window.onkeydown = listener
+        return () => window.removeEventListener("keydown", listener);
+    }, [darken]);
+
     const handleThemeClick = () => {
-        setDarken(!darken);
+        setDarken(prev => !prev);
     }
 
     return <ConfigProvider
         theme={{
-            ...userTheme(darken),
+            ...defaultTheme(darken),
             algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm
         }}
     >
-        <Index onThemeClick={handleThemeClick}/>
+        <Index
+            onThemeClick={handleThemeClick}
+        />
     </ConfigProvider>
 
 }
 
-const Index = ({onThemeClick}) => {
-    
-    const {token} = theme.useToken();
+const Index = ({ onThemeClick }) => {
+
+    const { token } = theme.useToken();
 
     return <Row style={{
         minHeight: "100%",

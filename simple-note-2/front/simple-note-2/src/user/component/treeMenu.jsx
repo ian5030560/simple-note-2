@@ -5,7 +5,7 @@ const { Text } = Typography;
 
 const ToolLine = ({ nodeKey, onDelete, onAdd }) => {
 
-    return <Flex>
+    return <Flex style={{color: "white"}}>
         <DeleteOutlined
             onClick={(e) => {
                 e.stopPropagation();;
@@ -23,7 +23,7 @@ const ToolLine = ({ nodeKey, onDelete, onAdd }) => {
 const Node = ({ text, nodeKey, onAdd, onDelete }) => {
 
     return <Flex gap={"large"}>
-        <Text ellipsis>{text}</Text>
+        <Text ellipsis style={{color: "white"}}>{text}</Text>
         <ToolLine
             nodeKey={nodeKey}
             onAdd={onAdd}
@@ -156,7 +156,10 @@ const FileMenu = ({ i_data, m_data }) => {
 
     return <Tree
         treeData={rootData}
-        rootStyle={{ backgroundColor: token.colorPrimary }}
+        rootStyle={{ 
+            backgroundColor: token.colorPrimary,
+            color: "white"
+        }}
         // onSelect={(key) => console.log(key)}
     />
 }

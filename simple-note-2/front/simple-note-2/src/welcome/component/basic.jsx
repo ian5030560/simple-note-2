@@ -55,8 +55,6 @@ const failureType = {
   onFailure: (e) => {},
 };
 
-const forgetPwdType = {};
-
 const ForgetPwdModal = ({ open, onCancel }) => {
   return (
     <Modal title="尋找密碼" open={open} footer={[]} onCancel={onCancel}>
@@ -139,6 +137,13 @@ const AuthModal = ({
   );
 };
 
+const STATE = {
+  SUCCESS: "success",
+  FAILURE: "failure",
+  LOADING: "loading",
+  FORGET: "forget",
+}
+
 /**
  *
  * @param {{success: successType, failure: failureType}} param0
@@ -180,7 +185,7 @@ const AuthForm = ({
   const { title: failTitle, subtitle: failSubtitle, onFailure } = failure;
 
   const handleFinished = (values) => {
-    setState("loading");
+    setState(STATE.LOADING);
 
     values = {
       ...values,
@@ -191,15 +196,13 @@ const AuthForm = ({
       url,
       values,
       (res) => {
-        setState("success");
+        setState(res.status === 200 ? STATE.SUCCESS : STATE.FAILURE);
         console.log(res);
-        
       },
       (e) => {
-        setState("failure");
+        setState(STATE.FAILURE);
         console.log(e.name);
         console.log(e.message);
-        
       }
     );
   };
@@ -244,7 +247,7 @@ const AuthForm = ({
                 type="primary"
                 htmlType="submit"
                 disabled={!submittable}
-                loading={state === "loading"}
+                loading={state === STATE.SUCCESS}
               >
                 submit
               </Button>
@@ -260,7 +263,7 @@ const AuthForm = ({
               >
                 {changeText}
               </Link>
-              <Link onClick={() => setState("forget")}>忘記密碼</Link>
+              <Link onClick={() => setState(STATE.FORGET)}>忘記密碼</Link>
             </Space>
           </Flex>
         </Form.Item>
@@ -268,21 +271,21 @@ const AuthForm = ({
       <AuthModal
         successTitle={successTitle}
         successSubtitle={successSubtitle}
-        successOpen={state === "success"}
+        successOpen={state === STATE.SUCCESS}
         onSuccess={() => {
           setState();
           onSuccess();
         }}
         failureTitle={failTitle}
         failSubtitle={failSubtitle}
-        failureOpen={state === "failure"}
+        failureOpen={state === STATE.FAILURE}
         onFailure={() => {
           setState();
           onFailure();
         }}
       />
       <ForgetPwdModal
-        open={state === "forget"}
+        open={state === STATE.FORGET}
         onCancel={() => {
           setState();
         }}

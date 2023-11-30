@@ -15,25 +15,4 @@ const defaultTheme = (dark) => {
     }
 }
 
-const userTheme = (dark) => {
-
-    const dt = defaultTheme(dark);
-
-    return {
-        token: {
-            ...dt.token,
-        },
-        components: {
-            Menu: {
-                ...dt.components.Menu,
-            },
-
-            Collapse: {
-                headerPadding: 0,
-            }
-        }
-    }
-}
-
 export default defaultTheme
-export {userTheme}

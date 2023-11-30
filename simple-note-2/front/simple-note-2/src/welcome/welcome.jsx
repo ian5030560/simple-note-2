@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import TopBar from "./component/topbar";
 import Brand from "./component/brand";
 import { Flex, ConfigProvider, FloatButton, theme } from "antd";
-import Authenticate from "./component/auth";
+import Auth from "./component/auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import defaultTheme from "../theme/default";
 
@@ -27,7 +27,7 @@ const BulbButton = ({ lighten, onClick }) => {
     return <FloatButton icon={lighten ? <AlertFilled /> : <AlertOutlined />} onClick={onClick} />
 }
 
-const Welcome = () => {
+const WelcomePage = () => {
     const [darken, setDarken] = useState(false);
 
     const handleClick = () => {
@@ -52,7 +52,7 @@ const Index = ({darken, onDarken}) => {
     return <>
         <Header
             backgroundColor={token.colorPrimary}
-            onAuthClick={() => setContent(<Authenticate />)}
+            onAuthClick={() => setContent(<Auth />)}
             onIntroClick={() => setContent()}
         />
         {content}
@@ -60,4 +60,4 @@ const Index = ({darken, onDarken}) => {
     </>
 }
 
-export default Welcome;
+export default WelcomePage;
