@@ -74,25 +74,45 @@ class DB:
         else:
             # 如果沒有結果，返回一個None
             return None
-<<<<<<< HEAD
-    def useremail_to_userpassword(self,user_email):
+
+    def useremail_to_userpassword(self, user_email):
         self.cursor.execute(
-            "SELECT user_password FROM User_Personal_Note_Data WHERE user_email = ?;", (user_email,)
+            "SELECT user_password FROM User_Personal_Note_Data WHERE user_email = ?;",
+            (user_email,),
         )
-         # 獲取查詢結果的第一行
+        # 獲取查詢結果的第一行
         row = self.cursor.fetchone()
-         # 如果有結果，取出 user_password 的值
+        # 如果有結果，取出 user_password 的值
         if row:
             user_password = row[0]
             return user_password
-            
+
         else:
             # 如果沒有結果，返回一個None
             return None
-            
-            
-=======
->>>>>>> 175692cab3d0e889af4a75040b7533183cea8596
+
+    def change_login_status(self, username):
+        self.cursor.execute(
+            "SELECT login_status FROM User_Personal_Note_Data WHERE username = ?;",
+            (username,),
+        )
+        # 獲取查詢結果的第一行
+        row = self.cursor.fetchone()
+        if row:
+            current_status = row[0]
+
+            # row 0 改為 1，1 改為 0
+            new_status = 1 if current_status == 0 else 0
+
+            #UPDATE更新 login_status
+            self.cursor.execute(
+                "UPDATE User_Personal_Note_Data SET login_status = ? WHERE username = ?;",
+                (new_status, username),
+            )
+            # 提交修改
+            self.conn.commit()
+        else:
+            return(f"No result found for {username}")
 
     def close_connection(self):
         # 關閉游標和資料庫連接
