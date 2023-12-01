@@ -17,15 +17,18 @@ Including another URLconf
 import sys
 
 sys.path.append("..signin")
+sys.path.append("..signin_status")
 from signin import views
 from django.urls import path
 from django.contrib import admin
 from signin.views import SigninView
+from signin_status.views import SigninStatusView
 
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("signin/", SigninView.as_view(), name="signin"),
+    path("signin_status/", SigninStatusView.as_view(), name="signin_status"),
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]
