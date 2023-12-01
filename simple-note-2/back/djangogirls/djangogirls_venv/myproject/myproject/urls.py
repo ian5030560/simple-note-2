@@ -18,17 +18,21 @@ import sys
 
 sys.path.append("..signin")
 sys.path.append("..signin_status")
+sys.path.append("..myapp")
 from signin import views
 from django.urls import path
 from django.contrib import admin
 from signin.views import SigninView
 from signin_status.views import SigninStatusView
-
+from myapp.views import ReactView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("signin/", SigninView.as_view(), name="signin"),
-    path("signin_status/", SigninStatusView.as_view(), name="signin_status"),
+    path("myapp/", ReactView.as_view(), name="myapp"),  # 測試路徑
+    path("signin/", SigninView.as_view(), name="signin"),  # signin路徑
+    path(
+        "signin_status/", SigninStatusView.as_view(), name="signin_status"
+    ),  # signin_status路徑
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]

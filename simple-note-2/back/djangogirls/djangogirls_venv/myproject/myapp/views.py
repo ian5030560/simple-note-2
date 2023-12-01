@@ -3,17 +3,12 @@ import sys
 
 sys.path.append("..db_modules")
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.http import JsonResponse
-from rest_framework.request import Request
 from .models import React
 from .serializer import ReactSerializer
-from db_modules.db import DB  # 資料庫來的檔案
 
-"""
+
 class ReactView(APIView):
-
     serializer_class = ReactSerializer
 
     def get(self, request):
@@ -28,4 +23,3 @@ class ReactView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-"""

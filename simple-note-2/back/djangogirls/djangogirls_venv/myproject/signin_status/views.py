@@ -19,13 +19,13 @@ from django.middleware.csrf import get_token
 
 class SigninStatusView(APIView):
     """
-    登入狀態:
-       若已登入, Response "true"
-       若未登入, Response "false"
+    登入狀態:\n
+       \t若已登入: Response "true",\n
+       \t若未登入: Response "false"\n
 
-    其他例外:
-        serializer raise_exception=False, Response HTTP_404_NOT_FOUND
-        JSONDecodeError, Response HTTP_405_METHOD_NOT_ALLOWED
+    其他例外:\n
+        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
     serializer_class = SigninStatusSerializer
