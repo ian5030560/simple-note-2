@@ -20,8 +20,8 @@ from django.middleware.csrf import get_token
 class SigninStatusView(APIView):
     """
     登入狀態:\n
-       \t若已登入: Response "true",\n
-       \t若未登入: Response "false"\n
+       \t若已登入: Response HTTP_200_OK,\n
+       \t若未登入: Response HTTP_400_BAD_REQUEST\n
 
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
@@ -32,7 +32,8 @@ class SigninStatusView(APIView):
 
     def get(self, request, format=None):
         output = [
-            {"account": output.signin_status} for output in SigninStatus.objects.all()
+            {"signin_status": output.signin_status}
+            for output in SigninStatus.objects.all()
         ]
         return Response("get")
 
@@ -46,10 +47,10 @@ class SigninStatusView(APIView):
             db = DB()
 
             if db.check_signin_status(username) == True:
-                return Response("true")
+                return Response(status=status.HTTP_200_OK)
 
             elif db.check_signin_status(username) == False:  # exception其他例外
-                return Response("false")
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             if serializer.is_valid(raise_exception=True):

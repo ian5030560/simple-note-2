@@ -39,7 +39,7 @@ class SigninView(APIView):
 
     def get(self, request, format=None):
         output = [
-            {"account": output.account, "password": output.password}
+            {"email": output.email, "password": output.password}
             for output in Signin.objects.all()
         ]
         return Response("get")
