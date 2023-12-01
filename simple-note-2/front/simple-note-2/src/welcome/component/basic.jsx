@@ -63,7 +63,8 @@ const ForgetPwdModal = ({ open, onCancel }) => {
     postData(
       "http://localhost:8080/forgetpassword",
       values,
-      (res) => {
+    )
+      .then((res) => {
         if (res.status === 200) {
           api.success(
             {
@@ -80,9 +81,15 @@ const ForgetPwdModal = ({ open, onCancel }) => {
             }
           )
         }
-      },
-      () => { }
-    );
+      })
+      .catch(() => {
+        api.error(
+          {
+            message: "密碼傳送失敗，請重新提交",
+            placement: "top"
+          }
+        )
+      });
   }
 
   return <>
@@ -192,6 +199,7 @@ const AuthForm = ({
 }) => {
   const [submittable, setSubmittable] = React.useState(false);
   const [state, setState] = useState();
+  const [failCause, setFailCause] = useState();
   const values = Form.useWatch([], form);
 
   useEffect(() => {
@@ -228,8 +236,25 @@ const AuthForm = ({
       values,
     )
       .then(res => {
-        setState(res.status === 200 ? STATE.SUCCESS : STATE.FAILURE);
-        console.log(res);
+
+        setFailCause(() => {
+
+          if (res.status === 200 || res.status === 201) return "";
+
+          switch (res.status) {
+            case 401:
+              return "username 重複";
+            case 402:
+              return "email 重複";
+            case 400:
+              return failSubtitle;
+            default:
+              console.log(res.status);
+              return "發生重大錯誤，請重新提交";
+          }
+        })
+
+        setState(res.status === 200 || res.status === 201 ? STATE.SUCCESS : STATE.FAILURE);
       })
       .catch(e => {
         setState(STATE.FAILURE);
@@ -308,7 +333,7 @@ const AuthForm = ({
           onSuccess();
         }}
         failureTitle={failTitle}
-        failureSubtitle={failSubtitle}
+        failureSubtitle={failCause}
         failureOpen={state === STATE.FAILURE}
         onFailure={() => {
           setState();
