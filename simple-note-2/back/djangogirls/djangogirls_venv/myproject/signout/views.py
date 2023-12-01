@@ -21,13 +21,16 @@ class SignoutView(APIView):
     """
     忘記密碼:\n
        \tsignout成功: Response HTTP_200_OK,\n
-       \tsignout錯誤: Response HTTP_404_NOT_FOUND\n
+
+    其他例外:\n
+        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
     serializer_class = SignoutSerializer
 
     def get(self, request, format=None):
-        output = [{"username": output.username} for output in Signout.objects.all()]
+        output = [{"signout": output.signout} for output in Signout.objects.all()]
         return Response("get")
 
     def post(self, request, format=None):
