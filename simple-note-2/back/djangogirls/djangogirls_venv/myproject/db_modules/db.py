@@ -58,25 +58,24 @@ class DB:
 
         except sqlite3.Error as e:
             return False
-    
-    def check_signin_status(self,username):
+
+    def check_signin_status(self, username):
         self.cursor.execute(
-            "SELECT login_status FROM User_Personal_Note_Data WHERE username = ?;", (username,)
+            "SELECT login_status FROM User_Personal_Note_Data WHERE username = ?;",
+            (username,),
         )
         # 獲取查詢結果的第一行
         row = self.cursor.fetchone()
-         # 如果有結果，取出 login_status 的值
-        if (row[0] == 0 or row[0] == 1  ):
+        # 如果有結果，取出 login_status 的值
+        if row:
             login_status = row[0]
             return login_status
-            
+
         else:
             # 如果沒有結果，可以根據需要返回一個預設值或者 None
             return None
-            
 
     def close_connection(self):
         # 關閉游標和資料庫連接
         self.cursor.close()
         self.conn.close()
-
