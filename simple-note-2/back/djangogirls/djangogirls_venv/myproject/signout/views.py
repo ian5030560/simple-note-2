@@ -42,6 +42,7 @@ class SignoutView(APIView):
                 return Response(status=status.HTTP_200_OK)
 
             serializer = SignoutSerializer(data=data)
+
             # serializer
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
