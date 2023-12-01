@@ -8,6 +8,7 @@ import {
   Result,
   Modal,
   Input,
+  notification
 } from "antd";
 const { Title, Link } = Typography;
 
@@ -18,8 +19,8 @@ const { Title, Link } = Typography;
  * @param {(response: Response) => void} onReceive
  * @param {(error) => void} onError
  */
-function postData(url, data, onReceive, onError) {
-  fetch(url, {
+export function postData(url, data) {
+  return fetch(url, {
     credentials: "include",
     body: JSON.stringify(data),
     method: "POST",
@@ -29,8 +30,6 @@ function postData(url, data, onReceive, onError) {
       "content-type": "application/json",
     },
   })
-    .then((res) => onReceive(res))
-    .catch((error) => onError(error));
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -41,7 +40,7 @@ const successType = {
    *
    * @param {Response} res
    */
-  onSuccess: (res) => {},
+  onSuccess: (res) => { },
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -52,13 +51,43 @@ const failureType = {
    *
    * @param {Error} e
    */
-  onFailure: (e) => {},
+  onFailure: (e) => { },
 };
 
 const ForgetPwdModal = ({ open, onCancel }) => {
-  return (
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const handleFinished = (values) => {
+
+    postData(
+      "http://localhost:8080/forgetpassword",
+      values,
+      (res) => {
+        if (res.status === 200) {
+          api.success(
+            {
+              message: "已傳送密碼至您的email",
+              placement: "top",
+            }
+          )
+        }
+        else {
+          api.error(
+            {
+              message: "密碼傳送失敗，請重新提交",
+              placement: "top"
+            }
+          )
+        }
+      },
+      () => { }
+    );
+  }
+
+  return <>
     <Modal title="尋找密碼" open={open} footer={[]} onCancel={onCancel}>
-      <Form>
+      <Form onFinish={handleFinished}>
         <Form.Item
           rules={[
             {
@@ -80,7 +109,8 @@ const ForgetPwdModal = ({ open, onCancel }) => {
         </Form.Item>
       </Form>
     </Modal>
-  );
+    {contextHolder}
+  </>
 };
 
 const AuthModal = ({
@@ -185,6 +215,7 @@ const AuthForm = ({
   const { title: failTitle, subtitle: failSubtitle, onFailure } = failure;
 
   const handleFinished = (values) => {
+
     setState(STATE.LOADING);
 
     values = {
@@ -195,16 +226,16 @@ const AuthForm = ({
     postData(
       url,
       values,
-      (res) => {
+    )
+      .then(res => {
         setState(res.status === 200 ? STATE.SUCCESS : STATE.FAILURE);
         console.log(res);
-      },
-      (e) => {
+      })
+      .catch(e => {
         setState(STATE.FAILURE);
         console.log(e.name);
         console.log(e.message);
-      }
-    );
+      });
   };
 
   const validateMessages = {
@@ -277,7 +308,7 @@ const AuthForm = ({
           onSuccess();
         }}
         failureTitle={failTitle}
-        failSubtitle={failSubtitle}
+        failureSubtitle={failSubtitle}
         failureOpen={state === STATE.FAILURE}
         onFailure={() => {
           setState();

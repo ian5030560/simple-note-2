@@ -5,41 +5,83 @@ import ToolBar from "./component/toolbar";
 import Editor from "./component/editor/editor";
 import defaultTheme from "../theme/default";
 import changeEditorStyle from "./change";
+import { useNavigate, useParams } from "react-router-dom";
+
+async function checkUserLogin(username) {
+    
+    return await fetch("http://localhost:8000/signin_status/", {
+        credentials: "include",
+        body: JSON.stringify({ username: username }),
+        method: "POST",
+        headers: {
+            "user-agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+            "content-type": "application/json",
+        },
+    })
+
+}
 
 const UserPage = () => {
 
     const [darken, setDarken] = useState(false);
+    const { username } = useParams();
+    const [logIn, setLogIn] = useState(false);
+    const navigate = useNavigate();
+ 
+    useEffect(() => {
+        checkUserLogin(username)
+            .then(async res => {
+                
+                let result = await res.text();
+
+                if (res.status !== 200 || !!result) {
+                    navigate("/");
+                    setLogIn(false);
+                }
+                else{
+                    setLogIn(true);
+                }
+
+            });
+
+    }, [navigate, username]);
 
     useEffect(() => {
         changeEditorStyle(darken);
     }, [darken]);
 
     useEffect(() => {
+
         const listener = () => {
             changeEditorStyle(darken);
         }
         window.onkeydown = listener;
         window.onclick = listener;
+
         return () => {
             window.removeEventListener("keydown", listener);
             window.removeEventListener("click", listener);
         }
+
     }, [darken]);
 
     const handleThemeClick = () => {
         setDarken(prev => !prev);
     }
 
-    return <ConfigProvider
-        theme={{
-            ...defaultTheme(darken),
-            algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm
-        }}
-    >
-        <Index
-            onThemeClick={handleThemeClick}
-        />
-    </ConfigProvider>
+    return <>
+        {logIn && <ConfigProvider
+            theme={{
+                ...defaultTheme(darken),
+                algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm
+            }}
+        >
+            <Index
+                onThemeClick={handleThemeClick}
+            />
+        </ConfigProvider>}
+    </>
 
 }
 

@@ -74,6 +74,7 @@ class DB:
         else:
             # 如果沒有結果，返回一個None
             return None
+
     def useremail_to_userpassword(self,user_email):
         self.cursor.execute(
             "SELECT user_password FROM User_Personal_Note_Data WHERE user_email = ?;", (user_email,)
@@ -88,8 +89,6 @@ class DB:
         else:
             # 如果沒有結果，返回一個None
             return None
-            
-            
 
     def close_connection(self):
         # 關閉游標和資料庫連接
