@@ -46,10 +46,10 @@ class ForgetPasswordView(APIView):
 
             db = DB()
 
-            if db.useremail_to_userpassword(username) != None:
+            if db.useremail_to_userpassword(email) != None:
                 return Response(status=status.HTTP_200_OK)
 
-            elif db.useremail_to_userpassword(username) == None:  # exception其他例外
+            elif db.useremail_to_userpassword(email) == None:  # exception其他例外
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
