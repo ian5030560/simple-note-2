@@ -58,7 +58,8 @@ class SigninView(APIView):
 
             if id == "sign-in":
                 if db.check_signin(username, password):  # 登入成功
-                    return Response(status=status.HTTP_200_OK)
+                    if db.change_login_status(username):
+                        return Response(status=status.HTTP_200_OK)
 
                 else:  # 登入失敗
                     return Response(status=status.HTTP_400_BAD_REQUEST)
