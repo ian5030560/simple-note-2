@@ -104,15 +104,16 @@ class DB:
             # row 0 改為 1，1 改為 0
             new_status = 1 if current_status == 0 else 0
 
-            #UPDATE更新 login_status
+            # UPDATE更新 login_status
             self.cursor.execute(
                 "UPDATE User_Personal_Note_Data SET login_status = ? WHERE username = ?;",
                 (new_status, username),
             )
             # 提交修改
             self.conn.commit()
+            return True
         else:
-            return(f"No result found for {username}")
+            return f"No result found for {username}"
 
     def close_connection(self):
         # 關閉游標和資料庫連接

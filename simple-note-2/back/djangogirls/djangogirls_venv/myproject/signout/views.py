@@ -20,8 +20,8 @@ from django.middleware.csrf import get_token
 class SignoutView(APIView):
     """
     忘記密碼:\n
-       \temail輸入正確: Response HTTP_200_OK,\n
-       \temail輸入錯誤: Response HTTP_404_NOT_FOUND\n
+       \tsignout成功: Response HTTP_200_OK,\n
+       \tsignout錯誤: Response HTTP_404_NOT_FOUND\n
     """
 
     serializer_class = SignoutSerializer
@@ -34,14 +34,11 @@ class SignoutView(APIView):
         try:
             data = json.loads(request.body)
             username = data.get("username")
+            db = DB()
+            if db.change_login_status(username) == True:
+                return Response(status=status.HTTP_200_OK)
 
             serializer = SignoutSerializer(data=data)
-
-            db = DB()
-
-            db.change_login_status(username)
-            return Response(status=status.HTTP_200_OK)
-
             # serializer
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
