@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "signin",
-    "corsheaders",
     "rest_framework",
+    "corsheaders",
+    "myapp",
+    "signin",
+    "signin_status",
 ]
 
 MIDDLEWARE = [
@@ -89,12 +91,6 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": os.path.join(BASE_DIR, "pydb.db"),
-        # "ENGINE": "django.db.backends.mysql",
-        # "NAME": "sql12662871",
-        # "USER": "sql12662871",
-        # "PASSWORD": "ATaMjgMM4k",
-        # "HOST": "sql12.freesqldatabase.com",
-        # "PORT": "3306",
     }
 }
 

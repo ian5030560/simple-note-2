@@ -15,7 +15,7 @@ class DB:
     def check_signin(self, username, user_password):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱和密碼
         self.cursor.execute(
-            "SELECT * FROM User_Register_Data WHERE username = ? AND user_password = ?;",
+            "SELECT * FROM User_Personal_Note_Data WHERE username = ? AND user_password = ?;",
             (username, user_password),
         )
         # 檢索結果
@@ -27,7 +27,7 @@ class DB:
     def check_register_username(self, username):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱
         self.cursor.execute(
-            "SELECT * FROM User_Register_Data WHERE username = ?;", (username,)
+            "SELECT * FROM User_Personal_Note_Data WHERE username = ?;", (username,)
         )
         # 檢索結果
         row = self.cursor.fetchone()
@@ -38,7 +38,7 @@ class DB:
         # 使用 SQL 查詢檢查是否有相同的使用者電子郵件
 
         self.cursor.execute(
-            "SELECT * FROM User_Register_Data WHERE user_email = ?;", (user_email,)
+            "SELECT * FROM User_Personal_Note_Data WHERE user_email = ?;", (user_email,)
         )
         # 檢索結果
         row = self.cursor.fetchone()
@@ -50,7 +50,7 @@ class DB:
             # 新增資料到 User_Register_Data 表格
             user_data = (username, user_email, user_password)
             self.cursor.execute(
-                "INSERT INTO User_Register_Data (username, user_email, user_password) VALUES (?, ?, ?);",
+                "INSERT INTO User_Personal_Note_Data (username, user_email, user_password) VALUES (?, ?, ?);",
                 user_data,
             )
             self.conn.commit()
@@ -58,6 +58,22 @@ class DB:
 
         except sqlite3.Error as e:
             return False
+
+    def check_signin_status(self, username):
+        self.cursor.execute(
+            "SELECT login_status FROM User_Personal_Note_Data WHERE username = ?;",
+            (username,),
+        )
+        # 獲取查詢結果的第一行
+        row = self.cursor.fetchone()
+        # 如果有結果，取出 login_status 的值
+        if row:
+            login_status = row[0]
+            return login_status
+
+        else:
+            # 如果沒有結果，可以根據需要返回一個預設值或者 None
+            return None
 
     def close_connection(self):
         # 關閉游標和資料庫連接
