@@ -34,8 +34,8 @@ const UserPage = () => {
             .then(async res => {
                 
                 let result = await res.text();
-
-                if (res.status !== 200 || !!result) {
+                
+                if (res.status !== 200 || !result) {
                     navigate("/");
                     setLogIn(false);
                 }

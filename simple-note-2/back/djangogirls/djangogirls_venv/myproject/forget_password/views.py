@@ -19,13 +19,17 @@ from django.middleware.csrf import get_token
 
 class ForgetPasswordView(APIView):
     """
-    忘記密碼:\n
-       \temail輸入正確: Response HTTP_200_OK,\n
-       \temail輸入錯誤: Response HTTP_400_BAD_REQUEST\n
+        忘記密碼:\n
+           \temail輸入正確: Response HTTP_200_OK,\n
+    <<<<<<< HEAD
+           \temail輸入錯誤: Response HTTP_400_BAD_REQUEST\n
 
-    其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        其他例外:\n
+            serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+            JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+    =======
+           \temail輸入錯誤: Response HTTP_404_NOT_FOUND\n
+    >>>>>>> a673000f202e7d81be6f88199175dd101b68169b
     """
 
     serializer_class = ForgetPasswordSerializer
