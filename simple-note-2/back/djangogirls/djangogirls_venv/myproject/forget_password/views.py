@@ -41,18 +41,19 @@ class ForgetPasswordView(APIView):
         try:
             data = json.loads(request.body)
             email = data.get("email")
-
-            serializer = ForgetPasswordSerializer(data=data)
-
             db = DB()
 
-            if db.useremail_to_userpassword(email) != None:
+            password = db.useremail_to_userpassword(email)
+            if password != None:
                 return Response(status=status.HTTP_200_OK)
 
-            elif db.useremail_to_userpassword(email) == None:  # exception其他例外
+            elif password == None:  # exception其他例外
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
+
+            serializer = ForgetPasswordSerializer(data=data)
+
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 print("serializer is valid")
