@@ -71,8 +71,23 @@ class DB:
             return login_status
             
         else:
-            # 如果沒有結果，可以根據需要返回一個預設值或者 None
+            # 如果沒有結果，返回一個None
             return None
+    def useremail_to_userpassword(self,user_email):
+        self.cursor.execute(
+            "SELECT user_password FROM User_Personal_Note_Data WHERE user_email = ?;", (user_email,)
+        )
+         # 獲取查詢結果的第一行
+        row = self.cursor.fetchone()
+         # 如果有結果，取出 user_password 的值
+        if row:
+            user_password = row[0]
+            return user_password
+            
+        else:
+            # 如果沒有結果，返回一個None
+            return None
+            
             
 
     def close_connection(self):
