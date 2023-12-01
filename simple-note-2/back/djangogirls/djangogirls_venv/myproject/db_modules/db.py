@@ -69,6 +69,7 @@ class DB:
         if (row[0] == 0 or row[0] == 1  ):
             login_status = row[0]
             return login_status
+            
         else:
             # 如果沒有結果，可以根據需要返回一個預設值或者 None
             return None
@@ -78,3 +79,4 @@ class DB:
         # 關閉游標和資料庫連接
         self.cursor.close()
         self.conn.close()
+
