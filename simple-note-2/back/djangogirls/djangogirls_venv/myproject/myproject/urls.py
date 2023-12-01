@@ -20,6 +20,7 @@ sys.path.append("..signin")
 sys.path.append("..signin_status")
 sys.path.append("..myapp")
 sys.path.append("..forget_password")
+sys.path.append("..signout")
 from signin import views
 from django.urls import path
 from django.contrib import admin
@@ -27,17 +28,19 @@ from signin.views import SigninView
 from signin_status.views import SigninStatusView
 from myapp.views import ReactView
 from forget_password.views import ForgetPasswordView
+from signout.views import SignoutView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("myapp/", ReactView.as_view(), name="myapp"),  # 測試路徑
-    path("signin/", SigninView.as_view(), name="signin"),  # signin路徑
+    path("myapp/", ReactView.as_view(), name="myapp"),  # 測試
+    path("signin/", SigninView.as_view(), name="signin"),  # signin
     path(
         "signin_status/", SigninStatusView.as_view(), name="signin_status"
-    ),  # signin_status路徑
+    ),  # signin_status
     path(
         "forget_password/", ForgetPasswordView.as_view(), name="forget_password"
-    ),  # forget_password路徑
+    ),  # forget_password
+    path("signout/", SignoutView.as_view(), name="signout"),  # signout
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]

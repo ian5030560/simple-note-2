@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "signin",
     "signin_status",
     "forget_password",
+    "signout",
 ]
 
 MIDDLEWARE = [
