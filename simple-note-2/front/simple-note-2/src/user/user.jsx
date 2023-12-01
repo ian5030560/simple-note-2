@@ -18,8 +18,12 @@ const UserPage = () => {
         const listener = () => {
             changeEditorStyle(darken);
         }
-        window.onkeydown = listener
-        return () => window.removeEventListener("keydown", listener);
+        window.onkeydown = listener;
+        window.onclick = listener;
+        return () => {
+            window.removeEventListener("keydown", listener);
+            window.removeEventListener("click", listener);
+        }
     }, [darken]);
 
     const handleThemeClick = () => {

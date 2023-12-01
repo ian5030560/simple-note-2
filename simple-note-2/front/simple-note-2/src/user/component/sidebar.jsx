@@ -4,11 +4,12 @@ import {
     Avatar,
     Typography,
     theme,
-    Dropdown
+    Dropdown,
 } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
-import {BoxArrowInRight} from "react-bootstrap-icons";
-import { ThemeMenu, FileMenu } from "./treeMenu";
+import { BoxArrowInRight } from "react-bootstrap-icons";
+import { ThemeMenu, FileMenu } from "./menu";
+import { IndividualModal } from "./modal";
 const { Title } = Typography;
 
 const UserProfile = ({ username, src, onLogout, onSet }) => {
@@ -19,17 +20,17 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
         {
             key: "setting",
             label: "設定",
-            icon: <SettingOutlined/>
+            icon: <SettingOutlined />
         },
         {
             key: "log out",
             label: "登出",
-            icon: <BoxArrowInRight/>
+            icon: <BoxArrowInRight />
         }
     ];
 
-    const handleClick = ({key}) => {
-        switch(key){
+    const handleClick = ({ key }) => {
+        switch (key) {
             case "setting":
                 onSet?.();
                 break;
@@ -44,7 +45,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
     return <Flex
         align="center"
         gap="small"
-        style={{padding: token.padding}}
+        style={{ padding: token.padding }}
     >
         <Avatar
             size={"large"}
@@ -52,7 +53,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
             icon={src ? null : <UserOutlined />}
             src={src}
         />
-        <Title level={4} style={{ color: "white"}}>{username}</Title>
+        <Title level={4} style={{ color: "white" }}>{username}</Title>
         <Dropdown
             menu={{
                 items,
@@ -61,7 +62,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
             trigger={"click"}
             placement="bottom"
         >
-            <EllipsisOutlined style={{ color: "white"}}/>
+            <EllipsisOutlined style={{ color: "white" }} />
         </Dropdown>
     </Flex>
 }
@@ -69,6 +70,11 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
 const SideBar = () => {
 
     const { token } = theme.useToken();
+    const [openIndivual, setOpenIndivual] = useState();
+
+    const handleIndiviualAdd = () => {
+        setOpenIndivual(true);
+    }
 
     return <Flex
         vertical
@@ -80,12 +86,19 @@ const SideBar = () => {
             overflow: "auto",
         }}>
         <Flex vertical>
-            <UserProfile username="username"/>
-            <FileMenu />
+            <UserProfile username="username" />
+            <FileMenu onIndiviualAdd={handleIndiviualAdd} />
         </Flex>
         <ThemeMenu style={{
-            borderRadius: token.Menu.itemBorderRadius
+            borderRadius: token.Menu.itemBorderRadius,
+            // minWidth: "100%",
         }} />
+
+        <IndividualModal
+            open={openIndivual}
+            onCancel={() => setOpenIndivual(false)}
+            onOk={() => setOpenIndivual(false)}
+        />
     </Flex>
 }
 
