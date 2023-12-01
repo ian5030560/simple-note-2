@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Flex, Form, Input, theme } from "antd";
 import AuthForm from "./basic";
+import { useNavigate } from "react-router-dom";
 
 const LogIn = ({ onChange }) => {
   const [form] = Form.useForm();
+
+  const navigate = useNavigate();
 
   return (
     <AuthForm
@@ -16,7 +19,7 @@ const LogIn = ({ onChange }) => {
       success={{
         title: "登入成功",
         subtitle: "登入成功請返回主頁",
-        onSuccess: () => {},
+        onSuccess: () => navigate(`user/${form.getFieldValue("username")}`),
       }}
       failure={{
         title: "登入失敗",
@@ -54,7 +57,8 @@ const LogIn = ({ onChange }) => {
 
 const SignUp = ({ onChange }) => {
   const [form] = Form.useForm();
-        
+  const navigate = useNavigate();
+
   return (
     <AuthForm
       form={form}
@@ -66,7 +70,7 @@ const SignUp = ({ onChange }) => {
       success={{
         title: "註冊成功",
         subtitle: "註冊成功請返回首頁登入",
-        onSuccess: () => {},
+        onSuccess: () => navigate(`user/${form.getFieldValue("username")}`),
       }}
       failure={{
         title: "註冊失敗",
@@ -114,7 +118,7 @@ const SignUp = ({ onChange }) => {
   );
 };
 
-const Authenticate = () => {
+const Auth = () => {
   const [current, setCurrent] = useState(0);
   const { token } = theme.useToken();
 
@@ -144,4 +148,4 @@ const Authenticate = () => {
   );
 };
 
-export default Authenticate;
+export default Auth;

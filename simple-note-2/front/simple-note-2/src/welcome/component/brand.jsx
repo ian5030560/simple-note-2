@@ -1,7 +1,7 @@
 import React from "react";
 import {Typography, Flex} from "antd";
 import Icon from "@ant-design/icons";
-import {ReactComponent as Note} from "../resource/notebook.svg";
+import {ReactComponent as Note} from "../../resource/notebook.svg";
 const {Title} = Typography;
 
 const NoteIcon = (prop) => <Icon component={Note}  {...prop}/>
