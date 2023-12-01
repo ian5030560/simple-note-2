@@ -22,7 +22,6 @@ class SigninStatusView(APIView):
     登入狀態:\n
        \t若已登入: Response "true",\n
        \t若未登入: Response "false"\n
-       \t其他: Response "error"\n
 
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
@@ -46,12 +45,11 @@ class SigninStatusView(APIView):
 
             db = DB()
 
-            if db.check_signin_status(username) == 0:  # 未登入
-                return Response("false")
-            elif db.check_signin_status(username) == 1:  # 已登入
+            if db.check_signin_status(username) == True:
                 return Response("true")
-            elif db.check_signin_status(username) == None:  # 其他
-                return Response("error")
+
+            elif db.check_signin_status(username) == False:  # exception其他例外
+                return Response("false")
 
             # serializer
             if serializer.is_valid(raise_exception=True):
