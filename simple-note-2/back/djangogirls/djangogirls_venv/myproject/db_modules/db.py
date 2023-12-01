@@ -66,7 +66,7 @@ class DB:
         # 獲取查詢結果的第一行
         row = self.cursor.fetchone()
          # 如果有結果，取出 login_status 的值
-        if (row[0] == 0 or row[0] == 1  ):
+        if row:
             login_status = row[0]
             return login_status
             
