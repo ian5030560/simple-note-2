@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "myapp",
     "signin",
     "signin_status",
+    "forget_password",
 ]
 
 MIDDLEWARE = [
