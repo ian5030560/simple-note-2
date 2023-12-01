@@ -34,7 +34,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
             case "setting":
                 onSet?.();
                 break;
-            case "logout":
+            case "log out":
                 onLogout?.();
                 break;
             default:
@@ -67,7 +67,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
     </Flex>
 }
 
-const SideBar = () => {
+const SideBar = ({onLogout}) => {
 
     const { token } = theme.useToken();
     const [openIndivual, setOpenIndivual] = useState();
@@ -86,12 +86,11 @@ const SideBar = () => {
             overflow: "auto",
         }}>
         <Flex vertical>
-            <UserProfile username="username" />
+            <UserProfile username="username" onLogout={onLogout}/>
             <FileMenu onIndiviualAdd={handleIndiviualAdd} />
         </Flex>
         <ThemeMenu style={{
             borderRadius: token.Menu.itemBorderRadius,
-            // minWidth: "100%",
         }} />
 
         <IndividualModal
