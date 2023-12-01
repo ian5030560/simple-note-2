@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Flex, Form, Input, theme } from "antd";
-import AuthForm from "./basic";
+import AuthForm from "./form";
 import { useNavigate } from "react-router-dom";
 
 const LogIn = ({ onChange }) => {
   const [form] = Form.useForm();
-
   const navigate = useNavigate();
 
   return (
@@ -14,17 +13,16 @@ const LogIn = ({ onChange }) => {
       id="sign-in"
       url="http://localhost:8000/signin/"
       title="登入"
-      changeText="註冊"
-      onChange={onChange}
+      switchText="註冊"
+      onSwitch={onChange}
       success={{
         title: "登入成功",
         subtitle: "登入成功請返回主頁",
-        onSuccess: () => navigate(`user/${form.getFieldValue("username")}`),
+        onSuccessClose: () => navigate(`user/${form.getFieldValue("username")}`),
       }}
       failure={{
         title: "登入失敗",
-        subtitle: "登入失敗請重新輸入",
-        onFailure: () => {},
+        subtitle: "登入失敗",
       }}
     >
       <Form.Item
@@ -36,7 +34,7 @@ const LogIn = ({ onChange }) => {
           },
         ]}
       >
-        <Input/>
+        <Input />
       </Form.Item>
       <Form.Item
         label="password"
@@ -58,6 +56,7 @@ const LogIn = ({ onChange }) => {
 const SignUp = ({ onChange }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [cause, setCause] = useState("");
 
   return (
     <AuthForm
@@ -65,17 +64,30 @@ const SignUp = ({ onChange }) => {
       id="register"
       url="http://localhost:8000/signin/"
       title="註冊"
-      changeText="登入"
-      onChange={onChange}
+      switchText="登入"
+      onSwitch={onChange}
       success={{
         title: "註冊成功",
         subtitle: "註冊成功請返回首頁登入",
-        onSuccess: () => navigate(`user/${form.getFieldValue("username")}`),
+        onSuccessClose: () => navigate(`user/${form.getFieldValue("username")}`),
       }}
       failure={{
         title: "註冊失敗",
-        subtitle: "註冊失敗請重新輸入",
-        onFailure: () => {},
+        subtitle: cause,
+        onFailure: (res) => {
+          setCause(() => {
+            switch (res.status) {
+              case 401:
+                return "username 重複";
+              case 402:
+                return "email 重複";
+              case 400:
+                return "註冊錯誤，請重新輸入";
+              default:
+                return "發生重大錯誤，請重新提交";
+            }
+          })
+        },
       }}
     >
       <Form.Item
@@ -99,7 +111,7 @@ const SignUp = ({ onChange }) => {
           },
         ]}
       >
-        <Input type="email"/>
+        <Input type="email" />
       </Form.Item>
       <Form.Item
         label="password"

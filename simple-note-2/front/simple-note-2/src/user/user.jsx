@@ -6,19 +6,14 @@ import Editor from "./component/editor/editor";
 import defaultTheme from "../theme/default";
 import changeEditorStyle from "./change";
 import { useNavigate, useParams } from "react-router-dom";
+import postData from "../postMethod/post";
 
-async function checkUserLogin(username) {
-    
-    return await fetch("http://localhost:8000/signin_status/", {
-        credentials: "include",
-        body: JSON.stringify({ username: username }),
-        method: "POST",
-        headers: {
-            "user-agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-            "content-type": "application/json",
-        },
-    })
+function checkUserLogin(username) {
+
+    return postData(
+        "http://localhost:8000/signin_status/",
+        { username: username },
+    )
 
 }
 
@@ -28,20 +23,23 @@ const UserPage = () => {
     const { username } = useParams();
     const [logIn, setLogIn] = useState(false);
     const navigate = useNavigate();
- 
+
     useEffect(() => {
         checkUserLogin(username)
-            .then(async res => {
-                
-                let result = await res.text();
-                
-                if (res.status !== 200 || !result) {
-                    navigate("/");
-                    setLogIn(false);
-                }
-                else{
-                    setLogIn(true);
-                }
+            .then(res => {
+                // console.log(res);
+                res.text()
+                    .then(text => {
+                        // console.log(text);
+                        if (res.status !== 200) {
+                            navigate("/");
+                            setLogIn(false);
+                        }
+                        else {
+                            setLogIn(true);
+                        }
+                    })
+
 
             });
 
