@@ -13,15 +13,19 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 
+# email用
+from django.core.mail import EmailMessage
+from django.conf import settings
+from django.template.loader import render_to_string
+
 """@csrf_exempt"""
 """@csrf_protect"""
 
 
 class ForgetPasswordView(APIView):
     """
-    忘記密碼:\n
-       \temail輸入正確: Response HTTP_200_OK,\n
-       \temail輸入錯誤: Response HTTP_400_BAD_REQUEST\n
+    email:\n
+       \temail成功寄出: Response HTTP_200_OK\n
 
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
@@ -41,14 +45,25 @@ class ForgetPasswordView(APIView):
         try:
             data = json.loads(request.body)
             email = data.get("email")
+            username = data.get("username")
             db = DB()
 
             password = db.useremail_to_userpassword(email)
-            if password != None:
-                return Response(status=status.HTTP_200_OK)
 
-            elif password == None:  # exception其他例外
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+            # 電子郵件內容
+            email_template = render_to_string(
+                "accounts/change_password.html",
+                {"username": username, "password": password},
+            )
+            email = EmailMessage(
+                "更改密碼通知信",  # 電子郵件標題
+                email_template,  # 電子郵件內容
+                settings.EMAIL_HOST_USER,  # 寄件者
+                [email],  # 收件者
+            )
+            email.fail_silently = False
+            if email.send():
+                return Response(status=status.HTTP_200_OK)
 
             # serializer
 
