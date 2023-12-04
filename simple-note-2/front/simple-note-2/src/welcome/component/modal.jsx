@@ -7,7 +7,7 @@ export const ForgetPwdModal = ({ open, onCancel }) => {
   const [loading, setLoading] = useState(false);
 
   const handleFinished = (values) => {
-    console.log(values);
+
     setLoading(true);
     postData("http://localhost:8000/forget_password/", values)
       .then((res) => {

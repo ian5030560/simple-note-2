@@ -43,7 +43,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
     }
 
     return <Flex
-        align="center"
+        align="baseline"
         gap="small"
         style={{ padding: token.padding }}
     >

@@ -4,9 +4,9 @@ import {Row, Col} from "antd";
 import Preview from "./component/preview";
 
 const ThemePage = () => {
-    return <Row>
-        <Col span={4}><SideBar light={{}} dark={{}}/></Col>
-        <Col span={20}><Preview/></Col>
+    return <Row style={{minHeight: "100%"}}>
+        <Col span={6}><SideBar light={{}} dark={{}}/></Col>
+        <Col span={18}><Preview/></Col>
     </Row>
 }
 
