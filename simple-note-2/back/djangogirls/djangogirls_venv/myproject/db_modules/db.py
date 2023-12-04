@@ -1,15 +1,17 @@
 import sqlite3
 from os import mkdir
 
+TEST_DB = "./pydb.db"
+BACK_DB = "db_modules/pydb.db"
 class DB:
     def __init__(self):
-        # try:
-        self.conn = sqlite3.connect("./pydb.db")
-        # except sqlite3.OperationalError:
-        #     mkdir("db_modules")
-        # finally:
-            # self.conn = sqlite3.connect("db_modules/pydb.db")
-        self.cursor = self.conn.cursor()
+        try:
+            self.conn = sqlite3.connect(BACK_DB)
+        except sqlite3.OperationalError:
+            mkdir("db_modules")
+        finally:
+            self.conn = sqlite3.connect(BACK_DB)
+            self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱和密碼
@@ -44,19 +46,19 @@ class DB:
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
 
-    def insert_into_User_Register_Data(self, username, user_password, user_email):
-        # try:
-            # 新增資料到 User_Register_Data 表格
-            user_data = (username, user_email, user_password)
+    def insert_into_User_Register_Data(self, username, user_email, user_password):
+        try:
+        # 新增資料到 User_Personal_Note_Data 表格
+            user_data = (username, user_email, user_password, 0)
             self.cursor.execute(
-                "INSERT INTO User_Personal_Note_Data (username, user_email, user_password) VALUES (?, ?, ?);",
-                user_data,
+            "INSERT INTO User_Personal_Note_Data (username, user_email, user_password, login_status) VALUES (?, ?, ?, ?);",
+            user_data,
             )
             self.conn.commit()
             return True
 
-        # except sqlite3.Error as e:
-        #     return False
+        except sqlite3.Error as e:
+            return False
 
     def check_signin_status(self, username):
         self.cursor.execute(
@@ -119,6 +121,5 @@ class DB:
         self.cursor.close()
         self.conn.close()
 
-db = DB()
 
-print(db.check_signin_status("fewefwe"))
+
