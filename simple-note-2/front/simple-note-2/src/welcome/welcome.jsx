@@ -5,6 +5,7 @@ import { Flex, ConfigProvider, FloatButton, theme } from "antd";
 import Auth from "./component/auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import defaultTheme from "../theme/default";
+import Intro from "./component/intro";
 
 const Header = ({ backgroundColor, onIntroClick, onAuthClick }) => {
     return <Flex
@@ -46,14 +47,14 @@ const WelcomePage = () => {
 
 const Index = ({darken, onDarken}) => {
 
-    const [content, setContent] = useState();
+    const [content, setContent] = useState(<Intro />);
     const {token} = theme.useToken();
 
     return <>
         <Header
             backgroundColor={token.colorPrimary}
             onAuthClick={() => setContent(<Auth />)}
-            onIntroClick={() => setContent()}
+            onIntroClick={() => setContent(<Intro />)}
         />
         {content}
         <BulbButton lighten={!darken} onClick={onDarken} />

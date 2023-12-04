@@ -1,36 +1,6 @@
 import React, { useState } from "react"
-import { Tree, Menu, Flex, Typography, theme } from "antd";
-import { PlusOutlined, DeleteOutlined } from "@ant-design/icons";
-const { Text } = Typography;
-
-const ToolLine = ({ nodeKey, onDelete, onAdd }) => {
-
-    return <Flex style={{ color: "white" }}>
-        <DeleteOutlined
-            onClick={(e) => {
-                e.stopPropagation();;
-                onDelete?.(nodeKey);
-            }} />
-        <PlusOutlined
-            onClick={(e) => {
-                e.stopPropagation();;
-                onAdd?.(nodeKey);
-            }}
-        />
-    </Flex>
-}
-
-const Node = ({ text, nodeKey, onAdd, onDelete }) => {
-
-    return <Flex gap={"large"}>
-        <Text ellipsis style={{ color: "white" }}>{text}</Text>
-        <ToolLine
-            nodeKey={nodeKey}
-            onAdd={onAdd}
-            onDelete={onDelete}
-        />
-    </Flex>
-}
+import { Tree, Menu, theme } from "antd";
+import { createIndiviualNode } from "./node";
 
 /**
  * 
@@ -78,14 +48,10 @@ const dataType = {
  * @param {{i_data: Array<dataType>, m_data: Array<dataType>}} param0 
  * @returns 
  */
-const FileMenu = ({ 
-    i_data, 
-    m_data, 
-    onSelect, 
-    onIndiviualAdd, 
-    onIndiviualDelete,
-    onMultipleAdd,
-    onMultipleDelete
+const FileMenu = ({
+    i_data,
+    m_data,
+    onSelect,
 }) => {
 
     const { token } = theme.useToken();
@@ -93,12 +59,13 @@ const FileMenu = ({
         i_data.map(data => {
             return {
                 key: data.key,
-                title: <Node
-                    text={data.title}
-                    nodeKey={data.key}
-                    onAdd={(k) => handleAdd(k, setI_Children, onIndiviualAdd, onIndiviualDelete)}
-                    onDelete={(k) => handleDelete(k, setI_Children, onIndiviualDelete, onMultipleAdd)}
-                />,
+                title: createIndiviualNode(
+                    data.title,
+                    data.key,
+                    (k, t) => handleAdd(k, t, setI_Children, createIndiviualNode),
+                    (k) => handleDelete(k, setI_Children, createIndiviualNode),
+                    false
+                ),
                 children: data.children,
                 name: data.name
             }
@@ -109,38 +76,36 @@ const FileMenu = ({
         m_data.map(data => {
             return {
                 key: data.key,
-                title: <Node
-                    text={data.title}
-                    nodeKey={data.key}
-                    onAdd={(k) => handleAdd(k, setM_Children, onMultipleAdd, onMultipleDelete)}
-                    onDelete={(k) => handleDelete(k, setM_Children, onMultipleDelete, onMultipleAdd)}
-                />,
+                title: createIndiviualNode(
+                    data.title,
+                    data.key,
+                    (k, t) => handleAdd(k, t, setM_Children, createIndiviualNode),
+                    (k) => handleDelete(k, setM_Children, createIndiviualNode),
+                    false
+                ),
                 children: data.children,
                 name: data.name
             }
         })
     );
 
-    const handleAdd = (nodeKey, setChildren, onAdd, onDelete) => {
-
-        const input = onAdd?.();
-
-        if(!input) return;
-
+    const handleAdd = (nodeKey, text, setChildren, createNode) => {
+    
         setChildren(prev => {
             let target = findTargetByKey(nodeKey, prev);
 
             let key = `${nodeKey}-${target.length}`;
             target.push({
                 key: key,
-                title: <Node
-                    text={input}
-                    nodeKey={key}
-                    onAdd={(k) => handleAdd(k, setChildren, onAdd, onDelete)}
-                    onDelete={(k) => handleDelete(k, setChildren, onDelete, onAdd)}
-                />,
+                title: createNode(
+                    text,
+                    key,
+                    (k, t) => handleAdd(k, t, setChildren, createNode),
+                    (k) => handleDelete(k, setChildren, createNode),
+                    false
+                ),
                 children: [],
-                name: input
+                name: text
             })
 
             return [...prev]
@@ -151,9 +116,7 @@ const FileMenu = ({
      * 
      * @param {string} nodeKey 
      */
-    const handleDelete = (nodeKey, setChildren, onDelete, onAdd) => {
-
-        onDelete?.();
+    const handleDelete = (nodeKey, setChildren, createNode) => {
 
         setChildren(prev => {
 
@@ -168,12 +131,13 @@ const FileMenu = ({
                     let key = `${p}-${index}`;
 
                     t[index].key = key;
-                    t[index].title = <Node
-                        text={t[index].name}
-                        nodeKey={key}
-                        onAdd={(k) => handleAdd(k, setChildren, onAdd, onDelete)}
-                        onDelete={(k) => handleDelete(k, setChildren, onDelete, onAdd)}
-                    />
+                    t[index].title = createNode(
+                        t[index].name,
+                        key,
+                        (k, t) => handleAdd(k, t, setChildren, createNode),
+                        (k) =>  handleDelete(k, setChildren, createNode),
+                        false
+                    )
 
                     changeSubtreeKey(t[index].children, key);
                 }
@@ -188,22 +152,24 @@ const FileMenu = ({
     const rootData = [
         {
             key: "individual",
-            title: <Node
-                text={"個人筆記"}
-                nodeKey={"individual"}
-                onAdd={(key) => handleAdd(key, setI_Children, onIndiviualAdd, onIndiviualDelete)}
-                onDelete={(key) => handleDelete(key, setI_Children, onIndiviualDelete, onIndiviualAdd)}
-            />,
+            title: createIndiviualNode(
+                "個人筆記",
+                "individual",
+                (k, t) => handleAdd(k, t, setI_Children, createIndiviualNode),
+                (k) => handleDelete(k, setI_Children, createIndiviualNode),
+                true
+            ),
             children: i_children
         },
         {
             key: "multiple",
-            title: <Node
-                text={"多人協作"}
-                nodeKey={"multiple"}
-                onAdd={(key) => handleAdd(key, setM_Children, onMultipleAdd, onMultipleDelete)}
-                onDelete={(key) => handleDelete(key, setM_Children, onMultipleDelete, onMultipleAdd)}
-            />,
+            title: createIndiviualNode(
+                "多人協作",
+                "multiple",
+                (k, t) => handleAdd(k, t, setM_Children, createIndiviualNode),
+                (k) => handleDelete(k, setM_Children, createIndiviualNode),
+                true
+            ),
             children: m_children
         }
     ]

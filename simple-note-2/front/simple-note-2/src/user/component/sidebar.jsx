@@ -9,7 +9,7 @@ import {
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BoxArrowInRight } from "react-bootstrap-icons";
 import { ThemeMenu, FileMenu } from "./menu";
-import { IndividualModal } from "./modal";
+
 const { Title } = Typography;
 
 const UserProfile = ({ username, src, onLogout, onSet }) => {
@@ -70,11 +70,6 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
 const SideBar = ({onLogout}) => {
 
     const { token } = theme.useToken();
-    const [openIndivual, setOpenIndivual] = useState();
-
-    const handleIndiviualAdd = () => {
-        setOpenIndivual(true);
-    }
 
     return <Flex
         vertical
@@ -87,17 +82,11 @@ const SideBar = ({onLogout}) => {
         }}>
         <Flex vertical>
             <UserProfile username="username" onLogout={onLogout}/>
-            <FileMenu onIndiviualAdd={handleIndiviualAdd} />
+            <FileMenu />
         </Flex>
         <ThemeMenu style={{
             borderRadius: token.Menu.itemBorderRadius,
         }} />
-
-        <IndividualModal
-            open={openIndivual}
-            onCancel={() => setOpenIndivual(false)}
-            onOk={() => setOpenIndivual(false)}
-        />
     </Flex>
 }
 

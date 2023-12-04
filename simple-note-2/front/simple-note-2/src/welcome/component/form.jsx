@@ -98,6 +98,7 @@ const AuthForm = ({
 
         if (res.status === 200 || res.status === 201) {
           onSuccess?.(res);
+          console.log(res);
           setState(STATE.SUCCESS);
         }
         else {
