@@ -1,15 +1,14 @@
 import sqlite3
 from os import mkdir
 
-
 class DB:
     def __init__(self):
-        try:
-            self.conn = sqlite3.connect("db_modules/pydb.db")
-        except sqlite3.OperationalError:
-            mkdir("db_modules")
-        finally:
-            self.conn = sqlite3.connect("db_modules/pydb.db")
+        # try:
+        self.conn = sqlite3.connect("./pydb.db")
+        # except sqlite3.OperationalError:
+        #     mkdir("db_modules")
+        # finally:
+            # self.conn = sqlite3.connect("db_modules/pydb.db")
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
@@ -46,7 +45,7 @@ class DB:
         return bool(row)
 
     def insert_into_User_Register_Data(self, username, user_password, user_email):
-        try:
+        # try:
             # 新增資料到 User_Register_Data 表格
             user_data = (username, user_email, user_password)
             self.cursor.execute(
@@ -56,8 +55,8 @@ class DB:
             self.conn.commit()
             return True
 
-        except sqlite3.Error as e:
-            return False
+        # except sqlite3.Error as e:
+        #     return False
 
     def check_signin_status(self, username):
         self.cursor.execute(
@@ -119,3 +118,7 @@ class DB:
         # 關閉游標和資料庫連接
         self.cursor.close()
         self.conn.close()
+
+db = DB()
+
+print(db.check_signin_status("fewefwe"))
