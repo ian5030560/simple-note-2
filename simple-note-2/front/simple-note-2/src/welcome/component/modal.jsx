@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, Result, Modal, Input, notification } from "antd";
-import postData from "../../postMethod/post";
+import postData from "../../http/post";
 
 export const ForgetPwdModal = ({ open, onCancel }) => {
   const [api, contextHolder] = notification.useNotification();
