@@ -6,7 +6,7 @@ import Editor from "./component/editor/editor";
 import defaultTheme from "../theme/default";
 import changeEditorStyle from "./change";
 import { useNavigate, useParams } from "react-router-dom";
-import postData from "../postMethod/post";
+import postData from "../http/post";
 
 const { Text } = Typography;
 
@@ -118,13 +118,14 @@ const UserPage = () => {
 
 }
 
-const Index = ({ onThemeClick, onLogout }) => {
+export const Index = ({ onThemeClick, onLogout, rootstyle }) => {
 
     const { token } = theme.useToken();
 
     return <Row style={{
         minHeight: "100%",
-        backgroundColor: token.colorBgBase
+        backgroundColor: token.colorBgBase,
+        ...rootstyle,
     }}>
         <Col
             span={4}

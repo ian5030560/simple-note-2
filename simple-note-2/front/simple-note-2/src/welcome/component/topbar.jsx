@@ -13,10 +13,10 @@ const { Text } = Typography;
 
 const TopBar = ({
     onIntroClick,
-    onAuthClick }
-) => {
+    onAuthClick 
+}) => {
 
-    const [current, setCurrent] = useState([]);
+    const [current, setCurrent] = useState(["intro"]);
     const {token} = theme.useToken();
 
     const handleClick = (e) => {

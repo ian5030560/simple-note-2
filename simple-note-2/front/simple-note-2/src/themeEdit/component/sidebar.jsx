@@ -13,7 +13,7 @@ const { Text, Title } = Typography;
 
 const ColorBar = ({ color, title, decription, onChange }) => {
 
-    return <Row>
+    return <Row align={"middle"}>
         <Col span={6}>
             <ColorPicker defaultValue={color} onChange={onChange} size="large" />
         </Col>

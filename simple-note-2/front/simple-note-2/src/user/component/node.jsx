@@ -23,6 +23,7 @@ const ToolLine = ({ nodeKey, onDelete, onAdd, root }) => {
     </Flex>
 }
 
+// eslint-disable-next-line no-unused-vars
 const NodeProp = {
     text: "",
     nodeKey: "",

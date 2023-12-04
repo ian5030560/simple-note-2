@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route path="/" element={<WelcomePage/>}/>
         <Route path="user/:username" element={<UserPage/>}/>
-        <Route path="" element={<ThemePage/>}/>
+        <Route path="theme" element={<ThemePage/>}/>
       </Routes>
     </BrowserRouter>
   );

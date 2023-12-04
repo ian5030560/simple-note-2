@@ -85,7 +85,7 @@ const SideBar = ({onLogout}) => {
             <FileMenu />
         </Flex>
         <ThemeMenu style={{
-            borderRadius: token.Menu.itemBorderRadius,
+            borderRadius: token.Menu ? token.Menu.itemBorderRadius: 8,
         }} />
     </Flex>
 }
