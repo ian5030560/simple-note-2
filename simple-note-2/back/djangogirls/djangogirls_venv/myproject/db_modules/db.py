@@ -3,6 +3,8 @@ from os import mkdir
 
 TEST_DB = "./pydb.db"
 BACK_DB = "db_modules/pydb.db"
+
+
 class DB:
     def __init__(self):
         try:
@@ -48,11 +50,11 @@ class DB:
 
     def insert_into_User_Register_Data(self, username, user_email, user_password):
         try:
-        # 新增資料到 User_Personal_Note_Data 表格
+            # 新增資料到 User_Personal_Note_Data 表格
             user_data = (username, user_email, user_password, 0)
             self.cursor.execute(
-            "INSERT INTO User_Personal_Note_Data (username, user_email, user_password, login_status) VALUES (?, ?, ?, ?);",
-            user_data,
+                "INSERT INTO User_Personal_Note_Data (username, user_email, user_password, login_status) VALUES (?, ?, ?, ?);",
+                user_data,
             )
             self.conn.commit()
             return True
@@ -120,6 +122,3 @@ class DB:
         # 關閉游標和資料庫連接
         self.cursor.close()
         self.conn.close()
-
-
-

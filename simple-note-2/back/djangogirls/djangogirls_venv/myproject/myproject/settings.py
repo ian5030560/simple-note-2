@@ -15,7 +15,7 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+# print(BASE_DIR)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -70,7 +70,7 @@ ROOT_URLCONF = "myproject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "myapp/templates")],
+        "DIRS": [os.path.join(BASE_DIR, "templates").replace("\\", "/")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -164,5 +164,5 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"  # SMTP伺服器
 EMAIL_PORT = 587  # TLS通訊埠號
 EMAIL_USE_TLS = True  # 開啟TLS(傳輸層安全性)
-EMAIL_HOST_USER = "s2mple.nknu@gmail.com"  # 寄件者電子郵件
-EMAIL_HOST_PASSWORD = "s2mplesimple"  # Gmail應用程式的密碼
+EMAIL_HOST_USER = "s2mplenote.nknu@gmail.com"  # 寄件者電子郵件
+EMAIL_HOST_PASSWORD = "fkfs igrw bjxz yzkj"  # Gmail應用程式的密碼

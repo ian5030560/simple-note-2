@@ -49,15 +49,16 @@ class ForgetPasswordView(APIView):
             db = DB()
 
             password = db.useremail_to_userpassword(email)
-
+            print(password)
             # 電子郵件內容
             email_template = render_to_string(
-                ".accounts/change_password.html",
-                {"username": username, "password": password},
+                "change_password.html",
+                {"username": username},
             )
+
             email = EmailMessage(
                 "更改密碼通知信",  # 電子郵件標題
-                email_template,  # 電子郵件內容
+                email_template + str(password),  # 電子郵件內容
                 settings.EMAIL_HOST_USER,  # 寄件者
                 [email],  # 收件者
             )
