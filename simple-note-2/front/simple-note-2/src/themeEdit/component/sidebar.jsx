@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import {
-    Flex,
+    Switch,
     Typography,
     theme,
     Row,
     Col,
     ColorPicker,
-    Space
+    Space,
+    Flex
 } from "antd";
 const { Text, Title } = Typography;
 
@@ -41,10 +42,10 @@ const ThemeDataType = {
 
 /**
  * 
- * @param {{light: ThemeDataType, dark: ThemeDataType}} param0 
+ * @param {{light: ThemeDataType, dark: ThemeDataType, onDarkenClick}} param0 
  * @returns 
  */
-const SideBar = ({ light, dark }) => {
+const SideBar = ({ light, dark, onDarkenClick }) => {
 
     const {token} = theme.useToken();
     const [lightprimary, setLightPrimary] = useState(light.primary? light.primary: token);
@@ -72,8 +73,12 @@ const SideBar = ({ light, dark }) => {
         dark.onNeutralChange?.(color);
     }
 
-    return <Flex vertical>
-        <Space direction="vertical">
+    return <Space direction="vertical">
+                
+                <Flex justify="end" align="center" style={{padding: token.padding, paddingBottom: "0px"}}>
+                    <Switch unCheckedChildren="亮" checkedChildren="暗" onClick={onDarkenClick}/>
+                </Flex>
+            
             <ColorBar color={lightprimary} title="LightPrimary"
                 decription="Acts as custom source color for light theme"
                 onChange={handleLightPrimary} />
@@ -87,7 +92,6 @@ const SideBar = ({ light, dark }) => {
                 decription="Used for background and surfaces for dark theme"
                 onChange={handleDarkNeutral} />
         </Space>
-    </Flex>
 };
 
 
