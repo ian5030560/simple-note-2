@@ -48,8 +48,7 @@ class ForgetPasswordView(APIView):
             username = data.get("username")
             db = DB()
 
-            password = db.useremail_to_userpassword(email)
-            print(password)
+            password = db.useremail_to_userpassword(email)  # from DB get password
             # 電子郵件內容
             email_template = render_to_string(
                 "change_password.html",
