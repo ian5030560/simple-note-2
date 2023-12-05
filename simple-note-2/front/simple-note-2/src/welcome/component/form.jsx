@@ -6,7 +6,7 @@ import {
   Space,
   Typography,
 } from "antd";
-import postData from "../../postMethod/post";
+import postData from "../../http/post";
 import { AuthModal, ForgetPwdModal } from "./modal";
 const { Title, Link } = Typography;
 

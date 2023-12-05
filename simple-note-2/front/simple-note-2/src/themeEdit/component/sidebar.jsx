@@ -13,8 +13,8 @@ const { Text, Title } = Typography;
 
 const ColorBar = ({ color, title, decription, onChange }) => {
 
-    return <Row>
-        <Col span={6}>
+    return <Row align={"middle"}>
+        <Col span={6} style={{textAlign: "center"}}>
             <ColorPicker defaultValue={color} onChange={onChange} size="large" />
         </Col>
         <Col span={18}>
@@ -73,7 +73,6 @@ const SideBar = ({ light, dark }) => {
     }
 
     return <Flex vertical>
-        <Title>Color</Title>
         <Space direction="vertical">
             <ColorBar color={lightprimary} title="LightPrimary"
                 decription="Acts as custom source color for light theme"

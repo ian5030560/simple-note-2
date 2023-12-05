@@ -43,7 +43,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
     }
 
     return <Flex
-        align="center"
+        align="baseline"
         gap="small"
         style={{ padding: token.padding }}
     >
@@ -85,7 +85,7 @@ const SideBar = ({onLogout}) => {
             <FileMenu />
         </Flex>
         <ThemeMenu style={{
-            borderRadius: token.Menu.itemBorderRadius,
+            borderRadius: token.Menu ? token.Menu.itemBorderRadius: 8,
         }} />
     </Flex>
 }
