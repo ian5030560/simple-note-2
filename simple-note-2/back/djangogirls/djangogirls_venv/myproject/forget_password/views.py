@@ -52,7 +52,7 @@ class ForgetPasswordView(APIView):
 
             # 電子郵件內容
             email_template = render_to_string(
-                "accounts/change_password.html",
+                ".accounts/change_password.html",
                 {"username": username, "password": password},
             )
             email = EmailMessage(
