@@ -9,6 +9,7 @@ import {
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BoxArrowInRight } from "react-bootstrap-icons";
 import { ThemeMenu, FileMenu } from "./menu";
+import { determineWhiteOrBlack } from "../../color/color";
 
 const { Title } = Typography;
 
@@ -53,7 +54,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
             icon={src ? null : <UserOutlined />}
             src={src}
         />
-        <Title level={4} style={{ color: "white" }}>{username}</Title>
+        <Title level={4} style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>{username}</Title>
         <Dropdown
             menu={{
                 items,
@@ -62,7 +63,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
             trigger={"click"}
             placement="bottom"
         >
-            <EllipsisOutlined style={{ color: "white" }} />
+            <EllipsisOutlined style={{ color: determineWhiteOrBlack(token.colorPrimary) }} />
         </Dropdown>
     </Flex>
 }

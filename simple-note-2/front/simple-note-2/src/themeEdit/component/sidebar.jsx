@@ -55,22 +55,22 @@ const SideBar = ({ light, dark, onDarkenClick }) => {
 
     const handleLightPrimary = (color) => {
         setLightPrimary(color.toHexString());
-        light.onPrimaryChange?.(color);
+        light.onPrimaryChange?.(color.toHexString());
     };
 
     const handleLightNeutral = (color) => {
         setLightNeutral(color.toHexString());
-        light.onNeutralChange?.(color);
+        light.onNeutralChange?.(color.toHexString());
     };
 
     const handleDarkPrimary = (color) => {
         setDarkPrimary(color.toHexString());
-        dark.onPrimaryChange?.(color);
+        dark.onPrimaryChange?.(color.toHexString());
     }
 
     const handleDarkNeutral = (color) => {
         setDarkNeutral(color.toHexString());
-        dark.onNeutralChange?.(color);
+        dark.onNeutralChange?.(color.toHexString());
     }
 
     return <Space direction="vertical">

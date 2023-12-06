@@ -3,6 +3,7 @@ import SideBar from "./component/sidebar";
 import { Row, Col, ConfigProvider, theme } from "antd";
 import Preview from "./component/preview";
 import { BulbButton } from "../welcome/welcome";
+import { determineWhiteOrBlack } from "../color/color";
 
 const ThemePage = () => {
 
@@ -10,10 +11,10 @@ const ThemePage = () => {
 
     return <ConfigProvider
         theme={{
-            algorithm: pageDarken ? theme.darkAlgorithm: theme.defaultAlgorithm
+            algorithm: pageDarken ? theme.darkAlgorithm : theme.defaultAlgorithm
         }}
     >
-        <Index/>
+        <Index />
         <BulbButton lighten={!pageDarken} onClick={() => setPageDarken(prev => !prev)} />
     </ConfigProvider>
 
@@ -25,32 +26,33 @@ const Index = () => {
     const [lightNeutral, setLightNeutral] = useState("#FFFCEC");
     const [darkPrimary, setDarkPrimary] = useState("#8696A7");
     const [darkNeutral, setDarkNeutral] = useState("#3C3C3C");
-    const {token} = theme.useToken();
+    const { token } = theme.useToken();
 
     const handleColor = (color, setColor) => {
-
+        setColor(() => color);
     }
 
     return <Row style={{ minHeight: "100%", backgroundColor: token.colorBgBase }}>
-            <Col span={6}>
-                <SideBar light={{
-                    primary: lightPrimary,
-                    neutral: lightNeutral,
-                    onPrimaryChange: (color) => handleColor(color, setLightPrimary),
-                    onNeutralChange: (color) => handleColor(color, setLightNeutral)
-                }} 
-                
+        <Col span={6}>
+            <SideBar light={{
+                primary: lightPrimary,
+                neutral: lightNeutral,
+                onPrimaryChange: (color) => handleColor(color, setLightPrimary),
+                onNeutralChange: (color) => handleColor(color, setLightNeutral)
+            }}
+
                 dark={{
                     primary: darkPrimary,
                     neutral: darkNeutral,
                     onPrimaryChange: (color) => handleColor(color, setDarkPrimary),
                     onNeutralChange: (color) => handleColor(color, setDarkNeutral)
-                }} 
-                
+                }}
+
                 onDarkenClick={() => setDarken(prev => !prev)}
-                />
-            </Col>
-            <Col span={18}><Preview theme={{
+            />
+        </Col>
+        <Col span={18}><Preview
+            theme={{
                 token: {
                     colorPrimary: darken ? darkPrimary : lightPrimary,
                     colorBgBase: darken ? darkNeutral : lightNeutral
@@ -58,14 +60,14 @@ const Index = () => {
                 components: {
                     Menu: {
                         itemBg: darken ? darkPrimary : lightPrimary,
-                        itemColor: "#FFFFFF",
-                        itemHoverColor: "#FFFFFF",
-                        horizontalItemSelectedColor: "#FFFFFF",
+                        itemColor: determineWhiteOrBlack(darken ? darkPrimary : lightPrimary),
+                        itemHoverColor: determineWhiteOrBlack(darken ? darkPrimary : lightPrimary),
+                        // horizontalItemSelectedColor: determineWhiteOrBlack(darken ? darkPrimary : lightPrimary),
                     }
                 },
                 algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
             }} />
-            </Col>
-        </Row>
+        </Col>
+    </Row>
 }
 export default ThemePage;

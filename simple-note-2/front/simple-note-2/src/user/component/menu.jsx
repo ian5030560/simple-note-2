@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import { Tree, Menu, theme } from "antd";
 import { createIndiviualNode } from "./node";
+import { determineWhiteOrBlack } from "../../color/color";
 
 /**
  * 
@@ -178,7 +179,7 @@ const FileMenu = ({
         treeData={rootData}
         rootStyle={{
             backgroundColor: token.colorPrimary,
-            color: "white"
+            // color: determineWhiteOrBlack(token.colorPrimary)
         }}
         onSelect={onSelect}
     />
