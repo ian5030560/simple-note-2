@@ -9,7 +9,7 @@ import {
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BoxArrowInRight } from "react-bootstrap-icons";
 import { ThemeMenu, FileMenu } from "./menu";
-import { determineWhiteOrBlack } from "../../color/color";
+import { determineWhiteOrBlack } from "../../util/color";
 
 const { Title } = Typography;
 

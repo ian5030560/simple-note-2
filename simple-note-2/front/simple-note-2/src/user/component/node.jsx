@@ -1,7 +1,7 @@
 import React, {useState, useRef} from "react";
 import {Modal, Input, Flex, Typography, theme} from "antd";
 import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
-import { determineWhiteOrBlack } from "../../color/color";
+import { determineWhiteOrBlack } from "../../util/color";
 
 const {Text} = Typography;
 

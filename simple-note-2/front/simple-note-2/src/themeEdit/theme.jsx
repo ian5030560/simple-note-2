@@ -3,7 +3,7 @@ import SideBar from "./component/sidebar";
 import { Row, Col, ConfigProvider, theme } from "antd";
 import Preview from "./component/preview";
 import { BulbButton } from "../welcome/welcome";
-import { determineWhiteOrBlack } from "../color/color";
+import { determineWhiteOrBlack } from "../util/color";
 
 const ThemePage = () => {
 

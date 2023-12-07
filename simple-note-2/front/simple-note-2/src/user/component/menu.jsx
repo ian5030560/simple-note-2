@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Tree, Menu, theme } from "antd";
 import { createIndiviualNode } from "./node";
-import { determineWhiteOrBlack } from "../../color/color";
+import { determineWhiteOrBlack } from "../../util/color";
 
 /**
  * 
