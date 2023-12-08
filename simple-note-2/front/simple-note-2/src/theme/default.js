@@ -10,6 +10,10 @@ const defaultTheme = (dark) => {
                 itemColor: "#FFFFFF",
                 itemHoverColor: "#FFFFFF",
                 horizontalItemSelectedColor: "#FFFFFF",
+            },
+
+            Tree: {
+                nodeSelectedBg: "#FFFFFF"
             }
         }
     }

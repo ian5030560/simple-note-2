@@ -8,7 +8,7 @@ const NoteImage = () => <Image src={Note} alt="" width={64} height={64} preview=
 const Brand = () => {
     return <Flex align="center" gap="small">
         <NoteImage/>
-        <Title level={2} style={{fontFamily: "monospace", color: "#FFFFFF"}} italic>Simple Note 2</Title>
+        <Title level={2} style={{fontFamily: "monospace", color: "#FFFFFF"}}>Simple Note 2</Title>
     </Flex>
 }
 

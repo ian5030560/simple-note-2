@@ -81,7 +81,7 @@ class SigninView(APIView):
                         print(
                             "register:",
                             db.insert_into_User_Register_Data(
-                                username, password, email
+                                username, email, password
                             ),
                         )
                         return Response(status=status.HTTP_201_CREATED)

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Col, Row, Flex, ConfigProvider, theme, Typography, Modal, notification } from "antd";
 import SideBar from "./component/sidebar";
 import ToolBar from "./component/toolbar";
-import Editor from "./component/editor/editor";
+import Editor from "./component/edit/editor";
 import defaultTheme from "../theme/default";
 import changeEditorStyle from "./change";
 import { useNavigate, useParams } from "react-router-dom";
-import postData from "../postMethod/post";
+import postData from "../util/post";
 
 const { Text } = Typography;
 
@@ -118,13 +118,14 @@ const UserPage = () => {
 
 }
 
-const Index = ({ onThemeClick, onLogout }) => {
+export const Index = ({ onThemeClick, onLogout, rootstyle }) => {
 
     const { token } = theme.useToken();
 
     return <Row style={{
         minHeight: "100%",
-        backgroundColor: token.colorBgBase
+        backgroundColor: token.colorBgBase,
+        ...rootstyle,
     }}>
         <Col
             span={4}

@@ -23,7 +23,7 @@ const Header = ({ backgroundColor, onIntroClick, onAuthClick }) => {
     </Flex>
 }
 
-const BulbButton = ({ lighten, onClick }) => {
+export const BulbButton = ({ lighten, onClick }) => {
 
     return <FloatButton icon={lighten ? <AlertFilled /> : <AlertOutlined />} onClick={onClick} />
 }

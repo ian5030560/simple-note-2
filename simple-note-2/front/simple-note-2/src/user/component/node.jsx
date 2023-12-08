@@ -1,12 +1,15 @@
 import React, {useState, useRef} from "react";
-import {Modal, Input, Flex, Typography} from "antd";
+import {Modal, Input, Flex, Typography, theme} from "antd";
 import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
+import { determineWhiteOrBlack } from "../../util/color";
 
 const {Text} = Typography;
 
 const ToolLine = ({ nodeKey, onDelete, onAdd, root }) => {
+    
+    const {token} = theme.useToken();
 
-    return <Flex style={{ color: "white" }}>
+    return <Flex style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>
         {!root && <DeleteOutlined
             onClick={(e) => {
                 e.stopPropagation();
@@ -23,6 +26,7 @@ const ToolLine = ({ nodeKey, onDelete, onAdd, root }) => {
     </Flex>
 }
 
+// eslint-disable-next-line no-unused-vars
 const NodeProp = {
     text: "",
     nodeKey: "",
@@ -50,10 +54,11 @@ const Node = (prop) => {
 
     const [openAdd, setOpenAdd] = useState(false);
     const [openDelete, setOpenDelte] = useState(false);
+    const {token} = theme.useToken();
 
     return <>
         <Flex gap={"large"}>
-            <Text ellipsis style={{ color: "white" }}>{prop.text}</Text>
+            <Text ellipsis style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>{prop.text}</Text>
             <ToolLine
                 nodeKey={prop.nodeKey}
                 onAdd={() => setOpenAdd(true)}
