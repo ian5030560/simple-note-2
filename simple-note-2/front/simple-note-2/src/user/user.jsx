@@ -136,7 +136,7 @@ export const Index = ({ onThemeClick, onLogout, rootstyle }) => {
         </Col>
         <Col span={20}>
             <Flex style={{ width: "100%" }} vertical>
-                <ToolBar onThemeClick={onThemeClick} />
+                {/* <ToolBar onThemeClick={onThemeClick} /> */}
                 <Editor />
             </Flex>
         </Col>

@@ -13,6 +13,7 @@ export const assignIdRecursively = (node) => {
 };
 
 export const withId = (editor) => {
+
     const { apply } = editor;
 
     editor.apply = (operation) => {
