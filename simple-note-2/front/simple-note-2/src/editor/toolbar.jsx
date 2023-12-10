@@ -6,7 +6,6 @@ import {
     ColorPicker,
     InputNumber,
     Select,
-    Radio,
     Flex
 } from "antd";
 import {
@@ -21,9 +20,9 @@ import {
     OrderedListOutlined,
     UnorderedListOutlined
 } from "@ant-design/icons";
-import MarkHelper from "../helper/mark";
+import MarkHelper from "./mark/helper";
 import { useSlate } from "slate-react";
-import {AlignHelper} from "../helper/block";
+import {AlignHelper, OrderHelper} from "./paragraph/helper";
 
 const Toolbar = () => {
 
@@ -110,7 +109,7 @@ const Index = () => {
             ]}
 
             onClick={(key) => MarkHelper.toggleMark(editor, key)}
-            // onSelect={(key) => MarkHelper.isActive(editor, key)}
+            onSelect={(key) => MarkHelper.isActive(editor, key)}
         />
 
         <ToolDivider />
@@ -137,10 +136,21 @@ const Index = () => {
 
         <ToolDivider />
 
-        <Radio.Group buttonStyle="solid">
-            <Radio.Button value={"ordered"}><OrderedListOutlined /></Radio.Button>
-            <Radio.Button value={"unordered"}><UnorderedListOutlined /></Radio.Button>
-        </Radio.Group>
+        <OptionGroup
+            options={[
+                {
+                    key: "ordered",
+                    icon: <OrderedListOutlined />
+                },
+                {
+                    key: "unordered",
+                    icon: <UnorderedListOutlined />
+                }
+            ]}
+
+            onClick={(key) => OrderHelper.toggleBlock(editor, key)}
+            onSelect={(key) => OrderHelper.isActive(editor, key)}
+        />
 
         <ToolDivider />
 

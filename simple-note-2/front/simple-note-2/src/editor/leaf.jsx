@@ -1,5 +1,5 @@
 import React from "react";
-import MARK from "../helper/component/mark";
+import MARK from "./mark/helper";
 
 const LEAF = {
     ...MARK,

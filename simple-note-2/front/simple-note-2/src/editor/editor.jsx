@@ -1,14 +1,14 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { createEditor, Transforms } from "slate";
+import { createEditor, Transforms, Editor as SlateEditor } from "slate";
 import { Editable, Slate, withReact } from "slate-react";
-import { ELEMENTS } from "./tools";
+import { ELEMENTS } from "./element";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { getId, withId } from "./plugin";
-import { Sortable } from "./element/sortable";
+import { Sortable } from "./sortable/sortable";
 import Overlay from "./overlay";
-import Toolbar from "./tool/toolbar";
-import Leaf from "./leaf/leaf";
+import Toolbar from "./toolbar";
+import Leaf from "./leaf";
 
 const DATA = [
     {
@@ -17,6 +17,20 @@ const DATA = [
         children: [{ text: "" }],
     }
 ]
+
+/**
+ * 
+ * @param {SlateEditor} editor 
+ */
+function nextLine(editor) {
+    Transforms.insertText(
+        editor,
+        "\n",
+        {
+            at: editor.selection
+        }
+    );
+}
 
 const Editor = ({ initlizeData }) => {
     const [editor] = useState(withId(withReact(createEditor())));
@@ -67,6 +81,10 @@ const Editor = ({ initlizeData }) => {
                 <Editable
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
+                    onKeyDown={(e) => {
+                        if(!e.shiftKey) return;
+                        if (e.key === "Enter") nextLine(editor); e.preventDefault();
+                    }}
                     spellCheck
                     autoFocus
                 />
