@@ -23,6 +23,17 @@ export const Sortable = (props) => {
         <div ref={setNodeRef} style={style} {...attributes}>
             <button
                 contentEditable={false}
+                type="button"
+                style={{
+                    background: "none",
+                    border: "none",
+                    userSelect: "none",
+                }}
+            >
+            +
+            </button>
+            <button
+                contentEditable={false}
                 {...listeners}
                 type="button"
                 style={{
@@ -39,8 +50,4 @@ export const Sortable = (props) => {
 
 }
 
-const DefaultElement = ({ children }) => {
-    return <p style={{ width: "100%" }}>{children}</p>
-}
-
-export default DefaultElement;
+export default Sortable;

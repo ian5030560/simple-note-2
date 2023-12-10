@@ -1,7 +1,7 @@
-import DefaultElement from "./element/default";
+import ParagraphElement from "./element/paragraph";
 // import ImageElement from "./element/image";
 
 export const ELEMENTS = {
-    "paragraph": DefaultElement,
+    "paragraph": ParagraphElement,
     // "image": ImageElement,
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Col, Row, Flex, ConfigProvider, theme, Typography, Modal, notification } from "antd";
 import SideBar from "./component/sidebar";
 import ToolBar from "./component/toolbar";
-import Editor from "./component/edit/editor";
+import Editor from "../editor/editor";
 import defaultTheme from "../theme/default";
 import changeEditorStyle from "./change";
 import { useNavigate, useParams } from "react-router-dom";
@@ -34,18 +34,18 @@ const UserPage = () => {
 
     const [darken, setDarken] = useState(false);
     const { username } = useParams();
-    const [logIn, setLogIn] = useState(false);
+    const [logIn, setLogIn] = useState(true); // 改false
     const [open, setOpen] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        checkUserLogin(username)
-            .then(value => {
-                if (!value) navigate("/");
-                setLogIn(value);
-            })
-    }, [navigate, username]);
+    // useEffect(() => {
+    //     checkUserLogin(username)
+    //         .then(value => {
+    //             if (!value) navigate("/");
+    //             setLogIn(value);
+    //         })
+    // }, [navigate, username]);
 
     useEffect(() => {
         changeEditorStyle(darken);
@@ -118,7 +118,7 @@ const UserPage = () => {
 
 }
 
-export const Index = ({ onThemeClick, onLogout, rootstyle }) => {
+export const Index = ({ onLogout, rootstyle }) => {
 
     const { token } = theme.useToken();
 

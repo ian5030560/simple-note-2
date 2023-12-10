@@ -1,11 +1,11 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { createEditor, Transforms, Editor as SlateEditor } from "slate";
+import { createEditor, Transforms } from "slate";
 import { Editable, Slate, withReact } from "slate-react";
 import { ELEMENTS } from "./tools";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { getId, withId } from "./plugin";
-import { Sortable } from "./element/default";
+import { Sortable } from "./element/sortable";
 import Overlay from "./overlay";
 import Toolbar from "./tool/toolbar";
 import Leaf from "./leaf/leaf";
@@ -67,6 +67,8 @@ const Editor = ({ initlizeData }) => {
                 <Editable
                     renderElement={renderElement}
                     renderLeaf={renderLeaf}
+                    spellCheck
+                    autoFocus
                 />
             </SortableContext>
             {/* <DragOverlay dropAnimation={null}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React from "react";
 import {
     Affix,
     Button,
@@ -15,15 +15,15 @@ import {
     BoldOutlined,
     ItalicOutlined,
     UnderlineOutlined,
-    StrikethroughOutlined,
     AlignLeftOutlined,
     AlignCenterOutlined,
     AlignRightOutlined,
     OrderedListOutlined,
     UnorderedListOutlined
 } from "@ant-design/icons";
-import { Format } from "../helper/helper";
+import MarkHelper from "../helper/mark";
 import { useSlate } from "slate-react";
+import {AlignHelper} from "../helper/block";
 
 const Toolbar = () => {
 
@@ -51,7 +51,7 @@ const ToolDivider = () => <span
     }} />
 </span>
 
-const OptionGroup = ({ options, vertical, editor }) => {
+const OptionGroup = ({ options, vertical, onClick, onSelect }) => {
 
     return <Flex vertical={vertical} gap={"small"}>
         {
@@ -59,13 +59,10 @@ const OptionGroup = ({ options, vertical, editor }) => {
 
                 return <Button
                     key={option.key}
-                    type={Format.Helper.isActive(editor, option.key) ? "primary" : "text"}
+                    type={onSelect?.(option.key) ? "primary" : "text"}
                     icon={option.icon}
                     style={option.style}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        Format.Helper.toggleMark(editor, option.key)
-                    }}>
+                    onClick={() => onClick?.(option.key)}>
                     {option.label}
                 </Button>
             })
@@ -97,7 +94,6 @@ const Index = () => {
         <ToolDivider />
 
         <OptionGroup
-            editor={editor}
             options={[
                 {
                     key: "bold",
@@ -110,20 +106,40 @@ const Index = () => {
                 {
                     key: "underline",
                     icon: <UnderlineOutlined />
-                },
-                {
-                    key: "strikethrough",
-                    icon: <StrikethroughOutlined />
                 }
             ]}
+
+            onClick={(key) => MarkHelper.toggleMark(editor, key)}
+            // onSelect={(key) => MarkHelper.isActive(editor, key)}
         />
 
         <ToolDivider />
 
-        <Radio.Group buttonStyle="solid" style={{ borderRadius: "0px" }}>
-            <Radio.Button value={"left"}>{<AlignLeftOutlined />}</Radio.Button>
-            <Radio.Button value={"center"}>{<AlignCenterOutlined />}</Radio.Button>
-            <Radio.Button value={"right"}>{<AlignRightOutlined />}</Radio.Button>
+        <OptionGroup
+            options={[
+                {
+                    key: "left",
+                    icon: <AlignLeftOutlined />
+                },
+                {
+                    key: "center",
+                    icon: <AlignCenterOutlined />
+                },
+                {
+                    key: "right",
+                    icon: <AlignRightOutlined />
+                }
+            ]}
+
+            onClick={(key) => AlignHelper.toggleBlock(editor, key)}
+            onSelect={(key) => AlignHelper.isActive(editor, key)}
+        />
+
+        <ToolDivider />
+
+        <Radio.Group buttonStyle="solid">
+            <Radio.Button value={"ordered"}><OrderedListOutlined /></Radio.Button>
+            <Radio.Button value={"unordered"}><UnorderedListOutlined /></Radio.Button>
         </Radio.Group>
 
         <ToolDivider />
@@ -136,14 +152,6 @@ const Index = () => {
         ]} />
         <InputNumber defaultValue={12} />
         <ColorPicker defaultValue={"black"} />
-
-        <ToolDivider />
-
-        <Radio.Group buttonStyle="solid">
-            <Radio.Button value={"ordered"}><OrderedListOutlined /></Radio.Button>
-            <Radio.Button value={"unordered"}><UnorderedListOutlined /></Radio.Button>
-        </Radio.Group>
-
     </div>
 }
 

@@ -17,7 +17,7 @@ const LogIn = ({ onChange }) => {
       onSwitch={onChange}
       success={{
         title: "登入成功",
-        subtitle: "登入成功請返回主頁",
+        subtitle: "登入成功",
         onSuccessClose: () => navigate(`user/${form.getFieldValue("username")}`),
       }}
       failure={{
