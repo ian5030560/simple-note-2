@@ -22,7 +22,8 @@ import {
 } from "@ant-design/icons";
 import MarkHelper from "./mark/helper";
 import { useSlate } from "slate-react";
-import {AlignHelper, OrderHelper} from "./paragraph/helper";
+import {AlignHelper} from "./paragraph/helper";
+import { OrderHelper } from "./list/helper";
 
 const Toolbar = () => {
 
