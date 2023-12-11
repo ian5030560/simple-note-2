@@ -1,6 +1,6 @@
 import React from "react"
 
-const ParagraphElement = ({ children, element }) => {
+const Paragraph = ({ children, element }) => {
 
     return <p style={{ 
         width: "100%",
@@ -8,4 +8,4 @@ const ParagraphElement = ({ children, element }) => {
     }}>{children}</p>
 }
 
-export default ParagraphElement;
+export default Paragraph;

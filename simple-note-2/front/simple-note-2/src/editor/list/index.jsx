@@ -3,6 +3,7 @@ import React from "react";
 const UnorderedList = ({children}) => {
     const style = {
         width: "100%",
+        // paddingLeft: "10px",
     }
 
     return <ul style={style}>{children}</ul>
@@ -11,13 +12,19 @@ const UnorderedList = ({children}) => {
 const OrderedList = ({children}) => {
     const style = {
         width: "100%",
+        // paddingLeft: "10px"
     }
 
     return <ol style={style}>{children}</ol>
 }
 
-const ListItem = ({children}) => {
-    return <li>{children}</li>
+const ListItem = ({attributes, element, children}) => {
+
+    const style = {
+        width: "100%",
+        textAlign: element.align ? element.align: "start",
+    }
+    return <li style={style} {...attributes}>{children}</li>
 }
 
 const List = {

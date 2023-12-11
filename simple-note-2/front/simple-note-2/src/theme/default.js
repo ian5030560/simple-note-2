@@ -1,3 +1,5 @@
+import { determineWhiteOrBlack } from "../util/color";
+
 const defaultTheme = (dark) => {
     return {
         token: {
@@ -7,7 +9,7 @@ const defaultTheme = (dark) => {
         components: {
             Menu: {
                 itemBg: "#8696A7",
-                itemColor: "#FFFFFF",
+                itemColor: determineWhiteOrBlack("#8696A7"),
                 itemHoverColor: "#FFFFFF",
                 horizontalItemSelectedColor: "#FFFFFF",
             },

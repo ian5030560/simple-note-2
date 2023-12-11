@@ -22,7 +22,7 @@ export const AlignHelper = {
 
     toggleBlock(editor, type) {
         const isActive = this.isActive(editor, type);
-        console.log(isActive);
+    
         Transforms.setNodes(
             editor,
             { align: isActive ? undefined : type },

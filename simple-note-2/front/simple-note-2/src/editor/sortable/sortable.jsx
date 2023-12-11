@@ -16,7 +16,8 @@ export const Sortable = (props) => {
     const style = {
         transform: CSS.Transform.toString(transform),
         transition: null,
-        display: "flex"
+        display: "flex",
+        outline: "none",
     }
 
     return <div {...props.attributes}>
@@ -44,7 +45,7 @@ export const Sortable = (props) => {
             >
                 ⠿
             </button>
-            {props.renderContent(props)}
+            {props.renderContent ? props.renderContent(props): props.children.text}
         </div>
     </div>
 

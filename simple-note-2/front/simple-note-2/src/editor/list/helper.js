@@ -1,7 +1,7 @@
 import { Transforms } from "slate";
 import { Editor, Element } from "slate";
 
-export const OrderHelper = {
+const ListHelper = {
 
     name: "type",
 
@@ -10,7 +10,7 @@ export const OrderHelper = {
 
         if (!selection) return false;
 
-        const match = Array.from(Editor.nodes(
+        const [match] = Array.from(Editor.nodes(
             editor,
             {
                 at: Editor.unhangRange(editor, selection),
@@ -18,35 +18,38 @@ export const OrderHelper = {
             }
         ))
 
-        return match.length === 1;
+        return !!match;
     },
 
+    /**
+     * 
+     * @param {Editor} editor 
+     * @param {string} type 
+     */
     toggleBlock(editor, type) {
         const isActive = this.isActive(editor, type);
         const LIST = ["ordered", "unordered"];
-        const isList = LIST.includes(type);
 
         Transforms.unwrapNodes(
             editor,
             {
-                match: n => {
-
-                    return !Editor.isEditor(n) && Element.isElement(n) && isList
-                },
+                match: n => LIST.includes(n.type),
                 split: true
             }
         )
-        
+
         Transforms.setNodes(
             editor,
-            {
-                type: isActive ? "paragraph" : isList ? "list-item" : type,
-            }
+            {type: isActive ? "paragraph" : LIST.includes(type) ? "list-item": type}
         )
 
-        if (!isActive && isList) {
-            const block = { type: type, children: [] }
-            Transforms.wrapNodes(editor, block)
+        if(!isActive && LIST.includes(type)){
+            Transforms.wrapNodes(
+                editor,
+                {type: type, children: []}
+            )
         }
     }
 }
+
+export default ListHelper;

@@ -1,14 +1,15 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { createEditor, Transforms, Editor as SlateEditor } from "slate";
+import { createEditor, Transforms } from "slate";
 import { Editable, Slate, withReact } from "slate-react";
 import { ELEMENTS } from "./element";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { getId, withId } from "./plugin";
+import { getId, withId } from "./withId";
 import { Sortable } from "./sortable/sortable";
 import Overlay from "./overlay";
-import Toolbar from "./toolbar";
+import Toolbar from "./component/toolbar";
 import Leaf from "./leaf";
+import withList from "./list/withList";
 
 const DATA = [
     {
@@ -26,9 +27,6 @@ function nextLine(editor) {
     Transforms.insertText(
         editor,
         "\n",
-        {
-            at: editor.selection
-        }
     );
 }
 
@@ -37,7 +35,13 @@ const Editor = ({ initlizeData }) => {
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
 
-    const renderElement = useCallback(props => <Sortable {...props} renderContent={ELEMENTS[props.element.type]} />, [])
+    const renderElement = useCallback(props => {
+        if(props.element.type === "list-item"){
+            return ELEMENTS[props.element.type](props);
+        }
+
+        return <Sortable {...props} renderContent={ELEMENTS[props.element.type]} />
+    }, [])
 
     const renderLeaf = useCallback(props => {
         return <Leaf {...props} />
@@ -85,6 +89,8 @@ const Editor = ({ initlizeData }) => {
                         if(!e.shiftKey) return;
                         if (e.key === "Enter") nextLine(editor); e.preventDefault();
                     }}
+                    style={{outline: "none", border: "none"}}
+                    disableDefaultStyles
                     spellCheck
                     autoFocus
                 />

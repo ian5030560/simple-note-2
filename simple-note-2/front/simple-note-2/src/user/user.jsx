@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Col, Row, Flex, ConfigProvider, theme, Typography, Modal, notification } from "antd";
 import SideBar from "./component/sidebar";
-import ToolBar from "./component/toolbar";
 import Editor from "../editor/editor";
 import defaultTheme from "../theme/default";
-import changeEditorStyle from "./change";
 import { useNavigate, useParams } from "react-router-dom";
 import postData from "../util/post";
 
@@ -46,25 +44,6 @@ const UserPage = () => {
     //             setLogIn(value);
     //         })
     // }, [navigate, username]);
-
-    useEffect(() => {
-        changeEditorStyle(darken);
-    }, [darken]);
-
-    useEffect(() => {
-
-        const listener = () => {
-            changeEditorStyle(darken);
-        }
-        window.onkeydown = listener;
-        window.onclick = listener;
-
-        return () => {
-            window.removeEventListener("keydown", listener);
-            window.removeEventListener("click", listener);
-        }
-
-    }, [darken]);
 
     const handleLogoutOk = () => {
         setOpen(false);
