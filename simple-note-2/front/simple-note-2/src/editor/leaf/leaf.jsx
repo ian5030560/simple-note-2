@@ -1,16 +1,11 @@
 import React from "react";
-import MARK from "./mark/index";
 
-const LEAF = {
-    ...MARK,
-}
-
-const Leaf = ({attributes, children, leaf}) => {
+const Leaf = ({attributes, children, leaf, LEAF}) => {
     const attrs = Object.keys(leaf).filter(key => !(key === "id" || key === "text"));
     
     for(let attr of attrs){
         if(leaf[attr]){
-            children = LEAF[attr]({children})
+            children = LEAF[attr]({leaf, children})
         }
     }
 

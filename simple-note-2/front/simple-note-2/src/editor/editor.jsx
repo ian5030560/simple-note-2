@@ -8,8 +8,10 @@ import { getId, withId } from "./withId";
 import { Sortable } from "./sortable/sortable";
 import Overlay from "./overlay";
 import Toolbar from "./component/toolbar";
-import Leaf from "./leaf";
+import Leaf from "./leaf/leaf";
+import LEAF from "./leaf";
 import withList from "./list/withList";
+import { withHistory } from "slate-history";
 
 const DATA = [
     {
@@ -31,7 +33,7 @@ function nextLine(editor) {
 }
 
 const Editor = ({ initlizeData }) => {
-    const [editor] = useState(withId(withReact(createEditor())));
+    const [editor] = useState(withId(withHistory(withReact(createEditor()))));
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
 
@@ -44,7 +46,7 @@ const Editor = ({ initlizeData }) => {
     }, [])
 
     const renderLeaf = useCallback(props => {
-        return <Leaf {...props} />
+        return <Leaf {...props} LEAF={LEAF}/>
     }, [])
 
     const items = useMemo(() => {
