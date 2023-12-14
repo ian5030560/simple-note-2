@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import {
     Affix,
     Button,
@@ -11,17 +11,18 @@ import {
     UndoOutlined,
     RedoOutlined,
     FontColorsOutlined,
-    HighlightOutlined
+    HighlightOutlined,
+    LinkOutlined
 } from "@ant-design/icons";
-import MarkHelper from "../mark/helper";
+import MarkHelper from "../node/mark/helper";
 import { useSlate } from "slate-react";
-import { AlignHelper } from "../paragraph/helper";
-import ListHelper from "../list/helper";
-import { ALIGN, FONT_FAMILY, LIST, MARKDOWN, SIZE, TEXT } from "./type";
+import { AlignHelper } from "../node/paragraph/helper";
+import ListHelper from "../node/list/helper";
+import { ALIGN, FONT_FAMILY, LIST, MARKDOWN, TEXT } from "./list";
 import OptionGroup from "./option";
-import TitleHelper from "../tiitle/helper";
-import { BgColorHelper, ColorHelper, rgbToHex } from "../color/helper";
-import { FamilyHelper, SizeHelper } from "../font/helper";
+import TitleHelper from "../node/tiitle/helper";
+import { BgColorHelper, ColorHelper, rgbToHex } from "../node/color/helper";
+import { FamilyHelper, SizeHelper } from "../node/font/helper";
 
 const Toolbar = () => {
 
@@ -70,9 +71,9 @@ const Index = () => {
         style={{
             padding: "3px",
             backgroundColor: token.colorBgBase,
-            boxShadow: "2px 2px 2px black",
+            boxShadow: "0px 1px 16px 0px",
             display: "flex",
-            borderRadius: "0px 0px 8px 8px"
+            borderRadius: "0px 0px 8px 8px",
         }}>
 
         <Button type="text" icon={<UndoOutlined />} />
@@ -157,6 +158,10 @@ const Index = () => {
             popupMatchSelectWidth={false}
             onChange={value => FamilyHelper.changeFamily(editor, value)}
         />
+
+        <ToolDivider/>
+
+        <Button type="text" icon={<LinkOutlined />}/>
     </div>
 }
 

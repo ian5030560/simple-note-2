@@ -5,12 +5,13 @@ import { ELEMENTS } from "./element";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { getId, withId } from "./withId";
-import { Sortable } from "./sortable/sortable";
+import Default from "./default";
 import Overlay from "./overlay";
 import Toolbar from "./component/toolbar";
-import Leaf from "./leaf/leaf";
+import Leaf from "./node/leaf/leaf";
 import LEAF from "./leaf";
-import withList from "./list/withList";
+import withList from "./node/list/withList";
+import withImage from "./node/image/withImage";
 import { withHistory } from "slate-history";
 
 const DATA = [
@@ -33,16 +34,21 @@ function nextLine(editor) {
 }
 
 const Editor = ({ initlizeData }) => {
-    const [editor] = useState(withId(withHistory(withReact(createEditor()))));
+    const [editor] = useState(withImage(withId(withHistory(withReact(createEditor())))));
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
-
+    
+    const {onChange} = editor;
+    editor.onChange = (operation) => {
+        console.log(editor.children);
+        return onChange(operation);
+    }
     const renderElement = useCallback(props => {
         if(props.element.type === "list-item"){
             return ELEMENTS[props.element.type](props);
         }
 
-        return <Sortable {...props} renderContent={ELEMENTS[props.element.type]} />
+        return <Default {...props} renderContent={ELEMENTS[props.element.type]} />
     }, [])
 
     const renderLeaf = useCallback(props => {
@@ -84,8 +90,7 @@ const Editor = ({ initlizeData }) => {
             onDragEnd={handleDragEnd}
         >
             <SortableContext items={items} strategy={verticalListSortingStrategy}>
-                <Editable
-                    renderElement={renderElement}
+                <Editable                    renderElement={renderElement}
                     renderLeaf={renderLeaf}
                     onKeyDown={(e) => {
                         if(!e.shiftKey) return;

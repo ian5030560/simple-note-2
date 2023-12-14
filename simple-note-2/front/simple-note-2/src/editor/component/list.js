@@ -84,7 +84,7 @@ const LIST = [
 
 const {Text} = Typography;
 const FontLabel = ({family}) => {
-    return <Text style={{fontFamily: family}}>{family}</Text>
+    return <Text style={{fontFamily: family === "default" ? "initial" : family}}>{family}</Text>
 }
 
 const FONT_FAMILY = [
@@ -198,13 +198,13 @@ const FONT_FAMILY = [
     },
 ]
 
-const SIZE = [];
-for(let i = 8; i <= 72; i += 2){
-    SIZE.push({
-        value: `${i}`,
-        label: `${i}`
-    })
-}
+// const SIZE = [];
+// for(let i = 8; i <= 72; i += 2){
+//     SIZE.push({
+//         value: `${i}`,
+//         label: `${i}`
+//     })
+// }
 
 export {
     TEXT, 
@@ -212,5 +212,5 @@ export {
     ALIGN,
     LIST,
     FONT_FAMILY,
-    SIZE
+    // SIZE
 }
