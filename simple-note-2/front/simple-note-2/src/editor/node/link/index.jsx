@@ -1,11 +1,7 @@
 import React from "react";
 
-const Link = ({children, leaf}) => {
-    return <span><a href={leaf.link}>{children}</a></span>
+const Link = ({children, element}) => {
+    return <a href={element.link}>{children}</a>;
 }
 
-const LINK = {
-    link: Link
-}
-
-export default LINK;
+export default Link;

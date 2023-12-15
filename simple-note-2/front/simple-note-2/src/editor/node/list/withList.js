@@ -8,21 +8,11 @@ const LIST = ["ordered", "unordered"];
  */
 const withList = (editor) => {
 
-    const {insertBreak} = editor;
-    
-    editor.insertBreak = () => {
-        return insertBreak();
-    }
+    const {isInline} = editor;
 
-    const isList = () => {
-        const match = Array.from(editor.nodes(
-            {
-                match: n => Element.isElement(n)
-            }
-        ));
-
-        return LIST.includes(match[0][0].type);
-    };
+    editor.isInline = (value) =>{
+        return value.type === "list-item" ? true: isInline(value);
+    } 
 
     return editor;
 }

@@ -1,18 +1,17 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { createEditor, Transforms } from "slate";
 import { Editable, Slate, withReact } from "slate-react";
-import { ELEMENTS } from "./element";
+import { ELEMENTS, INLINE_ELEMENTS } from "./element";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { getId, withId } from "./withId";
-import Default from "./default";
+import { getId } from "./withId";
+import Default from "./node/default/index";
 import Overlay from "./overlay";
 import Toolbar from "./component/toolbar";
 import Leaf from "./node/leaf/leaf";
 import LEAF from "./leaf";
-import withList from "./node/list/withList";
-import withImage from "./node/image/withImage";
-import { withHistory } from "slate-history";
+import withPlugin from "./plugin";
+import handleKeyEvent from "./keyEvent";
 
 const DATA = [
     {
@@ -22,34 +21,17 @@ const DATA = [
     }
 ]
 
-/**
- * 
- * @param {SlateEditor} editor 
- */
-function nextLine(editor) {
-    Transforms.insertText(
-        editor,
-        "\n",
-    );
-}
-
 const Editor = ({ initlizeData }) => {
-    const [editor] = useState(withImage(withId(withHistory(withReact(createEditor())))));
+    const [editor] = useState(withPlugin(withReact(createEditor())));
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
     
-    const {onChange} = editor;
-    editor.onChange = (operation) => {
-        console.log(editor.children);
-        return onChange(operation);
-    }
     const renderElement = useCallback(props => {
-        if(props.element.type === "list-item"){
-            return ELEMENTS[props.element.type](props);
+        if(editor.isInline(props.element)){
+            return INLINE_ELEMENTS[props.element.type](props);
         }
-
         return <Default {...props} renderContent={ELEMENTS[props.element.type]} />
-    }, [])
+    }, [editor])
 
     const renderLeaf = useCallback(props => {
         return <Leaf {...props} LEAF={LEAF}/>
@@ -92,19 +74,16 @@ const Editor = ({ initlizeData }) => {
             <SortableContext items={items} strategy={verticalListSortingStrategy}>
                 <Editable                    renderElement={renderElement}
                     renderLeaf={renderLeaf}
-                    onKeyDown={(e) => {
-                        if(!e.shiftKey) return;
-                        if (e.key === "Enter") nextLine(editor); e.preventDefault();
-                    }}
+                    onKeyDown={(e) => handleKeyEvent(e, editor)}
                     style={{outline: "none", border: "none"}}
                     disableDefaultStyles
                     spellCheck
                     autoFocus
                 />
             </SortableContext>
-            {/* <DragOverlay dropAnimation={null}>
-                {active && <Overlay/>}
-            </DragOverlay> */}
+            {/* <DragOverlay dropAnimation={null} adjustScale={false}> */}
+                {/* {active && <Overlay/>} */}
+            {/* </DragOverlay> */}
         </DndContext>
     </Slate>
 }

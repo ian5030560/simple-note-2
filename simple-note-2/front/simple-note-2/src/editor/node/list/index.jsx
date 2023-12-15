@@ -3,7 +3,6 @@ import React from "react";
 const UnorderedList = ({children}) => {
     const style = {
         width: "100%",
-        // paddingLeft: "10px",
     }
 
     return <ul style={style}>{children}</ul>
@@ -12,7 +11,6 @@ const UnorderedList = ({children}) => {
 const OrderedList = ({children}) => {
     const style = {
         width: "100%",
-        // paddingLeft: "10px"
     }
 
     return <ol style={style}>{children}</ol>

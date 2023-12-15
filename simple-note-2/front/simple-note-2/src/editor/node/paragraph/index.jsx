@@ -8,4 +8,8 @@ const Paragraph = ({ children, element }) => {
     }}>{children}</p>
 }
 
+export const NextLine = ({children}) => {
+    return <><br/>{children}</>
+}
+
 export default Paragraph;

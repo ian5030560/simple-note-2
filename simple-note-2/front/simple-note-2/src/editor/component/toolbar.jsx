@@ -23,6 +23,8 @@ import OptionGroup from "./option";
 import TitleHelper from "../node/tiitle/helper";
 import { BgColorHelper, ColorHelper, rgbToHex } from "../node/color/helper";
 import { FamilyHelper, SizeHelper } from "../node/font/helper";
+import LinkHelper from "../node/link/helper";
+import PopupButton from "./popupButton";
 
 const Toolbar = () => {
 
@@ -159,9 +161,21 @@ const Index = () => {
             onChange={value => FamilyHelper.changeFamily(editor, value)}
         />
 
-        <ToolDivider/>
+        <ToolDivider />
 
-        <Button type="text" icon={<LinkOutlined />}/>
+        <PopupButton
+            buttonProp={{
+                icon: <LinkOutlined />,
+                type: "text"
+            }}
+
+            summitButtonProp={{
+                type: "primary",
+                children: "Embed"
+            }}
+
+            onSummit={(value) => LinkHelper.toggleLink(editor, value) }
+        />
     </div>
 }
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import AddMenu from "./addMenu";
-import { TEXT } from "../component/list";
+import { TEXT } from "../../component/list";
 import { Button } from "antd";
 import DefaultHelper from "./helper";
 import { useSlate } from "slate-react";
