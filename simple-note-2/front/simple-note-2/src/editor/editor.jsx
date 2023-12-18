@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { createEditor, Transforms } from "slate";
-import { Editable, Slate, withReact } from "slate-react";
+import { createEditor, Transforms, Text } from "slate";
+import { Editable, Slate } from "slate-react";
 import { ELEMENTS, INLINE_ELEMENTS } from "./element";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
@@ -21,20 +21,21 @@ const DATA = [
     }
 ]
 
-const Editor = ({ initlizeData }) => {
-    const [editor] = useState(withPlugin(withReact(createEditor())));
+const Editor = ({ initlizeData, style }) => {
+    const [editor] = useState(withPlugin(createEditor()));
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
-    
+    const [search, setSearch] = useState("");
+
     const renderElement = useCallback(props => {
-        if(editor.isInline(props.element)){
+        if (editor.isInline(props.element)) {
             return INLINE_ELEMENTS[props.element.type](props);
         }
         return <Default {...props} renderContent={ELEMENTS[props.element.type]} />
     }, [editor])
 
     const renderLeaf = useCallback(props => {
-        return <Leaf {...props} LEAF={LEAF}/>
+        return <Leaf {...props} LEAF={LEAF} />
     }, [])
 
     const items = useMemo(() => {
@@ -61,28 +62,55 @@ const Editor = ({ initlizeData }) => {
         setActive(() => null);
     }
 
+    const decorate = useCallback(([node, path]) => {
+        const ranges = [];
+ 
+        if(search && Text.isText(node)){
+            const {text} = node;
+            const parts = text.split(search);
+            let offset = 0;
+
+            parts.forEach((part, i) => {
+                if (i !== 0) {
+                  ranges.push({
+                    anchor: { path, offset: offset - search.length },
+                    focus: { path, offset },
+                    highlight: true,
+                  })
+                }
+      
+                offset = offset + part.length + search.length
+              })
+            }
+
+            return ranges;
+        
+    }, [search]);
+
     return <Slate
         editor={editor}
         initialValue={value}
         onChange={setValue}
     >
-        <Toolbar />
+        <Toolbar onSearch={setSearch}/>
         <DndContext
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
         >
             <SortableContext items={items} strategy={verticalListSortingStrategy}>
-                <Editable                    renderElement={renderElement}
+                <Editable
+                    renderElement={renderElement}
                     renderLeaf={renderLeaf}
+                    decorate={decorate}
                     onKeyDown={(e) => handleKeyEvent(e, editor)}
-                    style={{outline: "none", border: "none"}}
+                    style={{ outline: "none", border: "none", ...style }}
                     disableDefaultStyles
                     spellCheck
                     autoFocus
                 />
             </SortableContext>
             {/* <DragOverlay dropAnimation={null} adjustScale={false}> */}
-                {/* {active && <Overlay/>} */}
+            {/* {active && <Overlay/>} */}
             {/* </DragOverlay> */}
         </DndContext>
     </Slate>

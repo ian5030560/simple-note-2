@@ -1,24 +1,30 @@
 import { Editor } from "slate";
-import { theme } from "antd";
 import Color from "colorjs.io";
 
 export function rgbToHex(rgb) {
+    
     let color = new Color(rgb);
     return color.toString({format: "hex"});
 }
 
 const ColorHelper = {
-    
+
     /**
      * 
      * @param {Editor} editor 
      * @returns {string}
      */
-    detectColor(editor){
-        const marks = Editor.marks(editor);
-        const colorText = rgbToHex(theme.getDesignToken().colorText);
+    detectColor(editor) {
+        
+        const marks = Editor.marks(editor); 
+        
+        return marks ? marks.color ? marks.color: undefined : undefined;
+    },
 
-        return marks ? marks.color ? marks.color: colorText : colorText;
+    isActive(editor, color){
+        const marks = Editor.marks(editor);
+        
+        return marks.color === color
     },
 
     /**
@@ -27,7 +33,15 @@ const ColorHelper = {
      * @param {string} color 
      */
     changeColor(editor, color){
-        Editor.addMark(editor, "color", color);
+        const isActive = this.isActive(editor, color);
+
+        if(isActive){
+            Editor.removeMark(editor, "color");
+        }
+        else{
+            Editor.addMark(editor, "color", color);
+        }
+        
     }
 }
 
@@ -40,7 +54,13 @@ const BgColorHelper = {
      */
     detectColor(editor){
         const marks = Editor.marks(editor);
-        return marks ? marks.bgColor ? marks.bgColor: "#ffffff50" : "#ffffff50";
+        return marks ? marks.bgColor ? marks.bgColor: undefined : undefined;
+    },
+
+    isActive(editor, color){
+        const marks = Editor.marks(editor);
+        
+        return marks.bgColor === color
     },
 
     /**
@@ -49,7 +69,14 @@ const BgColorHelper = {
      * @param {string} color 
      */
     changeColor(editor, color){
-        Editor.addMark(editor, "bgColor", color);
+        const isActive = this.isActive(editor, color);
+
+        if(isActive){
+            Editor.removeMark(editor, "bgColor");
+        }
+        else{
+            Editor.addMark(editor, "bgColor", color);
+        }
     }
 }
 

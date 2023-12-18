@@ -1,9 +1,8 @@
-import React, { useRef } from "react";
+import React from "react";
 import {
     Affix,
     Button,
     theme,
-    ColorPicker,
     InputNumber,
     Select,
 } from "antd";
@@ -12,7 +11,8 @@ import {
     RedoOutlined,
     FontColorsOutlined,
     HighlightOutlined,
-    LinkOutlined
+    LinkOutlined,
+    SearchOutlined
 } from "@ant-design/icons";
 import MarkHelper from "../node/mark/helper";
 import { useSlate } from "slate-react";
@@ -24,42 +24,46 @@ import TitleHelper from "../node/tiitle/helper";
 import { BgColorHelper, ColorHelper, rgbToHex } from "../node/color/helper";
 import { FamilyHelper, SizeHelper } from "../node/font/helper";
 import LinkHelper from "../node/link/helper";
-import PopupButton from "./popupButton";
+import { PopupButton, ColorButton } from "./button";
 
-const Toolbar = () => {
+const Toolbar = ({ onSearch }) => {
 
     return <Affix
         style={{
             marginBottom: "5px",
             minWidth: "100%",
         }}>
-        <Index />
+        <Index onSearch={onSearch} />
     </Affix>
 }
 
-const ToolDivider = () => <span
-    style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100%",
-        padding: "8px"
-    }}>
-    <div style={{
-        minHeight: "100%",
-        border: "1px solid black"
-    }} />
-</span>
+const ToolDivider = () => {
+
+    const { token } = theme.useToken();
+
+    return <span
+        style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: "100%",
+            padding: "8px"
+        }}>
+        <div style={{
+            minHeight: "100%",
+            border: `1px solid ${token.colorText}`
+        }} />
+    </span>
+}
 
 /**
  * 
  * @param {{editor: Editor}} param0 
  */
-const Index = () => {
+const Index = ({ onSearch }) => {
 
     const { token } = theme.useToken();
     const editor = useSlate();
-    const colorRef = useRef(rgbToHex(token.colorText));
 
     let text = "";
     for (let tool of TEXT) {
@@ -113,38 +117,45 @@ const Index = () => {
 
         <ToolDivider />
 
-        <ColorPicker value={ColorHelper.detectColor(editor)}
-            onChange={value => { ColorHelper.changeColor(editor, value.toHexString()) }}
-            presets={[
-                {
-                    label: 'Recommend',
-                    colors: [
-                        colorRef.current, "red", "yellow", "green", "blue"
-                    ],
-                    defaultOpen: true
-                }
-            ]}
-        >
-            <Button icon={<FontColorsOutlined />} type="text" style={{ color: ColorHelper.detectColor(editor) }} />
-        </ColorPicker>
+        <ColorButton
+            colorPickerProp={{
+                value: ColorHelper.detectColor(editor) ? ColorHelper.detectColor(editor) : token.colorText,
+                presets: [
+                    {
+                        label: 'Recommend',
+                        colors: [
+                            "red", "yellow", "green", "blue", "white"
+                        ],
+                        defaultOpen: true
+                    }
+                ],
+                onChange: value => { ColorHelper.changeColor(editor, value.toHexString()) }
+            }}
+            buttonProp={{
+                icon: <FontColorsOutlined />,
+                style: { color: ColorHelper.detectColor(editor) ? ColorHelper.detectColor(editor) : rgbToHex(token.colorText) }
+            }}
+        />
 
-        <ColorPicker value={BgColorHelper.detectColor(editor)}
-            onChange={value => { BgColorHelper.changeColor(editor, value.toHexString()) }}
-            presets={[
-                {
-                    label: 'Recommend',
-                    colors: [
-                        "#ffffff50", "red", "yellow", "green", "blue"
-                    ],
-                    defaultOpen: true
-                }
-            ]}
-        >
-            <Button icon={<HighlightOutlined />}
-                type="text"
-                style={{ color: BgColorHelper.detectColor(editor) === "#ffffff50" ? rgbToHex(token.colorText) : BgColorHelper.detectColor(editor) }}
-            />
-        </ColorPicker>
+        <ColorButton
+            colorPickerProp={{
+                value: BgColorHelper.detectColor(editor) ? BgColorHelper.detectColor(editor) : rgbToHex(token.colorText),
+                presets: [
+                    {
+                        label: 'Recommend',
+                        colors: [
+                            "red", "yellow", "green", "blue"
+                        ],
+                        defaultOpen: true
+                    }
+                ],
+                onChange: value => { BgColorHelper.changeColor(editor, value.toHexString()) }
+            }}
+            buttonProp={{
+                icon: <HighlightOutlined />,
+                style: {color: BgColorHelper.detectColor(editor) ? BgColorHelper.detectColor(editor) : rgbToHex(token.colorText) }
+            }}
+        />
 
         <InputNumber
             min={8}
@@ -171,10 +182,21 @@ const Index = () => {
 
             summitButtonProp={{
                 type: "primary",
-                children: "Embed"
+                children: "嵌入"
             }}
 
-            onSummit={(value) => LinkHelper.toggleLink(editor, value) }
+            onSummit={(value) => {
+                LinkHelper.toggleLink(editor, value)
+            }}
+        />
+
+        <PopupButton
+            buttonProp={{
+                icon: <SearchOutlined />,
+                type: "text",
+            }}
+            search={true}
+            onChange={onSearch}
         />
     </div>
 }
