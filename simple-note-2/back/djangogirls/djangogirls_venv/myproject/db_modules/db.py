@@ -112,7 +112,7 @@ class DB:
             return True
         else:
             return f"No result found for {username}"
-
+    #透過username和file_id插入內容
     def filename_insert_content(self, username, file_title_id, content):
         try:
             self.cursor.execute(
@@ -141,7 +141,22 @@ class DB:
             return True
         except sqlite3.Error as e:
             return False
-    # def filename_load_content(self, username, file_title_id):
+    #透過username和file_id回傳內容    
+    def filename_load_content(self, username, file_title_id):
+        try:
+            self.cursor.execute(
+                "SELECT content FROM User_Personal_Note_Data WHERE username = ? AND file_title_id = ?;",
+                (
+                    username,
+                    file_title_id,
+                ),
+            )
+            # 獲取查詢結果的第一行
+            row = self.cursor.fetchone()
+            return row
+        
+        except sqlite3.Error as e:
+            return "Error"
 
     def close_connection(self):
         # 關閉游標和資料庫連接
@@ -149,5 +164,5 @@ class DB:
         self.conn.close()
 
 
-my_db = DB()
-print(my_db.filename_insert_content("abc",0,"QWER"))
+# my_db = DB()
+# print(my_db.filename_load_content("abc",0))
