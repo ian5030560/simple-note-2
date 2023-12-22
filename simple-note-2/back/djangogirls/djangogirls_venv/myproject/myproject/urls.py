@@ -21,6 +21,8 @@ sys.path.append("..signin_status")
 sys.path.append("..myapp")
 sys.path.append("..forget_password")
 sys.path.append("..signout")
+sys.path.append("..save_content")
+sys.path.append("..load_content")
 from signin import views
 from django.urls import path
 from django.contrib import admin
@@ -29,6 +31,8 @@ from signin_status.views import SigninStatusView
 from myapp.views import ReactView
 from forget_password.views import ForgetPasswordView
 from signout.views import SignoutView
+from save_content.views import SaveContentView
+from load_content.views import LoadContentView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -41,6 +45,12 @@ urlpatterns = [
         "forget_password/", ForgetPasswordView.as_view(), name="forget_password"
     ),  # forget_password
     path("signout/", SignoutView.as_view(), name="signout"),  # signout
+    path(
+        "load_content/", LoadContentView.as_view(), name="load_content"
+    ),  # load_content
+    path(
+        "save_content/", SaveContentView.as_view(), name="save_content"
+    ),  # save_content
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]

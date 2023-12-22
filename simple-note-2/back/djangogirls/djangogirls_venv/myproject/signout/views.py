@@ -37,6 +37,7 @@ class SignoutView(APIView):
         try:
             data = json.loads(request.body)
             username = data.get("username")
+
             db = DB()
             if db.change_login_status(username) == True:
                 return Response(status=status.HTTP_200_OK)

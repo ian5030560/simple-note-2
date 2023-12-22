@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -45,6 +46,8 @@ INSTALLED_APPS = [
     "signin_status",
     "forget_password",
     "signout",
+    "load_content",
+    "save_content",
 ]
 
 MIDDLEWARE = [
@@ -138,11 +141,9 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
 STATICFILES_DIRS = [
-    os.path.join(
-        BASE_DIR,
-        "C:\\Users\\USER\\Documents\\GitHub\\simple-note-2\\simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\myapp\\static",
-    ),
+    os.path.join(BASE_DIR, "static"),
 ]
 
 CORS_ALLOW_CREDENTIALS = True
