@@ -1,19 +1,14 @@
 import sqlite3
 from os import mkdir
 
-TEST_DB = "./pydb.db"
+TEST_DB = "simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\db_modules\\pydb.db"
 BACK_DB = "db_modules/pydb.db"
 
 
 class DB:
     def __init__(self):
-        try:
-            self.conn = sqlite3.connect(BACK_DB)
-        except sqlite3.OperationalError:
-            mkdir("db_modules")
-        finally:
-            self.conn = sqlite3.connect(BACK_DB)
-            self.cursor = self.conn.cursor()
+        self.conn = sqlite3.connect(TEST_DB)
+        self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱和密碼
@@ -118,7 +113,41 @@ class DB:
         else:
             return f"No result found for {username}"
 
+    def filename_insert_content(self, username, file_title_id, content):
+        try:
+            self.cursor.execute(
+                "SELECT content FROM User_Personal_Note_Data WHERE username = ? AND file_title_id = ?;",
+                (
+                    username,
+                    file_title_id,
+                ),
+            )
+            # 獲取查詢結果的第一行
+            row = self.cursor.fetchone()
+
+            if row is None:
+                # 如果資料不存在，則使用 INSERT 插入新資料
+                self.cursor.execute(
+                    "INSERT INTO User_Personal_Note_Data (username, file_title_id, content) VALUES (?, ?, ?);",
+                    (username, file_title_id, content),
+                )
+            else:
+                # 如果資料存在，則使用 UPDATE 更新資料
+                self.cursor.execute(
+                    "UPDATE User_Personal_Note_Data SET content = ? WHERE username = ? AND file_title_id = ?;",
+                    (content, username, file_title_id),
+                )            
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            return False
+    # def filename_load_content(self, username, file_title_id):
+
     def close_connection(self):
         # 關閉游標和資料庫連接
         self.cursor.close()
         self.conn.close()
+
+
+my_db = DB()
+print(my_db.filename_insert_content("abc",0,"QWER"))
