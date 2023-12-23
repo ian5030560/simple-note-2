@@ -1,55 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Flex, ConfigProvider, theme, Typography, Modal, notification, FloatButton } from "antd";
+import { Col, Row, Flex, ConfigProvider, theme, Typography, Modal, notification } from "antd";
 import SideBar from "./component/sidebar";
 import Editor from "../editor/editor";
 import defaultTheme from "../theme/default";
-import { useNavigate, useParams } from "react-router-dom";
-import postData from "../util/post";
 import { BulbButton } from "../welcome/welcome";
+import User from "../service/user";
+import { useCookies } from "react-cookie";
 
 const { Text } = Typography;
-
-async function checkUserLogin(username) {
-
-    let response = await postData(
-        "http://localhost:8000/signin_status/",
-        { username: username },
-    )
-
-    return response.status === 200;
-}
-
-async function userLogout(username){
-    
-    let response = await postData(
-        "http://localhost:8000/signout/",
-        { username: username },
-    )
-
-    return response.status === 200;
-}
 
 const UserPage = () => {
 
     const [darken, setDarken] = useState(false);
-    const { username } = useParams();
-    const [logIn, setLogIn] = useState(true); // 改false
     const [open, setOpen] = useState(false);
     const [api, contextHolder] = notification.useNotification();
-    const navigate = useNavigate();
-
-    // useEffect(() => {
-    //     checkUserLogin(username)
-    //         .then(value => {
-    //             if (!value) navigate("/");
-    //             setLogIn(value);
-    //         })
-    // }, [navigate, username]);
-
+    const [{username}] = useCookies(["username"]);
+    
     const handleLogoutOk = () => {
         setOpen(false);
 
-        userLogout(username)
+        User.logout(username)
         .then((value) => {
             if(!value){
                 api.error(
@@ -59,24 +29,21 @@ const UserPage = () => {
                     }
                 )
             }
-            setLogIn(false);
-            navigate("/");
         })
     }
 
     return <>
-        {logIn && <ConfigProvider
+        <ConfigProvider
             theme={{
                 ...defaultTheme(darken),
                 algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm
             }}
         >
             <Index
-                onThemeClick={() => setDarken(prev => !prev)}
                 onLogout={() => setOpen(true)}
             />
             <BulbButton lighten={!darken} onClick={() => setDarken(prev => !prev)}/>
-        </ConfigProvider>}
+        </ConfigProvider>
         <Modal
             open={open}
             centered

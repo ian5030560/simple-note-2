@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TopBar from "./component/topbar";
 import Brand from "./component/brand";
 import { Flex, ConfigProvider, FloatButton, theme } from "antd";
@@ -6,6 +6,9 @@ import Auth from "./component/auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import defaultTheme from "../theme/default";
 import Intro from "./component/intro";
+import { useCookies } from "react-cookie";
+import User from "../service/user";
+import { useNavigate } from "react-router-dom";
 
 const Header = ({ backgroundColor, onIntroClick, onAuthClick }) => {
     return <Flex
@@ -24,7 +27,6 @@ const Header = ({ backgroundColor, onIntroClick, onAuthClick }) => {
 }
 
 export const BulbButton = ({ lighten, onClick }) => {
-
     return <FloatButton icon={lighten ? <AlertFilled /> : <AlertOutlined />} onClick={onClick} />
 }
 
@@ -49,6 +51,22 @@ const Index = ({darken, onDarken}) => {
 
     const [content, setContent] = useState(<Intro />);
     const {token} = theme.useToken();
+    const [{username}] = useCookies(["username"]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if(username){
+            User.checkLogin(username)
+            .then(async value => {
+                if(value){
+                    let {treeData, selected, content} = await User.loadInfo(username);
+                    navigate(`${selected}`);
+                    localStorage.setItem("treeData", treeData);
+                    localStorage.setItem("content", content);
+                }
+            })
+        }
+    });
 
     return <>
         <Header

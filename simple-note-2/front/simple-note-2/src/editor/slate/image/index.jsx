@@ -9,8 +9,7 @@ const Image = ({ element, children }) => {
     const editor = useSlate();
 
     const handleChange = (e) => {
-        let src = URL.createObjectURL(e.target.files[0]);
-        ImageHelper.setSource(editor, src, element);
+        ImageHelper.setSource(editor, e.target.files[0], element);
     }
 
     return <span
@@ -21,8 +20,8 @@ const Image = ({ element, children }) => {
                 textAlign: element.align ? element.align : "start",
             }}
         >
-            {element.src ?
-                <AntImage src={element.src} contentEditable={false} width={300} preview={false} /> :
+            {element.blob ?
+                <AntImage src={URL.createObjectURL(element.blob)} contentEditable={false} width={300} preview={false} /> :
                 <Button
                     type="primary"
                     style={{ width: "100%" }}

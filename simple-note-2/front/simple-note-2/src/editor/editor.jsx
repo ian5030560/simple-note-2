@@ -1,17 +1,17 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { createEditor, Transforms, Text } from "slate";
 import { Editable, Slate } from "slate-react";
-import { ELEMENTS, INLINE_ELEMENTS } from "./element";
+import { ELEMENTS, INLINE_ELEMENTS } from "./slate-list/element";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { getId } from "./withId";
-import Default from "./node/default/index";
+import Default from "./slate/default/index";
 import Overlay from "./overlay";
 import Toolbar from "./component/toolbar";
-import Leaf from "./node/leaf/leaf";
-import LEAF from "./leaf";
-import withPlugin from "./plugin";
-import handleKeyEvent from "./keyEvent";
+import Leaf from "./slate/leaf/leaf";
+import LEAF from "./slate-list/leaf";
+import withPlugin from "./slate-list/plugin";
+import handleKeyEvent from "./slate-list/hotkey";
 
 const DATA = [
     {

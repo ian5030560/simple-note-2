@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { Flex, Form, Input, theme } from "antd";
 import AuthForm from "./form";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 const LogIn = ({ onChange }) => {
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const [, setCookie] = useCookies();
 
   return (
     <AuthForm
@@ -18,7 +20,10 @@ const LogIn = ({ onChange }) => {
       success={{
         title: "登入成功",
         subtitle: "登入成功",
-        onSuccessClose: () => navigate(`user/${form.getFieldValue("username")}`),
+        onSuccessClose: () => {
+          setCookie("username", form.getFieldValue("username"));
+          navigate(0);
+        },
       }}
       failure={{
         title: "登入失敗",
@@ -69,7 +74,7 @@ const SignUp = ({ onChange }) => {
       success={{
         title: "註冊成功",
         subtitle: "註冊成功請返回首頁登入",
-        onSuccessClose: () => navigate(`user/${form.getFieldValue("username")}`),
+        onSuccessClose: () => navigate(0),
       }}
       failure={{
         title: "註冊失敗",

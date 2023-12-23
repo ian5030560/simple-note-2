@@ -1,12 +1,14 @@
 import { Editor } from "slate";
 import isHotkey from "is-hotkey";
-import MarkKeys from "./node/mark/key";
-import LinkKey from "./node/link/key";
+import MarkKeys from "../slate/mark/key";
+import LinkKeys from "../slate/link/key";
+import ListKeys from "../slate/list/key";
 
 
 const KEYMAP = [
     ...MarkKeys,
-    ...LinkKey,
+    ...LinkKeys,
+    ...ListKeys,
 ];
 
 /**

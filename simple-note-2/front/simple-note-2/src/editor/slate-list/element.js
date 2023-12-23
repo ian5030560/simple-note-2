@@ -1,8 +1,8 @@
-import Paragraph, { NextLine } from "./node/paragraph/index";
-import List from "./node/list/index";
-import Title from "./node/tiitle";
-import Image from "./node/image";
-import Link from "./node/link";
+import Paragraph, { NextLine } from "../slate/paragraph/index";
+import List from "../slate/list/index";
+import Title from "../slate/tiitle";
+import Image from "../slate/image";
+import Link from "../slate/link";
 
 export const ELEMENTS = {
     "paragraph": Paragraph,
@@ -18,7 +18,6 @@ export const ELEMENTS = {
 }
 
 export const INLINE_ELEMENTS = {
-    "list-item": List.Item,
     "link": Link,
     "next": NextLine,
 }

@@ -1,10 +1,10 @@
 import { Editor } from "slate";
 import { withHistory } from "slate-history";
 import { withReact } from "slate-react";
-import { withId } from "./withId";
-import withImage from "./node/image/withImage";
-import withLink from "./node/link/withLink";
-import withList from "./node/list/withList";
+import { withId } from "../withId";
+import withImage from "../slate/image/plugin";
+import withLink from "../slate/link/plugin";
+import withList from "../slate/list/plugin";
 
 const PLUGIN = [
     withReact,

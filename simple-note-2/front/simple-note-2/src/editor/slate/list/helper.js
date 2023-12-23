@@ -1,4 +1,4 @@
-import { Transforms } from "slate";
+import { Node, Transforms } from "slate";
 import { Editor, Element } from "slate";
 
 const ListHelper = {
@@ -28,25 +28,17 @@ const ListHelper = {
      */
     toggleBlock(editor, type) {
         const isActive = this.isActive(editor, type);
-        const LIST = ["ordered", "unordered"];
 
-        Transforms.unwrapNodes(
-            editor,
-            {
-                match: n => LIST.includes(n.type),
-                split: true
-            }
-        )
-
-        Transforms.setNodes(
-            editor,
-            {type: isActive ? "paragraph" : LIST.includes(type) ? "list-item": type}
-        )
-
-        if(!isActive && LIST.includes(type)){
-            Transforms.wrapNodes(
+        const nodes = Editor.nodes(editor, {match: n => Element.isElement(n)});
+        let i = 1;
+        for(let node of nodes) {
+            Transforms.setNodes(
                 editor,
-                {type: type, children: []}
+                {type: !isActive ? type : "paragraph", index: !isActive && type === "ordered" ? i++ : undefined},
+                {
+                    at: editor.selection,
+                    match: n => Element.isElement(n) && Node.matches(n, node[0])
+                }
             )
         }
     }

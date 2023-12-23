@@ -1,6 +1,6 @@
 import { Transforms } from "slate"
 
-const LinkKey = [
+const LinkKeys = [
     {
         key: "left",
         handler: (e, editor) => {
@@ -15,4 +15,4 @@ const LinkKey = [
     }
 ]
 
-export default LinkKey;
+export default LinkKeys;

@@ -14,16 +14,16 @@ import {
     LinkOutlined,
     SearchOutlined
 } from "@ant-design/icons";
-import MarkHelper from "../node/mark/helper";
+import MarkHelper from "../slate/mark/helper";
 import { useSlate } from "slate-react";
-import { AlignHelper } from "../node/paragraph/helper";
-import ListHelper from "../node/list/helper";
+import { AlignHelper } from "../slate/paragraph/helper";
+import ListHelper from "../slate/list/helper";
 import { ALIGN, FONT_FAMILY, LIST, MARKDOWN, TEXT } from "./list";
 import OptionGroup from "./option";
-import TitleHelper from "../node/tiitle/helper";
-import { BgColorHelper, ColorHelper, rgbToHex } from "../node/color/helper";
-import { FamilyHelper, SizeHelper } from "../node/font/helper";
-import LinkHelper from "../node/link/helper";
+import TitleHelper from "../slate/tiitle/helper";
+import { BgColorHelper, ColorHelper, rgbToHex } from "../slate/color/helper";
+import { FamilyHelper, SizeHelper } from "../slate/font/helper";
+import LinkHelper from "../slate/link/helper";
 import { PopupButton, ColorButton } from "./button";
 
 const Toolbar = ({ onSearch }) => {
