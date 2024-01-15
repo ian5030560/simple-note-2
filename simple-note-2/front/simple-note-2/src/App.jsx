@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import WelcomePage from "./welcome/welcome";
+import WelcomePage from "./Welcome";
 import "./resource/root.css";
-import UserPage from "./user/user";
-import ThemePage from "./themeEdit/theme";
+import UserPage from "./User";
+import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 
 function App() {

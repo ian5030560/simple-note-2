@@ -2,7 +2,7 @@ import postData from "../util/post";
 
 export default class User{
     
-    static async checkLogin(username) {
+    static async checkSignIn(username) {
 
         let response = await postData(
             "http://localhost:8000/signin_status/",
@@ -12,7 +12,7 @@ export default class User{
         return response.status === 200;
     }
 
-    static async logout(username){
+    static async userLogOut(username){
     
         let response = await postData(
             "http://localhost:8000/signout/",
