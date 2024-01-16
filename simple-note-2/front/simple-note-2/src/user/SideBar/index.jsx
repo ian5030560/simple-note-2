@@ -78,9 +78,10 @@ const SideBar = ({onLogout}) => {
         justify="space-between"
         style={{
             height: "100%",
+            position: "fixed",
+            width: `${100 / 6}%`,
             backgroundColor: token.colorPrimary,
-            borderRight: `${token.lineWidth}px solid ${token.colorBorder}`,
-            overflow: "auto",
+            
         }}>
         <Flex vertical>
             <UserProfile username="username" onLogout={onLogout}/>

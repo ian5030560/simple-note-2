@@ -17,7 +17,24 @@ const DATA = [
         id: getId(),
         type: 'paragraph',
         children: [{ text: "" }],
-    }
+    },
+    // {
+    //     id: getId(),
+    //     type: "tbody",
+    //     children: [
+    //         {
+    //             id: getId(),
+    //             type: "tr",
+    //             children: [
+    //                 {
+    //                     id: getId(),
+    //                     type: "td",
+    //                     children: [{text: "123"}]
+    //                 }
+    //             ]
+    //         }
+    //     ]
+    // }
 ]
 
 const Editor = ({ initlizeData, style }) => {

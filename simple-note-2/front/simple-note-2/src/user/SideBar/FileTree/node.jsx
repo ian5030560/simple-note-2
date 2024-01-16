@@ -58,7 +58,7 @@ const Node = (prop) => {
 
     return <>
         <Flex gap={"large"}>
-            <Text ellipsis style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>{prop.text}</Text>
+            <Text ellipsis style={{ color: determineWhiteOrBlack(token.colorPrimary), whiteSpace: "nowrap" }}>{prop.text}</Text>
             <ToolLine
                 nodeKey={prop.nodeKey}
                 onAdd={() => setOpenAdd(true)}

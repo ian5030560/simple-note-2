@@ -25,6 +25,7 @@ import { BgColorHelper, ColorHelper, rgbToHex } from "../Slate/Component/color/h
 import { FamilyHelper, SizeHelper } from "../Slate/Component/font/helper";
 import LinkHelper from "../Slate/Component/link/helper";
 import { PopupButton, ColorButton } from "./button";
+import { Editor } from "slate";
 
 const Toolbar = ({ onSearch }) => {
 
@@ -77,9 +78,8 @@ const Index = ({ onSearch }) => {
         style={{
             padding: "3px",
             backgroundColor: token.colorBgBase,
-            boxShadow: "0px 1px 16px 0px",
+            borderBottom: "3px solid black",
             display: "flex",
-            borderRadius: "0px 0px 8px 8px",
         }}>
 
         <Button type="text" icon={<UndoOutlined />} />

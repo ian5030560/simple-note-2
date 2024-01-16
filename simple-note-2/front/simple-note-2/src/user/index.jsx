@@ -84,7 +84,7 @@ export const Index = ({ onLogout, rootStyle }) => {
         </Col>
         <Col span={20}>
             <Flex style={{ width: "100%" }} vertical>
-                <Editor style={{color: token.colorText}}/>
+                <Editor style={{color: token.colorText, paddingLeft: "5%", paddingRight: "10%"}}/>
             </Flex>
         </Col>
     </Row>

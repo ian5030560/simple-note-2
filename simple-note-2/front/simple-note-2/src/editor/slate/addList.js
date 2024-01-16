@@ -30,7 +30,11 @@ const ADDLIST = [
     {
         value: "image",
         label: "Image",
-    }
+    },
+    // {
+    //     value: "tbody",
+    //     label: "Table",
+    // }
 ]
 
 export default ADDLIST;

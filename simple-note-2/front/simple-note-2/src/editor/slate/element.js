@@ -1,8 +1,9 @@
-import Paragraph, { NextLine } from "./Component/paragraph";
+import Paragraph from "./Component/paragraph";
 import List from "./Component/list";
 import Title from "./Component/tiitle";
 import Image from "./Component/image";
 import Link from "./Component/link";
+import Table from "./Component/table";
 
 export const ELEMENTS = {
     "paragraph": Paragraph,
@@ -15,9 +16,11 @@ export const ELEMENTS = {
     "h5": Title.h5,
     "h6": Title.h6,
     "image": Image,
+    "tbody": Table.tbody,
 }
 
 export const INLINE_ELEMENTS = {
     "link": Link,
-    "next": NextLine,
+    "tr": Table.tr,
+    "td": Table.td,
 }

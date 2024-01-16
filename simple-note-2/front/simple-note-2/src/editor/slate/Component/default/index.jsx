@@ -6,6 +6,8 @@ import { Button } from "antd";
 import DefaultHelper from "./helper";
 import { useSlate } from "slate-react";
 import ADDLIST from "../../addList";
+import { PlusOutlined } from "@ant-design/icons";
+import { List } from "react-bootstrap-icons";
 
 export const Default = (props) => {
 
@@ -49,18 +51,16 @@ export const Default = (props) => {
                     onClick={() => setOpen(prev => !prev)}
                     contentEditable={false}
                     type="text"
-                    size="small"
-                >+
-                </Button>
+                    icon=<PlusOutlined />
+                />
             </AddMenu>
             <Button
                 contentEditable={false}
                 {...listeners}
                 type="text"
-                size="small"
-            >
-                ⠿
-            </Button>
+                icon=<List />
+            />
+            {/* ⠿ */}
             {props.renderContent ? props.renderContent(props) : props.children.text}
         </div>
     </div>
