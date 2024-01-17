@@ -43,7 +43,7 @@ class LoadContentView(APIView):
 
             db = DB()
 
-            load = filename_load_content(username, id, content)
+            load = db.filename_load_content(username, id, content)
             if load == True:
                 return Response("load successfully", status=status.HTTP_200_OK)
 

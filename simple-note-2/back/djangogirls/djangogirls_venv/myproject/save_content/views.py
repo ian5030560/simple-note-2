@@ -43,7 +43,7 @@ class SaveContentView(APIView):
 
             db = DB()
 
-            save = filename_insert_content(username, id, content)
+            save = db.filename_insert_content(username, id, content)
             if save == True:
                 return Response("save successfully", status=status.HTTP_200_OK)
 
