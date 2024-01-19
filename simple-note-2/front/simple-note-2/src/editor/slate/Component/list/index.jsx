@@ -1,6 +1,7 @@
 import React from "react";
+import createElement from "../../spec/element";
 
-const UnorderedList = ({children}) => {
+const Unordered = ({children}) => {
     const style = {
         width: "100%",
     }
@@ -8,7 +9,7 @@ const UnorderedList = ({children}) => {
     return <ul style={style}><li>{children}</li></ul>
 }
 
-const OrderedList = ({element, children}) => {
+const Ordered = ({element, children}) => {
     const style = {
         width: "100%",
     }
@@ -16,9 +17,5 @@ const OrderedList = ({element, children}) => {
     return <ol start={element.index} style={style}><li>{children}</li></ol>
 }
 
-const List = {
-    Unordered: UnorderedList,
-    Ordered: OrderedList,
-}
-
-export default List;
+export const unordered = createElement(Unordered);
+export const ordered = createElement(Ordered);

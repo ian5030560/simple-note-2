@@ -1,4 +1,4 @@
-import getRandomString from "../util/random";
+import getRandomString from "../../../util/random";
 import { Element } from "slate";
 
 export function getId() {

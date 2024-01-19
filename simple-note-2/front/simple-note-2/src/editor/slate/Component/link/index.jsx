@@ -1,5 +1,6 @@
 import React from "react";
 import { Popover } from "antd";
+import createElement from "../../spec/element";
 
 const Link = ({children, element}) => {
 
@@ -11,4 +12,5 @@ const Link = ({children, element}) => {
     
 }
 
-export default Link;
+const link = createElement(Link, true);
+export default link;

@@ -1,7 +1,7 @@
 import { Editor } from "slate";
 import { withHistory } from "slate-history";
 import { withReact } from "slate-react";
-import { withId } from "../withId";
+import { withId } from "./Plugin/withId";
 import withImage from "./Component/image/plugin";
 import withLink from "./Component/link/plugin";
 import withList from "./Component/list/plugin";

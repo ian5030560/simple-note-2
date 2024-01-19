@@ -1,13 +1,14 @@
-import React, {useState, useRef} from "react";
-import {Modal, Input, Flex, Typography, theme} from "antd";
-import {DeleteOutlined, PlusOutlined} from "@ant-design/icons";
+import React, { useState } from "react";
+import { Modal, Input, Flex, Typography, theme } from "antd";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { determineWhiteOrBlack } from "../../../util/color";
+import PropTypes from 'prop-types';
 
-const {Text} = Typography;
+const { Text } = Typography;
 
 const ToolLine = ({ nodeKey, onDelete, onAdd, root }) => {
-    
-    const {token} = theme.useToken();
+
+    const { token } = theme.useToken();
 
     return <Flex style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>
         {!root && <DeleteOutlined
@@ -26,35 +27,11 @@ const ToolLine = ({ nodeKey, onDelete, onAdd, root }) => {
     </Flex>
 }
 
-// eslint-disable-next-line no-unused-vars
-const NodeProp = {
-    text: "",
-    nodeKey: "",
-    onAdd: (key, text) => {},
-    onDelete: (key, text) => {},
-    root: false,
-    /**
-     * @type {React.ReactNode}
-     */
-    addModalRender: undefined,
-    /**
-     * @type {React.ReactNode}
-     */
-    deleteModalRender: undefined,
-    addModalProp: {},
-    deleteModalProp: {}
-}
-
-/**
- * 
- * @param {NodeProp} prop 
- * @returns 
- */
 const Node = (prop) => {
 
     const [openAdd, setOpenAdd] = useState(false);
     const [openDelete, setOpenDelte] = useState(false);
-    const {token} = theme.useToken();
+    const { token } = theme.useToken();
 
     return <>
         <Flex gap={"large"}>
@@ -82,18 +59,33 @@ const Node = (prop) => {
     </>
 }
 
-const IndividualNode = ({text, nodeKey, onAdd, onDelete, root}) => {
+Node.propTypes = {
+    text: PropTypes.string,
+    nodeKey: PropTypes.string,
+    onAdd: PropTypes.func,
+    onDelete: PropTypes.func,
+    root: PropTypes.bool,
+    addModalRender: PropTypes.element,
+    deleteModalRender: PropTypes.element,
+    addModalProp: PropTypes.object,
+    deleteModalProp: PropTypes.object
+}
 
-    const ref = useRef();
+const IndividualNode = ({ text, nodeKey, onAdd, onDelete, root }) => {
+
+    const [input, setInput] = useState("");
 
     return <Node
         text={text}
         nodeKey={nodeKey}
-        onAdd={() => onAdd?.(nodeKey, ref.current.input.value)}
+        onAdd={() => {
+            onAdd?.(nodeKey, input);
+            setInput(() => "");
+        }}
         onDelete={onDelete}
         root={root}
-        addModalRender={<Input ref={ref} placeholder="請輸入..."/>}
-        addModalProp={{title: "輸入名稱"}}
+        addModalRender={<Input value={input} placeholder="請輸入..." onChange={(e) => setInput(() => e.target.value)}/>}
+        addModalProp={{ title: "輸入名稱" }}
         deleteModalRender={<Text>是否刪除{text}</Text>}
         deleteModalProp={{
             title: `刪除${text}`,
@@ -104,7 +96,7 @@ const IndividualNode = ({text, nodeKey, onAdd, onDelete, root}) => {
     />
 }
 
-export function createIndiviualNode(text, nodeKey, onAdd, onDelete, root){
+export function createIndiviualNode(text, nodeKey, onAdd, onDelete, root) {
     return <IndividualNode
         text={text}
         nodeKey={nodeKey}

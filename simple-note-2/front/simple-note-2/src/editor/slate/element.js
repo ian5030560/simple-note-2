@@ -1,26 +1,21 @@
-import Paragraph from "./Component/paragraph";
-import List from "./Component/list";
-import Title from "./Component/tiitle";
-import Image from "./Component/image";
-import Link from "./Component/link";
-import Table from "./Component/table";
+import paragraph from "./Component/paragraph";
+import { ordered, unordered } from "./Component/list";
+import { h1, h2, h3, h4, h5, h6 } from "./Component/title";
+import image from "./Component/image";
+import link from "./Component/link";
 
-export const ELEMENTS = {
-    "paragraph": Paragraph,
-    "ordered": List.Ordered,
-    "unordered": List.Unordered,
-    "h1": Title.h1,
-    "h2": Title.h2,
-    "h3": Title.h3,
-    "h4": Title.h3,
-    "h5": Title.h5,
-    "h6": Title.h6,
-    "image": Image,
-    "tbody": Table.tbody,
+const ELEMENT = {
+    paragraph,
+    ordered,
+    unordered,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    image,
+    link
 }
 
-export const INLINE_ELEMENTS = {
-    "link": Link,
-    "tr": Table.tr,
-    "td": Table.td,
-}
+export default ELEMENT;

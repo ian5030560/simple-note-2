@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import { useSlate } from "slate-react";
 import { Image as AntImage, Button } from "antd";
 import ImageHelper from "./helper";
+import createElement from "../../spec/element";
 
 const Image = ({ element, children }) => {
 
@@ -36,4 +37,5 @@ const Image = ({ element, children }) => {
     </span>
 }
 
-export default Image;
+const image = createElement(Image);
+export default image;

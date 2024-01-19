@@ -1,4 +1,5 @@
 import React from "react";
+import createLeaf from "../../spec/leaf";
 
 
 const FontFamily = ({leaf, children}) => {
@@ -13,9 +14,5 @@ const FontSize = ({leaf, children}) => {
     }}>{children}</span>
 }
 
-const FONT = {
-    family: FontFamily,
-    size: FontSize
-}
-
-export default FONT;
+export const family = createLeaf(FontFamily);
+export const size = createLeaf(FontSize);

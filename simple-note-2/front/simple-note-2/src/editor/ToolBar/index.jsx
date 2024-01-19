@@ -20,7 +20,7 @@ import { AlignHelper } from "../Slate/Component/paragraph/helper";
 import ListHelper from "../Slate/Component/list/helper";
 import { ALIGN, FONT_FAMILY, LIST, MARKDOWN, TEXT } from "./list";
 import OptionGroup from "./option";
-import TitleHelper from "../Slate/Component/tiitle/helper";
+import TitleHelper from "../Slate/Component/title/helper";
 import { BgColorHelper, ColorHelper, rgbToHex } from "../Slate/Component/color/helper";
 import { FamilyHelper, SizeHelper } from "../Slate/Component/font/helper";
 import LinkHelper from "../Slate/Component/link/helper";

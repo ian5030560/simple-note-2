@@ -1,14 +1,18 @@
 import { Editor } from "slate";
 import isHotkey from "is-hotkey";
-import MarkKeys from "./Component/mark/key";
-import LinkKeys from "./Component/link/key";
-import ListKeys from "./Component/list/key";
+import {MarkModB, MarkModI, MarkModU} from "./Component/mark/hotkey";
+import {LinkLeft, LinkRight} from "./Component/link/hotkey";
+import {ListTab, ListShiftTab} from "./Component/list/hotkey";
 
 
 const KEYMAP = [
-    ...MarkKeys,
-    ...LinkKeys,
-    ...ListKeys,
+    MarkModB,
+    MarkModI,
+    MarkModU,
+    LinkLeft, 
+    LinkRight,
+    ListTab, 
+    ListShiftTab
 ];
 
 /**

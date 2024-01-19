@@ -1,6 +1,6 @@
 import { Editor, Transforms } from "slate"
 
-const DefaultHelper = {
+const ElementHelper = {
     /**
      * 
      * @param {Editor} editor 
@@ -17,4 +17,4 @@ const DefaultHelper = {
     }
 }
 
-export default DefaultHelper;
+export default ElementHelper;

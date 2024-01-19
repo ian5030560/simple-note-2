@@ -1,16 +1,16 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { createEditor, Transforms, Text } from "slate";
 import { Editable, Slate } from "slate-react";
-import { ELEMENTS, INLINE_ELEMENTS } from "./Slate/element";
 import { DndContext } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { getId } from "./withId";
-import Default from "./Slate/Component/default";
+import { getId } from "./Slate/Plugin/withId";
+import Element from "./Slate/Component/default/element";
 import Toolbar from "./ToolBar";
-import Leaf from "./Slate/Component/leaf";
+import Leaf from "./Slate/Component/default/leaf";
 import LEAF from "./Slate/leaf";
 import withPlugin from "./Slate/plugin";
 import handleKeyEvent from "./Slate/hotkey";
+import ELEMENT from "./Slate/element";
 
 const DATA = [
     {
@@ -18,23 +18,6 @@ const DATA = [
         type: 'paragraph',
         children: [{ text: "" }],
     },
-    // {
-    //     id: getId(),
-    //     type: "tbody",
-    //     children: [
-    //         {
-    //             id: getId(),
-    //             type: "tr",
-    //             children: [
-    //                 {
-    //                     id: getId(),
-    //                     type: "td",
-    //                     children: [{text: "123"}]
-    //                 }
-    //             ]
-    //         }
-    //     ]
-    // }
 ]
 
 const Editor = ({ initlizeData, style }) => {
@@ -44,10 +27,12 @@ const Editor = ({ initlizeData, style }) => {
     const [search, setSearch] = useState("");
 
     const renderElement = useCallback(props => {
-        if (editor.isInline(props.element)) {
-            return INLINE_ELEMENTS[props.element.type](props);
+        
+        if (editor.isInline(props.element) && ELEMENT[props.element.type].inline) {
+            return ELEMENT[props.element.type].element(props);
         }
-        return <Default {...props} renderContent={ELEMENTS[props.element.type]} />
+
+        return <Element {...props} renderContent={ELEMENT[props.element.type].element} />
     }, [editor])
 
     const renderLeaf = useCallback(props => {

@@ -1,4 +1,5 @@
 import React from "react";
+import createElement from "../../spec/element";
 
 const H1 = ({children, element}) => {
     return <h1 style={{
@@ -42,13 +43,9 @@ const H6 = ({children, element}) => {
     }}>{children}</h6>
 }
 
-const Title = {
-    h1: H1,
-    h2: H2,
-    h3: H3,
-    h4: H4,
-    h5: H5,
-    h6: H6
-}
-
-export default Title
+export const h1 = createElement(H1);
+export const h2 = createElement(H2);
+export const h3 = createElement(H3);
+export const h4 = createElement(H4);
+export const h5 = createElement(H5);
+export const h6 = createElement(H6);

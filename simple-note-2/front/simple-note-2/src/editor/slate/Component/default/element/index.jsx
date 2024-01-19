@@ -3,13 +3,23 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import AddMenu from "./addMenu";
 import { Button } from "antd";
-import DefaultHelper from "./helper";
+import ElementHelper from "./helper";
 import { useSlate } from "slate-react";
-import ADDLIST from "../../addList";
+import ADDLIST from "../../../add";
 import { PlusOutlined } from "@ant-design/icons";
-import { List } from "react-bootstrap-icons";
 
-export const Default = (props) => {
+const HandleButton = (prop) => {
+    const [state, setState] = useState("grab");
+
+    return <Button
+        {...prop}
+        style={{ cursor: state }}
+        onMouseDown={() => setState("grabbing")}
+        onMouseUp={() => setState("grab")}
+    />;
+}
+
+const Element = (props) => {
 
     const [open, setOpen] = useState(false);
     const editor = useSlate();
@@ -33,10 +43,10 @@ export const Default = (props) => {
 
     /**
      * 
-     * @param {string} key 
+     * @param {string} value 
      */
-    const handleSelect = (key) => {
-        DefaultHelper.addElement(editor, key);
+    const handleSelect = (value) => {
+        ElementHelper.addElement(editor, value);
         setOpen(false);
     }
 
@@ -51,20 +61,22 @@ export const Default = (props) => {
                     onClick={() => setOpen(prev => !prev)}
                     contentEditable={false}
                     type="text"
+                    size="small"
                     icon=<PlusOutlined />
                 />
             </AddMenu>
-            <Button
+            <HandleButton
                 contentEditable={false}
                 {...listeners}
                 type="text"
-                icon=<List />
-            />
-            {/* ⠿ */}
+                size="small"
+            >
+            ⠿
+            </HandleButton>
             {props.renderContent ? props.renderContent(props) : props.children.text}
         </div>
     </div>
 
 }
 
-export default Default;
+export default Element;

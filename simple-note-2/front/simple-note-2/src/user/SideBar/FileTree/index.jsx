@@ -37,9 +37,6 @@ function getParentKey(key) {
 const dataType = {
     key: "",
     title: "",
-    /**
-     * @type {Array}
-     */
     children: [],
     name: "",
 }
@@ -90,7 +87,7 @@ const FileTree = ({
     );
 
     const handleAdd = (nodeKey, text, setChildren, createNode) => {
-    
+
         setChildren(prev => {
             let target = findTargetByKey(nodeKey, prev);
 
@@ -135,7 +132,7 @@ const FileTree = ({
                         t[index].name,
                         key,
                         (k, t) => handleAdd(k, t, setChildren, createNode),
-                        (k) =>  handleDelete(k, setChildren, createNode),
+                        (k) => handleDelete(k, setChildren, createNode),
                         false
                     )
 
@@ -176,9 +173,7 @@ const FileTree = ({
 
     return <Tree
         treeData={rootData}
-        rootStyle={{
-            backgroundColor: token.colorPrimary,
-        }}
+        rootStyle={{ backgroundColor: token.colorPrimary, }}
         onSelect={onSelect}
     />
 }

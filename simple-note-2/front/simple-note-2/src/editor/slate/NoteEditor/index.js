@@ -1,4 +1,4 @@
-import { Editor, Location, Element, EditorNodesOptions, Node, before } from "slate";
+import { Editor, Location, Element, EditorNodesOptions } from "slate";
 import { ReactEditor } from "slate-react";
 
 const NoteEditor = {

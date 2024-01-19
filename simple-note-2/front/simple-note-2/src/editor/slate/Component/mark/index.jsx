@@ -1,4 +1,5 @@
 import React from "react";
+import createLeaf from "../../spec/leaf";
 
 const Bold = ({children}) => {
     return <span style={{fontWeight: "bold"}}>{children}</span>
@@ -12,10 +13,6 @@ const Underline = ({children}) => {
     return <span style={{textDecoration: "underline"}}>{children}</span>
 }
 
-const MARK = {
-    bold: Bold,
-    italic: Italic,
-    underline: Underline,
-}
-
-export default MARK;
+export const bold = createLeaf(Bold);
+export const italic = createLeaf(Italic);
+export const underline = createLeaf(Underline);

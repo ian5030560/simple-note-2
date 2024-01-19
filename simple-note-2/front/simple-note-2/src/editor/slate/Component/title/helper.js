@@ -1,9 +1,9 @@
 import { Transforms, Editor, Element } from "slate";
-import Title from ".";
+import {h1, h2, h3, h4, h5, h6} from ".";
 
 const TitleHelper = {
 
-    TITLE: Object.keys(Title),
+    TITLE: Object.keys({h1, h2, h3, h4, h5, h6}),
 
     isActive(editor, type){
         const { selection } = editor;
