@@ -23,7 +23,7 @@ const withList = (editor) => {
             }
         }
         else if (operation.type === "move_node") {
-            console.log(operation);
+            // console.log(operation);
         }
 
         return onChange(op);

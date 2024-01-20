@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import AddMenu from "./addMenu";
-import { Button } from "antd";
+import { Button, theme } from "antd";
 import ElementHelper from "./helper";
 import { useSlate } from "slate-react";
 import ADDLIST from "../../../add";
 import { PlusOutlined } from "@ant-design/icons";
+
 
 const HandleButton = (prop) => {
     const [state, setState] = useState("grab");
@@ -19,19 +20,35 @@ const HandleButton = (prop) => {
     />;
 }
 
+
 const Element = (props) => {
 
     const [open, setOpen] = useState(false);
     const editor = useSlate();
-
+    const {token} = theme.useToken();
+    
     const {
         attributes,
         listeners,
         transform,
-        setNodeRef
+        setNodeRef,
+        isSorting,
+        newIndex,
+        overIndex,
+        isDragging,
+        isOver,
+        // activeIndex
     } = useSortable({
-        id: props.element.id
+        id: props.element.id,
     });
+
+    const touchTop = useCallback(() => {
+        return isSorting && !isDragging && !isOver && (overIndex - newIndex) === -1 
+    }, [isDragging, isOver, isSorting, newIndex, overIndex]);
+
+    const touchBottom = useCallback(() => {
+        return isSorting && !isDragging && !isOver && (overIndex - newIndex) === 1
+    }, [isDragging, isOver, isSorting, newIndex, overIndex]);
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -39,6 +56,8 @@ const Element = (props) => {
         display: "flex",
         outline: "none",
         alignItems: "center",
+        borderTop: `${touchTop() ? 3: 0}px solid ${token.colorText}`,
+        borderBottom: `${touchBottom() ? 3: 0}px solid ${token.colorText}`,
     }
 
     /**
@@ -71,7 +90,7 @@ const Element = (props) => {
                 type="text"
                 size="small"
             >
-            ⠿
+                ⠿
             </HandleButton>
             {props.renderContent ? props.renderContent(props) : props.children.text}
         </div>

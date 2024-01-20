@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { createEditor, Transforms, Text } from "slate";
 import { Editable, Slate } from "slate-react";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, DragOverlay } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { getId } from "./Slate/Plugin/withId";
 import Element from "./Slate/Component/default/element";
@@ -25,9 +25,10 @@ const Editor = ({ initlizeData, style }) => {
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
     const [search, setSearch] = useState("");
+    // const [activeContent, setActiveContent] = useState();
 
     const renderElement = useCallback(props => {
-        
+       
         if (editor.isInline(props.element) && ELEMENT[props.element.type].inline) {
             return ELEMENT[props.element.type].element(props);
         }
@@ -46,6 +47,7 @@ const Editor = ({ initlizeData, style }) => {
 
     const handleDragStart = (e) => {
         setActive(() => e.active.id);
+        // const content = editor.children.filter((value) => value.id === e.active.id);
     }
 
     const handleDragEnd = (e) => {
@@ -79,7 +81,7 @@ const Editor = ({ initlizeData, style }) => {
                     highlight: true,
                   })
                 }
-      
+
                 offset = offset + part.length + search.length
               })
             }
@@ -109,6 +111,7 @@ const Editor = ({ initlizeData, style }) => {
                     spellCheck
                     autoFocus
                 />
+            {/* <DragOverlay adjustScale={false} dropAnimation={null}/> */}
             </SortableContext>
         </DndContext>
     </Slate>
