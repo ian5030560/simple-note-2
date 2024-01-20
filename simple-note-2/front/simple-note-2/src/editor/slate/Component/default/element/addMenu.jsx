@@ -26,14 +26,14 @@ const AddMenu = ({ searchList, children, onSelect, open, onLeave }) => {
         setKeyword(() => new RegExp(`${text}`));
     }, []);
 
-    const handleClick = useCallback((item) => {
+    const handleMouseDown = useCallback((item) => {
         const result = item.handler?.(item.value);
         onSelect?.(item.value, result);
     }, [onSelect]);
 
     searchList = searchList.filter(value => filterData(value.label));
 
-    const content = <Flex vertical onPointerLeave={onLeave}> 
+    const content = <Flex vertical onBlur={onLeave}> 
         <Input ref={ref}
             onChange={handleChange}
             style={{ border: `1px solid ${token.colorPrimary}` }} />
@@ -46,15 +46,15 @@ const AddMenu = ({ searchList, children, onSelect, open, onLeave }) => {
                     <Button
                         type="text"
                         style={{ width: "100%" }}
-                        onClick={() => handleClick(item)}
+                        onMouseDown={() => handleMouseDown(item)}
                     >{item.label}</Button>
                 </List.Item>
             }} />
     </Flex>
 
-    // 直接 focus <input> 有問題，無法觸發 Button onClick
     return <Popover content={content} trigger={"click"}
-        arrow={false} open={open}>
+        arrow={false} open={open}
+        afterOpenChange={() => ref.current.focus()}>
         {children}
     </Popover>
 }
