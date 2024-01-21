@@ -7,7 +7,7 @@ import ElementHelper from "./helper";
 import { useSlate } from "slate-react";
 import ADDLIST from "../../../add";
 import { PlusOutlined } from "@ant-design/icons";
-
+import PropTypes from 'prop-types';
 
 const HandleButton = (prop) => {
     const [state, setState] = useState("grab");
@@ -20,35 +20,23 @@ const HandleButton = (prop) => {
     />;
 }
 
-
 const Element = (props) => {
 
     const [open, setOpen] = useState(false);
     const editor = useSlate();
-    const {token} = theme.useToken();
-    
+    const { token } = theme.useToken();
+    const [top, setTop] = useState(false);
+    const [bottom, setBottom] = useState(false);
+
     const {
         attributes,
         listeners,
         transform,
         setNodeRef,
-        isSorting,
-        newIndex,
-        overIndex,
-        isDragging,
-        isOver,
-        // activeIndex
+        // rect
     } = useSortable({
         id: props.element.id,
     });
-
-    const touchTop = useCallback(() => {
-        return isSorting && !isDragging && !isOver && (overIndex - newIndex) === -1 
-    }, [isDragging, isOver, isSorting, newIndex, overIndex]);
-
-    const touchBottom = useCallback(() => {
-        return isSorting && !isDragging && !isOver && (overIndex - newIndex) === 1
-    }, [isDragging, isOver, isSorting, newIndex, overIndex]);
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -56,8 +44,20 @@ const Element = (props) => {
         display: "flex",
         outline: "none",
         alignItems: "center",
-        borderTop: `${touchTop() ? 3: 0}px solid ${token.colorText}`,
-        borderBottom: `${touchBottom() ? 3: 0}px solid ${token.colorText}`,
+        // borderTop: `${top ? 3 : 0}px solid ${token.colorText}`,
+        // borderBottom: `${bottom ? 3 : 0}px solid ${token.colorText}`,
+    }
+
+    const handleMouseEnter = () => {
+        // console.log(rect.current);
+    }
+
+    const handleMouseMove = () => {
+
+    }
+
+    const handleMouseLeave = () => {
+
     }
 
     /**
@@ -69,7 +69,10 @@ const Element = (props) => {
         setOpen(false);
     }
 
-    return <div {...props.attributes}>
+    return <div {...props.attributes}
+        onMouseEnter={handleMouseEnter}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}>
         <div ref={setNodeRef} style={style} {...attributes}>
             <AddMenu
                 searchList={ADDLIST}
@@ -92,10 +95,16 @@ const Element = (props) => {
             >
                 ⠿
             </HandleButton>
-            {props.renderContent ? props.renderContent(props) : props.children.text}
+            <div style={{minWidth: "100%"}} id={props.element.id + "-content"}>
+                {props.renderContent ? props.renderContent(props) : props.children.text}
+            </div>
+            
         </div>
     </div>
 
 }
 
+Element.propTypes = {
+    renderContent: PropTypes.func.isRequired,
+}
 export default Element;
