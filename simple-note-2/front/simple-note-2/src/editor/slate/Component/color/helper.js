@@ -1,5 +1,6 @@
 import { Editor } from "slate";
 import Color from "colorjs.io";
+import { BGCOLOR, FONTCOLOR } from ".";
 
 export function rgbToHex(rgb) {
     
@@ -18,13 +19,13 @@ const ColorHelper = {
         
         const marks = Editor.marks(editor); 
         
-        return marks ? marks.color ? marks.color: undefined : undefined;
+        return marks ? marks[FONTCOLOR] ? marks[FONTCOLOR]: undefined : undefined;
     },
 
     isActive(editor, color){
         const marks = Editor.marks(editor);
         
-        return marks.color === color
+        return marks[FONTCOLOR] === color
     },
 
     /**
@@ -36,10 +37,10 @@ const ColorHelper = {
         const isActive = this.isActive(editor, color);
 
         if(isActive){
-            Editor.removeMark(editor, "color");
+            Editor.removeMark(editor, FONTCOLOR);
         }
         else{
-            Editor.addMark(editor, "color", color);
+            Editor.addMark(editor, FONTCOLOR, color);
         }
         
     }
@@ -54,13 +55,13 @@ const BgColorHelper = {
      */
     detectColor(editor){
         const marks = Editor.marks(editor);
-        return marks ? marks.bgColor ? marks.bgColor: undefined : undefined;
+        return marks ? marks[BGCOLOR] ? marks[BGCOLOR]: undefined : undefined;
     },
 
     isActive(editor, color){
         const marks = Editor.marks(editor);
         
-        return marks.bgColor === color
+        return marks[BGCOLOR] === color
     },
 
     /**
@@ -72,10 +73,10 @@ const BgColorHelper = {
         const isActive = this.isActive(editor, color);
 
         if(isActive){
-            Editor.removeMark(editor, "bgColor");
+            Editor.removeMark(editor, BGCOLOR);
         }
         else{
-            Editor.addMark(editor, "bgColor", color);
+            Editor.addMark(editor, BGCOLOR, color);
         }
     }
 }

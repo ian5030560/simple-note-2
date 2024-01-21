@@ -26,15 +26,14 @@ const Editor = ({ initlizeData, style }) => {
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
     const [search, setSearch] = useState("");
-    const [activeElement, setActiveElement] = useState();
 
     const renderElement = useCallback(props => {
-        
-        if (editor.isInline(props.element) && ELEMENT[props.element.type].inline) {
-            return ELEMENT[props.element.type].element(props);
+
+        if (editor.isInline(props.element)) {
+            return ELEMENT[props.element.type](props);
         }
 
-        return <Element {...props} renderContent={ELEMENT[props.element.type].element} />
+        return <Element {...props} renderContent={ELEMENT[props.element.type]} />
     }, [editor])
 
     const renderLeaf = useCallback(props => {
@@ -48,8 +47,6 @@ const Editor = ({ initlizeData, style }) => {
 
     const handleDragStart = (e) => {
         setActive(() => e.active.id);
-        const element = editor.children.filter((value) => value.id === e.active.id);
-        setActiveElement(() => element);
     }
 
     const handleDragEnd = (e) => {
@@ -65,32 +62,31 @@ const Editor = ({ initlizeData, style }) => {
             });
         }
         setActive(() => null);
-        setActiveElement(() => null);
     }
 
     const decorate = useCallback(([node, path]) => {
         const ranges = [];
- 
-        if(search && Text.isText(node)){
-            const {text} = node;
+
+        if (search && Text.isText(node)) {
+            const { text } = node;
             const parts = text.split(search);
             let offset = 0;
 
             parts.forEach((part, i) => {
                 if (i !== 0) {
-                  ranges.push({
-                    anchor: { path, offset: offset - search.length },
-                    focus: { path, offset },
-                    highlight: true,
-                  })
+                    ranges.push({
+                        anchor: { path, offset: offset - search.length },
+                        focus: { path, offset },
+                        highlight: true,
+                    })
                 }
 
                 offset = offset + part.length + search.length
-              })
-            }
+            })
+        }
 
-            return ranges;
-        
+        return ranges;
+
     }, [search]);
 
     return <Slate
@@ -98,7 +94,7 @@ const Editor = ({ initlizeData, style }) => {
         initialValue={value}
         onChange={setValue}
     >
-        <Toolbar onSearch={setSearch}/>
+        <Toolbar onSearch={setSearch} />
         <DndContext
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
@@ -114,7 +110,7 @@ const Editor = ({ initlizeData, style }) => {
                     spellCheck
                     autoFocus
                 />
-            {(active && activeElement) && <Overlay element={activeElement}/>}
+                {active && <Overlay id={active} />}
             </SortableContext>
         </DndContext>
     </Slate>

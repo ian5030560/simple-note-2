@@ -3,11 +3,11 @@ import { theme } from "antd";
 import PropTypes from 'prop-types';
 import { useMemo } from "react";
 
-const Overlay = ({element}) => {
+const Overlay = ({id}) => {
     const {token} = theme.useToken();
     const innerHtml = useMemo(() => {
-        return document.getElementById(element[0].id + "-content");
-    }, [element]);
+        return document.getElementById(id + "-content");
+    }, [id]);
 
     return <DragOverlay adjustScale={false}>
         <div dangerouslySetInnerHTML={{__html: innerHtml.outerHTML}} 

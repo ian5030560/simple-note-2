@@ -1,5 +1,4 @@
 import React from "react"
-import createElement from "../../spec/element";
 
 const Paragraph = ({ children, element }) => {
    
@@ -10,5 +9,4 @@ const Paragraph = ({ children, element }) => {
 }
 
 
-const paragraph = createElement(Paragraph);
-export default paragraph;
+export default Paragraph;

@@ -14,22 +14,22 @@ const UserPage = () => {
     const [darken, setDarken] = useState(false);
     const [open, setOpen] = useState(false);
     const [api, contextHolder] = notification.useNotification();
-    const [{username}] = useCookies(["username"]);
-    
+    const [{ username }] = useCookies(["username"]);
+
     const handleLogoutOk = () => {
         setOpen(false);
 
         User.logout(username)
-        .then((value) => {
-            if(!value){
-                api.error(
-                    {
-                        message: "登出發生錯誤，請重新登出",
-                        placement: "top",
-                    }
-                )
-            }
-        })
+            .then((value) => {
+                if (!value) {
+                    api.error(
+                        {
+                            message: "登出發生錯誤，請重新登出",
+                            placement: "top",
+                        }
+                    )
+                }
+            })
     }
 
     return <>
@@ -42,7 +42,7 @@ const UserPage = () => {
             <Index
                 onLogout={() => setOpen(true)}
             />
-            <BulbButton lighten={!darken} onClick={() => setDarken(prev => !prev)}/>
+            <BulbButton lighten={!darken} onClick={() => setDarken(prev => !prev)} />
         </ConfigProvider>
         <Modal
             open={open}
@@ -83,8 +83,13 @@ export const Index = ({ onLogout, rootStyle }) => {
             <SideBar onLogout={onLogout} />
         </Col>
         <Col span={20}>
-            <Flex style={{ width: "100%" }} vertical>
-                <Editor style={{color: token.colorText, paddingLeft: "5%", paddingRight: "10%"}}/>
+            <Flex vertical>
+                <Editor style={{
+                    color: token.colorText,
+                    paddingLeft: "5%",
+                    paddingRight: "10%",
+                    paddingTop: "5%",
+                }} />
             </Flex>
         </Col>
     </Row>

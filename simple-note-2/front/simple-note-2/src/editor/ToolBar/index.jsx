@@ -29,13 +29,13 @@ import { Editor } from "slate";
 
 const Toolbar = ({ onSearch }) => {
 
-    return <Affix
-        style={{
-            marginBottom: "5px",
-            minWidth: "100%",
-        }}>
+    return <div style={{
+        position: "fixed",
+        width: `${100 / 6 * 5}%`,
+    }}>
         <Index onSearch={onSearch} />
-    </Affix>
+    </div>
+
 }
 
 const ToolDivider = () => {
@@ -73,12 +73,12 @@ const Index = ({ onSearch }) => {
             break;
         }
     }
-
+    
     return <div
         style={{
             padding: "3px",
             backgroundColor: token.colorBgBase,
-            borderBottom: "3px solid black",
+            boxShadow: `3px 0px 5px ${token.colorText}`,
             display: "flex",
         }}>
 
@@ -153,7 +153,7 @@ const Index = ({ onSearch }) => {
             }}
             buttonProp={{
                 icon: <HighlightOutlined />,
-                style: {color: BgColorHelper.detectColor(editor) ? BgColorHelper.detectColor(editor) : rgbToHex(token.colorText) }
+                style: { color: BgColorHelper.detectColor(editor) ? BgColorHelper.detectColor(editor) : rgbToHex(token.colorText) }
             }}
         />
 

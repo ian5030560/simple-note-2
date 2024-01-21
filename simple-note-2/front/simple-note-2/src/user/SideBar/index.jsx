@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     Flex,
     Avatar,
@@ -55,7 +55,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
             icon={src ? null : <UserOutlined />}
             src={src}
         />
-        <Title level={4} style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>{username}</Title>
+        <Title level={4} ellipsis style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>{username}</Title>
         <Dropdown
             menu={{
                 items,
@@ -72,7 +72,7 @@ const UserProfile = ({ username, src, onLogout, onSet }) => {
 const SideBar = ({onLogout}) => {
 
     const { token } = theme.useToken();
-
+    
     return <Flex
         vertical
         justify="space-between"
@@ -80,8 +80,8 @@ const SideBar = ({onLogout}) => {
             height: "100%",
             position: "fixed",
             width: `${100 / 6}%`,
+            overflow: "auto",
             backgroundColor: token.colorPrimary,
-            
         }}>
         <Flex vertical>
             <UserProfile username="username" onLogout={onLogout}/>

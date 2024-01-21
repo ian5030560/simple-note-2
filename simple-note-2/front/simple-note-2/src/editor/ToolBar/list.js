@@ -84,12 +84,12 @@ const LIST = [
 
 const {Text} = Typography;
 const FontLabel = ({family}) => {
-    return <Text style={{fontFamily: family === "default" ? "initial" : family}}>{family}</Text>
+    return <Text style={{fontFamily: family === "default" ? undefined : family}}>{family}</Text>
 }
 
 const FONT_FAMILY = [
     {
-        value: "initial",
+        value: "default",
         label: <FontLabel family={"default"}/>,
     },
     {

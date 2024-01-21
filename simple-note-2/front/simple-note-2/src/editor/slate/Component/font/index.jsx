@@ -1,18 +1,17 @@
 import React from "react";
-import createLeaf from "../../spec/leaf";
 
+export const FONTFAMILY = "font-family";
+export const FONTSIZE = "font-size";
 
-const FontFamily = ({leaf, children}) => {
+export const FontFamily = ({leaf, children}) => {
+    
     return <span style={{
-        fontFamily: leaf.family && leaf.family !== "default" ? leaf.family : "initial",
+        fontFamily: leaf[FONTFAMILY] && leaf[FONTFAMILY] !== undefined ? leaf[FONTFAMILY] : undefined,
     }}>{children}</span>
 }
 
-const FontSize = ({leaf, children}) => {
+export const FontSize = ({leaf, children}) => {
     return <span style={{
-        fontSize: leaf.size ? `${leaf.size}px`: "initial"
+        fontSize: leaf[FONTSIZE] ? `${leaf[FONTSIZE]}px`: undefined
     }}>{children}</span>
 }
-
-export const family = createLeaf(FontFamily);
-export const size = createLeaf(FontSize);

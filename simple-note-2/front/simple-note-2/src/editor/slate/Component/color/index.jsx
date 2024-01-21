@@ -1,12 +1,12 @@
-import createLeaf from "../../spec/leaf"
+import React from "react"
 
-const FontColor = ({leaf, children}) => {
-    return <span style={{color: leaf.color ? leaf.color: "black"}}>{children}</span>
+export const FONTCOLOR = "font-color";
+export const BGCOLOR = "background-color";
+
+export const FontColor = ({leaf, children}) => {
+    return <span style={{color: leaf[FONTCOLOR] ? leaf[FONTCOLOR]: "black"}}>{children}</span>
 }
 
-const BackgroundColor = ({leaf, children}) => {
-    return <span style={{backgroundColor: leaf.bgColor ? leaf.bgColor: "transparent"}}>{children}</span>
+export const BackgroundColor = ({leaf, children}) => {
+    return <span style={{backgroundColor: leaf[BGCOLOR] ? leaf[BGCOLOR]: "transparent"}}>{children}</span>
 }
-
-export const color = createLeaf(FontColor);
-export const bgColor = createLeaf(BackgroundColor);

@@ -1,15 +1,15 @@
-import {bold, italic, underline} from "./Component/mark";
-import {color, bgColor} from "./Component/color";
-import {family, size} from "./Component/font";
+import {Bold, Italic, Underline} from "./Component/mark"
+import {FontColor, BackgroundColor, BGCOLOR, FONTCOLOR} from "./Component/color";
+import {FONTFAMILY, FONTSIZE, FontFamily, FontSize} from "./Component/font";
 
 const LEAF = {
-    bold, 
-    italic, 
-    underline,
-    color,
-    bgColor,
-    family, 
-    size,
+    "bold": Bold, 
+    "italic": Italic, 
+    "underline": Underline,
+    [FONTCOLOR]: FontColor,
+    [BGCOLOR]: BackgroundColor,
+    [FONTFAMILY]: FontFamily, 
+    [FONTSIZE]: FontSize,
 }
 
 export default LEAF;
