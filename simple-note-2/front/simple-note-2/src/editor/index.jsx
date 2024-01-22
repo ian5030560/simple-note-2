@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { createEditor, Transforms, Text } from "slate";
 import { Editable, Slate } from "slate-react";
-import { DndContext } from "@dnd-kit/core";
+import { DndContext, MouseSensor, useSensor } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { getId } from "./Slate/Plugin/withId";
 import Element from "./Slate/Component/default/element";
@@ -26,6 +26,9 @@ const Editor = ({ initlizeData, style }) => {
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
     const [search, setSearch] = useState("");
+    // const sensor = useSensor(MouseSensor, {
+    //     activationConstraint: {distance: 10}
+    // })
 
     const renderElement = useCallback(props => {
 

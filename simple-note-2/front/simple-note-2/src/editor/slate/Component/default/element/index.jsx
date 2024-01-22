@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import AddMenu from "./addMenu";
-import { Button, theme } from "antd";
+import { Button } from "antd";
 import ElementHelper from "./helper";
 import { useSlate } from "slate-react";
 import ADDLIST from "../../../add";
@@ -20,20 +20,40 @@ const HandleButton = (prop) => {
     />;
 }
 
+const DragLine = ({ isDragging }) => {
+
+    return <div style={{
+        width: "100%",
+        backgroundColor: "Highlight",
+        height: isDragging ? "3px" : "0px",
+        visibility: isDragging ? "visible" : "hidden",
+        position: "absolute",
+    }} contentEditable={false} />
+}
+
+const Wrapper = ({ children, isDragging, ...divProp }) => {
+    const style = {
+        minWidth: "100%",
+        height: !isDragging ? "auto" : "0px"
+    }
+
+    return <div {...divProp} style={style}>
+        {children}
+    </div>
+}
+
 const Element = (props) => {
 
     const [open, setOpen] = useState(false);
     const editor = useSlate();
-    const { token } = theme.useToken();
-    const [top, setTop] = useState(false);
-    const [bottom, setBottom] = useState(false);
 
     const {
         attributes,
         listeners,
         transform,
         setNodeRef,
-        // rect
+        isDragging,
+        isSorting,
     } = useSortable({
         id: props.element.id,
     });
@@ -44,20 +64,9 @@ const Element = (props) => {
         display: "flex",
         outline: "none",
         alignItems: "center",
-        // borderTop: `${top ? 3 : 0}px solid ${token.colorText}`,
-        // borderBottom: `${bottom ? 3 : 0}px solid ${token.colorText}`,
-    }
-
-    const handleMouseEnter = () => {
-        // console.log(rect.current);
-    }
-
-    const handleMouseMove = () => {
-
-    }
-
-    const handleMouseLeave = () => {
-
+        position: "relative",
+        visibility: !(isDragging && isSorting) ? "visible" : "hidden",
+        height: !(isDragging && isSorting) ? "auto" : "0px"
     }
 
     /**
@@ -69,10 +78,7 @@ const Element = (props) => {
         setOpen(false);
     }
 
-    return <div {...props.attributes}
-        onMouseEnter={handleMouseEnter}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}>
+    return <div {...props.attributes}>
         <div ref={setNodeRef} style={style} {...attributes}>
             <AddMenu
                 searchList={ADDLIST}
@@ -95,10 +101,10 @@ const Element = (props) => {
             >
                 ⠿
             </HandleButton>
-            <div style={{minWidth: "100%"}} id={props.element.id + "-content"}>
+            <DragLine isDragging={isSorting && isDragging}/>
+            <Wrapper id={props.element.id + "-content"} isDragging={isDragging && isSorting}>
                 {props.renderContent ? props.renderContent(props) : props.children.text}
-            </div>
-            
+            </Wrapper>
         </div>
     </div>
 
