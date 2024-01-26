@@ -86,7 +86,7 @@ export const Index = ({ onLogout, rootStyle }) => {
             <Flex vertical>
                 <Editor style={{
                     color: token.colorText,
-                    paddingLeft: "5%",
+                    paddingLeft: "10%",
                     paddingRight: "10%",
                     paddingTop: "5%",
                 }} />

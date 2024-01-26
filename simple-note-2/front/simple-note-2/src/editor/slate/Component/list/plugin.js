@@ -1,5 +1,6 @@
 import NoteEditor from "../../NoteEditor";
-import { Editor, TextUnit, Transforms } from "slate";
+import { Editor, TextUnit, Transforms, Element } from "slate";
+
 /**
  * 
  * @param {Editor} editor 
@@ -45,8 +46,6 @@ const withList = (editor) => {
     
         return deleteBackward(unit);
     }
-
-
     
     return editor;
 }

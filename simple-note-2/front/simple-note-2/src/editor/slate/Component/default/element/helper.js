@@ -1,4 +1,4 @@
-import { Editor, Transforms } from "slate"
+import { Editor, Transforms, Range, Path, Point } from "slate"
 
 const ElementHelper = {
     /**
@@ -7,11 +7,12 @@ const ElementHelper = {
      * @param {string} type 
      */
     addElement(editor, type) {
+
         Transforms.insertNodes(
             editor,
             { type: type, children: [{ text: "" }] },
             {
-                at: [editor.children.length]
+                at: [editor.children.length],
             }
         );
     }

@@ -32,6 +32,7 @@ const Toolbar = ({ onSearch }) => {
     return <div style={{
         position: "fixed",
         width: `${100 / 6 * 5}%`,
+        zIndex: 100
     }}>
         <Index onSearch={onSearch} />
     </div>

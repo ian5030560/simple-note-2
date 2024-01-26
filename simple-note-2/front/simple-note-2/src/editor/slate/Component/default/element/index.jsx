@@ -20,7 +20,7 @@ const HandleButton = (prop) => {
     />;
 }
 
-const DragLine = ({ isDragging }) => {
+const DropLine = ({ isDragging }) => {
 
     return <div style={{
         width: "100%",
@@ -31,15 +31,8 @@ const DragLine = ({ isDragging }) => {
     }} contentEditable={false} />
 }
 
-const Wrapper = ({ children, isDragging, ...divProp }) => {
-    const style = {
-        minWidth: "100%",
-        height: !isDragging ? "auto" : "0px"
-    }
-
-    return <div {...divProp} style={style}>
-        {children}
-    </div>
+DropLine.propTypes = {
+    isDragging: PropTypes.bool
 }
 
 const Element = (props) => {
@@ -54,19 +47,20 @@ const Element = (props) => {
         setNodeRef,
         isDragging,
         isSorting,
+        transition
     } = useSortable({
         id: props.element.id,
     });
 
     const style = {
         transform: CSS.Transform.toString(transform),
-        transition: null,
+        transition: transition,
         display: "flex",
         outline: "none",
         alignItems: "center",
         position: "relative",
         visibility: !(isDragging && isSorting) ? "visible" : "hidden",
-        height: !(isDragging && isSorting) ? "auto" : "0px"
+        height: !(isDragging && isSorting) ? "auto" : "5px"
     }
 
     /**
@@ -80,31 +74,33 @@ const Element = (props) => {
 
     return <div {...props.attributes}>
         <div ref={setNodeRef} style={style} {...attributes}>
-            <AddMenu
-                searchList={ADDLIST}
-                onSelect={handleSelect}
-                open={open}
-                onLeave={() => setOpen(false)}>
-                <Button
-                    onClick={() => setOpen(prev => !prev)}
+            <div style={{ position: "absolute", display: "flex", left: "-50px" }}>
+                <AddMenu
+                    searchList={ADDLIST}
+                    onSelect={handleSelect}
+                    open={open}
+                    onLeave={() => setOpen(false)}>
+                    <Button
+                        onClick={() => setOpen(prev => !prev)}
+                        contentEditable={false}
+                        type="text"
+                        size="small"
+                        icon=<PlusOutlined />
+                    />
+                </AddMenu>
+                <HandleButton
                     contentEditable={false}
+                    {...listeners}
                     type="text"
                     size="small"
-                    icon=<PlusOutlined />
-                />
-            </AddMenu>
-            <HandleButton
-                contentEditable={false}
-                {...listeners}
-                type="text"
-                size="small"
-            >
-                ⠿
-            </HandleButton>
-            <DragLine isDragging={isSorting && isDragging}/>
-            <Wrapper id={props.element.id + "-content"} isDragging={isDragging && isSorting}>
+                >
+                    ⠿
+                </HandleButton>
+            </div>
+            <DropLine isDragging={isSorting && isDragging} />
+            <div id={props.element.id + "-content"} style={{ minWidth: "100%" }}>
                 {props.renderContent ? props.renderContent(props) : props.children.text}
-            </Wrapper>
+            </div>
         </div>
     </div>
 

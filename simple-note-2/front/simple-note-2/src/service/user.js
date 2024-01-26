@@ -25,4 +25,23 @@ export default class User{
     static async loadInfo(username){
         return undefined;
     }
+
+    /**
+     * 
+     * @param {File} file
+     */
+    static async uploadImage(file){
+        let form = new FormData();
+        form.append("file", file);
+        let res = await fetch(
+            "http://localhost:5000/upload",
+            {
+                method: "POST",
+                body: form,
+            }
+        ).then((r) => r.text())
+
+        return res
+    }
+
 }

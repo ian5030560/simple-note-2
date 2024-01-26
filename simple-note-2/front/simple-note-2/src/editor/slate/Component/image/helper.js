@@ -5,16 +5,16 @@ const ImageHelper = {
     /**
      * 
      * @param {Editor} editor 
-     * @param {Blob} blob 
+     * @param {string} src
      * @param {Element} element
      */
-    setSource(editor, blob, element){
+    setSource(editor, src, element){
 
         const path = ReactEditor.findPath(editor, element);
 
         Transforms.setNodes(
             editor,
-            {blob: blob},
+            {src: src},
             {
                 at: path
             }

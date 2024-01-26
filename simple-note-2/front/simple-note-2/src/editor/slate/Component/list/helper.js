@@ -3,27 +3,25 @@ import { Editor, Element } from "slate";
 import NoteEditor from "../../NoteEditor";
 
 class IntVariable {
-    
+
     /**
      * 
      * @param {Number} value 
      */
-    constructor(value){
+    constructor(value) {
         this.value = value;
     }
 
-    set(value){
+    set(value) {
         this.value = value;
     }
 
-    get(){
+    get() {
         return this.value;
     }
 }
 
 const ListHelper = {
-
-    name: "type",
 
     isActive(editor, type) {
         const { selection } = editor;
@@ -34,10 +32,10 @@ const ListHelper = {
             editor,
             {
                 at: Editor.unhangRange(editor, selection),
-                match: n => !Editor.isEditor(n) && Element.isElement(n) && n[this.name] === type
+                match: n => !Editor.isEditor(n) && Element.isElement(n) && n["type"] === type
             }
         ))
-        
+
         return !!match;
     },
 
@@ -49,7 +47,7 @@ const ListHelper = {
     toggleBlock(editor, type) {
         const isActive = this.isActive(editor, type);
         const prev = NoteEditor.previousElement(editor, editor.selection);
-        this.sorted(isActive, prev.index, editor, type);
+        this.sorted(isActive, prev.index, editor, type, 0);
     },
 
     /**
@@ -59,23 +57,25 @@ const ListHelper = {
      * @param {Editor} editor 
      * @param {string} type 
      */
-    sorted(active, start, editor, type){
-        const nodes = NoteEditor.nodes(editor, {match: n => Element.isElement(n)});
+    sorted(active, start, editor, type, indent) {
+        const nodes = NoteEditor.nodes(editor, { match: n => Element.isElement(n) });
         var i = new IntVariable(start ? start : 0);
 
-        for(let node of nodes) {
+        for (let node of nodes) {
             Transforms.setNodes(
                 editor,
-                {type: !active ? type : "paragraph",
-                 index: !active && type === "ordered" ? (() => {
-                    i.set(i.get() + 1);
-                    return i.get();
-                 })() : undefined},
+                {
+                    type: !active ? type : "paragraph",
+                    index: !active && type === "ordered" ? (() => {
+                        i.set(i.get() + 1);
+                        return i.get();
+                    })() : undefined,
+                },
                 {
                     at: editor.selection,
                     match: n => {
-                        if(Element.isElement(n) && Node.matches(n, node[0])){
-                            if(node[0].children.length === 1 && !node[0].children[0].text){
+                        if (Element.isElement(n) && Node.matches(n, node[0])) {
+                            if (node[0].children.length === 1 && !node[0].children[0].text) {
                                 i.set(0);
                                 return false;
                             }
@@ -84,6 +84,8 @@ const ListHelper = {
                     }
                 }
             )
+
+            
         }
     }
 }

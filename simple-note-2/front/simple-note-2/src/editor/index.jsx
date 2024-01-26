@@ -26,9 +26,6 @@ const Editor = ({ initlizeData, style }) => {
     const [active, setActive] = useState();
     const [value, setValue] = useState(initlizeData ? initlizeData : DATA);
     const [search, setSearch] = useState("");
-    // const sensor = useSensor(MouseSensor, {
-    //     activationConstraint: {distance: 10}
-    // })
 
     const renderElement = useCallback(props => {
 

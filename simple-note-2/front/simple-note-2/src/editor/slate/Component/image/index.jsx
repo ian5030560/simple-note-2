@@ -1,27 +1,29 @@
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 import { useSlate } from "slate-react";
 import { Image as AntImage, Button } from "antd";
 import ImageHelper from "./helper";
+import User from "../../../../service/user";
 
 const Image = ({ element, children }) => {
 
     const ref = useRef();
     const editor = useSlate();
 
-    const handleChange = (e) => {
-        ImageHelper.setSource(editor, e.target.files[0], element);
-    }
+    const handleChange = useCallback(async (e) => {
+        let src = await User.uploadImage(e.target.files[0]);
+        ImageHelper.setSource(editor, src, element);
+    }, [editor, element]);
 
     return <span
         style={{width: "100%"}}
-    >
+    >   
         <div
             style={{
                 textAlign: element.align ? element.align : "start",
             }}
         >
-            {element.blob ?
-                <AntImage src={URL.createObjectURL(element.blob)} contentEditable={false} width={300} preview={false} /> :
+            {element.src ?
+                <AntImage src={element.src} contentEditable={false} width={300} preview={false} /> :
                 <Button
                     type="primary"
                     style={{ width: "100%" }}
