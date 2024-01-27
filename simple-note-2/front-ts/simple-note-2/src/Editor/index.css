@@ -1,0 +1,37 @@
+body{
+    overflow-x: hidden;
+}
+.ltr {
+    text-align: left;
+}
+
+.rtl {
+    text-align: right;
+}
+
+.editor-placeholder {
+    color: #999;
+    overflow: hidden;
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    user-select: none;
+    pointer-events: none;
+}
+
+.editor-paragraph {
+    position: relative;
+}
+
+.editable {
+    position: relative;
+    padding: 3px;
+    margin: 8% 10%;
+    outline: none;
+}
+
+.placeholder {
+    width: 100%;
+    position: absolute;
+    top: 0;
+}

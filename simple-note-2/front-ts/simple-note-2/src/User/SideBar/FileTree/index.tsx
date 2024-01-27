@@ -3,11 +3,11 @@ import { Tree, theme, TreeDataNode } from "antd";
 import { NodeCreater, createIndiviualNode } from "./node";
 import { Key, EventDataNode } from "rc-tree/lib/interface";
 
-interface FileDataType extends TreeDataNode{
+interface FileDataType extends TreeDataNode {
     key: string,
-    title: React.ReactNode,
+    title: string | React.JSX.Element,
     children: FileDataType[],
-    name: string,
+    name: React.ReactNode,
 }
 
 function findTargetByKey(key: string, origin: FileDataType[]) {
@@ -86,9 +86,10 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
 
     const handleAdd = (
         nodeKey: string,
-        text: string,
+        text: React.ReactNode,
         setChildren: React.Dispatch<SetStateAction<FileDataType[]>>,
-        createNode: NodeCreater) => {
+        createNode: NodeCreater
+    ) => {
 
         setChildren(prev => {
             let target = findTargetByKey(nodeKey, prev);
@@ -113,8 +114,8 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
 
 
     const handleDelete = (
-        nodeKey: string, 
-        setChildren: React.Dispatch<SetStateAction<FileDataType[]>>, 
+        nodeKey: string,
+        setChildren: React.Dispatch<SetStateAction<FileDataType[]>>,
         createNode: NodeCreater) => {
 
         setChildren(prev => {
@@ -147,7 +148,7 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
             return [...prev];
         })
     }
-    
+
     const rootData: TreeDataNode[] = [
         {
             key: "individual",

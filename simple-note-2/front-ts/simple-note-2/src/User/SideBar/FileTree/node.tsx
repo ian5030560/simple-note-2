@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Modal, Input, Flex, Typography, theme, ModalProps } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { determineWhiteOrBlack } from "../../../util/color";
-import PropTypes from 'prop-types';
 
 const { Text } = Typography;
 
@@ -91,7 +90,7 @@ const IndividualNode: React.FC<IndividualProp> = ({ text, nodeKey, onAdd, onDele
         }}
         onDelete={onDelete}
         root={root}
-        addModalRender={<Input value={input} placeholder="請輸入..." onChange={(e) => setInput(() => e.target.value)}/>}
+        addModalRender={<Input value={input} placeholder="請輸入..." onChange={(e) => setInput(() => e.target.value)} />}
         addModalProp={{ title: "輸入名稱" }}
         deleteModalRender={<Text>是否刪除{text}</Text>}
         deleteModalProp={{
@@ -104,25 +103,23 @@ const IndividualNode: React.FC<IndividualProp> = ({ text, nodeKey, onAdd, onDele
 }
 
 export type NodeCreater = (
-    text: string, 
-    nodeKey: string, 
-    onAdd: (key: string, text: string) => void, 
-    onDelete: (key: string, text: string) => void, 
+    text: React.ReactNode,
+    nodeKey: string,
+    onAdd: (key: string, text: React.ReactNode) => void,
+    onDelete: (key: string, text: React.ReactNode) => void,
     root: boolean
 ) => React.JSX.Element;
 
-export function createIndiviualNode(
-    text: React.ReactNode, 
-    nodeKey: string, 
-    onAdd: (key: string, text: React.ReactNode) => void, 
-    onDelete: (key: string, text: React.ReactNode) => void, 
-    root: boolean
-) {
-    return <IndividualNode
+export const createIndiviualNode: NodeCreater = (
+    text,
+    nodeKey,
+    onAdd,
+    onDelete,
+    root
+) => <IndividualNode
         text={text}
         nodeKey={nodeKey}
         onAdd={onAdd}
         onDelete={onDelete}
         root={root}
     />;
-}
