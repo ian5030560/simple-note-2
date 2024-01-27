@@ -1,14 +1,21 @@
 import React, { SetStateAction, useState } from "react"
 import { Tree, theme, TreeDataNode } from "antd";
-import { createIndiviualNode } from "./node";
+import { NodeCreater, createIndiviualNode } from "./node";
 import { Key, EventDataNode } from "rc-tree/lib/interface";
 
-function findTargetByKey(key: string, origin: any[]) {
+interface FileDataType extends TreeDataNode{
+    key: string,
+    title: React.ReactNode,
+    children: FileDataType[],
+    name: string,
+}
+
+function findTargetByKey(key: string, origin: FileDataType[]) {
     let indice = key.split("-");
 
     let tmp = origin;
     for (let i of indice.slice(1)) {
-        tmp = tmp[i].children
+        tmp = tmp[parseInt(i)].children
     }
 
     return tmp;
@@ -26,14 +33,7 @@ function getParentKey(key: string) {
     return result;
 }
 
-interface FileDataType{
-    key: string,
-    title: string,
-    children?: FileDataType[],
-    name: string,
-}
-
-interface SelectInfo {
+type SelectInfo = {
     event: "select",
     selected: boolean;
     node: EventDataNode<TreeDataNode>;
@@ -50,8 +50,8 @@ interface FileTreeProp {
 const FileTree: React.FC<FileTreeProp> = (prop) => {
 
     const { token } = theme.useToken();
-    const [i_children, setI_Children] = useState<TreeDataNode[]>(!prop.individual ? [] :
-        prop.individual.map(data => {
+    const [i_children, setI_Children] = useState<FileDataType[]>(!prop.individual ? [] :
+        prop.individual.map((data): FileDataType => {
             return {
                 key: data.key,
                 title: createIndiviualNode(
@@ -67,8 +67,8 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
         })
     );
 
-    const [m_children, setM_Children] = useState<TreeDataNode[]>(!prop.mutiple ? [] :
-        prop.mutiple.map(data => {
+    const [m_children, setM_Children] = useState<FileDataType[]>(!prop.mutiple ? [] :
+        prop.mutiple.map((data): FileDataType => {
             return {
                 key: data.key,
                 title: createIndiviualNode(
@@ -87,8 +87,8 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
     const handleAdd = (
         nodeKey: string,
         text: string,
-        setChildren: React.Dispatch<SetStateAction<TreeDataNode[]>>,
-        createNode: any) => {
+        setChildren: React.Dispatch<SetStateAction<FileDataType[]>>,
+        createNode: NodeCreater) => {
 
         setChildren(prev => {
             let target = findTargetByKey(nodeKey, prev);
@@ -114,8 +114,8 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
 
     const handleDelete = (
         nodeKey: string, 
-        setChildren: React.Dispatch<SetStateAction<any>>, 
-        createNode: any) => {
+        setChildren: React.Dispatch<SetStateAction<FileDataType[]>>, 
+        createNode: NodeCreater) => {
 
         setChildren(prev => {
 
@@ -124,7 +124,7 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
             let i = parseInt(nodeKey.charAt(nodeKey.length - 1));
             target.splice(i, 1);
 
-            function changeSubtreeKey(t, p) {
+            function changeSubtreeKey(t: FileDataType[], p: string) {
 
                 for (let index in t) {
                     let key = `${p}-${index}`;

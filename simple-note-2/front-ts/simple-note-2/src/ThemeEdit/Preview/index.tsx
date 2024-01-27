@@ -2,7 +2,7 @@ import React from "react";
 import '../../../node_modules/reactflow/dist/style.css';
 import ReactFlow, { Controls, Background, BackgroundVariant } from "reactflow";
 import { Index as User } from "../../User";
-import { ConfigProvider } from "antd";
+import { ConfigProvider, ThemeConfig } from "antd";
 import { Node } from "@reactflow/core/dist/esm/types/nodes"
 
 const PreviewComponent = () => {
@@ -23,7 +23,7 @@ const nodes: Node<any, string | undefined>[] = [
     },
 ];
 
-const Preview = ({ theme }) => {
+const Preview = ({ theme }: {theme: ThemeConfig}) => {
 
     return <ConfigProvider
         theme={theme}

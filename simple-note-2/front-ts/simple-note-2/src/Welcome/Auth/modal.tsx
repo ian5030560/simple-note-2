@@ -11,7 +11,7 @@ export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
 
-  const handleFinished = (values) => {
+  const handleFinished = (values: any) => {
 
     setLoading(true);
     postData("http://localhost:8000/forget_password/", values)

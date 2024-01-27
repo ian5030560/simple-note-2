@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Col, Row, Flex, ConfigProvider, theme, Typography, Modal, notification } from "antd";
 import SideBar from "./SideBar";
-import Editor from "../Editor";
+// import Editor from "../Editor";
 import defaultTheme from "../theme/default";
 import { BulbButton } from "../Welcome";
 import User from "../service/user";
@@ -89,12 +89,13 @@ export const Index: React.FC<UserPageIndexProp> = ({ onLogout, rootStyle }) => {
         </Col>
         <Col span={20}>
             <Flex vertical>
-                <Editor style={{
+                <></>
+                {/* <Editor style={{
                     color: token.colorText,
                     paddingLeft: "10%",
                     paddingRight: "10%",
                     paddingTop: "5%",
-                }} />
+                }} /> */}
             </Flex>
         </Col>
     </Row>

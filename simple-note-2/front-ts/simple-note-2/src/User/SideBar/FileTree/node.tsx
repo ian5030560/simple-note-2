@@ -6,7 +6,13 @@ import PropTypes from 'prop-types';
 
 const { Text } = Typography;
 
-const ToolLine = ({ nodeKey, onDelete, onAdd, root }) => {
+interface ToolButtonsProp {
+    nodeKey: string,
+    onDelete: (key: string) => void,
+    onAdd: (key: string) => void,
+    root: boolean
+}
+const ToolButtons: React.FC<ToolButtonsProp> = ({ nodeKey, onDelete, onAdd, root }) => {
 
     const { token } = theme.useToken();
 
@@ -28,10 +34,10 @@ const ToolLine = ({ nodeKey, onDelete, onAdd, root }) => {
 }
 
 interface NodeProp {
-    text: string,
+    text: React.ReactNode,
     nodeKey: string,
-    onAdd: (key: string, text: string) => void,
-    onDelete: (key: string, text: string) => void,
+    onAdd: (key: string, text: React.ReactNode) => void,
+    onDelete: (key: string, text: React.ReactNode) => void,
     root: boolean,
     addModalRender: React.ReactNode,
     deleteModalRender: React.ReactNode,
@@ -47,7 +53,7 @@ const Node: React.FC<NodeProp> = (prop) => {
     return <>
         <Flex gap={"large"}>
             <Text ellipsis style={{ color: determineWhiteOrBlack(token.colorPrimary), whiteSpace: "nowrap" }}>{prop.text}</Text>
-            <ToolLine
+            <ToolButtons
                 nodeKey={prop.nodeKey}
                 onAdd={() => setOpenAdd(true)}
                 onDelete={() => setOpenDelte(true)}
@@ -70,13 +76,7 @@ const Node: React.FC<NodeProp> = (prop) => {
     </>
 }
 
-interface IndividualProp {
-    text: string,
-    nodeKey: string,
-    onAdd: (key: string, text: string) => void,
-    onDelete: (key: string, text: string) => void,
-    root: any,
-}
+type IndividualProp = Pick<NodeProp, "text" | "nodeKey" | "onAdd" | "onDelete" | "root">;
 
 const IndividualNode: React.FC<IndividualProp> = ({ text, nodeKey, onAdd, onDelete, root }) => {
 
@@ -103,12 +103,20 @@ const IndividualNode: React.FC<IndividualProp> = ({ text, nodeKey, onAdd, onDele
     />
 }
 
-export function createIndiviualNode(
+export type NodeCreater = (
     text: string, 
     nodeKey: string, 
     onAdd: (key: string, text: string) => void, 
     onDelete: (key: string, text: string) => void, 
-    root: any
+    root: boolean
+) => React.JSX.Element;
+
+export function createIndiviualNode(
+    text: React.ReactNode, 
+    nodeKey: string, 
+    onAdd: (key: string, text: React.ReactNode) => void, 
+    onDelete: (key: string, text: React.ReactNode) => void, 
+    root: boolean
 ) {
     return <IndividualNode
         text={text}

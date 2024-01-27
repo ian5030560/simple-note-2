@@ -27,7 +27,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             );
     }, [form, values]);
 
-    const handleFinished = (values) => {
+    const handleFinished = (values: any) => {
 
         setState(STATE.LOADING);
 

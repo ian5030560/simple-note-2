@@ -6,7 +6,7 @@ import UserPage from "./User";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 
-function App(): React.JSX.Element {
+export default function App(): React.JSX.Element {
   return <CookiesProvider defaultSetOptions={{ path: "/" }}>
     <BrowserRouter>
       <Routes>
@@ -17,5 +17,3 @@ function App(): React.JSX.Element {
     </BrowserRouter>
   </CookiesProvider>
 }
-
-export default App;

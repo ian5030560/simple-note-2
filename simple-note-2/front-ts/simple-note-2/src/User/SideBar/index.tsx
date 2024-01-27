@@ -38,7 +38,7 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src, onLogout, onSet
         }
     ];
 
-    const handleClick = ({ key }) => {
+    const handleClick = ({ key }: {key: string}) => {
         switch (key) {
             case "setting":
                 onSet?.();
