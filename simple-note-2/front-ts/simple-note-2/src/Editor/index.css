@@ -19,9 +19,10 @@ body{
     pointer-events: none;
 }
 
-.editor-paragraph {
+.paragraph {
     position: relative;
 }
+
 
 .editable {
     position: relative;
@@ -34,4 +35,16 @@ body{
     width: 100%;
     position: absolute;
     top: 0;
+}
+
+.text-underline {
+    text-decoration: underline;
+}
+
+.text-bold {
+    font-weight: bold;
+}
+
+.text-italic {
+    font-style: italic;
 }

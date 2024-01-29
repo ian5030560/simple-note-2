@@ -12,9 +12,9 @@ export interface OptionGroupProp {
     options: Option[],
     vertical?: boolean,
     onClick?: (key: string) => void,
-    onSelect?: (key: string) => boolean,
+    select?: (key: string) => boolean,
 }
-const OptionGroup: React.FC<OptionGroupProp> = ({ options, vertical, onClick, onSelect }) => {
+const OptionGroup: React.FC<OptionGroupProp> = ({ options, vertical, onClick, select }) => {
 
     return <Flex vertical={vertical} gap={"small"}>
         {
@@ -22,7 +22,7 @@ const OptionGroup: React.FC<OptionGroupProp> = ({ options, vertical, onClick, on
 
                 return <Button
                     key={option.key}
-                    type={onSelect?.(option.key) ? "primary" : "text"}
+                    type={select?.(option.key) ? "primary" : "text"}
                     icon={option.icon}
                     style={option.style}
                     onClick={() => onClick?.(option.key)}>

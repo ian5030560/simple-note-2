@@ -7,9 +7,11 @@ const FontLabel: React.FC<{family: string}> = ({family}: {family: string}) => {
     return <Text style={{fontFamily: family === "default" ? undefined : family}}>{family}</Text>
 }
 
+export const DEFAULT = "unset";
+
 const FONT_FAMILY = [
     {
-        value: "default",
+        value: DEFAULT,
         label: <FontLabel family={"default"}/>,
     },
     {

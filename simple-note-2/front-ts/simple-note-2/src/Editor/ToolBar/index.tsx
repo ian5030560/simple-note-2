@@ -3,8 +3,9 @@ import React from "react"
 import { LIST } from "./constant";
 import Divider from "./Component/Basic/divider";
 import "./index.css";
+import { Plugin } from "../Lexical/Interface";
 
-const ToolBar: React.FC = () => {
+const ToolBarPlugin: Plugin = () => {
     const { token } = theme.useToken();
 
     return <Flex
@@ -27,4 +28,4 @@ const ToolBar: React.FC = () => {
     </Flex>
 }
 
-export default ToolBar;
+export default ToolBarPlugin;
