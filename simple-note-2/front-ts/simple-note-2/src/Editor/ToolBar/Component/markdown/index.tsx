@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, { useState } from "react"
 import OptionGroup, { Option } from "../Basic/option"
 import { BoldOutlined, ItalicOutlined, UnderlineOutlined } from "@ant-design/icons"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
@@ -25,18 +25,15 @@ const Markdown: React.FC = () => {
     const [editor] = useLexicalComposerContext();
     const [current, setCurrent] = useState<string[]>([]);
 
-    useSelectionListener({
-        handler: (selection) => {
-            let marks: string[] = [];
-            for(let {key} of MARKDOWN){
-                if(selection?.hasFormat(key as TextFormatType)){
-                    marks.push(key)
-                }
+    useSelectionListener((selection) => {
+        let marks: string[] = [];
+        for (let { key } of MARKDOWN) {
+            if (selection?.hasFormat(key as TextFormatType)) {
+                marks.push(key)
             }
-            setCurrent(() => marks);
-        },
-        priority: 1,
-    })
+        }
+        setCurrent(() => marks);
+    }, 1)
 
     return <OptionGroup
         options={MARKDOWN}

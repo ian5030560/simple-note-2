@@ -24,9 +24,8 @@ const ALIGN: Option[] = [
 const Align: React.FC = () => {
     const [editor] = useLexicalComposerContext();
     const [current, setCurrent] = useState<string | undefined>();
-
-    useSelectionListener({
-        handler: (selection) => {
+    
+    useSelectionListener((selection) => {
             let node = selection?.getNodes()[0];
             if (!node) return;
 
@@ -38,9 +37,7 @@ const Align: React.FC = () => {
             let result = $isElementNode(parent);
             let text = result ? (parent as ElementNode).getFormatType() : "left";
             setCurrent(() => text);
-        },
-        priority: 1,
-    })
+        }, 1)
 
     return <OptionGroup
         options={ALIGN}

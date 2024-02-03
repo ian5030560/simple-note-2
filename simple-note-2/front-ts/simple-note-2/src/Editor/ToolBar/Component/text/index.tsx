@@ -53,22 +53,19 @@ const Text: React.FC = () => {
     const [editor] = useLexicalComposerContext();
     const [current, setCurrent] = useState<string | null>();
 
-    useSelectionListener({
-        handler: (selection) => {
-            const node = selection.getNodes()[0];
-            let result: LexicalNode | null;
-            if($isElementNode(node)) result = node;
-            else{
-                let parent = $findMatchingParent(
-                    node,
-                    (p) => $isElementNode(p) && !p.isInline()
-                );
-                result = parent;
-            }
-            setCurrent(() => $isParagraphNode(result) ? "paragraph" : $isHeadingNode(result) ? result.getTag() : undefined);
-        },
-        priority: 1,
-    })
+    useSelectionListener((selection) => {
+        const node = selection.getNodes()[0];
+        let result: LexicalNode | null;
+        if ($isElementNode(node)) result = node;
+        else {
+            let parent = $findMatchingParent(
+                node,
+                (p) => $isElementNode(p) && !p.isInline()
+            );
+            result = parent;
+        }
+        setCurrent(() => $isParagraphNode(result) ? "paragraph" : $isHeadingNode(result) ? result.getTag() : undefined);
+    }, 1)
 
     return <Select
         options={TEXT}
@@ -77,18 +74,18 @@ const Text: React.FC = () => {
             editor.update(() => {
                 const selection = $getSelection();
 
-                if(!$isRangeSelection(selection)) return;
+                if (!$isRangeSelection(selection)) return;
 
                 const node = selection.getNodes()[0];
-                if($isElementNode(node)){
+                if ($isElementNode(node)) {
                     $setBlocksType(selection, handlers[value]);
-                }   
-                else{
+                }
+                else {
                     let parent = $findMatchingParent(
                         node,
                         (p) => $isElementNode(p) && !p.isInline()
                     );
-                    if(!$isElementNode(parent)) return;
+                    if (!$isElementNode(parent)) return;
                     $setBlocksType(selection, handlers[value]);
                 }
             })

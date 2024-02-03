@@ -1,15 +1,13 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { RangeSelection, $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, CommandListenerPriority } from "lexical";
+import { RangeSelection, $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, CommandListenerPriority, TextNode } from "lexical";
 import { useEffect } from "react";
 import { mergeRegister } from "@lexical/utils";
 
-
-export interface SelectionHandler {
+export function useSelectionListener(
     handler: (selection: RangeSelection) => void,
-    returnValue?: boolean,
-    priority: CommandListenerPriority
-};
-export function useSelectionListener(handler: SelectionHandler) {
+    priority: CommandListenerPriority,
+    stopPropagation: boolean = false,
+) {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
@@ -18,7 +16,7 @@ export function useSelectionListener(handler: SelectionHandler) {
             editor.registerUpdateListener(({ editorState }) => {
                 editorState.read(() => {
                     let selection = $getSelection();
-                    if($isRangeSelection(selection)) handler.handler(selection);
+                    if ($isRangeSelection(selection)) handler(selection);
                 })
             }),
 
@@ -27,11 +25,11 @@ export function useSelectionListener(handler: SelectionHandler) {
                 (_payload, _) => {
                     editor.update(() => {
                         let selection = $getSelection();
-                        if($isRangeSelection(selection)) handler.handler(selection);
+                        if (selection) handler(selection as RangeSelection);
                     });
-                    return handler.returnValue ? handler.returnValue : false;
-                }, handler.priority
+                    return stopPropagation;
+                }, priority
             )
         );
-    })
+    }, [editor, handler, priority, stopPropagation])
 }

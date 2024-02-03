@@ -11,16 +11,13 @@ const FontFamily: React.FC = () => {
     const [editor] = useLexicalComposerContext();
     const [family, setFamily] = useState<string | null>();
 
-    useSelectionListener({
-        handler: (selection) => {
-            const node = selection.getNodes()[0];
-            if(!$isTextNode(node)) return;
-            
-            let f = $getSelectionStyleValueForProperty(selection, "font-family", DEFAULT);
-            setFamily(() => f);
-        },
-        priority: 1,
-    })
+    useSelectionListener((selection) => {
+        const node = selection.getNodes()[0];
+        if (!$isTextNode(node)) return;
+
+        let f = $getSelectionStyleValueForProperty(selection, "font-family", DEFAULT);
+        setFamily(() => f);
+    }, 1)
 
     return <Select
         showSearch
@@ -30,12 +27,12 @@ const FontFamily: React.FC = () => {
         onChange={(value) => {
             editor.update(() => {
                 const selection = $getSelection();
-                if(!$isRangeSelection(selection)) return;
-    
+                if (!selection) return;
+
                 const node = selection.getNodes()[0];
-                if(!$isTextNode(node)) return;
-    
-                $patchStyleText(selection, {"font-family": value});
+                if (!$isTextNode(node)) return;
+
+                $patchStyleText(selection, { "font-family": value });
                 setFamily(() => value);
             })
         }}

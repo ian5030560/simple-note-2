@@ -1,0 +1,11 @@
+.dnd-wrapper{
+    position: relative;
+}
+
+.drop-line-top{
+    border-top: 3px solid;
+}
+
+.drop-line-bottom{
+    border-bottom: 3px solid;
+}

@@ -15,14 +15,11 @@ const FontSize: React.FC = () => {
     const [value, setValue] = useState<number>(SIZE.DEFAULT);
     const [editor] = useLexicalComposerContext();
 
-    useSelectionListener({
-        handler: (selection) => {
-            let v = $getSelectionStyleValueForProperty(selection, "font-size", `${SIZE.DEFAULT}px`);
-            let result = parseInt(v.replace("px", ""));
-            setValue(() => Number.isNaN(result) ? SIZE.DEFAULT : result);
-        },
-        priority: 1,
-    })
+    useSelectionListener((selection) => {
+        let v = $getSelectionStyleValueForProperty(selection, "font-size", `${SIZE.DEFAULT}px`);
+        let result = parseInt(v.replace("px", ""));
+        setValue(() => Number.isNaN(result) ? SIZE.DEFAULT : result);
+    }, 1)
 
     return <InputNumber
         min={SIZE.MIN}
@@ -32,7 +29,7 @@ const FontSize: React.FC = () => {
         onChange={(val) => {
             editor.update(() => {
                 const selection = $getSelection();
-                if (!$isRangeSelection(selection)) return;
+                if (!selection) return;
 
                 const node = selection.getNodes()[0];
                 if (!$isTextNode(node)) return;

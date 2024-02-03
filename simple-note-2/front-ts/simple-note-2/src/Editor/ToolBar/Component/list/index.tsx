@@ -27,30 +27,27 @@ const List: React.FC = () => {
     const [current, setCurrent] = useState<string | null>();
     const [editor] = useLexicalComposerContext();
 
-    useSelectionListener({
-        handler: (selection) => {
-            const node = selection.getNodes()[0];
-            let parent = $findMatchingParent(
-                node,
-                (p) => $isListNode(p)
-            )
-            if($isListNode(parent)){
-                let type = parent.getListType();
-                setCurrent(() => type);
-            }
-            else{
-                setCurrent(() => null);
-            }
-        },
-        priority: 1,
-    })
+    useSelectionListener((selection) => {
+        const node = selection.getNodes()[0];
+        let parent = $findMatchingParent(
+            node,
+            (p) => $isListNode(p)
+        )
+        if ($isListNode(parent)) {
+            let type = parent.getListType();
+            setCurrent(() => type);
+        }
+        else {
+            setCurrent(() => null);
+        }
+    }, 1)
 
     return <OptionGroup
         options={LIST}
         select={(key) => current === key}
         onClick={(key) => {
-            if (current === key) { 
-                editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined); 
+            if (current === key) {
+                editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
                 setCurrent(() => null);
             }
             else {
