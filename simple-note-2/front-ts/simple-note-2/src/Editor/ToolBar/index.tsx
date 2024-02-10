@@ -13,7 +13,6 @@ const ToolBarPlugin: Plugin = () => {
         style={{
             backgroundColor: token.colorBgBase,
             boxShadow: `3px 0px 5px ${token.colorText}`,
-            width: `${100 / 6 * 5 - 0.5}%`
         }}
 
         justify="space-evenly"

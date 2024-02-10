@@ -7,6 +7,7 @@ import RichTextPlugin from "./Lexical/richtext";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import DraggablePlugin from "./Lexical/draggable";
+import ADDLIST from "./addList";
 
 const PLUGINS: React.ReactNode[] = [
     <RichTextPlugin />,
@@ -15,7 +16,7 @@ const PLUGINS: React.ReactNode[] = [
     <HistoryPlugin />,
     <ListPlugin />,
     <LinkPlugin />,
-    <DraggablePlugin />,
+    <DraggablePlugin addList={ADDLIST}/>,
 ]
 
 export default PLUGINS;  

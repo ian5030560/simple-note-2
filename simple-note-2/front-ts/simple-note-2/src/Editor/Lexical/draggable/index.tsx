@@ -1,91 +1,92 @@
-import { DragEventHandler, EventHandler, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { Plugin } from "../Interface";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, $isBlockElementNode, LexicalNode } from "lexical";
-import "./index.css";
+import { $getRoot, DRAGOVER_COMMAND, DROP_COMMAND } from "lexical";
 import { createPortal } from "react-dom";
-import DraggableElement, { DropLine } from "./component";
-import { useDragLeave, useDragOver, useDragStart } from "./dnd";
+import DraggableElement, { AddItem, DndProvider, DropLine, useWrapper } from "./component";
+import { useDrop, useDragOver, useDragStart } from "./dnd";
+import { moveElement, resetElement, resetLine, useDndDispatch, setId } from "./redux";
+import { theme } from "antd";
+import { mergeRegister } from "@lexical/utils";
+import { getBlockFromPoint } from "./util";
 
 export interface DraggableProp {
-    addList?: any[],
+    addList: AddItem[],
 }
-const DraggablePlugin: Plugin<DraggableProp> = ({ addList }) => {
+const Draggable: React.FC<DraggableProp> = ({ addList }) => {
+    const dispatch = useDndDispatch();
     const [editor] = useLexicalComposerContext();
-    const dragRef = useRef<HTMLElement>(null);
-    const [draggableElement, setDraggableElement] = useState<HTMLElement>();
-    const rootRef = useRef<HTMLElement>();
-    const dropRef = useRef<HTMLDivElement>(null);
-    const handleDragStart = useDragStart(draggableElement);
-    const handleDragOver = useDragOver(dropRef.current);
-    const handleDragLeave = useDragLeave(dropRef.current);
+    const wrapper = useWrapper();
+    const { token } = theme.useToken();
+    const handleDragStart = useDragStart();
+    const handleDragOver = useDragOver();
+    const handleDrop = useDrop();
 
-    const handleMouseEnter = useCallback((e: MouseEvent) => setDraggableElement(e.target as HTMLElement), []);
-    
-    const bindMouseEnter = useCallback((node: LexicalNode | undefined) => {
-        if (!$isBlockElementNode(node)) return;
-        const element = editor.getElementByKey(node.getKey());
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        let { clientX, clientY } = e;
+        let target = document.elementFromPoint(clientX, clientY);
+        let root = editor.getRootElement()!;
 
-        if (!element) return;
-        element.setAttribute("draggable-item", node.getKey());
-        element.addEventListener("mouseenter", handleMouseEnter);
-        element.addEventListener("dragover", handleDragOver);
-        element.addEventListener("dragleave", handleDragLeave);
+        if (root?.isEqualNode(target)) return;
 
-    }, [editor, handleDragLeave, handleDragOver, handleMouseEnter]);
+        let elem = getBlockFromPoint(editor, clientX, clientY);
+        if (!elem) return;
+
+        let top = elem.offsetTop
+        let left = elem.parentElement!.offsetLeft;
+        dispatch(moveElement({ top: top, left: left - 50 }));
+        dispatch(setId(elem.getAttribute("draggable-item")!));  
+
+    }, [dispatch, editor]);
+
+    const handleMouseLeave = useCallback((e: MouseEvent) => {
+        let element = e.target as HTMLElement;
+        if (element.hasAttribute("draggable-item")) return;
+        dispatch(resetElement())
+    }, [dispatch]);
 
     useEffect(() => {
-        const root = document.getElementById("dnd-wrapper");
-        if (!root) return;
-        rootRef.current = root;
+        wrapper?.addEventListener("mousemove", handleMouseMove);
+        wrapper?.addEventListener("mouseleave", handleMouseLeave);
+        wrapper?.addEventListener("dragover", handleDragOver);
+        wrapper?.addEventListener("drop", handleDrop);
 
-        editor.update(() => {
-            const nodes = $getRoot().getChildren();
-            nodes.forEach(node => bindMouseEnter(node));
-        });
-
-        editor.registerUpdateListener(({ editorState, prevEditorState }) => {
-            let current = editorState._nodeMap.size;
-            let prev = prevEditorState._nodeMap.size;
-
-            if (current <= prev) return;
-
-            const node = editorState._nodeMap.get((current - 1).toString());
-            editorState.read(() => bindMouseEnter(node));
+        editor.registerUpdateListener(() => {
+            const keys = editor.getEditorState().read(() => $getRoot().getChildrenKeys());
+            for (let key of keys) {
+                let element = editor.getElementByKey(key);
+                element?.setAttribute("draggable-item", key);
+            }
         });
 
         return () => {
-            editor.update(() => {
-                const keys = $getRoot().getChildrenKeys();
-                for (let key of keys) {
-                    const element = editor.getElementByKey(key);
-                    element?.removeEventListener("mouseenter", handleMouseEnter);
-                    element?.removeEventListener("dragover", handleDragOver);
-                    element?.removeEventListener("dragleave", handleDragLeave);
-                }
-            })
-        }
-    }, [bindMouseEnter, editor, handleDragLeave, handleDragOver, handleMouseEnter]);
+            wrapper?.removeEventListener('mousemove', handleMouseMove);
+            wrapper?.removeEventListener('mouseleave', handleMouseLeave);
+            wrapper?.removeEventListener('dragover', handleDragOver);
+            wrapper?.removeEventListener('drop', handleDrop);
 
-    useEffect(() => {
-        if (draggableElement && dragRef.current) {
-            let rect = draggableElement.getBoundingClientRect();
-            let scrollRect = document.body.getBoundingClientRect();
-            let offset = 0;
-            dragRef.current.style.top = `${rect.top - scrollRect.top - offset}px`;
-            dragRef.current.style.left = `${5}%`;
-            dragRef.current.style.height = `${rect.height}px`;
+            mergeRegister(
+                editor.registerCommand(DRAGOVER_COMMAND, handleDragOver, 1),
+                editor.registerCommand(DROP_COMMAND, handleDrop, 4),
+            ) 
         }
-    }, [draggableElement]);
+    }, [editor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, wrapper]);
 
-    return rootRef.current ? createPortal(
+    return wrapper ? createPortal(
         <>
-            <DraggableElement ref={dragRef} draggable={true} 
-            onDragStart={handleDragStart}/>
-            <DropLine ref={dropRef} style={{width: "100%", borderColor: "black"}}/>
+            <DraggableElement
+                onDragStart={handleDragStart}
+                onDragEnd={() => dispatch(resetLine())}
+                addList={addList}
+            />
+            <DropLine style={{
+                border: `1px dashed ${token.colorText}`,
+                width: "80%",
+            }} />
         </>,
-        rootRef.current
+        wrapper
     ) : null;
 }
 
+export const DraggablePlugin: Plugin<DraggableProp> = (prop) => <DndProvider><Draggable {...prop} /></DndProvider>;
 export default DraggablePlugin;

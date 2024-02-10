@@ -1,0 +1,8 @@
+.editable {
+    margin: 0 10%;
+    outline: none;
+}
+
+.editor-scroller{
+    overflow-y: auto;
+}

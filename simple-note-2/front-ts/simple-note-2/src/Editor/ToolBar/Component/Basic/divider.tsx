@@ -9,9 +9,7 @@ const Divider: React.FC = () => {
         style={{
             display: "flex",
             justifyContent: "center",
-            alignItems: "center",
-            minHeight: "100%",
-            padding: "8px"
+            minHeight: "70%",
         }}>
         <div style={{
             minHeight: "100%",

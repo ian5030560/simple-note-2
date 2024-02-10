@@ -86,8 +86,6 @@ const SideBar = ({ onLogout }: {onLogout?: () => void;}) => {
         justify="space-between"
         style={{
             height: "100%",
-            position: "fixed",
-            width: `${100 / 6}%`,
             overflow: "auto",
             backgroundColor: token.colorPrimary,
         }}>

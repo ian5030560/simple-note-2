@@ -1,5 +1,6 @@
 body{
     overflow-x: hidden;
+    overflow-y: hidden;
 }
 .ltr {
     text-align: left;
@@ -21,14 +22,6 @@ body{
 
 .paragraph {
     position: relative;
-}
-
-
-.editable {
-    position: relative;
-    padding: 3px;
-    margin: 8% 10%;
-    outline: none;
 }
 
 .placeholder {

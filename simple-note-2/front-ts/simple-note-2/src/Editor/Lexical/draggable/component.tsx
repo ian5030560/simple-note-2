@@ -1,14 +1,15 @@
-import { Flex, Popover, Input, List, Button, theme, InputRef, ButtonProps, FlexProps } from "antd";
-import React, { useState, useRef, useCallback, forwardRef, useEffect } from "react";
+import { Flex, Popover, Input, List, Button, theme, InputRef, FlexProps } from "antd";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { PlusOutlined } from "@ant-design/icons";
-import { createPortal } from "react-dom";
+import { dndStore, useDndSelector } from "./redux";
+import { Provider } from "react-redux";
+import styled from "styled-components";
 
-interface AddItem {
+export interface AddItem {
     value: string,
     label: string,
     handler?: (value: string) => any,
 }
-
 interface AddMenuProp {
     searchList: AddItem[],
     children: React.ReactNode,
@@ -63,34 +64,49 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children, onSelect, open, 
     </Popover>
 }
 
-const HandleButton = (prop: ButtonProps) => {
-    const [state, setState] = useState("grab");
+const HandleButton = styled(Button)`
+    cursor: grab;
+    font-size: 2em;
+    &:active{
+        cursor: grabbing;
+    }
+`
 
-    return <Button
-        {...prop}
-        style={{ cursor: state }}
-        onMouseDown={() => setState("grabbing")}
-        onMouseUp={() => setState("grab")}
-    />;
+const FlexStyled = (prop: FlexProps) => <Flex draggable={true} {...prop}/>
+const Draggable = styled(FlexStyled)`
+    position: absolute;
+    &:active{
+        opacity: 0.3;
+    }
+`
+export interface DraggableElementProp extends Omit<FlexProps, "children" | "draggable"> {
+    addList: AddItem[],
+    style?: Omit<React.CSSProperties, "position" | "top" | "left">,
 }
+const DraggableElement = ({ addList, style, ...flexProps }: DraggableElementProp) => {
+    const element = useDndSelector(state => state.dnd.element);
+    const [open, setOpen] = useState(false);
 
-export interface DraggableElementProp extends Omit<FlexProps, "children">{
-    addList?: any[],
-    style?: Omit<React.CSSProperties, "position">,
-}
-const DraggableElement = forwardRef(({ addList, style, ...flexProps }: DraggableElementProp, ref: React.Ref<HTMLElement>) => {
-    return <Flex style={{
-        position: "absolute",
+    const handleSelect = useCallback((value: string, result: any) => {
+
+        setOpen(() => false);
+    }, []);
+
+    return <Draggable style={{
+        top: element.top - 3,
+        left: element.left,
         ...style
-    }} ref={ref} {...flexProps}>
+    }}
+        className="draggable"
+        {...flexProps}>
         <AddMenu
             searchList={addList || []}
-        // onSelect={handleSelect}
-        // open={open}
-        // onLeave={() => setOpen(false)}
+        onSelect={handleSelect}
+        open={open}
+        onLeave={() => setOpen(false)}
         >
             <Button
-                // onClick={() => setOpen(prev => !prev)}
+                onClick={() => setOpen(prev => !prev)}
                 contentEditable={false}
                 type="text"
                 size="small"
@@ -102,18 +118,42 @@ const DraggableElement = forwardRef(({ addList, style, ...flexProps }: Draggable
             type="text"
             size="small"
         >
-            ⠿
+            ⠿   
         </HandleButton>
-    </Flex>
-})
+    </Draggable>
+}
 
 export default DraggableElement;
 
+const WrapperStyled = styled.div`position: relative;`;
+
 export type DragWrapperProp = Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "id">;
-export const DragWrapper: React.FC<DragWrapperProp> = (prop) => <div id="dnd-wrapper" {...prop}/>;
+export const DragWrapper: React.FC<DragWrapperProp> = (prop) => <WrapperStyled id="dnd-wrapper" {...prop} />;
 
-
-export type DropLineProp = Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "id" | "children">;
-export const DropLine: React.FC<DropLineProp> = (prop) => {
-    return <div id = "drop-line" {...prop}/>
+export const useWrapper = () => {
+    const [wrapper, setWrapper] = useState<HTMLElement>();
+    useEffect(() => {
+        let root = document.getElementById("dnd-wrapper");
+        if (!root) return;
+        setWrapper(() => root!);
+    }, []);
+    return wrapper;
 }
+
+export interface DropLineProp extends Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "id" | "children"> {
+    style?: Omit<React.CSSProperties, "top" | "left" | "position">
+}
+export const DropLine: React.FC<DropLineProp> = ({style, ...prop}) => {
+    const line = useDndSelector(state => state.dnd.line);
+    const offset = useMemo(() => document.body.offsetTop, []);
+    return <div className="drop-line"
+        style={{
+            top: line.top - offset, 
+            left: line.left,
+            // transform: `translate(${line.left}px, ${line.top - offset})`,
+            position: "absolute", 
+            ...style
+        }} {...prop} />
+}
+
+export const DndProvider = ({ children }: { children: React.ReactNode }) => <Provider store={dndStore}>{children}</Provider>;
