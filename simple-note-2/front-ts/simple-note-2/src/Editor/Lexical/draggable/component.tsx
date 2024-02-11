@@ -79,6 +79,7 @@ const Draggable = styled(FlexStyled)`
         opacity: 0.3;
     }
 `
+
 export interface DraggableElementProp extends Omit<FlexProps, "children" | "draggable"> {
     addList: AddItem[],
     style?: Omit<React.CSSProperties, "position" | "top" | "left">,
@@ -145,10 +146,10 @@ export interface DropLineProp extends Omit<React.DetailedHTMLProps<React.HTMLAtt
 }
 export const DropLine: React.FC<DropLineProp> = ({style, ...prop}) => {
     const line = useDndSelector(state => state.dnd.line);
-    const offset = useMemo(() => document.body.offsetTop, []);
+    // const offset = useMemo(() => document.body.offsetTop, []);
     return <div className="drop-line"
         style={{
-            top: line.top - offset, 
+            top: line.top, 
             left: line.left,
             // transform: `translate(${line.left}px, ${line.top - offset})`,
             position: "absolute", 

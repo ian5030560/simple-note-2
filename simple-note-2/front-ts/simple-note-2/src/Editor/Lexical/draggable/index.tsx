@@ -1,13 +1,12 @@
 import { useCallback, useEffect } from "react";
 import { Plugin } from "../Interface";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, DRAGOVER_COMMAND, DROP_COMMAND } from "lexical";
+import { $getRoot } from "lexical";
 import { createPortal } from "react-dom";
 import DraggableElement, { AddItem, DndProvider, DropLine, useWrapper } from "./component";
 import { useDrop, useDragOver, useDragStart } from "./dnd";
 import { moveElement, resetElement, resetLine, useDndDispatch, setId } from "./redux";
 import { theme } from "antd";
-import { mergeRegister } from "@lexical/utils";
 import { getBlockFromPoint } from "./util";
 
 export interface DraggableProp {
@@ -64,11 +63,6 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
             wrapper?.removeEventListener('mouseleave', handleMouseLeave);
             wrapper?.removeEventListener('dragover', handleDragOver);
             wrapper?.removeEventListener('drop', handleDrop);
-
-            mergeRegister(
-                editor.registerCommand(DRAGOVER_COMMAND, handleDragOver, 1),
-                editor.registerCommand(DROP_COMMAND, handleDrop, 4),
-            ) 
         }
     }, [editor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, wrapper]);
 

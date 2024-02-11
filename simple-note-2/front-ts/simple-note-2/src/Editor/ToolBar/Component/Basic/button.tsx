@@ -14,7 +14,8 @@ export const PopupButton: React.FC<PopupButtonProp> = ({ summitButton, onSummit,
     const content = <Space.Compact>
         <Input ref={ref} allowClear onChange={(e) => onChange?.(e.target.value)} />
         <Button {...summitButton} onClick={() => {
-            onSummit?.(ref.current?.input?.value);
+            onSummit?.(ref.current!.input!.value);
+            ref.current!.input!.value = "";
         }} />
     </Space.Compact>
 

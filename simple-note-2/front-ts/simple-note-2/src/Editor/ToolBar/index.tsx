@@ -2,19 +2,26 @@ import { Flex, theme } from "antd";
 import React from "react"
 import { LIST } from "./constant";
 import Divider from "./Component/Basic/divider";
-import "./index.css";
 import { Plugin } from "../Lexical/Interface";
+import styled, { css } from "styled-components";
 
+const ToolBarFlex = styled(Flex)<{$backgroundColor: string, $shadowColor: string}>`
+    height: 8%;
+    position: sticky;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    align-items: center;
+    ${({$backgroundColor, $shadowColor}) => css`
+        background-color: ${$backgroundColor};
+        box-shadow: ${$shadowColor} 1.95px 1.95px 2.6px;
+    `}
+`
 const ToolBarPlugin: Plugin = () => {
     const { token } = theme.useToken();
 
-    return <Flex
-        className="toolbar"
-        style={{
-            backgroundColor: token.colorBgBase,
-            boxShadow: `3px 0px 5px ${token.colorText}`,
-        }}
-
+    return <ToolBarFlex
+        $backgroundColor={token.colorBgBase}
+        $shadowColor={token.colorText}
         justify="space-evenly"
     >
         {LIST[0]}
@@ -24,7 +31,7 @@ const ToolBarPlugin: Plugin = () => {
                 {element}
             </React.Fragment>)
         }
-    </Flex>
+    </ToolBarFlex>
 }
 
 export default ToolBarPlugin;

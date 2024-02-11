@@ -1,22 +1,24 @@
 import React from "react";
 import { TRANSFORMERS } from '@lexical/markdown';
 import { MarkdownShortcutPlugin } from '@lexical/react/LexicalMarkdownShortcutPlugin';
-import AutofocusPlugin from "./Lexical/autofocus";
+import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import RichTextPlugin from "./Lexical/richtext";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import DraggablePlugin from "./Lexical/draggable";
 import ADDLIST from "./addList";
+import LinkPlugin, { FloatingLinkPlugin } from "./Lexical/link";
 
 const PLUGINS: React.ReactNode[] = [
     <RichTextPlugin />,
-    <AutofocusPlugin />,
+    <AutoFocusPlugin />,
     <MarkdownShortcutPlugin transformers={TRANSFORMERS} />,
     <HistoryPlugin />,
     <ListPlugin />,
     <LinkPlugin />,
-    <DraggablePlugin addList={ADDLIST}/>,
+    <DraggablePlugin addList={ADDLIST} />,
+    <FloatingLinkPlugin/>,
+    
 ]
 
 export default PLUGINS;  

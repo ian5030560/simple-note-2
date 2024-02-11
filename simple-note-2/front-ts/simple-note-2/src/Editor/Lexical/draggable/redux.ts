@@ -1,5 +1,4 @@
 import { PayloadAction, configureStore, createSlice } from "@reduxjs/toolkit";
-import React from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 type position = {top: number, left: number};
@@ -13,6 +12,8 @@ const initialState: DndDataType = {
     element: { top: -10000, left: -10000 },
     line: { top: -10000, left: -10000 },
 };
+
+const RESET = -10000;
 export const dndSlice = createSlice({
     name: "dnd",
     initialState: initialState,
@@ -20,8 +21,8 @@ export const dndSlice = createSlice({
         setId: (state, action: PayloadAction<string | undefined>) => { state.dragId = action.payload },
         moveElement: (state, action: PayloadAction<position>) => { state.element = action.payload },
         moveLine: (state, action: PayloadAction<position>) => { state.line = action.payload },
-        resetElement: (state) => {state.element = {top: -10000, left: -10000}},
-        resetLine: (state) => {state.line = {top: -10000, left: -10000}}
+        resetElement: (state) => {state.element = {top: RESET, left: RESET}},
+        resetLine: (state) => {state.line = {top: RESET, left: RESET}}
     }
 })
 
