@@ -7,7 +7,6 @@ import styled, { css } from "styled-components";
 
 const ToolBarFlex = styled(Flex)<{$backgroundColor: string, $shadowColor: string}>`
     height: 8%;
-    position: sticky;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     align-items: center;

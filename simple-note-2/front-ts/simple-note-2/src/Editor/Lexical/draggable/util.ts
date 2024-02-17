@@ -32,10 +32,7 @@ export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: num
         let lResult = elementContains(posx, posy, lastElement);
 
         if (fResult || mResult || lResult) {
-            if (fResult) elem = firstElement;
-            else if (mResult) elem = midElement;
-            else elem = lastElement;
-
+            elem = fResult ? firstElement : mResult ? midElement : lastElement;
             break;
         }
         else {

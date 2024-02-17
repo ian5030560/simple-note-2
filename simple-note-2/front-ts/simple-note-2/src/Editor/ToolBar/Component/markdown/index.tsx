@@ -26,9 +26,13 @@ const Markdown: React.FC = () => {
     const [current, setCurrent] = useState<string[]>([]);
 
     useSelectionListener((selection) => {
+        
+        if(!selection) return;
+
         let marks: string[] = [];
         for (let { key } of MARKDOWN) {
-            if (selection?.hasFormat(key as TextFormatType)) {
+
+            if (selection.hasFormat(key as TextFormatType)) {
                 marks.push(key)
             }
         }

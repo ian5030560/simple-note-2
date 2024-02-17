@@ -8,6 +8,11 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import DraggablePlugin from "./Lexical/draggable";
 import ADDLIST from "./addList";
 import LinkPlugin, { FloatingLinkPlugin } from "./Lexical/link";
+import ImagePlugin from "./Lexical/image";
+import SavePlugin from "./Lexical/save";
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
+import ListMaxLevelPlugin from "./Lexical/listmaxlevel";
+// import TablePlugin from "./Lexical/table";
 
 const PLUGINS: React.ReactNode[] = [
     <RichTextPlugin />,
@@ -17,8 +22,12 @@ const PLUGINS: React.ReactNode[] = [
     <ListPlugin />,
     <LinkPlugin />,
     <DraggablePlugin addList={ADDLIST} />,
-    <FloatingLinkPlugin/>,
-    
+    <FloatingLinkPlugin />,
+    <ImagePlugin />,
+    <SavePlugin />,
+    <TabIndentationPlugin />,
+    <ListMaxLevelPlugin maxLevel={5}/>,
+    // <TablePlugin/>,
 ]
 
 export default PLUGINS;  

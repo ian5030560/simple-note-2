@@ -4,6 +4,9 @@ import { MarkNode } from "@lexical/mark";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
+import ImageNode from "./Lexical/image/node";
+// import { TableCellNode, TableRowNode } from "@lexical/table";
+// import { TableNode } from "./Lexical/table/nodes/TableNode";
 
 const NODES: Klass<LexicalNode>[] = [
     HeadingNode,
@@ -15,6 +18,10 @@ const NODES: Klass<LexicalNode>[] = [
     ListNode,
     AutoLinkNode,
     LinkNode,
+    ImageNode,
+    // TableCellNode,
+    // TableNode,
+    // TableRowNode
 ]
 
 export default NODES;

@@ -1,24 +1,28 @@
 import { Flex, Popover, Input, List, Button, theme, InputRef, FlexProps } from "antd";
-import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import { PlusOutlined } from "@ant-design/icons";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
 import { dndStore, useDndSelector } from "./redux";
 import { Provider } from "react-redux";
 import styled from "styled-components";
+import { LexicalEditor } from "lexical";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 export interface AddItem {
     value: string,
     label: string,
-    handler?: (value: string) => any,
+    icon: React.ReactNode,
+    onSelect: (editor: LexicalEditor, item: AddItem) => void,
 }
 interface AddMenuProp {
     searchList: AddItem[],
     children: React.ReactNode,
-    onSelect?: (value: string, result: any) => void,
+    onSelect?: () => void,
     open?: boolean,
     onLeave?: (e: React.FocusEvent) => void
 }
 const AddMenu: React.FC<AddMenuProp> = ({ searchList, children, onSelect, open, onLeave }) => {
 
+    const [editor] = useLexicalComposerContext();
     const [keyword, setKeyword] = useState(/.*/);
     const { token } = theme.useToken();
 
@@ -32,9 +36,9 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children, onSelect, open, 
     }, []);
 
     const handleMouseDown = useCallback((item: AddItem) => {
-        const result = item.handler?.(item.value);
-        onSelect?.(item.value, result);
-    }, [onSelect]);
+        item.onSelect?.(editor, item);
+        onSelect?.();
+    }, [editor, onSelect]);
 
     searchList = searchList.filter(value => filterData(value.label));
 
@@ -50,9 +54,12 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children, onSelect, open, 
                 return <List.Item key={item.value} style={{ padding: "0px" }}>
                     <Button
                         type="text"
-                        style={{ width: "100%" }}
+                        style={{ width: "100%", display: "flex", justifyContent: "left" }}
+                        icon={item.icon}
                         onMouseDown={() => handleMouseDown(item)}
-                    >{item.label}</Button>
+                    >
+                        {item.label}
+                    </Button>
                 </List.Item>
             }} />
     </Flex>
@@ -72,7 +79,7 @@ const HandleButton = styled(Button)`
     }
 `
 
-const FlexStyled = (prop: FlexProps) => <Flex draggable={true} {...prop}/>
+const FlexStyled = (prop: FlexProps) => <Flex draggable={true} {...prop} />
 const Draggable = styled(FlexStyled)`
     position: absolute;
     &:active{
@@ -88,11 +95,6 @@ const DraggableElement = ({ addList, style, ...flexProps }: DraggableElementProp
     const element = useDndSelector(state => state.dnd.element);
     const [open, setOpen] = useState(false);
 
-    const handleSelect = useCallback((value: string, result: any) => {
-
-        setOpen(() => false);
-    }, []);
-
     return <Draggable style={{
         top: element.top - 3,
         left: element.left,
@@ -102,9 +104,9 @@ const DraggableElement = ({ addList, style, ...flexProps }: DraggableElementProp
         {...flexProps}>
         <AddMenu
             searchList={addList || []}
-        onSelect={handleSelect}
-        open={open}
-        onLeave={() => setOpen(false)}
+            onSelect={() => setOpen(false)}
+            open={open}
+            onLeave={() => setOpen(false)}
         >
             <Button
                 onClick={() => setOpen(prev => !prev)}
@@ -118,9 +120,8 @@ const DraggableElement = ({ addList, style, ...flexProps }: DraggableElementProp
             contentEditable={false}
             type="text"
             size="small"
-        >
-            ⠿   
-        </HandleButton>
+            icon={<HolderOutlined />}
+        />
     </Draggable>
 }
 
@@ -144,15 +145,15 @@ export const useWrapper = () => {
 export interface DropLineProp extends Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "id" | "children"> {
     style?: Omit<React.CSSProperties, "top" | "left" | "position">
 }
-export const DropLine: React.FC<DropLineProp> = ({style, ...prop}) => {
+export const DropLine: React.FC<DropLineProp> = ({ style, ...prop }) => {
     const line = useDndSelector(state => state.dnd.line);
     // const offset = useMemo(() => document.body.offsetTop, []);
     return <div className="drop-line"
         style={{
-            top: line.top, 
+            top: line.top,
             left: line.left,
             // transform: `translate(${line.left}px, ${line.top - offset})`,
-            position: "absolute", 
+            position: "absolute",
             ...style
         }} {...prop} />
 }

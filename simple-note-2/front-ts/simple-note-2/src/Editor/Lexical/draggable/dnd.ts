@@ -3,6 +3,7 @@ import { moveLine, resetLine, setId, useDndDispatch, useDndSelector } from "./re
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey } from "lexical";
 import { getBlockFromPoint } from "./util";
+import {eventFiles} from "@lexical/rich-text";
 
 type NativeDndHandler = (...args: any[]) => (e: DragEvent) => any;
 type ReactDndHanlder = (...args: any[]) => React.DragEventHandler<HTMLElement>;
@@ -15,7 +16,9 @@ export const useDragStart: DndHanlder<"react"> = () => {
 
     const handleDragStart = useCallback((e: React.DragEvent) => {
 
-        if (!e.dataTransfer || !id) return;
+        if(eventFiles(e.nativeEvent)[0]) return false;
+
+        if (!e.dataTransfer || !id) return false;
         const element = editor.getElementByKey(id);
         e.dataTransfer.setDragImage(element!, 0, 0);
 
@@ -32,6 +35,8 @@ export const useDragOver: DndHanlder<"native"> = () => {
     const handleDragOver = useCallback((e: DragEvent): boolean => {
         e.preventDefault();
 
+        if(eventFiles(e)[0]) return false;
+        
         let { target: overElement, clientY: mouseY } = e as {target: HTMLElement | null, clientY: number};
 
         if (!overElement?.hasAttribute("draggable-item")) overElement = getBlockFromPoint(editor, e.clientX, e.clientY);
@@ -65,10 +70,10 @@ export const useDrop: DndHanlder<"native"> = () => {
 
     const handleDrop = useCallback((e: DragEvent) => {
 
+        if(eventFiles(e)[0]) return false;
+
         let dropElement = e.target as HTMLElement | null;
-
         if (!dropElement?.hasAttribute("draggable-item")) dropElement = getBlockFromPoint(editor, e.clientX, e.clientY);
-
         if(!dropElement) return false;
 
         editor.update(() => {
@@ -80,7 +85,7 @@ export const useDrop: DndHanlder<"native"> = () => {
             const dropNode = $getNodeByKey(dropKey);
             const dragNode = $getNodeByKey(dragKey);
 
-            if (!dragNode || !dropNode) return;
+            if (!dragNode || !dropNode || dragKey === dropKey) return;
 
             const mouseAt = line.top + dropElement!.parentElement!.getBoundingClientRect().top;
 

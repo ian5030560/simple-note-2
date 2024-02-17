@@ -7,7 +7,7 @@ import {
     Dropdown,
 } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
-import { BoxArrowInRight } from "react-bootstrap-icons";
+import {BsBoxArrowRight} from "react-icons/bs";
 import FileTree from "./FileTree";
 import ThemeMenu from "./ThemeMenu";
 import { determineWhiteOrBlack } from "../../util/color";
@@ -34,7 +34,7 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src, onLogout, onSet
         {
             key: "log out",
             label: "登出",
-            icon: <BoxArrowInRight />
+            icon: <BsBoxArrowRight />
         }
     ];
 

@@ -25,7 +25,8 @@ export function useSelectionListener(
                 (_payload, _) => {
                     editor.update(() => {
                         let selection = $getSelection();
-                        if (selection) handler(selection as RangeSelection);
+                        // if (selection) handler(selection as RangeSelection);
+                        if ($isRangeSelection(selection)) handler(selection);
                     });
                     return stopPropagation;
                 }, priority
