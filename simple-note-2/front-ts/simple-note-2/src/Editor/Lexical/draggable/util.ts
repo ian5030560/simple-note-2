@@ -3,16 +3,23 @@ import { $getRoot, LexicalEditor } from "lexical";
 function elementContains(posx: number, posy: number, element: HTMLElement) {
 
     if (!element) return false;
-
+    
     let { x, y, width, height } = element.getBoundingClientRect();
-    let style = window.getComputedStyle(element.parentElement!);
-    let offsetLeft = parseFloat(style.marginLeft.replace("px", ""));
-    let offsetRight = parseFloat(style.marginRight.replace("px", ""));
+    // let style = window.getComputedStyle(element);
+    let pstyle = window.getComputedStyle(element.parentElement!);
+    let offsetLeft = parseFloat(pstyle.paddingLeft);
+    let offsetRight = parseFloat(pstyle.paddingRight);
+
+    // console.log(posx, x - offsetLeft);
+    // console.log(posx, x + width + offsetRight);
+    // console.log(posy, y);
+    // console.log(posy, y + height);
+    // console.log("--------------------------------------------------------");
 
     return posx >= x - offsetLeft &&
-        posx < x + width + offsetRight &&
+        posx <= x + width + offsetRight &&
         posy >= y &&
-        posy < y + height;
+        posy <= y + height;
 }
 
 export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: number) {
@@ -40,7 +47,7 @@ export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: num
             if (midRect.top < posy) first = mid + 1;
             else last = mid - 1;
         }
-    }
+    } 
 
     return elem;
 }

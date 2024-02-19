@@ -44,15 +44,15 @@ export const useDragOver: DndHanlder<"native"> = () => {
 
         const { top: overTop } = overElement.getBoundingClientRect();
         const { marginTop, marginBottom, height } = window.getComputedStyle(overElement);
-        const parentRect = overElement.parentElement!.getBoundingClientRect();
+        // const parentRect = overElement.parentElement!.getBoundingClientRect();
 
-        let overHalf = mouseY > (overTop + parseFloat(height.replace("px", "")) / 2);
+        let overHalf = mouseY > (overTop + parseFloat(height) / 2);
         
-        let top = overTop - parentRect.top;
-        top = !overHalf ? top - parseFloat(marginTop.replace("px", "")) / 2 :
-            top + parseFloat(height.replace("px", "")) + parseFloat(marginBottom.replace("px", "")) / 2;
+        let top = overElement.offsetTop;
+        top = !overHalf ? top - parseFloat(marginTop) / 2 :
+            top + parseFloat(height) + parseFloat(marginBottom) / 2;
 
-        let left = overElement.parentElement?.offsetLeft!
+        let left = overElement.offsetLeft!
 
         dispatch(moveLine({ top: top, left: left }));
 

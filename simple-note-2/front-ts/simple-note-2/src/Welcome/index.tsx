@@ -44,7 +44,7 @@ const WelcomePage: React.FC = () => {
     const handleClick = () => {
         setDarken(!darken);
     }
-
+    
     return <ConfigProvider
         theme={{
             ...defaultTheme(darken),

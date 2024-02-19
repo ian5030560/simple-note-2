@@ -1,5 +1,5 @@
-import { Modal, Tabs, TabsProps, Input, Upload, Button, Space, InputRef } from "antd";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Modal, Tabs, TabsProps, Input, Button, Space, InputRef } from "antd";
+import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LexicalCommand, createCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { AiOutlineFileImage, AiOutlineUpload } from "react-icons/ai";
@@ -12,7 +12,8 @@ const ImageModal: React.FC = () => {
 
     const [editor] = useLexicalComposerContext();
     const [open, setOpen] = useState(false);
-    const ref = useRef<InputRef>(null);
+    const urlRef = useRef<InputRef>(null);
+    const fileRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         return editor.registerCommand(OPEN_IMAGE_MODAL, (payload: boolean) => {
@@ -23,10 +24,18 @@ const ImageModal: React.FC = () => {
 
 
     const handleURL = useCallback(() => {
-        let url = ref.current!.input!.value;
+        let url = urlRef.current!.input!.value;
 
-        editor.dispatchCommand(INSERT_IMAGE, {alt: "...", src: url});
-        ref.current!.input!.value = "";
+        editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: url });
+        urlRef.current!.input!.value = "";
+        setOpen(false);
+    }, [editor]);
+
+    const handleFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        let file = e.target.files![0];
+        let src = URL.createObjectURL(file);
+        editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
+        fileRef.current!.value = "";
         setOpen(false);
     }, [editor]);
 
@@ -35,23 +44,28 @@ const ImageModal: React.FC = () => {
             key: "file",
             label: "Upload File",
             icon: <AiOutlineFileImage />,
-            children: <Button
-                type="primary"
-                style={{ width: "100%" }}
-                icon={<AiOutlineUpload />}>
-                Upload File
-            </Button>,
+            children: <>
+                <Button
+                    type="primary"
+                    style={{ width: "100%" }}
+                    icon={<AiOutlineUpload />}
+                    onClick={() => {fileRef.current!.click()}}
+                >
+                    Upload File
+                </Button>
+                <input type="file" accept="image/*" style={{display: "none"}} ref={fileRef} onChange={handleFile}/>
+            </>
         },
         {
             key: "url",
             label: "Upload URL",
             icon: <CiEdit />,
             children: <Space.Compact style={{ width: "100%" }}>
-                <Input placeholder="https://" autoFocus ref={ref}/>
-                <Button type="primary" onClick={handleURL}>upload</Button>
+                <Input placeholder="https://" autoFocus ref={urlRef} />
+                <Button type="primary" onClick={handleURL}>pload</Button>
             </Space.Compact>,
         }
-    ], [handleURL]);
+    ], [handleFile, handleURL]);
 
     return <Modal title="Upload Image" open={open}
         footer={null} onCancel={() => setOpen(false)}>
