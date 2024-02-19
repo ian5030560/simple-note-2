@@ -123,8 +123,11 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
         sizeRef.current = undefined;
     }, [editor, nodeKey]);
 
-    const handleClick = useCallback(() => {
-        setSelected(!isSelected);
+    const handleClick = useCallback((e: MouseEvent) => {
+        if(e.target === imageRef.current){
+            setSelected(!isSelected);
+        }
+        
         return false;
     }, [isSelected, setSelected]);
 
