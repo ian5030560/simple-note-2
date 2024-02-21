@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import ImageNode, { ImageNodeProp } from "./node";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import styled, { css } from "styled-components";
-import { $getNodeByKey, $isNodeSelection, CLICK_COMMAND } from "lexical";
+import { $getNodeByKey, CLICK_COMMAND } from "lexical";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 
 

@@ -1,4 +1,4 @@
-import { Flex, Popover, Input, List, Button, theme, InputRef, FlexProps } from "antd";
+import { Flex, Popover, Input, List, Button, theme, InputRef, FlexProps, ButtonProps } from "antd";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
 import { dndStore, useDndSelector } from "./redux";
@@ -6,6 +6,7 @@ import { Provider } from "react-redux";
 import styled from "styled-components";
 import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+// import * as stylex from "@stylexjs/stylex";
 
 export interface AddItem {
     value: string,
@@ -87,6 +88,12 @@ const Draggable = styled(FlexStyled)`
     }
 `
 
+
+// const styles = stylex.create({
+//     base: {
+//         backgroundColor: "red",
+//     }
+// })
 export interface DraggableElementProp extends Omit<FlexProps, "children" | "draggable"> {
     addList: AddItem[],
     style?: Omit<React.CSSProperties, "position" | "top" | "left">,
@@ -147,7 +154,7 @@ export interface DropLineProp extends Omit<React.DetailedHTMLProps<React.HTMLAtt
 }
 export const DropLine: React.FC<DropLineProp> = ({ style, ...prop }) => {
     const line = useDndSelector(state => state.dnd.line);
-    // const offset = useMemo(() => document.body.offsetTop, []);
+
     return <div className="drop-line"
         style={{
             top: line.top,
