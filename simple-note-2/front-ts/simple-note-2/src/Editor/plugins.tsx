@@ -13,7 +13,8 @@ import SavePlugin from "./Lexical/save";
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 import ListMaxLevelPlugin from "./Lexical/listmaxlevel";
 import SpeechToTextPlugin from "./Lexical/speechToText";
-// import TextSearchPlugin from "./Lexical/textSearch";
+import KeywordSearchPlugin from "./Lexical/keywordSearch";
+import CanvasPlugin from "./Lexical/canvas";
 // import TablePlugin from "./Lexical/table";
 
 const PLUGINS: React.ReactNode[] = [
@@ -30,8 +31,9 @@ const PLUGINS: React.ReactNode[] = [
     <TabIndentationPlugin />,
     <ListMaxLevelPlugin maxLevel={5}/>,
     // <TablePlugin/>,
-    // <TextSearchPlugin/>,
+    // <KeywordSearchPlugin/>,
     <SpeechToTextPlugin/>,
+    <CanvasPlugin/>,
 ]
 
 export default PLUGINS;  

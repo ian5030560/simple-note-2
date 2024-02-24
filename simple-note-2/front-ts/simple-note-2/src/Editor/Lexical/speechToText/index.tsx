@@ -1,11 +1,10 @@
 import { $getSelection, $isRangeSelection, $isTextNode, LexicalCommand, createCommand } from "lexical";
 import { Plugin } from "../Interface";
 import { Modal, Flex, Typography } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 import { FaMicrophone } from "react-icons/fa";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
 const MicroButton = styled.button<{ $active: boolean }>`
     background-color: white;
@@ -30,43 +29,74 @@ const SpeechModal: React.FC<SpeechModalProp> = (prop) => {
     const [active, setActive] = useState(false);
     const [hint, setHint] = useState(HINT.START);
     const [editor] = useLexicalComposerContext();
-    const {
-        transcript,
-        browserSupportsSpeechRecognition,
-        listening,
-        resetTranscript,
-    } = useSpeechRecognition();
-
+    const SpeechRecognition = useMemo(() => window.SpeechRecognition || window.webkitSpeechRecognition, []);
+    const recognition = useRef<SpeechRecognition | null>(null);
+    
     useEffect(() => {
-        if(transcript){
-            editor.update(() => {
-                const selection = $getSelection();
-                if($isRangeSelection(selection)){
-                    selection.insertText(transcript);
+        if (active && recognition.current === null) {
+            recognition.current = new SpeechRecognition();
+            recognition.current.continuous = true;
+            recognition.current.interimResults = true;
+            recognition.current.addEventListener("result", (e: SpeechRecognitionEvent) => {
+                const resultItem = e.results.item(e.resultIndex);
+                const { transcript } = resultItem.item(0);
+
+                if (!resultItem.isFinal) {
+                    return;
                 }
+
+                editor.update(() => {
+                    const selection = $getSelection();
+
+                    if ($isRangeSelection(selection)) {
+                        if (transcript.match(/\s*\n\s*/)) {
+                            selection.insertParagraph();
+                        } else {
+                            selection.insertText(transcript);
+                        }
+                    }
+                });
+
+                setActive(false);
                 setHint(HINT.END);
-                resetTranscript();
             })
         }
-    }, [editor, resetTranscript, transcript]);
+
+        if (recognition.current) {
+            if (active) {
+                recognition.current.start();
+            } else {
+                recognition.current.stop();
+            }
+        }
+
+        return () => {
+            if (recognition.current !== null) {
+                recognition.current.stop();
+            }
+        }
+    }, [SpeechRecognition, active, editor]);
 
     const handleClick = useCallback(() => {
         if (active) {
             setHint(HINT.START);
-            SpeechRecognition.stopListening();
         }
         else {
             setHint(HINT.SPEECH);
-            SpeechRecognition.startListening();
+
         }
         setActive(!active);
     }, [active]);
 
 
-    return <Modal open={prop.open} footer={null} onCancel={prop.onClose} title="語音辨識">
+    return <Modal open={prop.open} footer={null}
+        onCancel={() => {
+
+            prop.onClose?.();
+        }} title="語音辨識">
         <Flex justify="center" align="center" vertical>
             {
-                browserSupportsSpeechRecognition ?
+                SpeechRecognition ?
                     <>
                         <MicroButton $active={active} onClick={handleClick}><FaMicrophone size={30} /></MicroButton>
                         <div style={{ height: 5 }} />

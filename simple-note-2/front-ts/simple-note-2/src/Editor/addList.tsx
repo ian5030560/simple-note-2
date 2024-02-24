@@ -1,3 +1,4 @@
+import Canvas from "./AddList/canvas";
 import Heading from "./AddList/heading";
 import Image from "./AddList/image";
 import Paragraph from "./AddList/paragraph";
@@ -9,6 +10,7 @@ const ADDLIST: AddItem[] = [
     ...Heading,
     Image,
     SpeechToText,
+    Canvas,
 ];
 
 export default ADDLIST;

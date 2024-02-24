@@ -1,4 +1,4 @@
-import { Flex, Popover, Input, List, Button, theme, InputRef, FlexProps, ButtonProps } from "antd";
+import { Flex, Popover, Input, List, Button, theme, InputRef, FlexProps } from "antd";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
 import { dndStore, useDndSelector } from "./redux";
@@ -6,11 +6,40 @@ import { Provider } from "react-redux";
 import styled from "styled-components";
 import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-// import * as stylex from "@stylexjs/stylex";
+
+// interface MenuContentProp{
+//     onLeave: () => void;
+//     sourceList: AddItem;
+//     inputRef: React.Ref;
+//     onChange: React.ChangeEventHandler<HTMLE>
+// }
+// const MenuContent: React.FC<MenuContentProp> = () => {
+//     return <Flex vertical onBlur={onLeave}>
+//         <Input ref={ref}
+//             onChange={handleChange}
+//             style={{ border: `1px solid ${token.colorPrimary}` }} />
+//         <List
+//             dataSource={result}
+//             style={{ maxHeight: "250px", overflow: "auto" }}
+//             rowKey={"value"}
+//             renderItem={(item) => {
+//                 return <List.Item style={{ padding: "0px" }}>
+//                     <Button
+//                         type="text"
+//                         style={{ width: "100%", display: "flex", justifyContent: "left" }}
+//                         icon={item.icon}
+//                         onMouseDown={() => handleMouseDown(item)}
+//                     >
+//                         {item.label}
+//                     </Button>
+//                 </List.Item>
+//             }} />
+//     </Flex>
+// };
 
 export interface AddItem {
     value: string,
-    label: string,
+    label: React.ReactNode,
     icon: React.ReactNode,
     onSelect: (editor: LexicalEditor, item: AddItem) => void,
 }
@@ -19,7 +48,7 @@ interface AddMenuProp {
     children: React.ReactNode,
     onSelect?: () => void,
     open?: boolean,
-    onLeave?: (e: React.FocusEvent) => void
+    onLeave?: () => void
 }
 const AddMenu: React.FC<AddMenuProp> = ({ searchList, children, onSelect, open, onLeave }) => {
 
@@ -32,7 +61,8 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children, onSelect, open, 
     const filterData = useCallback((s: string) => keyword.test(s), [keyword]);
 
     const handleChange = useCallback((e: React.ChangeEvent) => {
-        const text = e.target.nodeValue;
+
+        const text = ref.current!.input?.value;
         setKeyword(() => new RegExp(`${text}`));
     }, []);
 
@@ -41,18 +71,18 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children, onSelect, open, 
         onSelect?.();
     }, [editor, onSelect]);
 
-    searchList = searchList.filter(value => filterData(value.label));
+    let result = searchList.filter(value => filterData(value.value));
 
     const content = <Flex vertical onBlur={onLeave}>
         <Input ref={ref}
             onChange={handleChange}
             style={{ border: `1px solid ${token.colorPrimary}` }} />
         <List
-            dataSource={searchList}
+            dataSource={result}
             style={{ maxHeight: "250px", overflow: "auto" }}
+            rowKey={"value"}
             renderItem={(item) => {
-
-                return <List.Item key={item.value} style={{ padding: "0px" }}>
+                return <List.Item style={{ padding: "0px" }}>
                     <Button
                         type="text"
                         style={{ width: "100%", display: "flex", justifyContent: "left" }}
@@ -87,13 +117,6 @@ const Draggable = styled(FlexStyled)`
         opacity: 0.3;
     }
 `
-
-
-// const styles = stylex.create({
-//     base: {
-//         backgroundColor: "red",
-//     }
-// })
 export interface DraggableElementProp extends Omit<FlexProps, "children" | "draggable"> {
     addList: AddItem[],
     style?: Omit<React.CSSProperties, "position" | "top" | "left">,
@@ -110,10 +133,10 @@ const DraggableElement = ({ addList, style, ...flexProps }: DraggableElementProp
         className="draggable"
         {...flexProps}>
         <AddMenu
-            searchList={addList || []}
+            searchList={addList}
             onSelect={() => setOpen(false)}
             open={open}
-            onLeave={() => setOpen(false)}
+            onLeave={() => { console.log(1); setOpen(false) }}
         >
             <Button
                 onClick={() => setOpen(prev => !prev)}
@@ -159,7 +182,6 @@ export const DropLine: React.FC<DropLineProp> = ({ style, ...prop }) => {
         style={{
             top: line.top,
             left: line.left,
-            // transform: `translate(${line.left}px, ${line.top - offset})`,
             position: "absolute",
             ...style
         }} {...prop} />

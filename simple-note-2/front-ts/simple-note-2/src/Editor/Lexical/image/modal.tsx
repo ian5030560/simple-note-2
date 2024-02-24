@@ -62,7 +62,7 @@ const ImageModal: React.FC = () => {
             icon: <CiEdit />,
             children: <Space.Compact style={{ width: "100%" }}>
                 <Input placeholder="https://" autoFocus ref={urlRef} />
-                <Button type="primary" onClick={handleURL}>pload</Button>
+                <Button type="primary" onClick={handleURL}>upload</Button>
             </Space.Compact>,
         }
     ], [handleFile, handleURL]);
