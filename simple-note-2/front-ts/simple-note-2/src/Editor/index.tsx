@@ -1,6 +1,5 @@
 import React from "react";
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import "./index.css";
 import PLUGINS from "./plugins";
 import config from "./config";
 import ToolBarPlugin from "./ToolBar";

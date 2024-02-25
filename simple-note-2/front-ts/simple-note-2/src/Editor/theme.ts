@@ -1,9 +1,10 @@
 import { EditorThemeClasses } from 'lexical';
+import styles from "./index.module.css";
 
 const theme: EditorThemeClasses = {
-    ltr: 'simple-note-2-ltr',
-    rtl: 'simple-note-2-rtl',
-    paragraph: 'simple-note-2-paragraph',
+    ltr: "simple-note-2-ltr",
+    rtl: "simple-note-2-ltr",
+    paragraph: styles["simple-note-2-paragraph"],
     text: {
         bold: "simple-note-2-text-bold",
         italic: "simple-note-2-text-italic",
@@ -39,20 +40,20 @@ const theme: EditorThemeClasses = {
         focus: "simple-note-2-embed-block-focus",
     },
 
-    table: "simple-note-2-table",
-    tableAddColumns: "simple-note-2-table-add-columns",
-    tableAddRows: "simple-note-2-table-add-rows",
-    tableCell: "simple-note-2-table-cell",
-    tableCellActionButton: "simple-note-2-table-cell-action-button",
-    tableCellActionButtonContainer: "simple-note-2-table-cell-action-button-container",
-    tableCellEditing: "simple-note-2-table-cell-editing",
-    tableCellHeader: "simple-note-2-table-cell-header",
-    tableCellPrimarySelected: "simple-note-2-table-cell-primary-selected",
-    tableCellResizer: "simple-note-2-table-cell-resizer",
-    tableCellSelected: "simple-note-2-table-cell-selected",
-    tableCellSortedIndicator: "simple-note-2-table-cell-sorted-indicator",
-    tableResizeRuler: "simple-note-2-table-resize-ruler",
-    tableSelected: "simple-note-2-table-selected",
+    // table: "simple-note-2-table",
+    // tableAddColumns: "simple-note-2-table-add-columns",
+    // tableAddRows: "simple-note-2-table-add-rows",
+    // tableCell: "simple-note-2-table-cell",
+    // tableCellActionButton: "simple-note-2-table-cell-action-button",
+    // tableCellActionButtonContainer: "simple-note-2-table-cell-action-button-container",
+    // tableCellEditing: "simple-note-2-table-cell-editing",
+    // tableCellHeader: "simple-note-2-table-cell-header",
+    // tableCellPrimarySelected: "simple-note-2-table-cell-primary-selected",
+    // tableCellResizer: "simple-note-2-table-cell-resizer",
+    // tableCellSelected: "simple-note-2-table-cell-selected",
+    // tableCellSortedIndicator: "simple-note-2-table-cell-sorted-indicator",
+    // tableResizeRuler: "simple-note-2-table-resize-ruler",
+    // tableSelected: "simple-note-2-table-selected",
     
 };
 

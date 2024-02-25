@@ -1,42 +1,33 @@
 import { Flex, Popover, Input, List, Button, theme, InputRef, FlexProps } from "antd";
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo, cloneElement } from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
 import { dndStore, useDndSelector } from "./redux";
 import { Provider } from "react-redux";
-import styled from "styled-components";
 import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import styles from "./component.module.css";
 
-// interface MenuContentProp{
-//     onLeave: () => void;
-//     sourceList: AddItem;
-//     inputRef: React.Ref;
-//     onChange: React.ChangeEventHandler<HTMLE>
+// interface SearchResultProp<T> {
+//     resultList: T[],
+//     renderItem: (value: T) => React.ReactNode,
+//     show: boolean,
+//     children: React.ReactNode,
+//     rowKey: keyof T
 // }
-// const MenuContent: React.FC<MenuContentProp> = () => {
-//     return <Flex vertical onBlur={onLeave}>
-//         <Input ref={ref}
-//             onChange={handleChange}
-//             style={{ border: `1px solid ${token.colorPrimary}` }} />
-//         <List
-//             dataSource={result}
-//             style={{ maxHeight: "250px", overflow: "auto" }}
-//             rowKey={"value"}
-//             renderItem={(item) => {
-//                 return <List.Item style={{ padding: "0px" }}>
-//                     <Button
-//                         type="text"
-//                         style={{ width: "100%", display: "flex", justifyContent: "left" }}
-//                         icon={item.icon}
-//                         onMouseDown={() => handleMouseDown(item)}
-//                     >
-//                         {item.label}
-//                     </Button>
-//                 </List.Item>
-//             }} />
-//     </Flex>
-// };
+// function SearchResult<T>(prop: SearchResultProp<T>) {
 
+//     const content = <List
+//         dataSource={prop.resultList}
+//         rowKey={prop.rowKey}
+//         style={{ maxHeight: "250px", overflow: "auto" }}
+//         renderItem={(item) => <List.Item style={{ padding: "0px" }}>
+//             {prop.renderItem(item)}
+//         </List.Item>} />;
+
+//     return <Popover style={{width: "100%"}} arrow={false} content={content} open={prop.show}>
+//         {prop.children}
+//     </Popover>
+// }
 export interface AddItem {
     value: string,
     label: React.ReactNode,
@@ -46,121 +37,132 @@ export interface AddItem {
 interface AddMenuProp {
     searchList: AddItem[],
     children: React.ReactNode,
-    onSelect?: () => void,
-    open?: boolean,
-    onLeave?: () => void
 }
-const AddMenu: React.FC<AddMenuProp> = ({ searchList, children, onSelect, open, onLeave }) => {
+const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
 
     const [editor] = useLexicalComposerContext();
-    const [keyword, setKeyword] = useState(/.*/);
-    const { token } = theme.useToken();
+    // const [keyword, setKeyword] = useState(/.*/);
+    // const { token } = theme.useToken();
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLElement>(null);
 
-    const ref = useRef<InputRef | null>(null);
+    // const filterData = useCallback((s: string) => keyword.test(s), [keyword]);
 
-    const filterData = useCallback((s: string) => keyword.test(s), [keyword]);
-
-    const handleChange = useCallback((e: React.ChangeEvent) => {
-
-        const text = ref.current!.input?.value;
-        setKeyword(() => new RegExp(`${text}`));
-    }, []);
+    // const handleChange = useCallback(() => {
+    //     const text = ref.current!.input?.value;
+    //     ref.current?.focus();
+    //     setKeyword(() => new RegExp(`${text}`));
+    // }, []);
 
     const handleMouseDown = useCallback((item: AddItem) => {
         item.onSelect?.(editor, item);
-        onSelect?.();
-    }, [editor, onSelect]);
+        setOpen(false);
+    }, [editor]);
 
-    let result = searchList.filter(value => filterData(value.value));
+    let result = searchList;
+    // let result = searchList.filter(value => filterData(value.value));
 
-    const content = <Flex vertical onBlur={onLeave}>
-        <Input ref={ref}
-            onChange={handleChange}
-            style={{ border: `1px solid ${token.colorPrimary}` }} />
+    // const content = <Flex vertical>
+    //     <SearchResult
+    //         resultList={result}
+    //         renderItem={(item) => <Button
+    //             type="text"
+    //             style={{ width: "100%", display: "flex", justifyContent: "left" }}
+    //             icon={item.icon}
+    //             onMouseDown={() => handleMouseDown(item)}
+    //         >
+    //             {item.label}
+    //         </Button>}
+
+    //         rowKey={"value"}
+    //         show={open}
+    //     >
+    //         <Input ref={ref}
+    //             onBlur={() => setOpen(() => false)}
+    //             onChange={handleChange}
+    //             autoFocus
+    //             style={{ border: `1px solid ${token.colorPrimary}` }} />
+    //     </SearchResult>
+    // </Flex> 
+
+    const handleExit = useCallback((e: MouseEvent) => {
+        if(ref.current && !ref.current.contains(e.target as Node)){
+            setOpen(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener("mousedown", handleExit);
+        return () => document.removeEventListener("mousedown", handleExit);
+    }, [handleExit]);
+
+    const content = <Flex justify="center" ref={ref}>
         <List
             dataSource={result}
-            style={{ maxHeight: "250px", overflow: "auto" }}
             rowKey={"value"}
-            renderItem={(item) => {
-                return <List.Item style={{ padding: "0px" }}>
-                    <Button
-                        type="text"
-                        style={{ width: "100%", display: "flex", justifyContent: "left" }}
-                        icon={item.icon}
-                        onMouseDown={() => handleMouseDown(item)}
-                    >
-                        {item.label}
-                    </Button>
-                </List.Item>
-            }} />
+            style={{ maxHeight: "250px", overflow: "auto" }}
+            renderItem={(item) => <List.Item style={{ padding: "0px" }}>
+                <Button
+                    type="text"
+                    style={{ width: "100%", display: "flex", justifyContent: "left" }}
+                    icon={item.icon}
+                    onMouseDown={() => handleMouseDown(item)}
+                >
+                    {item.label}
+                </Button>
+            </List.Item>} />
     </Flex>
 
-    return <Popover content={content} trigger={"click"}
+    return <Popover trigger={"click"}
         arrow={false} open={open}
-        afterOpenChange={() => ref.current?.focus()}>
-        {children}
+        afterOpenChange={(open) => open ? ref.current?.focus() : undefined}
+        content={content}>
+        {
+            cloneElement(children as React.JSX.Element, {
+                onClick: () => setOpen(!open)
+            })
+        }
     </Popover>
 }
 
-const HandleButton = styled(Button)`
-    cursor: grab;
-    font-size: 2em;
-    &:active{
-        cursor: grabbing;
-    }
-`
-
-const FlexStyled = (prop: FlexProps) => <Flex draggable={true} {...prop} />
-const Draggable = styled(FlexStyled)`
-    position: absolute;
-    &:active{
-        opacity: 0.3;
-    }
-`
 export interface DraggableElementProp extends Omit<FlexProps, "children" | "draggable"> {
     addList: AddItem[],
     style?: Omit<React.CSSProperties, "position" | "top" | "left">,
 }
 const DraggableElement = ({ addList, style, ...flexProps }: DraggableElementProp) => {
     const element = useDndSelector(state => state.dnd.element);
-    const [open, setOpen] = useState(false);
 
-    return <Draggable style={{
-        top: element.top - 3,
-        left: element.left,
-        ...style
-    }}
-        className="draggable"
+    return <Flex
+        style={{
+            top: element.top - 3,
+            left: element.left,
+            ...style
+        }}
+        className={styles.draggable}
+        draggable={true}
         {...flexProps}>
-        <AddMenu
-            searchList={addList}
-            onSelect={() => setOpen(false)}
-            open={open}
-            onLeave={() => { console.log(1); setOpen(false) }}
-        >
+        <AddMenu searchList={addList}>
             <Button
-                onClick={() => setOpen(prev => !prev)}
                 contentEditable={false}
                 type="text"
                 size="small"
                 icon={<PlusOutlined />}
             />
         </AddMenu>
-        <HandleButton
+        <Button
+            className={styles["handle-button"]}
             contentEditable={false}
             type="text"
             size="small"
             icon={<HolderOutlined />}
         />
-    </Draggable>
+    </Flex>
 }
 
 export default DraggableElement;
 
-const WrapperStyled = styled.div`position: relative;`;
-
 export type DragWrapperProp = Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "id">;
-export const DragWrapper: React.FC<DragWrapperProp> = (prop) => <WrapperStyled id="dnd-wrapper" {...prop} />;
+export const DragWrapper: React.FC<DragWrapperProp> = (prop) => <div id="dnd-wrapper" className={styles.wrapper} {...prop} />;
 
 export const useWrapper = () => {
     const [wrapper, setWrapper] = useState<HTMLElement>();
@@ -178,7 +180,7 @@ export interface DropLineProp extends Omit<React.DetailedHTMLProps<React.HTMLAtt
 export const DropLine: React.FC<DropLineProp> = ({ style, ...prop }) => {
     const line = useDndSelector(state => state.dnd.line);
 
-    return <div className="drop-line"
+    return <div className={styles.dropLine}
         style={{
             top: line.top,
             left: line.left,

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import ImageNode, { ImageNodeProp } from "./node";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import styled, { css } from "styled-components";
 import { $getNodeByKey, CLICK_COMMAND } from "lexical";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
-
+import styles from "./component.module.css";
+import styled, {css} from "styled-components";
 
 enum Direction {
     LEFT = "top: 50%; left: 0%; cursor: w-resize; transform: translate(-7px, -7px);",
@@ -17,13 +17,9 @@ enum Direction {
     TOP = "top: 0%; left: 50%; cursor: n-resize; transform: translate(-7px, -7px);",
 }
 
-const HandlePin = styled.div<{ $direction: Direction }>`
-    background-color: blue;
-    width: 7px;
-    height: 7px;
-    position: absolute;
-    ${({ $direction }) => css`${$direction}`}
-`;
+const HandlePin = styled.div<{$direction: string}>`
+    ${({$direction}) => css`${$direction}`}
+`
 
 interface ResizerProp {
     children: React.ReactNode;
@@ -79,14 +75,14 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
         {prop.children}
         {prop.showHandle &&
             <>
-                <HandlePin $direction={Direction.BOTTOM} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOM)} />
-                <HandlePin $direction={Direction.BOTTOMLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMLEFT)} />
-                <HandlePin $direction={Direction.BOTTOMRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMRIGHT)} />
-                <HandlePin $direction={Direction.LEFT} onPointerDown={(e) => handlePointerDown(e, Direction.LEFT)} />
-                <HandlePin $direction={Direction.RIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.RIGHT)} />
-                <HandlePin $direction={Direction.TOPLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPLEFT)} />
-                <HandlePin $direction={Direction.TOPRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPRIGHT)} />
-                <HandlePin $direction={Direction.TOP} onPointerDown={(e) => handlePointerDown(e, Direction.TOP)} />
+                <HandlePin className={styles["handle-pin"]} $direction={Direction.BOTTOM} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOM)} />
+                <HandlePin className={styles["handle-pin"]}  $direction={Direction.BOTTOMLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMLEFT)} />
+                <HandlePin className={styles["handle-pin"]}  $direction={Direction.BOTTOMRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMRIGHT)} />
+                <HandlePin className={styles["handle-pin"]}  $direction={Direction.LEFT} onPointerDown={(e) => handlePointerDown(e, Direction.LEFT)} />
+                <HandlePin className={styles["handle-pin"]}  $direction={Direction.RIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.RIGHT)} />
+                <HandlePin className={styles["handle-pin"]}  $direction={Direction.TOPLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPLEFT)} />
+                <HandlePin className={styles["handle-pin"]}  $direction={Direction.TOPRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPRIGHT)} />
+                <HandlePin className={styles["handle-pin"]}  $direction={Direction.TOP} onPointerDown={(e) => handlePointerDown(e, Direction.TOP)} />
             </>
         }
     </div>

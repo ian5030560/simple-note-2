@@ -44,7 +44,6 @@ export const useDragOver: DndHanlder<"native"> = () => {
 
         const { top: overTop } = overElement.getBoundingClientRect();
         const { marginTop, marginBottom, height } = window.getComputedStyle(overElement);
-        // const parentRect = overElement.parentElement!.getBoundingClientRect();
 
         let overHalf = mouseY > (overTop + parseFloat(height) / 2);
         

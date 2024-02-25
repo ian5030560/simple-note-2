@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import { Plugin } from "../Interface";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, DRAGOVER_COMMAND, DROP_COMMAND } from "lexical";
+import { $getRoot } from "lexical";
 import { createPortal } from "react-dom";
 import DraggableElement, { AddItem, DndProvider, DropLine, useWrapper } from "./component";
 import { useDrop, useDragOver, useDragStart } from "./dnd";
@@ -9,7 +9,6 @@ import { moveElement, resetElement, resetLine, useDndDispatch, setId } from "./r
 import { theme } from "antd";
 import { getBlockFromPoint } from "./util";
 import { useScroller } from "../richtext/scroller";
-import {mergeRegister} from "@lexical/utils";
 
 export interface DraggableProp {
     addList: AddItem[],
@@ -76,10 +75,7 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
                 onDragEnd={() => dispatch(resetLine())}
                 addList={addList}
             />
-            <DropLine style={{
-                border: `1px dashed ${token.colorText}`,
-                width: "80%",
-            }} />
+            <DropLine/>
         </>,
         wrapper
     ) : null;

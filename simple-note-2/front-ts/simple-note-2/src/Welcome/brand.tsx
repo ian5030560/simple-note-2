@@ -1,6 +1,7 @@
 import React from "react";
 import {Typography, Flex, Image} from "antd";
 import Note from "../resource/notesbook.png";
+import styles from "./index.module.css";
 
 const {Title} = Typography;
 
@@ -9,7 +10,7 @@ const NoteImage: React.FC = () => <Image src={Note} alt="" width={64} height={64
 const Brand: React.FC = () => {
     return <Flex align="center" gap="small">
         <NoteImage/>
-        <Title level={2} style={{fontFamily: "monospace", color: "#FFFFFF"}}>Simple Note 2</Title>
+        <p className={styles["brand-title"]}>Simple Note 2</p>
     </Flex>
 }
 

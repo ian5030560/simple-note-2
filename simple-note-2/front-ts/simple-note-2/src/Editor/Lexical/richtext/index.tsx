@@ -4,7 +4,8 @@ import { RichTextPlugin as LexicalRichTextPlugin } from "@lexical/react/LexicalR
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
 import { theme } from "antd";
 import { DragWrapper } from "../draggable/component";
-import "./index.css";
+import styles from "./index.module.css";
+
 import Scroller from "./scroller";
 
 const RichTextPlugin: Plugin = () => {
@@ -14,7 +15,7 @@ const RichTextPlugin: Plugin = () => {
         contentEditable={
             <Scroller>
                 <DragWrapper>
-                    <ContentEditable className="editable" style={{ color: token.colorText }} />
+                    <ContentEditable className={styles.editable} style={{ color: token.colorText }} />
                 </DragWrapper>
             </Scroller>
         }

@@ -6,6 +6,7 @@ import Auth from "./Auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import defaultTheme from "../theme/default";
 import Intro from "./Intro";
+import "../resource/root.css";
 // import { useCookies } from "react-cookie";
 // import User from "../service/user";
 // import { useNavigate } from "react-router-dom";

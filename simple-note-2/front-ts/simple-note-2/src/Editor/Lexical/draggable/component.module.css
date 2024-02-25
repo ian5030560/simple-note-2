@@ -1,0 +1,23 @@
+.handle-button {
+    cursor: grab;
+    font-size: 2em;
+    :active{
+        cursor: grabbing;
+    }
+}
+
+.draggable{
+    position: absolute;
+    :active{
+        opacity: 0.3;
+    }
+}
+
+.wrapper{
+    position: relative;
+}
+
+.dropLine{
+    border: 3px solid skyblue;
+    width: 80%;
+}

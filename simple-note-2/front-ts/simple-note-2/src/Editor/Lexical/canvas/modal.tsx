@@ -1,35 +1,17 @@
 import { Modal, Flex } from "antd";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import React, { useCallback, useRef, useState } from "react";
 import { RxEraser } from "react-icons/rx";
 import { FaPlus } from "react-icons/fa6";
 import { IoIosSave, IoIosRedo, IoIosUndo } from "react-icons/io";
-import { darken } from "polished";
+import styles from "./modal.module.css";
 
-const ToolButton = styled.button<{ $backgroundColor: string }>`
-    border-radius: 50px;
-    background-color: ${({ $backgroundColor }) => $backgroundColor};
-    box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
-    width: 30px;
-    height: 30px;
-    border: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    margin-right: 5px;
-    &:active {
-        box-shadow: none;
-    }
-`;
+interface ToolButtonProp extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>{
+    backgroundColor: string;
+}
+const ToolButton = ({backgroundColor, ...buttonProp}: ToolButtonProp) => <button className={styles["tool-button"]} {...buttonProp} style={{backgroundColor: backgroundColor}}/>;
 
-const EraseButton: React.FC<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>> = (prop) => <ToolButton {...prop} $backgroundColor="white"><RxEraser size={20} /></ToolButton>;
-const AdditionButton: React.FC<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>> = (prop) => <ToolButton {...prop} $backgroundColor="white"><FaPlus size={20} /></ToolButton>;
-
-const Slider = styled.input`
-    outline: none;
-    cursor: pointer;
-`;
+const EraseButton: React.FC<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>> = (prop) => <ToolButton {...prop} backgroundColor="white"><RxEraser size={20} /></ToolButton>;
+const AdditionButton: React.FC<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>> = (prop) => <ToolButton {...prop} backgroundColor="white"><FaPlus size={20} /></ToolButton>;
 
 interface CanvasToolBarProp {
     recommendColors: string[];
@@ -41,13 +23,13 @@ const CanvasToolBar: React.FC<CanvasToolBarProp> = (prop) => {
             <EraseButton />
             <p>大小:</p>
             <p>12</p>
-            <Slider type="range" min={0} max={100} />
+            <input type="range" min={0} max={100} className={styles["tool-slider"]}/>
         </Flex>
 
         <Flex justify="center" align="center">
             {
                 prop.recommendColors.map((color, index) => {
-                    return <ToolButton $backgroundColor={color} key={index} onClick={() => prop.onPickColor(color)} />
+                    return <ToolButton backgroundColor={color} key={index} onClick={() => prop.onPickColor(color)} />
                 })
             }
             <AdditionButton />
@@ -55,21 +37,6 @@ const CanvasToolBar: React.FC<CanvasToolBarProp> = (prop) => {
     </Flex>
 }
 
-const AccessButton = styled.button`
-    background-color: whitesmoke;
-    border-radius: 10px;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border: none;
-    margin-right: 5px;
-    &:active{
-        background-color: ${darken(0.2, "whitesmoke")};
-    }
-`
 
 const DEFAULT = { width: 800, height: 500 };
 interface CanvasModalProp {
@@ -94,7 +61,7 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
         }
     }, []);
 
-    const handlePointerEnter = useCallback((e: React.PointerEvent) => {
+    const handlePointerEnter = useCallback(() => {
         let context = contextRef.current!;
         if (!color || !context) return;
         context.strokeStyle = color;
@@ -134,9 +101,9 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
         <Flex justify="center" align="center" vertical>
             <Flex justify="center" vertical>
                 <Flex justify="end" align="center" style={{ marginBottom: 5 }}>
-                    <AccessButton><IoIosUndo size={30} /></AccessButton>
-                    <AccessButton><IoIosRedo size={30} /></AccessButton>
-                    <AccessButton><IoIosSave size={30} /></AccessButton>
+                    <button className={styles["access-button"]}><IoIosUndo size={30} /></button>
+                    <button className={styles["access-button"]}><IoIosRedo size={30} /></button>
+                    <button className={styles["access-button"]}><IoIosSave size={30} /></button>
                 </Flex>
                 <canvas ref={canvasRef} style={{ backgroundColor: "whitesmoke" }}
                     onPointerDown={handlePointerDown}

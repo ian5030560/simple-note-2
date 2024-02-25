@@ -40,7 +40,7 @@ export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
 
   return (
     <>
-      <Modal title="尋找密碼" open={open} footer={[]} onCancel={onCancel}>
+      <Modal title="尋找密碼" open={open} footer={null} onCancel={onCancel}>
         <Form onFinish={handleFinished}>
           <Form.Item
             name={"username"}
