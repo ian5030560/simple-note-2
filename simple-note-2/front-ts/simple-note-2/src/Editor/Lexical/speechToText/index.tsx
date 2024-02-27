@@ -1,19 +1,15 @@
-import { $getSelection, $isRangeSelection, $isTextNode, LexicalCommand, createCommand } from "lexical";
+import { $getSelection, $isRangeSelection, LexicalCommand, createCommand } from "lexical";
 import { Plugin } from "../Interface";
 import { Modal, Flex, Typography } from "antd";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import styled from "styled-components";
 import { FaMicrophone } from "react-icons/fa";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import styles from "./index.module.css";
 
-const MicroButton = styled.button<{ $active: boolean }>`
-    background-color: white;
-    padding: 10px;
-    border-radius: 50px;
-    cursor: pointer;
-    border-color: gray;
-    color: ${({ $active }) => $active ? "red" : "black"};
-`
+interface MicroButtonProp extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>{
+    $active?: boolean;
+}
+const MicroButton: React.FC<MicroButtonProp> = ({$active, ...prop}) => <button className={styles.microButton} {...prop} style={{color: $active ? "red" : "black"}}/>;
 
 const HINT = {
     START: "開始錄音",
@@ -90,10 +86,8 @@ const SpeechModal: React.FC<SpeechModalProp> = (prop) => {
 
 
     return <Modal open={prop.open} footer={null}
-        onCancel={() => {
-
-            prop.onClose?.();
-        }} title="語音辨識">
+        onCancel={() => prop.onClose?.()} title="語音辨識"
+        centered>
         <Flex justify="center" align="center" vertical>
             {
                 SpeechRecognition ?

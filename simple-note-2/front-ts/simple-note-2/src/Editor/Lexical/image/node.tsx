@@ -1,6 +1,7 @@
 import {
     DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey,
-    SerializedLexicalNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput, $getEditor
+    SerializedLexicalNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput,
+    $applyNodeReplacement
 } from "lexical";
 import React, { ReactNode, Suspense } from "react";
 import { Skeleton } from "antd";
@@ -149,7 +150,7 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
 
 export function $createImageNode(src: string, alt: string,
     width?: number | "inherit", height?: number | "inherit", key?: string): ImageNode {
-    return new ImageNode(src, alt, width, height, key);
+    return $applyNodeReplacement(new ImageNode(src, alt, width, height, key));
 }
 export function $isImageNode(node: LexicalNode | null | undefined): node is ImageNode {
     return node instanceof ImageNode;

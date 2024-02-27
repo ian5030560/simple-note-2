@@ -86,7 +86,7 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
     // </Flex> 
 
     const handleExit = useCallback((e: MouseEvent) => {
-        if(ref.current && !ref.current.contains(e.target as Node)){
+        if (ref.current && !ref.current.contains(e.target as Node)) {
             setOpen(false);
         }
     }, []);
@@ -97,19 +97,17 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
     }, [handleExit]);
 
     const content = <Flex justify="center" ref={ref}>
-        <List
+        <List   
             dataSource={result}
             rowKey={"value"}
             style={{ maxHeight: "250px", overflow: "auto" }}
             renderItem={(item) => <List.Item style={{ padding: "0px" }}>
-                <Button
-                    type="text"
-                    style={{ width: "100%", display: "flex", justifyContent: "left" }}
-                    icon={item.icon}
-                    onMouseDown={() => handleMouseDown(item)}
-                >
+                <span className={styles.addListItem} onMouseDown={() => handleMouseDown(item)}>
+                    {cloneElement(item.icon as React.JSX.Element, {
+                        className: styles.addListItemIcon
+                    })}
                     {item.label}
-                </Button>
+                </span>
             </List.Item>} />
     </Flex>
 
