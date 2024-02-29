@@ -75,14 +75,14 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
         {prop.children}
         {prop.showHandle &&
             <>
-                <HandlePin className={styles["handle-pin"]} $direction={Direction.BOTTOM} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOM)} />
-                <HandlePin className={styles["handle-pin"]}  $direction={Direction.BOTTOMLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMLEFT)} />
-                <HandlePin className={styles["handle-pin"]}  $direction={Direction.BOTTOMRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMRIGHT)} />
-                <HandlePin className={styles["handle-pin"]}  $direction={Direction.LEFT} onPointerDown={(e) => handlePointerDown(e, Direction.LEFT)} />
-                <HandlePin className={styles["handle-pin"]}  $direction={Direction.RIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.RIGHT)} />
-                <HandlePin className={styles["handle-pin"]}  $direction={Direction.TOPLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPLEFT)} />
-                <HandlePin className={styles["handle-pin"]}  $direction={Direction.TOPRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPRIGHT)} />
-                <HandlePin className={styles["handle-pin"]}  $direction={Direction.TOP} onPointerDown={(e) => handlePointerDown(e, Direction.TOP)} />
+                <HandlePin className={styles.handlePin} $direction={Direction.BOTTOM} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOM)} />
+                <HandlePin className={styles.handlePin}  $direction={Direction.BOTTOMLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMLEFT)} />
+                <HandlePin className={styles.handlePin}  $direction={Direction.BOTTOMRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMRIGHT)} />
+                <HandlePin className={styles.handlePin}  $direction={Direction.LEFT} onPointerDown={(e) => handlePointerDown(e, Direction.LEFT)} />
+                <HandlePin className={styles.handlePin}  $direction={Direction.RIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.RIGHT)} />
+                <HandlePin className={styles.handlePin}  $direction={Direction.TOPLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPLEFT)} />
+                <HandlePin className={styles.handlePin}  $direction={Direction.TOPRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPRIGHT)} />
+                <HandlePin className={styles.handlePin}  $direction={Direction.TOP} onPointerDown={(e) => handlePointerDown(e, Direction.TOP)} />
             </>
         }
     </div>

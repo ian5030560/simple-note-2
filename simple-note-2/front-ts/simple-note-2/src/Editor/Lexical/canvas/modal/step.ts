@@ -22,77 +22,51 @@ function dataURItoBlob(dataURI: string) {
 
 class StepController{
 
-    private undoStack: Array<HTMLImageElement>;
-    private redoStack: Array<HTMLImageElement>;
+    private undoStack: Array<string>;
+    private redoStack: Array<string>;
     canvas: HTMLCanvasElement;
-    private ustep: number;
-    private rstep: number;
 
     constructor(canvas: HTMLCanvasElement){
         this.undoStack = [];
         this.redoStack = [];
         this.canvas = canvas;
-        this.ustep = -1;
-        this.rstep = -1;
     }
 
     save(){
         let context = this.canvas.getContext("2d", { willReadFrequently: true });
         if(!context) return;
         
-        let data = new Image();
-        data.src = this.canvas.toDataURL();
-        if(this.ustep === this.undoStack.length - 1){
-            this.undoStack.push(data);
-            this.ustep ++;
-        }
-        else{
-            this.undoStack[++ this.ustep] = data;
-        }
+        let data = this.canvas.toDataURL();
+        this.undoStack.push(data);
     }
 
     redo(){
-        if(this.rstep === -1) return;
-    
-        let data = this.redoStack[this.rstep --];
+        if(this.redoStack.length === 0) return;
 
-        if(this.ustep === this.undoStack.length - 1){
-            this.undoStack.push(data);
-            this.ustep ++;
-        }
-        else{
-            this.undoStack[++ this.ustep] = data;
-        }
-
+        let data = this.redoStack.pop()!;
+        this.undoStack.push(data);
         this.redraw(data);
     }
 
     undo(){
-        if(this.ustep === -1) return;
-   
-        let data = this.undoStack[this.ustep --];
+        if(this.undoStack.length === 0) return;
 
-        if(this.rstep === this.redoStack.length - 1){
-            this.redoStack.push(data);
-            this.rstep ++;
-        }
-        else{
-            this.redoStack[++ this.rstep] = data;
-        }
-
+        let data = this.undoStack.pop()!;
+        this.redoStack.push(data);
         this.redraw(data);
     }
 
-    private redraw(data: HTMLImageElement){
+    private redraw(data: string){
         let context = this.canvas.getContext("2d", { willReadFrequently: true });
         if(!context) return;
         
-        // console.log(this.undoStack, this.ustep);
-        // console.log(this.redoStack, this.rstep);
-        // console.log("--------------------------------------------------------");
-
-        context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        data.onload = () => context!.drawImage(data, 0, 0);
+        let image = new Image();
+        image.src = data;
+        
+        image.onload = () => {
+            context!.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            context!.drawImage(image, 0, 0);
+        }
     }
 
     export(){
@@ -104,12 +78,12 @@ class StepController{
     }
 
     clear(){
-        this.rstep = -1;
-        this.ustep = -1;
+        this.redoStack.length = 0;
+        this.undoStack.length = 0;
     }
 
     isDirty(){
-        return this.ustep !== -1;
+        return this.undoStack.length > 0;
     }
 }
 

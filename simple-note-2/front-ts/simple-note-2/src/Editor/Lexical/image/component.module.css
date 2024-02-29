@@ -1,7 +1,8 @@
-.handle-pin{
+.handlePin{
     background-color: blue;
     width: 7px;
     height: 7px;
     position: absolute;
+    /* display: block; */
 }
 

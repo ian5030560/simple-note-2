@@ -1,69 +1,11 @@
-import { Modal, Flex, ColorPicker } from "antd";
+import { Modal, Flex } from "antd";
 import React, { useCallback, useRef, useState } from "react";
-import { RxEraser } from "react-icons/rx";
-import { FaPlus } from "react-icons/fa6";
 import { IoIosSave, IoIosRedo, IoIosUndo } from "react-icons/io";
 import styles from "./modal.module.css";
-import {Color} from "antd/es/color-picker/color";
 import useStep from "./step";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { INSERT_IMAGE } from "../image";
-
-interface ToolButtonProp extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>{
-    backgroundColor: string;
-}
-const ToolButton = ({backgroundColor, ...buttonProp}: ToolButtonProp) => <button className={styles["tool-button"]} {...buttonProp} style={{backgroundColor: backgroundColor}}/>;
-
-const EraseButton: React.FC<React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>> = (prop) => <ToolButton {...prop} backgroundColor="white"><RxEraser size={20} /></ToolButton>;
-
-interface AdditionButtonProp extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>{
-    onColorChange: (value: Color, hex: string) => void
-}
-const AdditionButton = ({onColorChange, ...prop}: AdditionButtonProp) => {
-    
-    return <ColorPicker onChange={onColorChange}>
-        <ToolButton {...prop} backgroundColor="white"><FaPlus size={20} /></ToolButton>
-    </ColorPicker>
-}
-
-interface CanvasToolBarProp {
-    recommendColors: string[],
-    onPickColor: (color: string) => void,
-    onEraseClick: (e: React.MouseEvent) => void,
-    onSizeChange: (size: number) => void,
-    onOtherColorChange: (color: string) => void,
-}
-const CanvasToolBar: React.FC<CanvasToolBarProp> = (prop) => {
-
-    const sizeRef = useRef<HTMLInputElement>(null);
-
-    const handleChange = useCallback(() => {
-        let value = parseInt(sizeRef.current!.value);
-        prop.onSizeChange(value);
-    }, [prop]);
-
-    return <Flex justify="space-around" align="center">
-
-        <Flex justify="center" align="center">
-            <EraseButton onClick={prop.onEraseClick}/>
-            {
-                prop.recommendColors.map((color, index) => {
-                    return <ToolButton backgroundColor={color} key={index} onClick={() => prop.onPickColor(color)} />
-                })
-            }
-            <AdditionButton onColorChange={(_, hex) => prop.onOtherColorChange(hex)}/>
-        </Flex>
-
-        <Flex justify="center" align="center">
-            <p>大小:</p>
-            <p>{sizeRef.current ? sizeRef.current.value : 1}</p>
-            <input type="range" min={0} max={100} defaultValue={1}
-            className={styles["tool-slider"]} ref={sizeRef}
-            onChange={handleChange}/>
-        </Flex>
-    </Flex>
-}
-
+import { INSERT_IMAGE } from "../../image";
+import { CanvasToolBar } from "./tool";
 
 const DEFAULT = { width: 800, height: 500 };
 const ERASER = "eraser";
@@ -96,14 +38,14 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
         let context = contextRef.current!;
         if (!color || !context) return;
 
-        if(color === ERASER){
+        if (color === ERASER) {
             context.globalCompositeOperation = "destination-out";
         }
-        else{
+        else {
             context.strokeStyle = color;
         }
 
-        if(size) context.lineWidth = size;
+        if (size) context.lineWidth = size;
     }, [color, size]);
 
     const handlePointerMove = useCallback((e: PointerEvent) => {
@@ -124,10 +66,11 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
         e.preventDefault();
         if (!canvasRef.current) return;
         let canvas = canvasRef.current;
+
+        step?.save();
+        contextRef.current?.beginPath();
         let { top, left } = canvas.getBoundingClientRect();
         startRef.current = { x: e.nativeEvent.clientX - left, y: e.nativeEvent.clientY - top };
-        contextRef.current?.beginPath();
-        step?.save();
         canvasRef.current?.addEventListener("pointermove", handlePointerMove);
     }, [handlePointerMove, step]);
 
@@ -137,22 +80,19 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
     }, [handlePointerMove]);
 
     const handleExport = useCallback(() => {
-        if(!step) return;
+        if (!step || !step.isDirty()) return;
         let image = step.export();
-        editor.dispatchCommand(INSERT_IMAGE, {alt: "", src: image.src});
+        editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: image.src });
     }, [editor, step]);
 
     const handleClose = useCallback(() => {
-        if(!step?.isDirty()){
-            prop.onClose?.();
-        }
-        else{
+        if (step?.isDirty()) {
             let result = window.confirm("內容尚未儲存, 是否儲存");
-            if(result) {
-                handleExport();
-                prop.onClose?.();
-            }
+            if (result) handleExport();
         }
+
+        step?.clear();
+        prop.onClose?.();
 
     }, [handleExport, prop, step]);
 
@@ -160,8 +100,16 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
         <Flex justify="center" align="center" vertical>
             <Flex justify="center" vertical>
                 <Flex justify="end" align="center" style={{ marginBottom: 5 }}>
-                    <button className={styles["access-button"]} onClick={() => step?.undo()}><IoIosUndo size={30}/></button>
-                    <button className={styles["access-button"]} onClick={() => step?.redo()}><IoIosRedo size={30} /></button>
+                    <button className={styles["access-button"]}
+                        onClick={() => {
+                            contextRef.current!.globalCompositeOperation = "source-over";
+                            step?.undo();
+                        }}><IoIosUndo size={30} /></button>
+                    <button className={styles["access-button"]}
+                        onClick={() => {
+                            contextRef.current!.globalCompositeOperation = "source-over";
+                            step?.redo();
+                        }}><IoIosRedo size={30} /></button>
                     <button className={styles["access-button"]} onClick={handleExport}><IoIosSave size={30} /></button>
                 </Flex>
                 <canvas ref={canvasRef} style={{ backgroundColor: "whitesmoke" }}
