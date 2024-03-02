@@ -1,10 +1,9 @@
-import { $createRangeSelection, $getRoot, $getSelection, $isParagraphNode, $isRangeSelection, LexicalCommand, TextNode, createCommand } from "lexical";
+import { $getRoot, $getSelection, $isParagraphNode, $isRangeSelection, LexicalCommand, TextNode, createCommand } from "lexical";
 import { Plugin } from "../Interface";
 import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { cleanAllKeywords, skipHistoryUpdate } from "./node";
 import { useCallback } from "react";
-import { $findMatchingParent } from "@lexical/utils";
 
 export const SEARCH_TEXT: LexicalCommand<string> = createCommand();
 
@@ -22,40 +21,30 @@ const KeywordSearchPlugin: Plugin = () => {
         editor.registerCommand(SEARCH_TEXT, (payload) => {
 
             skipHistoryUpdate(editor, () => {
-                const selection = $getSelection();
-              
-                // const searchText = payload;
-                // const regex = new RegExp(searchText, "gi");
+                const searchText = payload;
+                const regex = new RegExp(searchText, "gi");
 
-                // const bnodes = $getRoot().getChildren();
-
-                // for (let bnode of bnodes) {
-
-                //     if (!$isParagraphNode(bnode)) continue;
-
-                //     let textSegements: string[] = [];
-                //     for(let node of bnode.getChildren()){
-                //         let content = node.getTextContent();
-                //         if(!content || textSegements.length === 0){
-                //             textSegements.push(content);
-                //         }
-                //         else{
-                //             textSegements[textSegements.length - 1] += content;
-                //         }
-                //     }
+                const rootNodes = $getRoot().getChildren();
+                
+                for(let rootNode of rootNodes) {
+                    if(!$isParagraphNode(rootNode)) continue;
                     
-                //     let result;
-                //     let selection = $createRangeSelection();
-                //     for(let segement of textSegements){
-                //         let indice = [];
-                //         while((result = regex.exec(segement))) indice.push(result.index);
+                    let segements: string[] = [""];
+                    let childNodes = rootNode.getChildren();
+                    for(let childNode of childNodes) {
+                        let text = childNode.getTextContent();
+                        if(text.length === 0){
+                            segements.push(text);
+                        }
+                        else{
+                            segements[segements.length - 1] += text;
+                        }
+                    }
 
-                //         indice.forEach(index => {
-                //             selection.anchor.key = 
-                //         })
-                //     }
-                // }
-
+                    for(let segement of segements){
+                        
+                    }
+                }
             });
 
             return false;

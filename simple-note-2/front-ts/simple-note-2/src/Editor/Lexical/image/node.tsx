@@ -86,8 +86,12 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
         return span;
     }
 
-    updateDOM(_prevNode: unknown, _dom: HTMLElement, _config: EditorConfig): boolean {
+    updateDOM(_prevNode: ImageNode, _dom: HTMLElement, _config: EditorConfig): boolean {
         return false;
+    }
+
+    setSrc(src: string){
+        this.getWritable().__src = src;
     }
 
     getSrc(): string {

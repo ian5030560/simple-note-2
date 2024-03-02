@@ -33,3 +33,10 @@
 .access-button:active{
     filter: brightness(80%)
 }
+
+.canvas{
+    background-position: center;
+    background-size: contain;
+    background-color: whitesmoke;
+    background-repeat: no-repeat;
+}

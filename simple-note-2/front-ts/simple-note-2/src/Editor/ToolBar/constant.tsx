@@ -8,7 +8,6 @@ import FontFamily from "./Component/font-family";
 import FontColor from "./Component/font-color";
 import BackgroundColor from "./Component/background-color";
 import Align from "./Component/align";
-import Search from "./Component/search";
 
 export const LIST: React.ReactNode[] = [
     <Track/>,
@@ -26,7 +25,6 @@ export const LIST: React.ReactNode[] = [
     </>,
     <>
         <Link />
-        <Search />
     </>,
 
 ]

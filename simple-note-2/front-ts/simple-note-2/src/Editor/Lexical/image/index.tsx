@@ -19,7 +19,6 @@ const ImagePlugin: Plugin = () => {
                     if($isRootNode(selection.anchor.getNode())){
                         selection.insertParagraph();
                     }
-
                     const node = $createImageNode(payload.src, payload.src);
                     selection.insertNodes([node]);
                 }

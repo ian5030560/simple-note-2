@@ -5,6 +5,8 @@ import { $getNodeByKey, CLICK_COMMAND } from "lexical";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import styles from "./component.module.css";
 import styled, {css} from "styled-components";
+import { RiEdit2Fill } from "react-icons/ri";
+import { OPEN_CANVAS } from "../canvas";
 
 enum Direction {
     LEFT = "top: 50%; left: 0%; cursor: w-resize; transform: translate(-7px, -7px);",
@@ -46,8 +48,15 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
         let isHorizontal = directionRef.current === Direction.LEFT || directionRef.current === Direction.RIGHT;
         let isVertical = directionRef.current === Direction.TOP || directionRef.current === Direction.BOTTOM;
 
-        offsetX = isVertical ? 0 : offsetX;
-        offsetY = isHorizontal ? 0 : offsetY;
+        let invertX = [Direction.LEFT, Direction.TOPLEFT, Direction.BOTTOMLEFT];
+        let isInvertX = directionRef.current ? invertX.includes(directionRef.current) : false;
+
+        let invertY = [Direction.TOP, Direction.TOPLEFT, Direction.TOPRIGHT];
+        let isInvertY = directionRef.current ? invertY.includes(directionRef.current) : false;
+
+
+        offsetX = isVertical ? 0 : isInvertX ? -offsetX : offsetX;
+        offsetY = isHorizontal ? 0 : isInvertY ? -offsetY : offsetY;
 
         prop.onResize?.(offsetX, offsetY);
 
@@ -127,6 +136,10 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
         return false;
     }, [isSelected, setSelected]);
 
+    const handleEdit = useCallback(() => {
+        editor.dispatchCommand(OPEN_CANVAS, {image: imageRef.current!, key: nodeKey!});
+    }, [editor, nodeKey]);
+
     useEffect(() => {
         return editor.registerCommand(CLICK_COMMAND, handleClick, 1);
     }, [editor, handleClick]);
@@ -137,8 +150,10 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
                 height: height,
                 width: width,
                 maxWidth: MAX ? MAX / 2 : undefined,
+                minWidth: MAX ? MAX / 4 : undefined,
             }}
             ref={imageRef} />
+        <button className={styles.imageEdit} onClick={handleEdit} style={{visibility: isSelected ? "visible" : "hidden"}}><RiEdit2Fill size={20}/></button>
     </Resizer>;
 }
 

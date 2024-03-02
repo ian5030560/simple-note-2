@@ -6,12 +6,19 @@ import useStep from "./step";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { INSERT_IMAGE } from "../../image";
 import { CanvasToolBar } from "./tool";
+import { $isImageNode } from "../../image/node";
+import { $getNodeByKey } from "lexical";
+
+export type CanvasData = {
+    image: HTMLImageElement,
+    key: string,
+}
 
 const DEFAULT = { width: 800, height: 500 };
 const ERASER = "eraser";
 interface CanvasModalProp {
     open: boolean;
-    image: CanvasImageSource | null;
+    data: CanvasData | null;
     onClose?: () => void;
 }
 const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
@@ -26,13 +33,25 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
     const handleOpenChange = useCallback((open: boolean) => {
         if (open) {
             let canvas = canvasRef.current!;
-            canvas.width = DEFAULT.width;
-            canvas.height = DEFAULT.height;
-            canvas.style.width = `${DEFAULT.width}px`;
-            canvas.style.height = `${DEFAULT.height}px`;
+
+            let width = DEFAULT.width;
+            let height = DEFAULT.height;
+
+            if (prop.data) {
+                let { width: imageWidth, height: imageHeight } = prop.data.image.getBoundingClientRect();
+                let wr = width / imageWidth;
+                let hr = height / imageHeight;
+                width = imageWidth * Math.min(wr, hr);
+                height = imageHeight * Math.min(wr, hr);
+            }
+            canvas.width = width;
+            canvas.height = height;
+            canvas.style.width = `${width}px`;
+            canvas.style.height = `${height}px`;
             contextRef.current = canvas.getContext("2d");
+
         }
-    }, []);
+    }, [prop.data]);
 
     const handlePointerEnter = useCallback(() => {
         let context = contextRef.current!;
@@ -81,16 +100,29 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
 
     const handleExport = useCallback(() => {
         if (!step || !step.isDirty()) return;
-        let image = step.export();
-        editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: image.src });
-    }, [editor, step]);
+
+        let data = step.export();
+        if (!prop.data) {
+            editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: data.src });
+        }
+        else {
+            editor.update(() => {
+                const node = $getNodeByKey(prop.data!.key);
+                if ($isImageNode(node)) {
+                    node.setSrc(data.src);
+                }
+            })
+        }
+        step.clear();
+        prop.onClose?.();
+
+    }, [editor, prop, step]);
 
     const handleClose = useCallback(() => {
         if (step?.isDirty()) {
             let result = window.confirm("內容尚未儲存, 是否儲存");
             if (result) handleExport();
         }
-
         step?.clear();
         prop.onClose?.();
 
@@ -104,15 +136,20 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
                         onClick={() => {
                             contextRef.current!.globalCompositeOperation = "source-over";
                             step?.undo();
-                        }}><IoIosUndo size={30} /></button>
+                        }}><IoIosUndo size={30} />
+                    </button>
                     <button className={styles["access-button"]}
                         onClick={() => {
                             contextRef.current!.globalCompositeOperation = "source-over";
                             step?.redo();
-                        }}><IoIosRedo size={30} /></button>
+                        }}><IoIosRedo size={30} />
+                    </button>
                     <button className={styles["access-button"]} onClick={handleExport}><IoIosSave size={30} /></button>
                 </Flex>
-                <canvas ref={canvasRef} style={{ backgroundColor: "whitesmoke" }}
+                <canvas
+                    ref={canvasRef}
+                    className={styles.canvas}
+                    style={{ backgroundImage: prop.data ? `url(${prop.data.image.src})` : undefined }}
                     onPointerDown={handlePointerDown}
                     onPointerEnter={handlePointerEnter}
                     onPointerUp={handlePointerUp}

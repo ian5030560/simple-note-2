@@ -1,17 +1,17 @@
 import { createPortal } from "react-dom";
 import { Plugin } from "../Interface";
 import { LinkPlugin as LexicalLinkPlugin } from "@lexical/react/LexicalLinkPlugin";
-import { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
 import { $isLinkNode, LinkNode } from "@lexical/link";
-import styled, { css } from "styled-components";
 import { theme, Button } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { mergeRegister } from "@lexical/utils"
+import styles from "./index.module.css";
 
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/;
 function validateUrl(url: string): boolean {
@@ -23,18 +23,11 @@ const LinkPlugin: Plugin = () => <LexicalLinkPlugin validateUrl={validateUrl} />
 export default LinkPlugin;
 
 const PADDING = 8;
-const Floating = styled.div<{ $backgroundColor: string }>`
-    position: absolute;
-    padding: ${PADDING}px;
-    border-radius: 5px;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    ${({ $backgroundColor }) => css`
-        background-color: ${$backgroundColor};
-    `}
-`;
+interface FloatingProp extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>{
+    $backgroundColor: string;
+    style: React.CSSProperties;
+}
+const Floating = ({$backgroundColor, style, ...prop}: FloatingProp) => <div className={styles.floatingLink} {...prop} style={{backgroundColor: $backgroundColor, ...style}}/>;
 
 interface FloatingLinkProp {
     url?: string,
@@ -50,8 +43,7 @@ const Link: React.FC<FloatingLinkProp> = (prop) => {
 
     return <Floating
         style={{
-            top: prop.top,
-            left: prop.left,
+            transform: `translate(${prop.left}px, ${prop.top}px)`
         }}
         $backgroundColor={token.colorBgBase}
     >
@@ -80,6 +72,7 @@ export const FloatingLinkPlugin: Plugin = () => {
             if ($isRangeSelection(selection)) {
                 let node = selection.anchor.getNode();
                 let parent = $findMatchingParent(node, (n) => $isLinkNode(n)) as LinkNode | null;
+            
                 let url: string | undefined = undefined;
                 let position: { x: number, y: number } = DEFAULT;
                 if (parent) {

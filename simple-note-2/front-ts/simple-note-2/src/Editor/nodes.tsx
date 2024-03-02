@@ -6,8 +6,7 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import ImageNode from "./Lexical/image/node";
 // import KeywordNode from "./Lexical/keywordSearch/node";
-// import { TableCellNode, TableRowNode } from "@lexical/table";
-// import { TableNode } from "./Lexical/table/nodes/TableNode";
+import { TableCellNode, TableRowNode, TableNode } from "@lexical/table";
 
 const NODES: Klass<LexicalNode>[] = [
     HeadingNode,
@@ -21,9 +20,9 @@ const NODES: Klass<LexicalNode>[] = [
     LinkNode,
     ImageNode,
     // KeywordNode,
-    // TableCellNode,
-    // TableNode,
-    // TableRowNode,
+    TableCellNode,
+    TableNode,
+    TableRowNode,
 
 ]
 

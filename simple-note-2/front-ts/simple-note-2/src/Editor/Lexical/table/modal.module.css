@@ -1,0 +1,28 @@
+.tableFormWrapper{
+    margin-bottom: 8px;
+    display: flex;
+}
+
+.tableFormLabel{
+    flex-grow: 1;
+    margin-right: 8px;
+}
+
+.tableFormInput {
+    outline: none;
+    padding: 5px 0px;
+}
+
+.tableButton{
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.tableButton:hover{
+    filter: brightness(85%);
+}
+
+.tableButton:active{
+    filter: brightness(70%);
+}

@@ -13,9 +13,9 @@ import SavePlugin from "./Lexical/save";
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 import ListMaxLevelPlugin from "./Lexical/listmaxlevel";
 import SpeechToTextPlugin from "./Lexical/speechToText";
-import KeywordSearchPlugin from "./Lexical/keywordSearch";
+// import KeywordSearchPlugin from "./Lexical/keywordSearch";
 import CanvasPlugin from "./Lexical/canvas";
-// import TablePlugin from "./Lexical/table";
+import TablePlugin from "./Lexical/table";
 
 const PLUGINS: React.ReactNode[] = [
     <RichTextPlugin />,
@@ -30,7 +30,7 @@ const PLUGINS: React.ReactNode[] = [
     <SavePlugin />,
     <TabIndentationPlugin />,
     <ListMaxLevelPlugin maxLevel={5}/>,
-    // <TablePlugin/>,
+    <TablePlugin/>,
     // <KeywordSearchPlugin/>,
     <SpeechToTextPlugin/>,
     <CanvasPlugin/>,

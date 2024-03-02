@@ -1,27 +1,32 @@
 import { Plugin } from "../Interface";
 import { LexicalCommand, createCommand } from "lexical";
-import CanvasModal from "./modal";
+import CanvasModal, { CanvasData } from "./modal";
 import { useEffect, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 
-export const OPEN_CANVAS: LexicalCommand<CanvasImageSource | null> = createCommand();
+export const OPEN_CANVAS: LexicalCommand<CanvasData | null> = createCommand();
 const CanvasPlugin: Plugin = () => {
     const [open, setOpen] = useState(false);
     const [editor] = useLexicalComposerContext();
-    const imageRef = useRef<CanvasImageSource | null>(null);
+    const dataRef = useRef<CanvasData | null>(null);
 
     useEffect(() => {
         return mergeRegister(
             editor.registerCommand(OPEN_CANVAS, (payload) => {
                 setOpen(true);
-                imageRef.current = payload;
+                dataRef.current = payload;
                 return false;
             }, 4)
         )
     }, [editor]);
 
-    return <CanvasModal open={open} onClose={() => setOpen(false)} image={imageRef.current} />
+    return <CanvasModal open={open}
+        onClose={() => {
+            dataRef.current = null;
+            setOpen(false);
+        }}
+        data={dataRef.current} />
 }
 
 export default CanvasPlugin;

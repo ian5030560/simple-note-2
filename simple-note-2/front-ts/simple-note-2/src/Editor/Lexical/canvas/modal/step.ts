@@ -70,10 +70,33 @@ class StepController{
     }
 
     export(){
+
+        let imageData: HTMLImageElement | undefined = undefined;
+        if(this.canvas.style.backgroundImage){
+            let {backgroundImage} = window.getComputedStyle(this.canvas);
+            backgroundImage = backgroundImage.replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+            imageData = new Image();
+            imageData.onload = () => {
+                imageData!.width = this.canvas.width;
+                imageData!.height = this.canvas.height;
+            }
+            imageData.src = backgroundImage;
+        }
+
+
+        let context = this.canvas.getContext("2d")!;
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = "high";
+
+        if(imageData){
+            context.globalCompositeOperation = "destination-over";
+            context.drawImage(imageData, 0, 0, this.canvas.width, this.canvas.height);
+            context.globalCompositeOperation = "source-over";
+        };
+
         let data = new Image();
-        let blob = dataURItoBlob(this.canvas.toDataURL());
+        let blob = dataURItoBlob(this.canvas.toDataURL("image/png", 1));
         data.src = URL.createObjectURL(blob);
-        this.clear();
         return data;
     }
 

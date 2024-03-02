@@ -3,6 +3,7 @@ import Heading from "./AddList/heading";
 import Image from "./AddList/image";
 import Paragraph from "./AddList/paragraph";
 import SpeechToText from "./AddList/speechToText";
+import Table from "./AddList/table";
 import { AddItem } from "./Lexical/draggable/component";
 
 const ADDLIST: AddItem[] = [
@@ -11,6 +12,7 @@ const ADDLIST: AddItem[] = [
     Image,
     SpeechToText,
     Canvas,
+    Table
 ];
 
 export default ADDLIST;
