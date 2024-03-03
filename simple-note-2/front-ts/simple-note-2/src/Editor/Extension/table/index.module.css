@@ -149,7 +149,7 @@
     top: 0;
 }
 
-.simple-note-2-table-cell-action-button-container {
+:global(.simple-note-2-table-cell-action-button-container) {
     display: block;
     right: 5px;
     top: 6px;
@@ -159,18 +159,20 @@
     height: 20px;
 }
 
-.simple-note-2-table-cell-action-button {
+:global(.simple-note-2-table-cell-action-button) {
     background-color: #eee;
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 0;
-    border-radius: 20px;
-    width: 20px;
-    height: 20px;
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
     color: #222;
     cursor: pointer;
 }
 
-.simple-note-2-table-cell-action-button:hover {
+:global(.simple-note-2-table-cell-action-button:hover) {
     background-color: #ddd;
 }
 

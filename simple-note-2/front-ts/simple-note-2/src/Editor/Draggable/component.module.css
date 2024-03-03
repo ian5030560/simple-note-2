@@ -1,9 +1,16 @@
-.handle-button {
+.handleButton {
     cursor: grab;
     font-size: 2em;
     :active{
         cursor: grabbing;
     }
+}
+
+.dropOverlay{
+    max-height: 250px;
+    overflow: auto;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+    border-radius: 8px;
 }
 
 .draggable{
@@ -20,26 +27,4 @@
 .dropLine{
     border: 3px solid skyblue;
     width: 80%;
-}
-
-.addListItem{
-    display: flex;
-    width: 100%;
-    justify-content: left;
-    cursor: pointer;
-    align-items: center;
-    padding: 4px;
-    border-radius: 5px;
-}
-
-.addListItem:hover{
-    background-color: rgba(0, 0, 0, 0.06);
-}
-
-.addListItemIcon{
-    margin-right: 10px;
-}
-
-.addListItem:hover{
-    filter: brightness(85%);
 }
