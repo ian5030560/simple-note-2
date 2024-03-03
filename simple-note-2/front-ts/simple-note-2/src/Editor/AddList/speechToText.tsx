@@ -1,6 +1,6 @@
-import { AddItem } from "../Lexical/draggable/component";
+import { AddItem } from "../Draggable/component";
 import {RiUserVoiceFill} from "react-icons/ri";
-import { SPEECH_TO_TEXT } from "../Lexical/speechToText";
+import { SPEECH_TO_TEXT } from "../Extension/speechToText/plugin";
 
 const SpeechToText: AddItem = {
     value: "speech to text",

@@ -1,0 +1,56 @@
+:global(.simple-note-2-ltr) {
+    text-align: left;
+}
+
+:global(.simple-note-2-rtl) {
+    text-align: right;
+}
+
+:global(.simple-note-2-paragraph) {
+    position: relative;
+}
+
+:global(.simple-note-2-text-underline) {
+    text-decoration: underline;
+}
+
+:global(.simple-note-2-text-bold) {
+    font-weight: bold;
+}
+
+:global(.simple-note-2-text-italic) {
+    font-style: italic;
+}
+
+:global(.simple-note-2-nested-list-item) {
+    list-style: none;
+}
+
+:global(.simple-note-2-ordered-nested-list-1),
+:global(.simple-note-2-ordered-nested-list-2),
+:global(.simple-note-2-ordered-nested-list-3),
+:global(.simple-note-2-ordered-nested-list-4) {
+    padding: 0;
+    margin: 0px 0px 0px 40px;
+    list-style-position: inside;
+}
+
+:global(.simple-note-2-ordered-nested-list-1) {
+    margin-left: 0px;
+}
+
+:global(.simple-note-2-ordered-nested-list-2) {
+    list-style-type: upper-alpha;
+}
+
+:global(.simple-note-2-ordered-nested-list-3) {
+    list-style-type: lower-alpha;
+}
+
+:global(.simple-note-2-ordered-nested-list-4) {
+    list-style-type: upper-roman;
+}
+
+:global(.simple-note-2-ordered-nested-list-5) {
+    list-style-type: lower-roman;
+}

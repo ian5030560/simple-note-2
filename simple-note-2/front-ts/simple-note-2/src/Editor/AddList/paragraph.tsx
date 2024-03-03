@@ -1,5 +1,5 @@
 import { $createParagraphNode, $getSelection, $isBlockElementNode, $isRangeSelection, ElementNode, LexicalEditor } from "lexical";
-import { AddItem } from "../Lexical/draggable/component";
+import { AddItem } from "../Draggable/component";
 import {BsParagraph} from "react-icons/bs";
 import { $findMatchingParent } from "@lexical/utils";
 

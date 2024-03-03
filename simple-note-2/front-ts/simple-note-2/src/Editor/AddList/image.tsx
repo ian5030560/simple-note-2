@@ -1,7 +1,6 @@
-import { Modal as AntModal } from "antd";
-import { AddItem } from "../Lexical/draggable/component";
+import { AddItem } from "../Draggable/component";
 import { AiOutlinePicture } from "react-icons/ai";
-import { OPEN_IMAGE_MODAL } from "../Lexical/image/modal";
+import { OPEN_IMAGE_MODAL } from "../Extension/image/modal";
 
 const Image: AddItem = {
     value: "image",

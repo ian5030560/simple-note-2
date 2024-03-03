@@ -4,7 +4,7 @@ import Image from "./AddList/image";
 import Paragraph from "./AddList/paragraph";
 import SpeechToText from "./AddList/speechToText";
 import Table from "./AddList/table";
-import { AddItem } from "./Lexical/draggable/component";
+import { AddItem } from "./Draggable/component";
 
 const ADDLIST: AddItem[] = [
     Paragraph,

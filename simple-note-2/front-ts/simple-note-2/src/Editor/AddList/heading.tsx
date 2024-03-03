@@ -1,4 +1,4 @@
-import { AddItem } from "../Lexical/draggable/component";
+import { AddItem } from "../Draggable/component";
 import { $findMatchingParent } from "@lexical/utils";
 import { $getSelection, $isBlockElementNode, $isRangeSelection, ElementNode, LexicalEditor } from "lexical";
 import { $createHeadingNode, HeadingTagType } from "@lexical/rich-text";

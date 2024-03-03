@@ -2,7 +2,7 @@ import React from "react";
 import { PopupButton } from "../Basic/button";
 import { SearchOutlined } from "@ant-design/icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { SEARCH_TEXT } from "../../../Lexical/keywordSearch";
+// import { SEARCH_TEXT } from "../../../Lexical/keywordSearch";
 
 const Search: React.FC = () => {
     const [editor] = useLexicalComposerContext();
@@ -11,7 +11,7 @@ const Search: React.FC = () => {
         icon={<SearchOutlined/>}
         search = {true}
         type="text"
-        onChange={(value) => editor.dispatchCommand(SEARCH_TEXT, value)}
+        // onChange={(value) => editor.dispatchCommand(SEARCH_TEXT, value)}
     />;
 }
 

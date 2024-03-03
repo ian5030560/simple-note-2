@@ -1,5 +1,5 @@
-import { OPEN_CANVAS } from "../Lexical/canvas";
-import { AddItem } from "../Lexical/draggable/component";
+import { OPEN_CANVAS } from "../Extension/canvas/plugin";
+import { AddItem } from "../Draggable/component";
 import { FaPaintBrush } from "react-icons/fa";
 
 const Canvas: AddItem = {
