@@ -38,7 +38,8 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
         }
     });
 
-    return <Dropdown trigger={["click"]} arrow={false} menu={{ items }} placement="bottom" overlayClassName={styles.dropOverlay}>
+    return <Dropdown trigger={["click"]} arrow={false} menu={{ items }} placement="bottom"
+    dropdownRender={(node) => React.cloneElement(node as React.JSX.Element, {className: styles.dropDown})}>
         {children}
     </Dropdown>
 }

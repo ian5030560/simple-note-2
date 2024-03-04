@@ -8,6 +8,7 @@ import Track from "./ToolBar/Component/track";
 import Text from "./ToolBar/Component/text";
 import Markdown from "./ToolBar/Component/markdown";
 import List from "./ToolBar/Component/list";
+import Table from "./ToolBar/Component/table";
 
 export const LIST: React.ReactNode[] = [
     <Track/>,
@@ -25,6 +26,7 @@ export const LIST: React.ReactNode[] = [
     </>,
     <>
         <Link />
+        <Table/>
     </>,
 
 ]

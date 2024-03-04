@@ -100,7 +100,7 @@
     background-color: #c9dbf0;
 }
 
-.simple-note-2-table-add-rows {
+:global(.simple-note-2-table-add-rows) {
     position: absolute;
     bottom: -25px;
     width: calc(100% - 25px);
@@ -112,7 +112,7 @@
     cursor: pointer;
 }
 
-.simple-note-2-table-add-rows:after {
+:global(.simple-note-2-table-add-rows:after) {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -126,7 +126,7 @@
     opacity: 0.4;
 }
 
-.simple-note-2-table-add-rows:hover {
+:global(.simple-note-2-table-add-rows:hover) {
     background-color: #c9dbf0;
 }
 
@@ -140,7 +140,7 @@
     }
 }
 
-.simple-note-2-table-cell-resizer {
+:global(.simple-note-2-table-cell-resizer) {
     display: block;
     position: absolute;
     width: 1px;
@@ -151,8 +151,8 @@
 
 :global(.simple-note-2-table-cell-action-button-container) {
     display: block;
-    right: 5px;
-    top: 6px;
+    left: 0px;
+    top: 0px;
     position: absolute;
     z-index: 4;
     width: 20px;
@@ -176,6 +176,6 @@
     background-color: #ddd;
 }
 
-.simple-note-2-table-cell-resizer {
+:global(.simple-note-2-table-cell-resizer) {
     position: absolute;
 }
