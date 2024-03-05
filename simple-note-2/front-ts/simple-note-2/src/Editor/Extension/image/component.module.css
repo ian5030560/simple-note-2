@@ -4,11 +4,10 @@
     height: 7px;
     position: absolute;
     z-index: 10000;
-    /* display: block; */
 }
 
 .imageEdit{
-    border: 1px solid blueviolet;
+    border: 1px solid skyblue;
     display: flex;
     justify-content: center;
     align-items: center;

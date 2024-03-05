@@ -7,20 +7,22 @@ const defaultTheme: ThemeConfigHandler = (dark: boolean) => {
     return {
         token: {
             colorPrimary: "#8696A7",
+            // colorPrimary: "#87CEEB",
             colorBgBase: dark ? "#3C3C3C" : "#FFFCEC",
+            // colorBgBase: dark ? "#3C3C3C" : "#f5f5f5",
         },
         components: {
             Menu: {
                 itemBg: "#8696A7",
-                // itemColor: determineWhiteOrBlack("#8696A7"),
-                itemColor: "white",
+                // itemBg: "#87CEEB",
+                itemColor: "#FFFFFF",
                 itemHoverColor: "#FFFFFF",
+                itemSelectedColor: "#FFFFFF",
                 horizontalItemSelectedColor: "#FFFFFF",
             },
 
             Tree: {
                 nodeSelectedBg: "#FFFFFF",
-                
             }
         }
     }

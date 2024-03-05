@@ -1,7 +1,9 @@
-import React from "react"
-import { Menu } from "antd";
+import { Menu, theme } from "antd";
 
-const ThemeMenu = ({ style }: {style: React.CSSProperties}) => {
+const ThemeMenu = () => {
+
+    const {token} = theme.useToken();
+
     const items = [
         {
             label: "我的主題",
@@ -14,7 +16,7 @@ const ThemeMenu = ({ style }: {style: React.CSSProperties}) => {
     return <Menu
         mode="vertical"
         items={items}
-        style={style}
+        style={{borderRadius: token.Menu ? token.Menu.itemBorderRadius : 8}}
     />
 }
 

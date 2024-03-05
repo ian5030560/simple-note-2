@@ -21,10 +21,10 @@ const TableDimension = ({ maxRows, maxColumns, onSizePick }: TableDimensionProp)
         for (let i = 0; i < maxRows; i++) {
             let arr = [];
             for (let j = 0; j < maxColumns; j++) {
-                let selected = i <= size.rows && j <= size.cols;
-                arr.push(<td key={`${i}-${j}`} className={selected && styles.dimensionCellSelected}
-                    onPointerEnter={() => setSize({ rows: i, cols: j })}
-                    onPointerDown={() => onSizePick?.(i, j)} />);
+                let selected = i < size.rows && j < size.cols;
+                arr.push(<td key={`${i}-${j}`} className={selected ? styles.dimensionCellSelected : undefined}
+                    onPointerEnter={() => setSize({ rows: i + 1, cols: j + 1 })}
+                    onPointerDown={() => onSizePick?.(i + 1, j + 1)} />);
             }
 
             arrs.push(<tr key={`${i}`}>{arr}</tr>);
@@ -35,7 +35,9 @@ const TableDimension = ({ maxRows, maxColumns, onSizePick }: TableDimensionProp)
     return <>
         <span>{`${size.rows}x${size.cols}`}</span>
         <table className={styles.dimensionTable}>
-            {dimension}
+            <tbody>
+                {dimension}
+            </tbody>
         </table>
     </>
 }

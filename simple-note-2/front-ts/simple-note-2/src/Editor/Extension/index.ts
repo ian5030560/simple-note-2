@@ -5,6 +5,7 @@ import SpeechToTextExtension from "./speechToText";
 import ImageExtension from "./image";
 import CanvasExtension from "./canvas";
 import TableExtension from "./table";
+import AIExtension from "./ai";
 
 export type Plugin<T = {}> = React.FC<T>
 
@@ -24,7 +25,8 @@ const Extensions: Extension[] = [
     SpeechToTextExtension,
     ImageExtension,
     CanvasExtension,
-    TableExtension
+    TableExtension,
+    AIExtension,
 ]
 
 export default Extensions;

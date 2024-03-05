@@ -1,6 +1,6 @@
 import { Flex, theme } from "antd";
 import React from "react"
-import Divider from "./Component/Basic/divider";
+import Divider from "./Component/UI/divider";
 import { Plugin } from "../Extension/index";
 import styled, { css } from "styled-components";
 

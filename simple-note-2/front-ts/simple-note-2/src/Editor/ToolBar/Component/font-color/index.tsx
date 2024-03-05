@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ColorButton } from "../Basic/button";
+import { ColorButton } from "../UI/button";
 import { FontColorsOutlined } from "@ant-design/icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useSelectionListener } from "../Hooks";

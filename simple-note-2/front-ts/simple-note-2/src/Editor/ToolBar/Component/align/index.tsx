@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import OptionGroup, { Option } from "../Basic/option";
+import OptionGroup, { Option } from "../UI/option";
 import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from "@ant-design/icons";
 import { useSelectionListener } from "../Hooks";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";

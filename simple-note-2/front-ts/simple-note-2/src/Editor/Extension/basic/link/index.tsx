@@ -12,6 +12,7 @@ import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { mergeRegister } from "@lexical/utils"
 import styles from "./index.module.css";
+import { useWrapper } from "../../../Draggable/component";
 
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/;
 function validateUrl(url: string): boolean {
@@ -65,6 +66,7 @@ export const FloatingLinkPlugin: Plugin = () => {
     const [pos, setPos] = useState(DEFAULT);
     const [editable, setEditable] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
+    const wrapper = useWrapper();
 
     const showLink = useCallback(() => {
         editor.update(() => {
@@ -79,17 +81,20 @@ export const FloatingLinkPlugin: Plugin = () => {
                     url = parent.getURL();
                     let element = editor.getElementByKey(parent.getKey())!;
                     let { x, y, height } = element.getBoundingClientRect();
-                    position = { x: x, y: y - height - PADDING * 3 };
+                    let {top, left} = wrapper!.getBoundingClientRect();
+
+                    position = { x: x - left, y: y - top - height - PADDING * 3 };
                     inputRef.current!.value = url;
                 }
                 setEditable(false);
                 setUrl(url);
                 setPos(position);
+                
             }
         });
 
         return false;
-    }, [editor]);
+    }, [editor, wrapper]);
 
     useEffect(() => {
         return mergeRegister(
@@ -110,12 +115,12 @@ export const FloatingLinkPlugin: Plugin = () => {
         setEditable(() => false);
     }, [editor]);
 
-    return createPortal(
+    return wrapper ? createPortal(
         <Link top={pos.y} left={pos.x} url={url}
             editable={editable}
             onEditClick={handleEditClick}
             onDiscardClick={handleDiscardClick}
             inputRef={inputRef}
-        />, document.body
-    );
+        />, wrapper
+    ) : null;
 }

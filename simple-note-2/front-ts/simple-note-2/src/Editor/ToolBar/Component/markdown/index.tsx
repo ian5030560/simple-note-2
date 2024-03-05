@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import OptionGroup, { Option } from "../Basic/option"
+import OptionGroup, { Option } from "../UI/option"
 import { BoldOutlined, ItalicOutlined, UnderlineOutlined } from "@ant-design/icons"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { FORMAT_TEXT_COMMAND, TextFormatType } from "lexical"
