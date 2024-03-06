@@ -1,0 +1,17 @@
+version: '3.12'
+
+services:
+  django:
+    container_name: django
+    ports:
+      - 8000:8000
+    build:
+      context: ./djangogirls_venv
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./djangogirls_venv/myproject:/djangogirls/djangogirls_venv/myproject
+
+
+    environment:
+      - DEBUG=1
+    working_dir: /djangogirls/djangogirls_venv/myproject

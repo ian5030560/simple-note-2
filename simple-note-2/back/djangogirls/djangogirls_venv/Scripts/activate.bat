@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\USER\Documents\GitHub\simple-note-2\simple-note-2\back\djangogirls\djangogirls_venv
+set VIRTUAL_ENV=C:\Users\Administrator\Downloads\simple-note-2-main\simple-note-2-main\simple-note-2\back\djangogirls\djangogirls_venv
 
 if not defined PROMPT set PROMPT=$P$G
 
