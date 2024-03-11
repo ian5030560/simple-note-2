@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useEffect, memo } from "react";
 import '../../../node_modules/reactflow/dist/style.css';
-import ReactFlow, { Controls, Background, BackgroundVariant } from "reactflow";
+import ReactFlow, { Controls, Background, BackgroundVariant, useNodesState } from "reactflow";
 import { Index as User } from "../../User";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { Node } from "@reactflow/core/dist/esm/types/nodes"
 
-const PreviewComponent = () => {
-    return <User rootStyle={{
-        width: "1200px",
-        height: "600px",
-    }} />;
+const PreviewComponent = ({ data }: { data: ThemeConfig }) => {
+    return <ConfigProvider theme={data}>
+        <User rootStyle={{
+            width: "1200px",
+            height: "600px",
+        }} />;
+    </ConfigProvider>
 }
 
-const nodes: Node<any, string | undefined>[] = [
+const initNodes: Node<ThemeConfig | undefined, string | undefined>[] = [
     {
         id: 'view',
         type: "preview",
@@ -23,22 +25,33 @@ const nodes: Node<any, string | undefined>[] = [
     },
 ];
 
-const Preview = ({ theme }: {theme: ThemeConfig}) => {
+const nodeTypes = {
+    preview: PreviewComponent,
+}
 
-    return <ConfigProvider
-        theme={theme}
+const Preview = ({ theme }: { theme: ThemeConfig }) => {
+
+    const [nodes, setNodes, onNodeChange] = useNodesState(initNodes);
+
+    useEffect(() => {
+        setNodes(prev => {
+            return prev.map((n) => ({
+                ...n,
+                data: theme,
+            }))
+        })
+    }, [setNodes, theme]);
+
+    return <ReactFlow
+        nodes={nodes}
+        nodeTypes={nodeTypes}
+        fitView
+        nodesDraggable={false}
+        onNodesChange={onNodeChange}
     >
-        <ReactFlow
-            nodes={nodes}
-            nodeTypes={{ preview: PreviewComponent }}
-            fitView
-            nodesDraggable={false}
-        >
-            <Controls showInteractive={false} />
-            <Background variant={BackgroundVariant.Dots} size={3} />
-        </ReactFlow>
-    </ConfigProvider>
-
+        <Controls showInteractive={false} />
+        <Background variant={BackgroundVariant.Dots} size={3} />
+    </ReactFlow>
 }
 
 export default Preview

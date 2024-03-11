@@ -4,6 +4,7 @@ import { BoldOutlined, ItalicOutlined, UnderlineOutlined } from "@ant-design/ico
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { FORMAT_TEXT_COMMAND, TextFormatType } from "lexical"
 import { useSelectionListener } from "../Hooks"
+import { FaCode } from "react-icons/fa";
 
 const MARKDOWN: Option[] = [
     {
@@ -17,6 +18,10 @@ const MARKDOWN: Option[] = [
     {
         key: "underline",
         icon: <UnderlineOutlined />
+    },
+    {
+        key: "code",
+        icon: <FaCode />,
     }
 ]
 

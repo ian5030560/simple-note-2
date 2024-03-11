@@ -13,9 +13,9 @@ interface ToolButtonsProp {
 }
 const ToolButtons: React.FC<ToolButtonsProp> = ({ nodeKey, onDelete, onAdd, root }) => {
 
-    const { token } = theme.useToken();
+    // const { token } = theme.useToken();
 
-    return <Flex style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>
+    return <Flex>
         {!root && <DeleteOutlined
             onClick={(e) => {
                 e.stopPropagation();
@@ -47,11 +47,11 @@ const Node: React.FC<NodeProp> = (prop) => {
 
     const [openAdd, setOpenAdd] = useState(false);
     const [openDelete, setOpenDelte] = useState(false);
-    const { token } = theme.useToken();
+    // const { token } = theme.useToken();
 
     return <>
         <Flex gap={"large"}>
-            <Text ellipsis style={{ color: determineWhiteOrBlack(token.colorPrimary), whiteSpace: "nowrap" }}>{prop.text}</Text>
+            <Text ellipsis style={{ whiteSpace: "nowrap" }}>{prop.text}</Text>
             <ToolButtons
                 nodeKey={prop.nodeKey}
                 onAdd={() => setOpenAdd(true)}

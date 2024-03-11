@@ -11,10 +11,10 @@ import {
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
 import FileTree from "./FileTree";
-import ThemeMenu from "./ThemeMenu";
 import { determineWhiteOrBlack } from "../../util/color";
 import { useCookies } from "react-cookie";
 import User from "../../service/user";
+import SettingPanel from "./SettingPanel";
 
 const { Title } = Typography;
 
@@ -66,7 +66,7 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src, onLogout, onSet
             icon={src ? null : <UserOutlined />}
             src={src}
         />
-        <Title level={4} ellipsis style={{ color: determineWhiteOrBlack(token.colorPrimary) }}>{username}</Title>
+        <Title level={4} ellipsis>{username}</Title>
         <Dropdown
             menu={{
                 items,
@@ -75,7 +75,7 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src, onLogout, onSet
             trigger={["click"]}
             placement="bottom"
         >
-            <EllipsisOutlined style={{ color: determineWhiteOrBlack(token.colorPrimary) }} />
+            <EllipsisOutlined style={{color: token.colorText}}/>
         </Dropdown>
     </Flex>
 }
@@ -85,12 +85,13 @@ const {Text} = Typography;
 const SideBar = () => {
 
     const { token } = theme.useToken();
-    const [open, setOpen] = useState(false);
+    const [logoutOpen, setLogOutOpen] = useState(false);
     const [api, contextHolder] = notification.useNotification();
+    const [settingOpen, setSettingOpen] = useState(false);
     // const [{ username }] = useCookies(["username"]);
 
     const handleLogoutOk = useCallback(() => {
-        setOpen(false);
+        setLogOutOpen(false);
         
         // User.userLogOut(username)
         //     .then((value) => {
@@ -115,22 +116,22 @@ const SideBar = () => {
                 backgroundColor: token.colorPrimary,
             }}>
             <Flex vertical>
-                <UserProfile username="username" onLogout={() => setOpen(true)} />
+                <UserProfile username="username" onLogout={() => setLogOutOpen(true)} onSet={() => setSettingOpen(true)}/>
                 <FileTree />
             </Flex>
-            <ThemeMenu />
         </Flex>
         
         <Modal
-            open={open} centered title="登出" okText="是" cancelText="否"
+            open={logoutOpen} centered title="登出" okText="是" cancelText="否"
             okButtonProps={{danger: true,}}
-            cancelButtonProps={{type: "default",}}
+            cancelButtonProps={{type: "default"}}
             onOk={handleLogoutOk}
-            onCancel={() => setOpen(false)}
+            onCancel={() => setLogOutOpen(false)}
         >
             <Text>是否確定登出</Text>
         </Modal>
         {contextHolder}
+        <SettingPanel open={settingOpen} onOk={() => setSettingOpen(false)} onCancel={() => setSettingOpen(false)}/>
     </>
 }
 

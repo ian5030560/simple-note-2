@@ -1,4 +1,4 @@
-import { Flex, Button, FlexProps, Dropdown, MenuProps } from "antd";
+import { Flex, Button, FlexProps, Dropdown, MenuProps, Select } from "antd";
 import React, { useState, useEffect } from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
 import { dndStore, useDndSelector } from "./redux";
@@ -39,7 +39,7 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
     });
 
     return <Dropdown trigger={["click"]} arrow={false} menu={{ items }} placement="bottom"
-    dropdownRender={(node) => React.cloneElement(node as React.JSX.Element, {className: styles.dropDown})}>
+        dropdownRender={(node) => React.cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
         {children}
     </Dropdown>
 }

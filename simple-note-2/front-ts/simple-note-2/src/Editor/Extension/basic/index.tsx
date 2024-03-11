@@ -11,10 +11,10 @@ import LinkPlugin, { FloatingLinkPlugin } from "./link";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import ListMaxLevelPlugin from "./listMaxLevel";
-import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import styles from "./index.module.css";
-
+import SavePlugin from "./save";
+import EditorInstancePlugin from "./instance";
 
 const BasicExtension: Extension = {
     plugins: [
@@ -27,6 +27,8 @@ const BasicExtension: Extension = {
         <ListMaxLevelPlugin maxLevel={5} />,
         <ListPlugin />,
         <FloatingLinkPlugin/>,
+        <SavePlugin/>,
+        <EditorInstancePlugin/>,
     ],
 
     nodes: [
@@ -37,8 +39,6 @@ const BasicExtension: Extension = {
         AutoLinkNode,
         ListItemNode,
         ListNode,
-        CodeNode,
-        CodeHighlightNode,
     ],
 
     styleSheet: styles,
@@ -50,7 +50,8 @@ const BasicExtension: Extension = {
         text: {
             bold: "simple-note-2-text-bold",
             italic: "simple-note-2-text-italic",
-            underline: "simple-note-2-text-underline"
+            underline: "simple-note-2-text-underline",
+            code: "simple-note-2-text-code",
         },
         heading: {
             h1: "simple-note-2-heading-1",

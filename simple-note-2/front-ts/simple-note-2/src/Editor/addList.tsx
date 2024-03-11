@@ -4,6 +4,7 @@ import Image from "./AddList/image";
 import Paragraph from "./AddList/paragraph";
 import SpeechToText from "./AddList/speechToText";
 import Table from "./AddList/table";
+import Code from "./AddList/code";
 import { AddItem } from "./Draggable/component";
 
 const ADDLIST: AddItem[] = [
@@ -12,7 +13,8 @@ const ADDLIST: AddItem[] = [
     Image,
     SpeechToText,
     Canvas,
-    Table
+    Table,
+    Code,
 ];
 
 export default ADDLIST;

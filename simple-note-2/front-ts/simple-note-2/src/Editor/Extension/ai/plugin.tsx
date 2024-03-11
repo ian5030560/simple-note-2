@@ -1,39 +1,49 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Plugin } from "..";
 import { Placeholder } from "./component";
-import { useEffect, useState } from "react";
-import {mergeRegister} from "@lexical/utils";
-import { $getSelection, $isParagraphNode, $isRangeSelection, CLICK_COMMAND } from "lexical";
+import { useEffect, useRef, useState } from "react";
+import { mergeRegister, $getNearestBlockElementAncestorOrThrow } from "@lexical/utils";
+import { $getSelection, $isParagraphNode, $isRangeSelection} from "lexical";
 import { useWrapper } from "../../Draggable/component";
+import { useScroller } from "../basic/richtext/scroller";
 
-const DEFAULT = {top: -10000, left: -10000};
+function getCaretDOM(){
+    return window.getSelection()?.getRangeAt(0).getBoundingClientRect();
+}
+
+const DEFAULT = { top: -10000, left: -10000 };
 export const AIPlaceholderPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
     const [text, setText] = useState("");
     const [pos, setPos] = useState(DEFAULT);
+    const ref = useRef<HTMLDivElement>(null);
     const wrapper = useWrapper();
 
     useEffect(() => {
         return mergeRegister(
-            editor.registerCommand(CLICK_COMMAND, (e) => {
-                editor.update(() => {
+            editor.registerUpdateListener(({ editorState }) => {
+                editorState.read(() => {
                     const selection = $getSelection();
-                    if($isRangeSelection(selection) && selection.isCollapsed() && wrapper){
+                    if ($isRangeSelection(selection) && selection.isCollapsed() && wrapper) {
                         const node = selection.anchor.getNode();
+                        const bnode = $getNearestBlockElementAncestorOrThrow(node);
                         let pos = DEFAULT;
-                        if($isParagraphNode(node)){
-                            const {clientX: x, clientY: y} = e;
-                            const {top, left, height} = wrapper.getBoundingClientRect();
-                            pos = {top: y - top - height, left: x - left};
+                        if ($isParagraphNode(bnode)) {
+                            let {x} = getCaretDOM()!;
+                            let element = editor.getElementByKey(node.getKey())!;
+                            let {y, height} = element.getBoundingClientRect();
+                            let {top, left} = wrapper.getBoundingClientRect();
+                            
+                            ref.current!.style.height = `${height}px`;
+                            pos = {left: x - left, top: y - top };
                             setText("Hello");
                         }
                         setPos(pos);
                     }
                 })
-                return true;
-            }, 4)
+            })
         )
     }, [editor, wrapper]);
 
-    return <Placeholder text={text} top={pos.top} left={pos.left}/>
+    return <Placeholder text={text} top={pos.top} left={pos.left} ref={ref}/>
 }

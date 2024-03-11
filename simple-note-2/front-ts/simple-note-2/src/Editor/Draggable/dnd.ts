@@ -21,7 +21,7 @@ export const useDragStart: DndHanlder<"react"> = () => {
         if (!e.dataTransfer || !id) return false;
         const element = editor.getElementByKey(id);
         e.dataTransfer.setDragImage(element!, 0, 0);
-
+        
     }, [editor, id]);
 
     return handleDragStart;
@@ -35,8 +35,8 @@ export const useDragOver: DndHanlder<"native"> = () => {
     const handleDragOver = useCallback((e: DragEvent): boolean => {
         e.preventDefault();
 
-        if(eventFiles(e)[0]) return false;
-        
+        if(!e.dataTransfer || eventFiles(e)[0]) return false;
+
         let { target: overElement, clientY: mouseY } = e as {target: HTMLElement | null, clientY: number};
 
         if (!overElement?.hasAttribute("draggable-item")) overElement = getBlockFromPoint(editor, e.clientX, e.clientY);
@@ -69,7 +69,7 @@ export const useDrop: DndHanlder<"native"> = () => {
 
     const handleDrop = useCallback((e: DragEvent) => {
 
-        if(eventFiles(e)[0]) return false;
+        if(!e.dataTransfer || eventFiles(e)[0]) return false;
 
         let dropElement = e.target as HTMLElement | null;
         if (!dropElement?.hasAttribute("draggable-item")) dropElement = getBlockFromPoint(editor, e.clientX, e.clientY);

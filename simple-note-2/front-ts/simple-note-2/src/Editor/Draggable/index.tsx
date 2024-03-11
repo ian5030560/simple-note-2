@@ -33,8 +33,6 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
         let elem = getBlockFromPoint(editor, clientX, clientY);
         if (!elem) return;
 
-        // let top = elem.offsetTop
-        // let left = elem.parentElement!.offsetLeft;
         let top = elem.offsetTop;
         let left = elem.offsetLeft;
         dispatch(moveElement({ top: top, left: left - 50 }));

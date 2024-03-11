@@ -54,3 +54,11 @@
 :global(.simple-note-2-ordered-nested-list-5) {
     list-style-type: lower-roman;
 }
+
+:global(.simple-note-2-text-code){
+    background-color: rgb(224, 224, 224, 0.4);
+}   
+
+:global(.simple-note-2-code){
+    background-color: rgb(224, 224, 224, 0.4);
+}

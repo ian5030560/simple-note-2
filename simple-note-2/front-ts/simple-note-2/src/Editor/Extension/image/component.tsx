@@ -7,6 +7,7 @@ import styles from "./component.module.css";
 import styled, {css} from "styled-components";
 import { RiEdit2Fill } from "react-icons/ri";
 import { OPEN_CANVAS } from "../canvas/plugin";
+import { Button } from "antd";
 
 enum Direction {
     LEFT = "top: 50%; left: 0%; cursor: w-resize; transform: translate(-7px, -7px);",
@@ -80,7 +81,7 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
 
     }, [handlePointerMove, handlePointerUp, prop]);
 
-    return <div style={{ position: "relative", display: "inline-block" }} ref={ref}>
+    return <div ref={ref}>
         {prop.children}
         {prop.showHandle &&
             <>
@@ -153,7 +154,7 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
                 minWidth: MAX ? MAX / 4 : undefined,
             }}
             ref={imageRef} />
-        <button className={styles.imageEdit} onClick={handleEdit} style={{visibility: isSelected ? "visible" : "hidden"}}><RiEdit2Fill size={20}/></button>
+        <Button className={styles.imageEdit} onClick={handleEdit} style={{visibility: isSelected ? "visible" : "hidden"}} icon={<RiEdit2Fill size={20}/>}/>
     </Resizer>;
 }
 

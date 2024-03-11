@@ -6,6 +6,7 @@ import ImageExtension from "./image";
 import CanvasExtension from "./canvas";
 import TableExtension from "./table";
 import AIExtension from "./ai";
+import CodeExtension from "./code";
 
 export type Plugin<T = {}> = React.FC<T>
 
@@ -26,7 +27,8 @@ const Extensions: Extension[] = [
     ImageExtension,
     CanvasExtension,
     TableExtension,
-    AIExtension,
+    CodeExtension,
+    // AIExtension,
 ]
 
 export default Extensions;

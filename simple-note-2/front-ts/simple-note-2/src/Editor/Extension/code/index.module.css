@@ -1,0 +1,52 @@
+:global(.simple-note-2-code) {
+    overflow-x: auto;
+    tab-size: 2;
+    margin: 8px 0px;
+    position: relative;
+    padding: 30px 8px 8px 52px;
+    display: block;
+    line-height: 1.53;
+}
+
+:global(.simple-note-2-code::before){
+    content: attr(data-gutter);
+    position: absolute;
+    left: 0;
+    top: 22px;
+    white-space: pre-wrap;
+    text-align: right;
+    min-width: 25px;
+    padding: 8px;
+}
+
+:global(.simple-note-2-tokenComment) {
+    color: slategray;
+}
+
+:global(.simple-note-2-tokenPunctuation) {
+    color: #999;
+}
+
+:global(.simple-note-2-tokenProperty) {
+    color: #905;
+}
+
+:global(.simple-note-2-tokenSelector) {
+    color: #690;
+}
+
+:global(.simple-note-2-tokenOperator) {
+    color: #9a6e3a;
+}
+
+:global(.simple-note-2-tokenAttr) {
+    color: #07a;
+}
+
+:global(.simple-note-2-tokenVariable) {
+    color: #e90;
+}
+
+:global(.simple-note-2-tokenFunction) {
+    color: #dd4a68;
+}

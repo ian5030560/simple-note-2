@@ -29,13 +29,14 @@ const TableActionPlugin: Plugin = () => {
 
                     if ($isRangeSelection(selection) || $isTableSelection(selection)) {
                         let node = $getTableCellNodeFromLexicalNode(selection.anchor.getNode());
-                        if(!node) return;
+                        if(node){
+                            let {top, left, width} = editor.getElementByKey(node.getKey())!.getBoundingClientRect();
+                            let {top: ptop, left: pleft} = wrapper!.getBoundingClientRect();
+                            let {width: offset} = ref.current!.getBoundingClientRect();
+    
+                            position = {top: top - ptop, left: left - pleft + width - offset};
+                        }
 
-                        let {top, left, width} = editor.getElementByKey(node.getKey())!.getBoundingClientRect();
-                        let {top: ptop, left: pleft} = wrapper!.getBoundingClientRect();
-                        let {width: offset} = ref.current!.getBoundingClientRect();
-
-                        position = {top: top - ptop, left: left - pleft + width - offset};
                     }
                     setPos(position);
                 })

@@ -1,16 +1,11 @@
 import React, { useState } from "react";
 import {
-    Switch,
-    Typography,
-    theme,
-    Row,
-    Col,
-    ColorPicker,
-    Space,
-    Flex,
+    Switch, Typography, theme, Row, Col, ColorPicker, Space, Flex, Button,
 } from "antd";
 import { Color } from "antd/es/color-picker/color"
 import { SwitchClickEventHandler } from "antd/es/switch";
+import { TiExport } from "react-icons/ti";
+
 const { Text, Title } = Typography;
 
 interface ColorBarProp {
@@ -49,8 +44,8 @@ interface SideBarProp {
 const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
 
     const { token } = theme.useToken();
-    const [lightprimary, setLightPrimary] = useState(light.primary ? light.primary : token.colorPrimary);
-    const [lightneutral, setLightNeutral] = useState(light.neutral ? light.neutral : token.colorBgBase);
+    const [lightPrimary, setLightPrimary] = useState(light.primary ? light.primary : token.colorPrimary);
+    const [lightNeutral, setLightNeutral] = useState(light.neutral ? light.neutral : token.colorBgBase);
     const [darkPrimary, setDarkPrimary] = useState(dark.primary ? dark.primary : token.colorPrimary);
     const [darkNeutral, setDarkNeutral] = useState(dark.neutral ? dark.neutral : token.colorBgBase);
 
@@ -74,16 +69,26 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
         dark.onNeutralChange?.(color.toHexString());
     }
 
+    const handleExport = () => {
+        window.alert([
+            lightPrimary,
+            lightNeutral,
+            darkPrimary,
+            darkNeutral,
+        ])
+    }
+
     return <Space direction="vertical">
 
         <Flex justify="end" align="center" style={{ padding: token.padding, paddingBottom: "0px" }}>
+            <Button type="primary" icon={<TiExport />} style={{marginRight: 8}} onClick={handleExport}>export</Button>
             <Switch unCheckedChildren="亮" checkedChildren="暗" onClick={onDarkenClick} />
         </Flex>
 
-        <ColorBar color={lightprimary} title="LightPrimary"
+        <ColorBar color={lightPrimary} title="LightPrimary"
             decription="Acts as custom source color for light theme"
             onChange={handleLightPrimary} />
-        <ColorBar color={lightneutral} title="LightNeutral"
+        <ColorBar color={lightNeutral} title="LightNeutral"
             decription="Used for background and surfaces for light theme"
             onChange={handleLightNeutral} />
         <ColorBar color={darkPrimary} title="DarkPrimary"

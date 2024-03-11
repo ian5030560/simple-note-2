@@ -1,0 +1,19 @@
+.marginLeft{
+    margin-left: 8px;
+}
+
+.marginBottom{
+    margin-bottom: 8px;
+}
+
+.marginRight{
+    margin-right: 8px;
+}
+
+.button{
+    min-width: 30px;
+}
+
+.select{
+    width: 50%
+}

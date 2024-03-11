@@ -3,7 +3,7 @@ import SideBar from "./SideBar";
 import { Row, Col, ConfigProvider, theme } from "antd";
 import Preview from "./Preview";
 import { BulbButton } from "../Welcome";
-import { determineWhiteOrBlack } from "../util/color";
+import defaultTheme from "../theme/default";
 
 const ThemePage = () => {
 
@@ -20,12 +20,13 @@ const ThemePage = () => {
 
 }
 
+
 const Index = () => {
     const [darken, setDarken] = useState(false);
-    const [lightPrimary, setLightPrimary] = useState("#8696A7");
-    const [lightNeutral, setLightNeutral] = useState("#FFFCEC");
-    const [darkPrimary, setDarkPrimary] = useState("#8696A7");
-    const [darkNeutral, setDarkNeutral] = useState("#3C3C3C");
+    const [lightPrimary, setLightPrimary] = useState(defaultTheme(false).token!.colorPrimary!);
+    const [lightNeutral, setLightNeutral] = useState(defaultTheme(false).token!.colorBgBase!);
+    const [darkPrimary, setDarkPrimary] = useState(defaultTheme(true).token!.colorPrimary!);
+    const [darkNeutral, setDarkNeutral] = useState(defaultTheme(true).token!.colorBgBase!);
     const { token } = theme.useToken();
 
     const handleColor = (color: string, setColor: React.Dispatch<React.SetStateAction<string>>) => {
@@ -51,18 +52,11 @@ const Index = () => {
                 onDarkenClick={() => setDarken(prev => !prev)}
             />
         </Col>
-        <Col span={18}><Preview
-            theme={{
+        <Col span={18}>
+            <Preview theme={{
                 token: {
                     colorPrimary: darken ? darkPrimary : lightPrimary,
-                    colorBgBase: darken ? darkNeutral : lightNeutral
-                },
-                components: {
-                    Menu: {
-                        itemBg: darken ? darkPrimary : lightPrimary,
-                        itemColor: determineWhiteOrBlack(darken ? darkPrimary : lightPrimary),
-                        itemHoverColor: determineWhiteOrBlack(darken ? darkPrimary : lightPrimary),
-                    }
+                    colorBgBase: darken ? darkNeutral : lightNeutral,
                 },
                 algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
             }} />

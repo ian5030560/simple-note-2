@@ -82,7 +82,6 @@
 }
 
 :global(.simple-note-2-table-add-columns:after) {
-    /* background-image: url(../images/icons/plus.svg); */
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;

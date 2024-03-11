@@ -5,6 +5,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { AiOutlineFileImage, AiOutlineUpload } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
 import { INSERT_IMAGE } from "./plugin";
+import postData from "../../../util/post";
 
 export const OPEN_IMAGE_MODAL: LexicalCommand<boolean> = createCommand();
 
@@ -33,6 +34,12 @@ const ImageModal: React.FC = () => {
 
     const handleFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         let file = e.target.files![0];
+        // postData("", {
+        //     username: "user",
+        //     filename: file.name,
+        //     content: file,
+        //     mimetype: file.type,
+        // })
         let src = URL.createObjectURL(file);
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         fileRef.current!.value = "";
@@ -46,8 +53,7 @@ const ImageModal: React.FC = () => {
             icon: <AiOutlineFileImage />,
             children: <>
                 <Button
-                    type="primary"
-                    style={{ width: "100%" }}
+                    type="primary" block
                     icon={<AiOutlineUpload />}
                     onClick={() => {fileRef.current!.click()}}
                 >

@@ -1,7 +1,7 @@
 import {
     DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey,
     SerializedLexicalNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput,
-    $applyNodeReplacement
+    $applyNodeReplacement,
 } from "lexical";
 import React, { ReactNode, Suspense } from "react";
 import { Skeleton } from "antd";

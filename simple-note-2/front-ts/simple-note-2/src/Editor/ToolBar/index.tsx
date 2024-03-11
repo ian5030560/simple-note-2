@@ -1,19 +1,14 @@
-import { Flex, theme } from "antd";
+import { Flex, FlexProps, theme } from "antd";
 import React from "react"
 import Divider from "./Component/UI/divider";
 import { Plugin } from "../Extension/index";
-import styled, { css } from "styled-components";
+import styles from "./index.module.css";
 
-const ToolBarFlex = styled(Flex)<{$backgroundColor: string, $shadowColor: string}>`
-    height: 8%;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    align-items: center;
-    ${({$backgroundColor, $shadowColor}) => css`
-        background-color: ${$backgroundColor};
-        box-shadow: ${$shadowColor} 1.95px 1.95px 2.6px;
-    `}
-`
+interface ToolBarFlexProp extends FlexProps{
+    $backgroundColor: string;
+    $shadowColor: string;
+}
+const ToolBarFlex = ({$backgroundColor, $shadowColor, ...prop}: ToolBarFlexProp) => <Flex className={styles.toolBar} style={{backgroundColor: $backgroundColor, boxShadow: `${$shadowColor} 1.95px 1.95px 2.6px`}} {...prop}/>
 const ToolBarPlugin: Plugin<{toolbars: React.ReactNode[]}> = ({toolbars}) => {
     const { token } = theme.useToken();
 

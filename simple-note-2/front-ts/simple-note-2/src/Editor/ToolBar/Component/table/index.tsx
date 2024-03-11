@@ -1,4 +1,4 @@
-import { Button, Popover } from "antd";
+import { Button, Popover, theme } from "antd";
 import { useCallback, useMemo, useState } from "react";
 import { FaTableCells } from "react-icons/fa6";
 import styles from "./index.module.css";
@@ -11,10 +11,11 @@ interface TableDimensionProp {
     onSizePick?: (row: number, column: number) => void;
 }
 
-const RESET = { rows: -1, cols: -1 };
+const RESET = { rows: 0, cols: 0 };
 const TableDimension = ({ maxRows, maxColumns, onSizePick }: TableDimensionProp) => {
 
     const [size, setSize] = useState<{ rows: number, cols: number }>(RESET);
+    const {token} = theme.useToken();
 
     const dimension = useMemo(() => {
         let arrs = [];
@@ -22,7 +23,8 @@ const TableDimension = ({ maxRows, maxColumns, onSizePick }: TableDimensionProp)
             let arr = [];
             for (let j = 0; j < maxColumns; j++) {
                 let selected = i < size.rows && j < size.cols;
-                arr.push(<td key={`${i}-${j}`} className={selected ? styles.dimensionCellSelected : undefined}
+                arr.push(<td key={`${i}-${j}`}
+                    style={{backgroundColor: selected ? token.colorPrimary : undefined}}
                     onPointerEnter={() => setSize({ rows: i + 1, cols: j + 1 })}
                     onPointerDown={() => onSizePick?.(i + 1, j + 1)} />);
             }
@@ -30,7 +32,7 @@ const TableDimension = ({ maxRows, maxColumns, onSizePick }: TableDimensionProp)
             arrs.push(<tr key={`${i}`}>{arr}</tr>);
         }
         return arrs;
-    }, [maxColumns, maxRows, onSizePick, size.cols, size.rows]);
+    }, [maxColumns, maxRows, onSizePick, size.cols, size.rows, token.colorPrimary]);
 
     return <>
         <span>{`${size.rows}x${size.cols}`}</span>
