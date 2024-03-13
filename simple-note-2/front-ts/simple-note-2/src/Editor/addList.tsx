@@ -6,6 +6,7 @@ import SpeechToText from "./AddList/speechToText";
 import Table from "./AddList/table";
 import Code from "./AddList/code";
 import { AddItem } from "./Draggable/component";
+import ImageToText from "./AddList/imageToText";
 
 const ADDLIST: AddItem[] = [
     Paragraph,
@@ -15,6 +16,7 @@ const ADDLIST: AddItem[] = [
     Canvas,
     Table,
     Code,
+    ImageToText,
 ];
 
 export default ADDLIST;

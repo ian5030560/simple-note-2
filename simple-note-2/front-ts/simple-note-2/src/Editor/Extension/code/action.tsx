@@ -113,7 +113,8 @@ const CodeActionPlugin: Plugin = () => {
         editor.update(() => {
             setCopied(true);
             let node = $getNodeByKey(keyRef.current!) as CodeNode;
-            navigator.clipboard.writeText(node.getTextContent());
+            let content = node.getTextContent();
+            if(content.length > 0) navigator.clipboard.writeText(node.getTextContent());
         })
 
     }, [editor]);

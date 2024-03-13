@@ -1,6 +1,6 @@
 import { $getSelection, $isRangeSelection, LexicalCommand, createCommand } from "lexical";
 import { Plugin } from "../index";
-import { Modal, Flex, Typography } from "antd";
+import { Modal, Flex, Typography, Button, ButtonProps } from "antd";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaMicrophone } from "react-icons/fa";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -9,7 +9,8 @@ import styles from "./plugin.module.css";
 interface MicroButtonProp extends React.DetailedHTMLProps<React.ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>{
     $active?: boolean;
 }
-const MicroButton: React.FC<MicroButtonProp> = ({$active, ...prop}) => <button className={styles.microButton} {...prop} style={{color: $active ? "red" : "black"}}/>;
+const MicroButton: React.FC<MicroButtonProp> = ({$active, ...prop}) => <button className={styles.microButton} 
+{...prop} style={{color: $active ? "red" : "black"}}><FaMicrophone size={30}/></button>;
 
 const HINT = {
     START: "開始錄音",
@@ -92,7 +93,7 @@ const SpeechModal: React.FC<SpeechModalProp> = (prop) => {
             {
                 SpeechRecognition ?
                     <>
-                        <MicroButton $active={active} onClick={handleClick}><FaMicrophone size={30} /></MicroButton>
+                        <MicroButton $active={active} onClick={handleClick}></MicroButton>
                         <div style={{ height: 5 }} />
                         <Typography.Text>{hint}</Typography.Text>
                     </> : <Typography.Text>瀏覽器不支持語音辨識</Typography.Text>

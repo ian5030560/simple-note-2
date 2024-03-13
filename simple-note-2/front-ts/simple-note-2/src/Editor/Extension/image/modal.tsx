@@ -49,7 +49,7 @@ const ImageModal: React.FC = () => {
     const items: TabsProps["items"] = useMemo(() => [
         {
             key: "file",
-            label: "Upload File",
+            label: "上傳文件",
             icon: <AiOutlineFileImage />,
             children: <>
                 <Button
@@ -57,18 +57,18 @@ const ImageModal: React.FC = () => {
                     icon={<AiOutlineUpload />}
                     onClick={() => {fileRef.current!.click()}}
                 >
-                    Upload File
+                    上傳
                 </Button>
                 <input type="file" accept="image/*" style={{display: "none"}} ref={fileRef} onChange={handleFile}/>
             </>
         },
         {
             key: "url",
-            label: "Upload URL",
+            label: "上傳網址",
             icon: <CiEdit />,
             children: <Space.Compact style={{ width: "100%" }}>
                 <Input placeholder="https://" autoFocus ref={urlRef} />
-                <Button type="primary" onClick={handleURL}>upload</Button>
+                <Button type="primary" onClick={handleURL}>上傳</Button>
             </Space.Compact>,
         }
     ], [handleFile, handleURL]);

@@ -1,7 +1,7 @@
 import { createPortal } from "react-dom";
 import { CiCircleChevDown } from "react-icons/ci";
 import { Plugin } from "../../index";
-import { Dropdown, MenuProps } from "antd";
+import { Button, Dropdown, MenuProps } from "antd";
 import { cloneElement, useEffect, useMemo, useRef, useState } from "react";
 import { useWrapper } from "../../../Draggable/component";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -89,9 +89,7 @@ const TableActionPlugin: Plugin = () => {
             dropdownRender={(node) => cloneElement(node as React.JSX.Element, {className: styles.dropDown})}>
             <div className="simple-note-2-table-cell-action-button-container"
                 style={{ transform: `translate(${pos.left}px, ${pos.top}px)` }}>
-                <button type="button" className="simple-note-2-table-cell-action-button" ref={ref}>
-                    <CiCircleChevDown size={20}/>
-                </button>
+                <Button type="text" className="simple-note-2-table-cell-action-button" ref={ref} icon={<CiCircleChevDown size={20}/>}/>
             </div>
         </Dropdown>,
         wrapper

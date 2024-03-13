@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-function dataURItoBlob(dataURI: string) {
+export function dataURItoBlob(dataURI: string) {
     // convert base64/URLEncoded data component to raw binary data held in a string
     var byteString;
     if (dataURI.split(',')[0].indexOf('base64') >= 0)
