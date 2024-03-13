@@ -48,7 +48,7 @@ class UploadFileView(APIView):
 
             if 1:  # 新增成功(資料庫條件)
                 url = "localhost:8000/view_file/" + str(filename)
-                return url
+                return Response(url, status=status.HTTP_200_OK)
 
             # serializer
             serializer = UploadFileSerializer(data=data)
