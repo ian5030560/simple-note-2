@@ -21,7 +21,8 @@ class UpdateFileView(APIView):
     """
     前端傳:\n
         帳號名(username, type:str)、文件網址(新增文件所提供的網址, type:str)、文件內容(name: content, type: blob)
-                後端回傳: status code 200 if success
+    後端回傳:\n
+        status code 200 if success
 
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n

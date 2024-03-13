@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 import sys
 
 sys.path.append("..signin")
@@ -23,6 +24,10 @@ sys.path.append("..forget_password")
 sys.path.append("..signout")
 sys.path.append("..save_content")
 sys.path.append("..load_content")
+sys.path.append("..update_file")
+sys.path.append("..upload_file")
+sys.path.append("..delete_file")
+sys.path.append("..view_file")
 from signin import views
 from django.urls import path
 from django.contrib import admin
@@ -33,6 +38,10 @@ from forget_password.views import ForgetPasswordView
 from signout.views import SignoutView
 from save_content.views import SaveContentView
 from load_content.views import LoadContentView
+from upload_file.views import UploadFileView
+from update_file.views import UpdateFileView
+from delete_file.views import DeleteFileView
+from view_file.views import ViewFileView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -51,6 +60,10 @@ urlpatterns = [
     path(
         "save_content/", SaveContentView.as_view(), name="save_content"
     ),  # save_content
+    path("upload_file/", UploadFileView.as_view(), name="upload_file"),  # upload_file
+    path("update_file/", UpdateFileView.as_view(), name="update_file"),  # update_file
+    path("delete_file/", DeleteFileView.as_view(), name="delete_file"),  # delete_file
+    path("view_file/", ViewFileView.as_view(), name="view_file"),  # view_file
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]
