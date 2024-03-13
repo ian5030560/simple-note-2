@@ -8,6 +8,7 @@ import TableExtension from "./table";
 import AIExtension from "./ai";
 import CodeExtension from "./code";
 import ImageToTextExtension from "./imageToText";
+import VideoExtension from "./video";
 
 export type Plugin<T = {}> = React.FC<T>
 
@@ -29,7 +30,8 @@ const Extensions: Extension[] = [
     CanvasExtension,
     TableExtension,
     CodeExtension,
-    ImageToTextExtension
+    ImageToTextExtension,
+    VideoExtension,
     // AIExtension,
 ]
 
