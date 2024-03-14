@@ -32,14 +32,15 @@ const ImageModal: React.FC = () => {
         setOpen(false);
     }, [editor]);
 
-    const handleFile = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
         let file = e.target.files![0];
-        // postData("", {
+        // let src = await postData("http://localhost:8000/upload_file/", {
         //     username: "user",
         //     filename: file.name,
         //     content: file,
         //     mimetype: file.type,
-        // })
+        // }).then(res => res.text());
+
         let src = URL.createObjectURL(file);
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         fileRef.current!.value = "";

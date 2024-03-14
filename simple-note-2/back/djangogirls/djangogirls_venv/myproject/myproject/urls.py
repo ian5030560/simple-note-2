@@ -14,8 +14,10 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 import sys
 
+# new url add path here
 sys.path.append("..signin")
 sys.path.append("..signin_status")
 sys.path.append("..myapp")
@@ -23,6 +25,14 @@ sys.path.append("..forget_password")
 sys.path.append("..signout")
 sys.path.append("..save_content")
 sys.path.append("..load_content")
+sys.path.append("..update_file")
+sys.path.append("..upload_file")
+sys.path.append("..delete_file")
+sys.path.append("..view_file")
+sys.path.append("..get_info")
+sys.path.append("..update_info")
+sys.path.append("..add_theme")
+# new url import here
 from signin import views
 from django.urls import path
 from django.contrib import admin
@@ -33,6 +43,13 @@ from forget_password.views import ForgetPasswordView
 from signout.views import SignoutView
 from save_content.views import SaveContentView
 from load_content.views import LoadContentView
+from add_file.views import AddFileView
+from update_file.views import UpdateFileView
+from delete_file.views import DeleteFileView
+from view_file.views import ViewFileView
+from get_info.views import GetInfoView
+from update_info.views import UpdateInfoView
+from add_theme.views import AddThemeView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -51,6 +68,13 @@ urlpatterns = [
     path(
         "save_content/", SaveContentView.as_view(), name="save_content"
     ),  # save_content
+    path("add_file/", AddFileView.as_view(), name="add_file"),  # add_file
+    path("update_file/", UpdateFileView.as_view(), name="update_file"),  # update_file
+    path("delete_file/", DeleteFileView.as_view(), name="delete_file"),  # delete_file
+    path("view_file/", ViewFileView.as_view(), name="view_file"),  # view_file
+    path("get_info/", GetInfoView.as_view(), name="get_info"),  # get_info
+    path("update_info/", UpdateInfoView.as_view(), name="update_info"),  # update_info
+    path("add_theme/", AddThemeView.as_view(), name="add_theme"),  # add_theme
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]

@@ -19,8 +19,10 @@ from django.middleware.csrf import get_token
 
 class LoadContentView(APIView):
     """
-    載入成功:200\n
-    載入失敗:400\n
+    載入成功:\n
+        Response HTTP_200_OK.\n
+    載入失敗:\n
+        Response HTTP_400_BAD_REQUEST.\n
     """
 
     serializer_class = LoadContentSerializer

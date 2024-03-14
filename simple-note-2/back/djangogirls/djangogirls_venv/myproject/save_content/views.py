@@ -19,8 +19,10 @@ from django.middleware.csrf import get_token
 
 class SaveContentView(APIView):
     """
-    儲存成功:200\n
-    儲存失敗:400\n
+    儲存成功:\n
+        Response HTTP_200_OK.\n
+    儲存失敗:\n
+        Response HTTP_400_BAD_REQUEST.\n
     """
 
     serializer_class = SaveContentSerializer

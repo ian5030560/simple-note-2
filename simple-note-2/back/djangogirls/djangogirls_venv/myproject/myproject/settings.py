@@ -48,6 +48,13 @@ INSTALLED_APPS = [
     "signout",
     "load_content",
     "save_content",
+    "add_file",
+    "delete_file",
+    "update_file",
+    "view_file",
+    "get_info",
+    "update_info",
+    "add_theme",
 ]
 
 MIDDLEWARE = [
