@@ -94,10 +94,10 @@ class StepController{
             context.globalCompositeOperation = "source-over";
         };
 
-        let data = new Image();
+        // let data = new Image();
         let blob = dataURItoBlob(this.canvas.toDataURL("image/png", 1));
-        data.src = URL.createObjectURL(blob);
-        return data;
+        // data.src = URL.createObjectURL(blob);
+        return blob;
     }
 
     clear(){

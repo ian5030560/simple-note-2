@@ -5,6 +5,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import ImageNode, { $createImageNode } from "./node";
 import ImageModal from "./modal";
 import {mergeRegister} from "@lexical/utils";
+import postData from "../../../util/post";
 
 export const INSERT_IMAGE: LexicalCommand<{alt: string, src: string}> = createCommand();
 
@@ -33,8 +34,11 @@ const ImagePlugin: Plugin = () => {
                 editor.getEditorState().read(() => {
                     Array.from(mutations.entries()).forEach(([key, type]) => {
                         if(type === "destroyed"){
-                            let element = editor.getElementByKey(key);
-
+                            let element = editor.getElementByKey(key) as HTMLImageElement;
+                            // postData("http://localhost:8000/delete_file/", {
+                            //     username: "user",
+                            //     url: "http://localhost:8000/view_file/428220824_717405110214191_1896139774089273018_n.jpg",
+                            // })
                         }
                     })
                 })

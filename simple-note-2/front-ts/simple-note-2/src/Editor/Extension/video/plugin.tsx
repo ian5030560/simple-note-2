@@ -4,6 +4,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { LexicalCommand, createCommand } from "lexical";
 import VideoNode, { $createVideoNode, VideoNodeProp } from "./node";
 import { mergeRegister, $insertNodeToNearestRoot } from "@lexical/utils";
+import { MdOutlineFileUpload } from "react-icons/md";
 
 export const INSERT_VIDEO: LexicalCommand<Omit<VideoNodeProp, "className" | "nodeKey" | "format">> = createCommand();
 
@@ -48,7 +49,7 @@ const VideoModal = () => {
     }, [WIDTH, editor]);
 
     return <Modal open={open} footer={null} title="上傳影片" centered onCancel={() => setOpen(false)}>
-        <Button block type="primary" onClick={() => ref.current?.click()}>上傳</Button>
+        <Button block icon={<MdOutlineFileUpload/>} type="primary" onClick={() => ref.current?.click()}>上傳</Button>
         <input type="file" accept="video/mp4,video/x-m4v,video/*" style={{ display: "none" }} ref={ref} onChange={handleChange} />
     </Modal>
 }

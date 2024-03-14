@@ -36,16 +36,6 @@ const useWebcam = (prop: WebcamProp) => {
         }
     }, [getStream, init]);
 
-    const pause = useCallback(() => {
-        if(!ref.current) return;
-
-        let stream = getStream();
-        if(!stream.active) return;
-        
-        let tracks = stream.getTracks();
-        tracks.forEach(track => track.enabled = false);
-    }, [getStream]);
-
     const stop = useCallback(() => {
         if(!ref.current) return;
 
@@ -58,22 +48,13 @@ const useWebcam = (prop: WebcamProp) => {
         flag.current = false;
     }, [getStream]);
 
-    const restart = useCallback(() => {
-        if(!ref.current) return;
-
-        let stream = getStream();
-        if(stream.active) return;
-
-        init();
-    }, [getStream, init]);
-
     const getPicture = useCallback(() => {
 
     }, []);
 
     const camera = useMemo(() => <video autoPlay playsInline controls={false} width={prop.width} height={prop.height} ref={ref}/>, [prop.height, prop.width]);
 
-    return {play, pause, stop, restart, camera, getPicture};
+    return {play, stop, camera, getPicture};
 }
 
 export default useWebcam;

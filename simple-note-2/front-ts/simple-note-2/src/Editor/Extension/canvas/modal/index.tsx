@@ -8,6 +8,7 @@ import { CanvasToolBar } from "./tool";
 import { $isImageNode } from "../../image/node";
 import { $getNodeByKey } from "lexical";
 import { INSERT_IMAGE } from "../../image/plugin";
+import postData from "../../../../util/post";
 
 export type CanvasData = {
     image: HTMLImageElement,
@@ -103,13 +104,20 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
 
         let data = step.export();
         if (!prop.data) {
-            editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: data.src });
+            let src = URL.createObjectURL(data);
+            editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         }
         else {
             editor.update(() => {
                 const node = $getNodeByKey(prop.data!.key);
                 if ($isImageNode(node)) {
-                    node.setSrc(data.src);
+                    // postData("http://localhost:8000/update_file/", {
+                    //     username: "user",
+                    //     content: data,
+                    //     url: "http://localhost:8000/view_file/428220824_717405110214191_1896139774089273018_n.jpg"
+                    // })
+                    let src = URL.createObjectURL(data);
+                    node.setSrc(src);
                 }
             })
         }
