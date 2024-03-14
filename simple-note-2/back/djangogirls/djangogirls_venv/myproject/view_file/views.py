@@ -35,7 +35,8 @@ class ViewFileView(APIView):
         # close db connection
         db.close_connection()
         if 1:  # 資料庫條件
-            return content, mimetype
+            file_data = content + mimetype
+            return Response(file_data, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         try:

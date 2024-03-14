@@ -17,6 +17,7 @@ Including another URLconf
 
 import sys
 
+# new url add path here
 sys.path.append("..signin")
 sys.path.append("..signin_status")
 sys.path.append("..myapp")
@@ -28,6 +29,10 @@ sys.path.append("..update_file")
 sys.path.append("..upload_file")
 sys.path.append("..delete_file")
 sys.path.append("..view_file")
+sys.path.append("..get_info")
+sys.path.append("..update_info")
+sys.path.append("..add_theme")
+# new url import here
 from signin import views
 from django.urls import path
 from django.contrib import admin
