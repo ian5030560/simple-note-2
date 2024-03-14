@@ -19,9 +19,10 @@ from django.middleware.csrf import get_token
 
 class ViewFileView(APIView):
     """
+    Method: get.\n
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
     """
 
     serializer_class = ViewFileSerializer

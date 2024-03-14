@@ -20,9 +20,10 @@ from django.middleware.csrf import get_token
 class DeleteFileView(APIView):
     """
     前端傳:\n
-        帳號名(username, type:str)、文件網址(新增文件所提供的網址, type:str)
+        帳號名(name: username, type: str),\n
+        文件網址(name: url(新增文件所提供的網址), type: str).\n
     後端回傳:\n
-        status code 200 if success
+        Response HTTP_200_OK if success.\n
 
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n

@@ -5,7 +5,7 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import UploadFile  # 新建檔案改這個
+from .models import GetInfo  # 新建檔案改這個
 from db_modules.db import DB  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
@@ -17,41 +17,36 @@ from django.middleware.csrf import get_token
 """@csrf_protect"""
 
 
-class UploadFileView(APIView):
+class GetInfoView(APIView):
     """
-    前端傳來:\n
-        帳號名(name:username, type:str)、文件名(name: filename, type:str)、文件內容(name: content, type: blob)、mimetype(name: mimetype, type: string)
+    取得個人資訊: get_info\n
+    前端傳:\n
+        帳號名(username, type: str).\n
     後端回傳:\n
-        str: localhost:8000/view_file/"filename"
+        Response HTTP_200_OK if success.\n
 
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
-    serializer_class = UploadFileSerializer
+    serializer_class = GetInfoSerializer
 
     def get(self, request, format=None):
-        output = [
-            {"upload_file": output.upload_file} for output in UploadFile.objects.all()
-        ]
+        output = [{"get_info": output.get_info} for output in GetInfo.objects.all()]
         return Response("get")
 
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
-            filename = data.get("filename")  # 文件名稱
-            content = data.get("content")  # 文件內容
-            mimetype = data.get("mimetype")  # 媒體種類
             db = DB()
 
-            if 1:  # 新增成功(資料庫條件)
-                url = "localhost:8000/view_file/" + str(filename)
-                return Response(url, status=status.HTTP_200_OK)
+            if 1:  # 取得成功(資料庫條件)
+                return Response(status=status.HTTP_200_OK)
 
             # serializer
-            serializer = UploadFileSerializer(data=data)
+            serializer = GetInfoSerializer(data=data)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()

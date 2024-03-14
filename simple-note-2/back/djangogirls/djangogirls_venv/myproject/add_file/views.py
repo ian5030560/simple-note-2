@@ -5,7 +5,7 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import LoadContent  # 新建檔案改這個
+from .models import AddFile  # 新建檔案改這個
 from db_modules.db import DB  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
@@ -17,42 +17,44 @@ from django.middleware.csrf import get_token
 """@csrf_protect"""
 
 
-class LoadContentView(APIView):
+class AddFileView(APIView):
     """
-    載入成功:\n
+    前端傳來:\n
+        帳號名(name: username, type: str),\n
+        文件名(name: filename, type: str),\n
+        文件內容(name: content, type: blob),\n
+        mimetype(name: mimetype, type: string).\n
+    後端回傳:\n
+        str: localhost:8000/view_file/"filename",\n
         Response HTTP_200_OK.\n
-    載入失敗:\n
-        Response HTTP_400_BAD_REQUEST.\n
+
+    其他例外:\n
+        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
-    serializer_class = LoadContentSerializer
+    serializer_class = AddFileSerializer
 
     def get(self, request, format=None):
-        output = [
-            {"username": output.username, "id": output.id, "content": output.content}
-            for output in LoadContent.objects.all()
-        ]
+        output = [{"add_file": output.add_file} for output in AddFile.objects.all()]
         return Response("get")
 
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            username = data.get("username")
-            id = data.get("id")
-            content = data.get("content")
-
-            serializer = LoadContentSerializer(data=data)
-
+            username = data.get("username")  # 帳號名稱
+            filename = data.get("filename")  # 文件名稱
+            content = data.get("content")  # 文件內容
+            mimetype = data.get("mimetype")  # 媒體種類
             db = DB()
 
-            load = db.filename_load_content(username, id, content)
-            if load == True:
-                return Response("load successfully", status=status.HTTP_200_OK)
-
-            elif load == False:  # exception其他例外
-                return Response("else exception", status=status.HTTP_400_BAD_REQUEST)
+            if 1:  # 新增成功(資料庫條件)
+                url = "localhost:8000/view_file/" + str(filename)
+                return Response(url, status=status.HTTP_200_OK)
 
             # serializer
+            serializer = AddFileSerializer(data=data)
+
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 print("serializer is valid")
@@ -69,8 +71,6 @@ class LoadContentView(APIView):
         # Handle JSON decoding error
         except json.JSONDecodeError:
             username = None
-            id = None
-            content = None
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 

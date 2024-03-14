@@ -5,7 +5,7 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import LoadContent  # 新建檔案改這個
+from .models import UpdateInfo  # 新建檔案改這個
 from db_modules.db import DB  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
@@ -17,42 +17,41 @@ from django.middleware.csrf import get_token
 """@csrf_protect"""
 
 
-class LoadContentView(APIView):
+class UpdateInfoView(APIView):
     """
-    載入成功:\n
-        Response HTTP_200_OK.\n
-    載入失敗:\n
-        Response HTTP_400_BAD_REQUEST.\n
+    更新個人資訊:update_info\n
+    前端傳:\n
+        帳號名(username, type: str),\n
+        更新的資料(name: data, type: Info, 若Info中的項目為null, ignore it).\n
+    後端回傳:\n
+        Response HTTP_200_OK if success.\n
+
+    其他例外:\n
+        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
     """
 
-    serializer_class = LoadContentSerializer
+    serializer_class = UpdateInfoSerializer
 
     def get(self, request, format=None):
         output = [
-            {"username": output.username, "id": output.id, "content": output.content}
-            for output in LoadContent.objects.all()
+            {"update_info": output.update_info} for output in UpdateInfo.objects.all()
         ]
         return Response("get")
 
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            username = data.get("username")
-            id = data.get("id")
-            content = data.get("content")
-
-            serializer = LoadContentSerializer(data=data)
-
+            username = data.get("username")  # 帳號名稱
+            newname = data.get("name")  # 要更新的名稱
             db = DB()
 
-            load = db.filename_load_content(username, id, content)
-            if load == True:
-                return Response("load successfully", status=status.HTTP_200_OK)
-
-            elif load == False:  # exception其他例外
-                return Response("else exception", status=status.HTTP_400_BAD_REQUEST)
+            if 1:  # 更新成功(資料庫條件)
+                return Response(status=status.HTTP_200_OK)
 
             # serializer
+            serializer = UpdateInfoSerializer(data=data)
+
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 print("serializer is valid")
@@ -69,8 +68,6 @@ class LoadContentView(APIView):
         # Handle JSON decoding error
         except json.JSONDecodeError:
             username = None
-            id = None
-            content = None
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 

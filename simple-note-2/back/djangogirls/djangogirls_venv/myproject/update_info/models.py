@@ -5,5 +5,5 @@ from django.db import models
 
 
 # Create your models here.
-class UploadFile(models.Model):
-    upload_file = models.CharField(max_length=100)
+class UpdateInfo(models.Model):
+    update_info = models.CharField(max_length=100)

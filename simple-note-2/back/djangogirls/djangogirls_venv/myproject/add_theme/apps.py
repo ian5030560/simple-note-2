@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class UploadFileConfig(AppConfig):
+class AddThemeConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "upload_file"
+    name = "add_theme"

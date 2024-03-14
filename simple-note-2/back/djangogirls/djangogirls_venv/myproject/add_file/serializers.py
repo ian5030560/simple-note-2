@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import UploadFile
+from .models import AddFile
 
 
-class UploadFileSerializer(serializers.ModelSerializer):
+class AddFileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UploadFile
+        model = AddFile
         fields = "__all__"  # 所有欄位可以這樣寫

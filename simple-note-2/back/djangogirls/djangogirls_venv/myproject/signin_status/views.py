@@ -21,11 +21,11 @@ class SigninStatusView(APIView):
     """
     登入狀態:\n
        \t若已登入: Response HTTP_200_OK,\n
-       \t若未登入: Response HTTP_400_BAD_REQUEST\n
+       \t若未登入: Response HTTP_400_BAD_REQUEST.\n
 
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
     """
 
     serializer_class = SigninStatusSerializer

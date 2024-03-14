@@ -38,10 +38,13 @@ from forget_password.views import ForgetPasswordView
 from signout.views import SignoutView
 from save_content.views import SaveContentView
 from load_content.views import LoadContentView
-from upload_file.views import UploadFileView
+from add_file.views import AddFileView
 from update_file.views import UpdateFileView
 from delete_file.views import DeleteFileView
 from view_file.views import ViewFileView
+from get_info.views import GetInfoView
+from update_info.views import UpdateInfoView
+from add_theme.views import AddThemeView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -60,10 +63,13 @@ urlpatterns = [
     path(
         "save_content/", SaveContentView.as_view(), name="save_content"
     ),  # save_content
-    path("upload_file/", UploadFileView.as_view(), name="upload_file"),  # upload_file
+    path("add_file/", AddFileView.as_view(), name="add_file"),  # add_file
     path("update_file/", UpdateFileView.as_view(), name="update_file"),  # update_file
     path("delete_file/", DeleteFileView.as_view(), name="delete_file"),  # delete_file
     path("view_file/", ViewFileView.as_view(), name="view_file"),  # view_file
+    path("get_info/", GetInfoView.as_view(), name="get_info"),  # get_info
+    path("update_info/", UpdateInfoView.as_view(), name="update_info"),  # update_info
+    path("add_theme/", AddThemeView.as_view(), name="add_theme"),  # add_theme
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]
