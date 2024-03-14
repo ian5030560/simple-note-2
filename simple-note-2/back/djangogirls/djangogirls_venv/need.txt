@@ -3,7 +3,7 @@
 
 --- 帳號名(name: username, type: string)---
 
-新增文件
+新增文件:add_file/view_file
 	兩個網址
 		網址一: for 上傳文件，方法: POST
 			前端傳: 帳號名、文件名(name: filename)、文件內容(name: content, type: blob)、mimetype(name: mimetype, type: string)
@@ -11,13 +11,13 @@
 
 		網址二: for view文件或下載文件，方法: GET
 
-刪除文件
+刪除文件:delete_file
 	一個網址，方法: POST
 		前端傳: 帳號名、文件網址((新增文件所提供的網址)
 		後端回傳: status code 200 if success
 
 
-更新文件
+更新文件:update_file
 	一個網址，方法: POST
 		前端傳: 帳號名、文件網址、文件內容
 		後端回傳: status code 200 if success
@@ -39,18 +39,18 @@ type: Info{
 }
 ---
 
-取得個人資訊
+取得個人資訊:get_info
 	一個網址，方法: POST
 		前端傳: 帳號名
 		後端回傳: status code 200 if success
 
-更新個人資訊
+更新個人資訊:update_info
 	一個網址，方法: POST
 		前端傳: 帳號名、更新的資料(name: data, type: Info, 若Info中的項目為null，ignore it)
 		後端回傳: status code 200 if success
 
 		
-新增主題
+新增主題:add_theme
 	一個網址，方法: POST
 		前端傳: 帳號名、主題(name: theme, type: Theme)
 		後端回傳: status code 200 if success
