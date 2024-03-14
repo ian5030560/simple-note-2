@@ -7,7 +7,7 @@ BACK_DB = "db_modules/pydb.db"
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(TEST_DB)
+        self.conn = sqlite3.connect(BACK_DB)
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):

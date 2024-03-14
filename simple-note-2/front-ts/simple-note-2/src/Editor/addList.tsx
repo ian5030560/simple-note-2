@@ -7,6 +7,7 @@ import Table from "./AddList/table";
 import Code from "./AddList/code";
 import { AddItem } from "./Draggable/component";
 import ImageToText from "./AddList/imageToText";
+import Video from "./AddList/video";
 
 const ADDLIST: AddItem[] = [
     Paragraph,
@@ -17,6 +18,7 @@ const ADDLIST: AddItem[] = [
     Table,
     Code,
     ImageToText,
+    Video,
 ];
 
 export default ADDLIST;
