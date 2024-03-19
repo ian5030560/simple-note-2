@@ -32,6 +32,7 @@ sys.path.append("..view_file")
 sys.path.append("..get_info")
 sys.path.append("..update_info")
 sys.path.append("..add_theme")
+sys.path.append("..gemma")
 # new url import here
 from signin import views
 from django.urls import path
@@ -50,6 +51,7 @@ from view_file.views import ViewFileView
 from get_info.views import GetInfoView
 from update_info.views import UpdateInfoView
 from add_theme.views import AddThemeView
+from gemma.views import GemmaView
 
 urlpatterns = [
     path("admin/", admin.site.urls),

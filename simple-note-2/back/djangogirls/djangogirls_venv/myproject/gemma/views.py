@@ -33,7 +33,7 @@ class GemmaView(APIView):
     serializer_class = GemmaSerializer
 
     def get(self, request, format=None):
-        output = [{"get_info": output.get_info} for output in Gemma.objects.all()]
+        output = [{"gemma": output.gemma} for output in Gemma.objects.all()]
         return Response("get")
 
     def post(self, request, format=None):
@@ -45,10 +45,12 @@ class GemmaView(APIView):
             import subprocess
 
             # Define the command
-            command = 'ollama run gemma'
+            command = "ollama run gemma"
 
             # Execute the command
-            process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(
+                command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
 
             # Wait for the process to finish and get the output
             stdout, stderr = process.communicate()
@@ -58,7 +60,6 @@ class GemmaView(APIView):
                 print("Output:", stdout.decode())
             if stderr:
                 print("Error:", stderr.decode())
-
 
             # serializer
             serializer = GemmaSerializer(data=data)

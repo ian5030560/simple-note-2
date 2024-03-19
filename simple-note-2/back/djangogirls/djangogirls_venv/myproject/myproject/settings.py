@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "get_info",
     "update_info",
     "add_theme",
+    "gemma",
 ]
 
 MIDDLEWARE = [
