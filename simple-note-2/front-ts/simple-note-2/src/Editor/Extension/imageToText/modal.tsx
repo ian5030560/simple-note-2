@@ -1,11 +1,12 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Button, Flex, Modal, Tabs, TabsProps } from "antd";
+import { Button, Flex, Tabs, TabsProps } from "antd";
 import { $getSelection, $isRangeSelection, LexicalCommand, createCommand, $getRoot, $isRootNode } from "lexical";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styles from "./modal.module.css";
 import { FaRegDotCircle } from "react-icons/fa";
 import Tesseract from "tesseract.js";
+import Modal, { ModalRef } from "../UI/modal";
 
 const contraints: MediaTrackConstraints = {
   width: 500,
@@ -14,38 +15,30 @@ const contraints: MediaTrackConstraints = {
 }
 export const OPEN_IMAGE_TO_TEXT_MODAL: LexicalCommand<void> = createCommand();
 const ImageToTextModal = () => {
-  const [open, setOpen] = useState(false);
   const [editor] = useLexicalComposerContext();
-  const ref = useRef<Webcam>(null);
+  const ref = useRef<ModalRef>(null);
+  const camRef = useRef<Webcam>(null);
   const [id, setId] = useState<string>("camera");
   const fileRef = useRef<HTMLInputElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
-  // const {play, pause, stop, restart, camera, } = useWebcam({width: 500, height: 400, contraints})
 
   useEffect(() => {
-    return editor.registerCommand(OPEN_IMAGE_TO_TEXT_MODAL, () => {
-      setOpen(true);
-      return false;
-    }, 4);
-  }, [editor]);
+    if (!camRef.current) return;
 
-  useEffect(() => {
-    if(!ref.current) return;
+    let video = camRef.current!.video!;
+    function resize() {
+      if (!maskRef.current) return;
 
-    let video = ref.current!.video!;
-    function resize(){
-      if(!maskRef.current) return;
-
-      let {width, height} = video.getBoundingClientRect();
-      let {offsetTop, offsetLeft} = video;
+      let { width, height } = video.getBoundingClientRect();
+      let { offsetTop, offsetLeft } = video;
       maskRef.current.style.width = width + "px";
       maskRef.current.style.height = height + "px";
       maskRef.current.style.top = offsetTop + "px";
       maskRef.current.style.left = offsetLeft + "px";
     }
-    
+
     video.addEventListener("resize", resize);
-    
+
     return () => video.removeEventListener("resize", resize);
   });
 
@@ -65,7 +58,7 @@ const ImageToTextModal = () => {
   }, [editor]);
 
   const handleClick = useCallback(async () => {
-    let src = ref.current!.getScreenshot();
+    let src = camRef.current!.getScreenshot();
     if (!src) return;
 
     const { data: { text } } = await Tesseract.recognize(src);
@@ -88,11 +81,11 @@ const ImageToTextModal = () => {
         key: "camera",
         label: "照相",
         children: <Flex justify="center" align="center" style={{ position: "relative" }}>
-          {open && id === "camera" &&
-            <Webcam audio={false} width={500} height={400} ref={ref}
+          {id === "camera" &&
+            <Webcam audio={false} width={500} height={400} ref={camRef}
               videoConstraints={contraints} screenshotFormat="image/png" />
           }
-          <div className={styles.cameraMask} ref={maskRef}/>
+          <div className={styles.cameraMask} ref={maskRef} />
           <button className={styles.cameraButton} onClick={handleClick}>
             <FaRegDotCircle size={40} />
           </button>
@@ -107,10 +100,9 @@ const ImageToTextModal = () => {
         </>
       }
     ]
-  }, [handleClick, handleUpload, id, open]);
+  }, [handleClick, handleUpload, id]);
 
-  return <Modal title="圖文辨識" open={open} footer={null} width={600}
-    centered onCancel={() => setOpen(false)}>
+  return <Modal command={OPEN_IMAGE_TO_TEXT_MODAL} ref={ref} title="圖文辨識" width={600} footer={null}>
     <Tabs items={items} onChange={(key) => setId(key)} />
   </Modal>
 }

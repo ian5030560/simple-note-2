@@ -1,13 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-    Flex,
-    Avatar,
-    Typography,
-    theme,
-    Dropdown,
-    notification,
-    Modal,
-} from "antd";
+import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
 import FileTree from "./FileTree";
@@ -15,6 +7,7 @@ import { determineWhiteOrBlack } from "../../util/color";
 import { useCookies } from "react-cookie";
 import User from "../../service/user";
 import SettingPanel from "./SettingPanel";
+import styles from "./index.module.css";
 
 const { Title } = Typography;
 
@@ -75,13 +68,13 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src, onLogout, onSet
             trigger={["click"]}
             placement="bottom"
         >
-            <EllipsisOutlined style={{color: token.colorText}}/>
+            <EllipsisOutlined style={{ color: token.colorText }} />
         </Dropdown>
     </Flex>
 }
 
 
-const {Text} = Typography;
+const { Text } = Typography;
 const SideBar = () => {
 
     const { token } = theme.useToken();
@@ -92,7 +85,7 @@ const SideBar = () => {
 
     const handleLogoutOk = useCallback(() => {
         setLogOutOpen(false);
-        
+
         // User.userLogOut(username)
         //     .then((value) => {
         //         if (!value) {
@@ -109,29 +102,25 @@ const SideBar = () => {
     return <>
         <Flex
             vertical
-            justify="space-between"
-            style={{
-                height: "100%",
-                overflow: "auto",
-                backgroundColor: token.colorPrimary,
-            }}>
+            className={styles.sidebar}
+            style={{ backgroundColor: token.colorPrimary }}>
             <Flex vertical>
-                <UserProfile username="username" onLogout={() => setLogOutOpen(true)} onSet={() => setSettingOpen(true)}/>
+                <UserProfile username="username" onLogout={() => setLogOutOpen(true)} onSet={() => setSettingOpen(true)} />
                 <FileTree />
             </Flex>
         </Flex>
-        
+
         <Modal
             open={logoutOpen} centered title="登出" okText="是" cancelText="否"
-            okButtonProps={{danger: true,}}
-            cancelButtonProps={{type: "default"}}
+            okButtonProps={{ danger: true, }}
+            cancelButtonProps={{ type: "default" }}
             onOk={handleLogoutOk}
             onCancel={() => setLogOutOpen(false)}
         >
             <Text>是否確定登出</Text>
         </Modal>
         {contextHolder}
-        <SettingPanel open={settingOpen} onOk={() => setSettingOpen(false)} onCancel={() => setSettingOpen(false)}/>
+        <SettingPanel open={settingOpen} onOk={() => setSettingOpen(false)} onCancel={() => setSettingOpen(false)} />
     </>
 }
 

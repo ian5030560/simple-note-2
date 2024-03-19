@@ -1,5 +1,5 @@
 import { DecoratorBlockNode, SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
-import { DOMConversionMap, DOMExportOutput, EditorConfig, ElementFormatType, LexicalEditor, LexicalNode, SerializedLexicalNode, Spread } from "lexical";
+import { DOMConversionMap, DOMExportOutput, EditorConfig, ElementFormatType, LexicalEditor, LexicalNode, Spread } from "lexical";
 import React, { Suspense } from "react";
 import { Skeleton } from "antd";
 

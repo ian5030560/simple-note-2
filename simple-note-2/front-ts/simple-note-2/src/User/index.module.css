@@ -1,0 +1,23 @@
+.collapseButton{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.menuButton{
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+}
+.collapsed{
+    transform: translateX(-90%);
+    transition: transform 0.5s;
+    will-change: transform;
+}
+
+.notCollapsed{
+    position: relative;
+    transition: transform 0.5s;
+    will-change: transform;
+}
