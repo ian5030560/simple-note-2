@@ -1,10 +1,8 @@
 import sqlite3
 from os import mkdir
 
-TEST_DB = (
-    "simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\db_modules\\pydb.db"
-)
-BACK_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myproject\db_modules\pydb.db"
+BACK_DB = "C:\\Users\\USER\\Documents\\GitHub\\simple-note-2\\simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\db_modules\\pydb.db"
+TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myproject\db_modules\pydb.db"
 
 
 class DB:
@@ -299,4 +297,4 @@ class DB:
 
 
 my_db = DB()
-print(my_db.insert_User_theme_by_username("user03","dark"))
+print(my_db.check_register_username("user01"))
