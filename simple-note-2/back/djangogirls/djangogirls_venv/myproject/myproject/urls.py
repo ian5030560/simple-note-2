@@ -77,6 +77,7 @@ urlpatterns = [
     path("get_info/", GetInfoView.as_view(), name="get_info"),  # get_info
     path("update_info/", UpdateInfoView.as_view(), name="update_info"),  # update_info
     path("add_theme/", AddThemeView.as_view(), name="add_theme"),  # add_theme
+    path("gemma/", GemmaView.as_view(), name="gemma"),  # gemma
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]
