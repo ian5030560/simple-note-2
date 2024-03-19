@@ -133,7 +133,7 @@ class DB:
                 # 如果資料不存在，則使用 INSERT 插入新資料
                 self.cursor.execute(
                     "INSERT INTO User_Note_Data (user_id, file_title_id, content) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
-                    (username,file_title_id, content),
+                    (username, file_title_id, content),
                 )
             else:
                 # 如果資料存在，則使用 UPDATE 更新資料
@@ -145,7 +145,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-        
 
     # 透過username和file_id回傳內容
     def filename_load_content(self, username, file_title_id):
@@ -163,12 +162,9 @@ class DB:
 
         except sqlite3.Error as e:
             return "Error"
-        
-    
+
     # 傳user_id和file_name到User_Note_Data裡
-    def insert_user_id_file_name_User_Note_Data(
-        self, username, file_name
-    ):
+    def insert_user_id_file_name_User_Note_Data(self, username, file_name):
         try:
             user_data = (username, file_name)
             self.cursor.execute(
@@ -212,7 +208,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return False
-        
+
     # 給username和file_name來插入或更新content_mimetype
     def insert_into_User_Note_Data_content_mimetype(
         self, username, file_name, content_mimetype
@@ -231,8 +227,8 @@ class DB:
             if row is None:
                 # 如果資料不存在，則使用 INSERT 插入新資料
                 self.cursor.execute(
-                "INSERT INTO User_Note_Data (user_id, file_name, content_mimetype) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
-                (username, file_name, content_mimetype),
+                    "INSERT INTO User_Note_Data (user_id, file_name, content_mimetype) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
+                    (username, file_name, content_mimetype),
                 )
             else:
                 # 如果資料存在，則使用 UPDATE 更新資料
@@ -244,7 +240,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return False
-        
 
     # 給username和file_name來刪除整行
     def delete_User_Note_Data_username_to_file_name(self, username, file_name):
@@ -259,7 +254,8 @@ class DB:
 
         except sqlite3.Error as e:
             return False
-    #用username得到User_Personal_Info
+
+    # 用username得到User_Personal_Info
     def get_User_Personal_Info_by_username(
         self,
         username,
@@ -276,13 +272,31 @@ class DB:
 
         except sqlite3.Error as e:
             return False
+
+    # 插入User_Personal_Theme_Data的theme by username
+    def insert_User_theme_by_username(
+        self,
+        username,
+        theme_name,
+    ):
+        try:
+            self.cursor.execute(
+                "INSERT INTO User_Personal_Theme_Data (user_id, theme_name) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?);",
+                (
+                    username,
+                    theme_name,
+                ),
+            )
+            return True
+
+        except sqlite3.Error as e:
+            return False
+
     def close_connection(self):
         # 關閉游標和資料庫連接
         self.cursor.close()
         self.conn.close()
 
-    
-
 
 my_db = DB()
-print(my_db.get_User_Personal_Info_by_username("user03"))
+print(my_db.insert_User_theme_by_username("user03","dark"))
