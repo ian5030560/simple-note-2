@@ -24,10 +24,10 @@ class GetInfoView(APIView):
         帳號名(username, type: str).\n
     後端回傳:\n
         Response HTTP_200_OK if success.\n
-        Response HTTP_400_BAD_REQUEST if failure.\n
+        Sqlite error, Response HTTP_400_BAD_REQUEST if failure.\n
 
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
@@ -45,7 +45,7 @@ class GetInfoView(APIView):
 
             getInfoValue = db.get_User_Personal_Info_by_username(username)
             if getInfoValue:  # 取得成功(資料庫條件)
-                return Response(status=status.HTTP_200_OK)
+                return Response(getInfoValue, status=status.HTTP_200_OK)
             elif getInfoValue != 1:  # 取得失敗(資料庫條件)
                 return Response(getInfoValue, status=status.HTTP_400_BAD_REQUEST)
 

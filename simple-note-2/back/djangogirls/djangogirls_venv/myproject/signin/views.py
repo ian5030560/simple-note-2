@@ -20,18 +20,18 @@ from django.middleware.csrf import get_token
 class SigninView(APIView):
     """
     登入:\n
-       \t若登入成功: Response HTTP_200_OK,\n
-       \t若登入失敗: Response HTTP_400_BAD_REQUEST,\n
+       若登入成功: Response HTTP_200_OK,\n
+       若登入失敗: Response HTTP_400_BAD_REQUEST,\n
 
     註冊:\n
-       \t比較username:\n
+        比較username:\n
             若username重複, 不能註冊: Response HTTP_401_UNAUTHORIZED\n
             若username不重複:\n
                 若email重複, 不能註冊: Response HTTP_402_PAYMENT_REQUIRED\n
                 若email不重複, 可以註冊: ResponseHTTP_201_CREATED\n
     其他例外:\n
         登入註冊例外: Response HTTP_403_FORBIDDEN\n
-        serializer raise_exception=False: Response HTTP_404_NOT_FOUND\n
+        Serializer raise_exception=False: Response HTTP_404_NOT_FOUND\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 

@@ -26,7 +26,7 @@ class GemmaView(APIView):
         Response HTTP_200_OK if success.\n
 
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 

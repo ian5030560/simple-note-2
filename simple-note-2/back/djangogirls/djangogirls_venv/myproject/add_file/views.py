@@ -25,13 +25,13 @@ class AddFileView(APIView):
         文件內容(name: content, type: blob),\n
         mimetype(name: mimetype, type: string).\n
     後端回傳:\n
-        str: localhost:8000/view_file/"filename",Response HTTP_200_OK.\n
-        str: sqlite error.\n
+        Str: localhost:8000/view_file/"filename", Response HTTP_200_OK.\n
+        Str: sqlite error.\n
             insert content error: HTTP_400_BAD_REQUEST.\n
             insert mimetype error: HTTP_401_UNAUTHORIZED.\n
 
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
