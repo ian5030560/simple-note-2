@@ -237,7 +237,7 @@ class DB:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            return False
+            return e
 
     # 給username和file_name來刪除整行
     def delete_User_Note_Data_username_to_file_name(self, username, file_name):
@@ -251,7 +251,7 @@ class DB:
             return True
 
         except sqlite3.Error as e:
-            return False
+            return e
 
     # 用username得到User_Personal_Info
     def get_User_Personal_Info_by_username(
@@ -269,7 +269,7 @@ class DB:
             return row
 
         except sqlite3.Error as e:
-            return False
+            return e
 
     # 插入User_Personal_Theme_Data的theme by username
     def insert_User_theme_by_username(
@@ -288,7 +288,7 @@ class DB:
             return True
 
         except sqlite3.Error as e:
-            return False
+            return e
 
     def close_connection(self):
         # 關閉游標和資料庫連接

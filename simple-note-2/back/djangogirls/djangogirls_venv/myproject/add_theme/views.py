@@ -24,6 +24,7 @@ class AddThemeView(APIView):
         主題(name: theme, type: theme).\n
     後端回傳:\n
         Response HTTP_200_OK if success.\n
+        Response HTTP_400_BAD_REQUEST if failure.\n
 
     其他例外:\n
         serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
@@ -42,9 +43,11 @@ class AddThemeView(APIView):
             username = data.get("username")  # 帳號名稱
             theme = data.get("theme")  # 主題
             db = DB()
-
-            if 1:  # 新增主題成功(資料庫條件)
+            addTheme = db.insert_User_theme_by_username(username, theme)
+            if addTheme:  # 新增主題成功(資料庫條件)
                 return Response(status=status.HTTP_200_OK)
+            elif addTheme != 1:
+                return Response(addTheme, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = AddThemeSerializer(data=data)
