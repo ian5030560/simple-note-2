@@ -25,11 +25,13 @@ class AddFileView(APIView):
         文件內容(name: content, type: blob),\n
         mimetype(name: mimetype, type: string).\n
     後端回傳:\n
-        str: localhost:8000/view_file/"filename",\n
-        Response HTTP_200_OK.\n
+        Str: localhost:8000/view_file/"filename", Response HTTP_200_OK.\n
+        Str: sqlite error.\n
+            insert content error: HTTP_400_BAD_REQUEST.\n
+            insert mimetype error: HTTP_401_UNAUTHORIZED.\n
 
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
@@ -48,9 +50,28 @@ class AddFileView(APIView):
             mimetype = data.get("mimetype")  # 媒體種類
             db = DB()
 
-            if 1:  # 新增成功(資料庫條件)
+            returnValueInsertContent = db.filename_insert_content(
+                self, username, filename, content
+            )  # 透過content來新增資料
+            returnValueInsertMimetype = db.insert_into_User_Note_Data_content_mimetype(
+                self, username, filename, mimetype
+            )  # 透過mimetype來新增資料
+
+            if (
+                returnValueInsertContent and returnValueInsertMimetype
+            ):  # 新增成功(透過content, mimetype都成功)
                 url = "localhost:8000/view_file/" + str(filename)
                 return Response(url, status=status.HTTP_200_OK)
+
+            elif returnValueInsertContent != True:  # 透過content新增失敗
+                return Response(
+                    returnValueInsertContent, status=status.HTTP_400_BAD_REQUEST
+                )
+
+            elif returnValueInsertMimetype != True:  # 透過mimetype新增失敗
+                return Response(
+                    returnValueInsertMimetype, status=status.HTTP_401_UNAUTHORIZED
+                )
 
             # serializer
             serializer = AddFileSerializer(data=data)

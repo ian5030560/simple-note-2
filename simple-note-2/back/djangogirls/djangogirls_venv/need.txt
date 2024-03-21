@@ -32,7 +32,7 @@
 	一個網址，方法: POST
 
 		前端傳: 帳號名(name: username, type: str)、
-			文件網址(name: url(新增文件所提供的網址), type: str)
+			文件網址(name: url(新增文件所提供的網址), type:str)
 
 		#2.資料庫: #delete_file
 			拿:
@@ -49,13 +49,13 @@
 	一個網址，方法: POST
 
 		前端傳: 帳號名(name: username, type: str)、
-			文件名(name: filename, type: str)、
+			文件名(name: filename)、
 			文件內容(name: content, type: blob)
 
 		#3.資料庫: #update_file
 			拿: 
 				帳號名(name: username, type: str)、
-				文件名(name: filename, type: str)、
+				文件名(name: filename)、
 				文件內容(name: content, type: blob)
 			傳回:
 				成功:True
@@ -89,14 +89,12 @@ type: Info{
 				帳號名(name: username, type: str)
 			傳回:
 			
-		後端回傳: {頭像(name: image(圖片網址), type: str),
-			   themes: Array
-				<{colorLightPrimary: string
-			   	  colorLightBaseBg: string
-			   	  colorDarkPrimary: string
-			   	  colorDarkBaseBg: string
-			   	  isUsing: boolean(是否使用中)
-			  	}>}
+		後端回傳: {頭像(name: image(圖片網址), type: str), themes: Array<{colorLightPrimary: string
+										   colorLightBaseBg: string
+										   colorDarkPrimary: string
+										   colorDarkBaseBg: string
+										   isUsing: boolean(是否使用中)
+									    }>}
 
 更新個人資訊:update_info
 	一個網址，方法: POST

@@ -1,4 +1,4 @@
-import { $getSelection, $isRangeSelection, $isRootNode, COMMAND_PRIORITY_EDITOR, LexicalCommand, LexicalEditor, createCommand } from "lexical";
+import { $getRoot, $getSelection, $isRangeSelection, $isRootNode, COMMAND_PRIORITY_EDITOR, LexicalCommand, LexicalEditor, createCommand } from "lexical";
 import { Plugin } from "../index";
 import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -18,12 +18,15 @@ const ImagePlugin: Plugin = () => {
 
                     editor.update(() => {
                         const selection = $getSelection();
+                        const node = $createImageNode(payload.src, payload.src);
                         if($isRangeSelection(selection)){
                             if($isRootNode(selection.anchor.getNode())){
                                 selection.insertParagraph();
                             }
-                            const node = $createImageNode(payload.src, payload.src);
                             selection.insertNodes([node]);
+                        }
+                        else{
+                            $getRoot().selectEnd().insertNodes([node]);
                         }
                     });
 

@@ -26,7 +26,7 @@ class GemmaView(APIView):
         Response HTTP_200_OK if success.\n
 
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
@@ -39,7 +39,7 @@ class GemmaView(APIView):
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            username = data.get("username")  # 帳號名稱
+            text = data.get("text")  # 帳號名稱
             db = DB()
 
             import subprocess
@@ -50,6 +50,9 @@ class GemmaView(APIView):
             # Execute the command
             process = subprocess.Popen(
                 command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+            process = subprocess.Popen(
+                text, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             )
 
             # Wait for the process to finish and get the output

@@ -25,10 +25,10 @@ from django.template.loader import render_to_string
 class ForgetPasswordView(APIView):
     """
     email:\n
-       \temail成功寄出: Response HTTP_200_OK.\n
+       Email成功寄出: Response HTTP_200_OK.\n
 
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
     """
 

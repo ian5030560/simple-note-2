@@ -24,9 +24,9 @@ class DeleteFileView(APIView):
         文件網址(name: url(新增文件所提供的網址), type: str).\n
     後端回傳:\n
         Response HTTP_200_OK if success.\n
-
+        Response HTTP_400_BAD_REQUEST if failure.\n
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
@@ -49,8 +49,15 @@ class DeleteFileView(APIView):
             # 將網址前贅詞刪除，留下filename
             url.replace("localhost:8000/view_file/", "")
 
-            if 1:
+            deleteFileValue = db.delete_User_Note_Data_username_to_file_name(
+                self, username, url
+            )  # 呼叫資料庫的刪除方法
+
+            if deleteFileValue:  # 若刪除成功
                 return Response(status=status.HTTP_200_OK)
+
+            elif deleteFileValue != True:  # 若刪除失敗
+                return Response(deleteFileValue, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = DeleteFileSerializer(data=data)

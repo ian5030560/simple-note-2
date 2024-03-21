@@ -1,35 +1,29 @@
-import { Modal, Tabs, TabsProps, Input, Button, Space, InputRef } from "antd";
-import React, { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Tabs, TabsProps, Input, Button, Space, InputRef } from "antd";
+import React, { ChangeEvent, useCallback, useMemo, useRef } from "react";
 import { LexicalCommand, createCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { AiOutlineFileImage, AiOutlineUpload } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
 import { INSERT_IMAGE } from "./plugin";
 import postData from "../../../util/post";
+import Modal, { ModalRef } from "../UI/modal";
 
 export const OPEN_IMAGE_MODAL: LexicalCommand<boolean> = createCommand();
 
 const ImageModal: React.FC = () => {
 
     const [editor] = useLexicalComposerContext();
-    const [open, setOpen] = useState(false);
     const urlRef = useRef<InputRef>(null);
     const fileRef = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        return editor.registerCommand(OPEN_IMAGE_MODAL, (payload: boolean) => {
-            setOpen(payload);
-            return false;
-        }, 4);
-    }, [editor]);
-
+    const ref = useRef<ModalRef>(null);
+   
 
     const handleURL = useCallback(() => {
         let url = urlRef.current!.input!.value;
 
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: url });
         urlRef.current!.input!.value = "";
-        setOpen(false);
+        ref.current?.close();
     }, [editor]);
 
     const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
@@ -44,7 +38,7 @@ const ImageModal: React.FC = () => {
         let src = URL.createObjectURL(file);
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         fileRef.current!.value = "";
-        setOpen(false);
+        ref.current?.close();
     }, [editor]);
 
     const items: TabsProps["items"] = useMemo(() => [
@@ -74,10 +68,9 @@ const ImageModal: React.FC = () => {
         }
     ], [handleFile, handleURL]);
 
-    return <Modal title="Upload Image" open={open}
-        footer={null} onCancel={() => setOpen(false)}>
+    return <Modal command={OPEN_IMAGE_MODAL} footer={null} ref={ref}>
         <Tabs defaultActiveKey="file" items={items} />
-    </Modal>;
+    </Modal>
 }
 
 export default ImageModal;

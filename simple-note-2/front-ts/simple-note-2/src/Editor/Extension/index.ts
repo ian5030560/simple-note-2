@@ -9,7 +9,7 @@ import AIExtension from "./ai";
 import CodeExtension from "./code";
 import ImageToTextExtension from "./imageToText";
 import VideoExtension from "./video";
-import BlockFormatExtension from "./blockformat";
+import DocumentExtension from "./document";
 
 export type Plugin<T = {}> = React.FC<T>
 
@@ -33,7 +33,7 @@ const Extensions: Extension[] = [
     CodeExtension,
     ImageToTextExtension,
     VideoExtension,
-    // BlockFormatExtension,
+    DocumentExtension,
     // AIExtension,
 ]
 

@@ -24,10 +24,10 @@ class UpdateFileView(APIView):
         文件網址(新增文件所提供的網址, type: str),\n
         文件內容(content, type: blob).\n
     後端回傳:\n
-        Response HTTP_200_OK if success.\n
-
+        Response HTTP_200_OK if success if true.\n
+        Response HTTP_400_BAD_REQUEST if false.\n
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
+        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
     """
 
@@ -49,10 +49,21 @@ class UpdateFileView(APIView):
 
             # 更新帳號名稱所屬文件網址之內容
             # 將網址前贅詞刪除，留下filename
-            url.replace("localhost:8000/view_file/", "")
+            filename = url.replace("localhost:8000/view_file/", "")
 
-            if 1:
-                return Response(status=status.HTTP_200_OK)
+            returnValueInsertContent = db.filename_insert_content(
+                self, username, filename, content
+            )  # 透過content來新增資料
+
+            if returnValueInsertContent:  # 新增成功(透過content, mimetype都成功)
+                return Response(filename, status=status.HTTP_200_OK)
+
+            elif returnValueInsertContent != True:  # 透過content新增失敗
+                return Response(
+                    "error = ",
+                    returnValueInsertContent,
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
             # serializer
             serializer = UpdateFileSerializer(data=data)
