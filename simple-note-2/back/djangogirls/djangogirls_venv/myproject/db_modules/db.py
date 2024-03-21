@@ -290,6 +290,42 @@ class DB:
         except sqlite3.Error as e:
             return False
 
+    # 給username插入或更新User_Personal_Info
+    # username, profile_photo, theme, user_password, login_status
+    def update_User_Personal_Info_by_username(
+        self, username, profile_photo, theme, user_password, login_status
+    ):
+        try:
+            self.cursor.execute(
+                "SELECT * FROM User_Personal_Info WHERE username = ? ",
+                (username,),
+            )
+            # 獲取查詢結果的第一行
+            row = self.cursor.fetchone()
+
+            if row is None:
+                # 如果資料不存在，則使用 INSERT 插入新資料
+                self.cursor.execute(
+                    "INSERT INTO User_Personal_Info (username, profile_photo, theme, user_password, login_status) VALUES (?, ?, ?, ?, ?);",
+                    (
+                        username,
+                        profile_photo,
+                        theme,
+                        user_password,
+                        login_status,
+                    ),
+                )
+            else:
+                # 如果資料存在，則使用 UPDATE 更新資料
+                self.cursor.execute(
+                    "UPDATE User_Personal_Info SET profile_photo = ?, theme = ?, user_password = ?, login_status = ? WHERE username = ?;",
+                    (profile_photo, theme, user_password, login_status, username),
+                    )
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            return False
+
     def close_connection(self):
         # 關閉游標和資料庫連接
         self.cursor.close()
@@ -297,4 +333,4 @@ class DB:
 
 
 my_db = DB()
-print(my_db.check_register_username("user01"))
+print(my_db.update_User_Personal_Info_by_username("user05","user05_photo","dark","user05_pw","0"))
