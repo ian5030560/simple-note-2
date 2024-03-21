@@ -25,7 +25,7 @@ const ImageToTextModal = () => {
   useEffect(() => {
     if (!camRef.current) return;
 
-    let video = camRef.current!.video!;
+    let video = camRef.current.video!;
     function resize() {
       if (!maskRef.current) return;
 

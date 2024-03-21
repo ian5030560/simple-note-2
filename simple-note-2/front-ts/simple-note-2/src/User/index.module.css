@@ -1,23 +1,21 @@
-.collapseButton{
-    position: absolute;
-    top: 0;
-    right: 0;
+.sideBar{
+    height: 100%;
+    overflow: auto;
 }
 
-.menuButton{
-    position: fixed;
+.button{
+    box-shadow: none;
+}
+
+.collapsedButton{
     top: 0;
     left: 0;
-    z-index: 1000;
-}
-.collapsed{
-    transform: translateX(-90%);
-    transition: transform 0.5s;
-    will-change: transform;
+    transform: translateX(-100%);
+    position: absolute;
 }
 
-.notCollapsed{
-    position: relative;
-    transition: transform 0.5s;
-    will-change: transform;
+.collapsedButton-collapsing{
+    top: 50%;
+    transform: translateY(-100%);
+    position: fixed;
 }

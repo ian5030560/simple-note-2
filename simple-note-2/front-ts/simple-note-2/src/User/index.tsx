@@ -1,16 +1,13 @@
 import React, { useContext, useState } from "react";
-import { Col, Row, ConfigProvider, theme, Typography, Modal, notification, ThemeConfig, Button, Grid, Drawer } from "antd";
+import { ConfigProvider, theme, Button, Grid, Drawer, Layout } from "antd";
 import SideBar from "./SideBar";
 import Editor from "../Editor";
 import defaultTheme from "../theme/default";
 import { BulbButton } from "../Welcome";
 import { useCookies } from "react-cookie";
 import ThemeProvider, { ThemeContext } from "../theme";
-import { FaAngleDoubleLeft } from "react-icons/fa";
-import { IoMenu } from "react-icons/io5";
+import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
 import styles from "./index.module.css";
-
-const { Text } = Typography;
 
 const User: React.FC = () => {
 
@@ -30,41 +27,39 @@ const User: React.FC = () => {
 }
 
 const { useBreakpoint } = Grid;
-interface UserPageIndexProp {
+const { Sider, Content } = Layout;
+interface IndexProp {
     rootStyle?: React.CSSProperties,
 }
-export const Index: React.FC<UserPageIndexProp> = ({ rootStyle }) => {
+export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
 
+    const [collapse, setCollapse] = useState(false);
+    const { lg } = useBreakpoint();
     const { token } = theme.useToken();
-    // const [collapse, setCollapse] = useState(false);
-    // const screens = useBreakpoint();
-    const [openDrawer, setOpenDrawer] = useState(false);
 
-    return <Row style={{
-        minHeight: "100%",
-        backgroundColor: token.colorBgBase,
-        ...rootStyle
-    }}>
-        {/* {
-            screens.xs && <>
-                <Button type="text" icon={<IoMenu />} onClick={() => setOpenDrawer(true)} className={styles.menuButton}/>
-                <Drawer onClose={() => setOpenDrawer(false)} open={openDrawer} placement="left" closeIcon={null} styles={{body: {padding: 0}}} width="30%">
-                    <SideBar />
+    return <Layout style={{ minHeight: "100%", ...rootStyle }}>
+        {
+            lg ? <Sider collapsible trigger={null} collapsedWidth={0} collapsed={collapse}>
+                <SideBar className={styles.sideBar} />
+            </Sider> :
+                <Drawer open={!collapse} onClick={() => setCollapse(true)} placement="left"
+                    styles={{
+                        header: {
+                            backgroundColor: token.colorPrimary,
+                        },
+                        body: { padding: 0 }
+                    }}>
+                    <SideBar className={styles.sideBar} />
                 </Drawer>
-            </>
-        } */}
-        {/* {
-            screens.sm && <Col sm={4} className={collapse ? styles.collapsed : styles.notCollapsed}>
-                <SideBar />
-            </Col>
-        } */}
-        <Col span={4}>
-            <SideBar/>
-        </Col>
-        <Col xs={24} sm={20}>
+        }
+
+        <Content style={{ position: "relative" }}>
+            <Button type="primary" icon={!collapse ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}
+                className={`${styles.button} ${!collapse ? styles.collapsedButton : styles['collapsedButton-collapsing']}`}
+                onClick={() => setCollapse(prev => !prev)} size="large"/>
             <Editor />
-        </Col>
-    </Row>
+        </Content>
+    </Layout>
 }
 
 const UserPage = () => {

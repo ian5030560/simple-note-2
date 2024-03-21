@@ -4,6 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 export type ModalRef = {
+    isOpen: boolean;
     open: () => void;
     close: () => void;
 }
@@ -18,6 +19,7 @@ const Modal = forwardRef(({ command, onClose, onOk, onOpen, ...prop }: ModalProp
     const [open, setOpen] = useState(false);
     
     useImperativeHandle(ref, () => ({
+        isOpen: open,
         open: () => setOpen(true),
         close: () => setOpen(false),
     }))

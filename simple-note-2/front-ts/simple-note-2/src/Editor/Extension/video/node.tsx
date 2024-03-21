@@ -1,7 +1,8 @@
-import { DecoratorBlockNode, SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
+import { SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import { DOMConversionMap, DOMExportOutput, EditorConfig, ElementFormatType, LexicalEditor, LexicalNode, Spread } from "lexical";
-import React, { Suspense } from "react";
-import { Skeleton } from "antd";
+import React from "react";
+import Load from "../UI/load";
+import DecoratorBlockNode from "../basic/decoratorBlockNode";
 
 export interface VideoNodeProp {
     width: number;
@@ -17,16 +18,16 @@ export interface VideoNodeProp {
 
 const LazyVideo = React.lazy(() => import("./component"));
 
-export type SerializedVideoNode = Spread<{width: number, height: number, src: string}, SerializedDecoratorBlockNode>;
+export type SerializedVideoNode = Spread<{ width: number, height: number, src: string }, SerializedDecoratorBlockNode>;
 
-function convertVideoElement(dom: HTMLElement){
+function convertVideoElement(dom: HTMLElement) {
     const src = dom.getAttribute("src");
     const width = dom.getAttribute("width");
     const height = dom.getAttribute("height");
 
-    if(src  && width && height){
+    if (src && width && height) {
         let node = $createVideoNode(parseFloat(width), parseFloat(height), src);
-        return {node}
+        return { node }
     }
 
     return null;
@@ -56,7 +57,7 @@ export default class VideoNode extends DecoratorBlockNode {
     static importJSON(_serializedNode: SerializedVideoNode): VideoNode {
         const node = $createVideoNode(_serializedNode.width, _serializedNode.height, _serializedNode.src);
         node.setFormat(_serializedNode.format);
-        return node;        
+        return node;
     }
 
     exportJSON(): SerializedVideoNode {
@@ -79,10 +80,10 @@ export default class VideoNode extends DecoratorBlockNode {
         element.setAttribute("controls", "true");
         element.setAttribute("playsinline", "true");
 
-        return {element}
+        return { element }
     }
 
-    static importDOM(): DOMConversionMap | null{
+    static importDOM(): DOMConversionMap | null {
         return {
             video: () => ({
                 conversion: convertVideoElement,
@@ -96,13 +97,9 @@ export default class VideoNode extends DecoratorBlockNode {
     }
 
     decorate(_: LexicalEditor, config: EditorConfig): JSX.Element {
-        const embedBlockTheme = config.theme.embedBlock || {};
-        const className = {
-            base: embedBlockTheme.base || '',
-            focus: embedBlockTheme.focus || '',
-        };
+        const className = this.getEmbedClass(config);
 
-        return <Suspense fallback={<Skeleton active/>}>
+        return <Load width={this.__width} height={this.__height}>
             <LazyVideo
                 width={this.__width}
                 height={this.__height}
@@ -110,7 +107,7 @@ export default class VideoNode extends DecoratorBlockNode {
                 nodeKey={this.__key}
                 src={this.__src}
                 className={className} />
-        </Suspense>
+        </Load>
     }
 }
 

@@ -17,7 +17,7 @@ const DocumentModal = () => {
         let file = e.target.files[0];
         editor.dispatchCommand(INSERT_FILE, {
             name: "pdf", payload: {
-                width: 300, height: 400, src: URL.createObjectURL(file),
+                width: 800, height: 400, src: URL.createObjectURL(file),
             }
         })
 
@@ -25,7 +25,7 @@ const DocumentModal = () => {
     }, [editor]);
 
 
-    return <Modal command={OPEN_DOCUMENT_MODAL} footer={null} ref={ref}>
+    return <Modal command={OPEN_DOCUMENT_MODAL} footer={null} ref={ref} title="上傳文件">
         <Button block type="primary" icon={<FaUpload />} onClick={() => inputRef.current?.click()}>上傳</Button>
         <input type="file" accept=".pdf" style={{ display: "none" }} ref={inputRef} onChange={(e) => handleChange(e)} />
     </Modal>

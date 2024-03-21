@@ -62,3 +62,11 @@
 :global(.simple-note-2-code){
     background-color: rgb(224, 224, 224, 0.4);
 }
+
+:global(.simple-note-2-embedBlock){
+    user-select: none;
+}
+
+:global(.simple-note-2-embedBlock-focus){
+    outline: 2px solid skyblue;
+}

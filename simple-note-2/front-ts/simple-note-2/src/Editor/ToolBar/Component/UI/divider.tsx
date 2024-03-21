@@ -1,21 +1,10 @@
 import React from "react";
 import { theme } from "antd";
+import styles from "./divider.module.css";
 
 const Divider: React.FC = () => {
-
     const { token } = theme.useToken();
-
-    return <span
-        style={{
-            display: "flex",
-            justifyContent: "center",
-            minHeight: "70%",
-        }}>
-        <div style={{
-            minHeight: "100%",
-            border: `1px solid ${token.colorText}`
-        }} />
-    </span>
+    return <div className={styles.divider} style={{borderColor: token.colorText}}/>
 }
 
 export default Divider;

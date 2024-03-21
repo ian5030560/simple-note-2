@@ -11,7 +11,6 @@ export const INSERT_VIDEO: LexicalCommand<Omit<VideoNodeProp, "className" | "nod
 
 export const OPEN_VIDEO_MODAL: LexicalCommand<void> = createCommand();
 const VideoModal = () => {
-    // const [open, setOpen] = useState(false);
     const [editor] = useLexicalComposerContext();
     const inputRef = useRef<HTMLInputElement>(null);
     const ref = useRef<ModalRef>(null);

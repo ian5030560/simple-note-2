@@ -3,7 +3,6 @@ import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal } from "
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
 import FileTree from "./FileTree";
-import { determineWhiteOrBlack } from "../../util/color";
 import { useCookies } from "react-cookie";
 import User from "../../service/user";
 import SettingPanel from "./SettingPanel";
@@ -18,9 +17,12 @@ interface UserProfileProp {
     onSet?: () => void;
 }
 
-const UserProfile: React.FC<UserProfileProp> = ({ username, src, onLogout, onSet }) => {
+const UserProfile: React.FC<UserProfileProp> = ({ username, src }) => {
 
     const { token } = theme.useToken();
+    const [logOutOpen, setLogOutOpen] = useState(false);
+    const [settingOpen, setSettingOpen] = useState(false);
+    const [api, contextHolder] = notification.useNotification();
 
     const items = [
         {
@@ -38,50 +40,15 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src, onLogout, onSet
     const handleClick = ({ key }: { key: string }) => {
         switch (key) {
             case "setting":
-                onSet?.();
+                setSettingOpen(true)
                 break;
             case "log out":
-                onLogout?.();
+                setLogOutOpen(true);
                 break;
             default:
                 break;
         }
     }
-
-    return <Flex
-        align="baseline"
-        gap="small"
-        style={{ padding: token.padding }}
-    >
-        <Avatar
-            size={"large"}
-            shape="square"
-            icon={src ? null : <UserOutlined />}
-            src={src}
-        />
-        <Title level={4} ellipsis>{username}</Title>
-        <Dropdown
-            menu={{
-                items,
-                onClick: handleClick
-            }}
-            trigger={["click"]}
-            placement="bottom"
-        >
-            <EllipsisOutlined style={{ color: token.colorText }} />
-        </Dropdown>
-    </Flex>
-}
-
-
-const { Text } = Typography;
-const SideBar = () => {
-
-    const { token } = theme.useToken();
-    const [logoutOpen, setLogOutOpen] = useState(false);
-    const [api, contextHolder] = notification.useNotification();
-    const [settingOpen, setSettingOpen] = useState(false);
-    // const [{ username }] = useCookies(["username"]);
 
     const handleLogoutOk = useCallback(() => {
         setLogOutOpen(false);
@@ -99,19 +66,27 @@ const SideBar = () => {
         //     })
     }, []);
 
-    return <>
-        <Flex
-            vertical
-            className={styles.sidebar}
-            style={{ backgroundColor: token.colorPrimary }}>
-            <Flex vertical>
-                <UserProfile username="username" onLogout={() => setLogOutOpen(true)} onSet={() => setSettingOpen(true)} />
-                <FileTree />
-            </Flex>
-        </Flex>
-
+    return <Flex
+        align="baseline"
+        gap="small"
+        style={{ padding: token.padding }}
+    >
+        <Avatar
+            size={"large"}
+            shape="square"
+            icon={src ? null : <UserOutlined />}
+            src={src}
+        />
+        <Title level={4} ellipsis>{username}</Title>
+        <Dropdown
+            menu={{ items, onClick: handleClick }}
+            trigger={["click"]}
+            placement="bottom"
+        >
+            <EllipsisOutlined style={{ color: token.colorText }} />
+        </Dropdown>
         <Modal
-            open={logoutOpen} centered title="登出" okText="是" cancelText="否"
+            open={logOutOpen} centered title="登出" okText="是" cancelText="否"
             okButtonProps={{ danger: true, }}
             cancelButtonProps={{ type: "default" }}
             onOk={handleLogoutOk}
@@ -121,7 +96,26 @@ const SideBar = () => {
         </Modal>
         {contextHolder}
         <SettingPanel open={settingOpen} onOk={() => setSettingOpen(false)} onCancel={() => setSettingOpen(false)} />
-    </>
+    </Flex>
+}
+
+
+const { Text } = Typography;
+const SideBar = ({className}: {className: string}) => {
+
+    const { token } = theme.useToken();
+    const [{ username }] = useCookies(["username"]);
+
+    return <Flex
+        vertical
+        className={className}
+        style={{ backgroundColor: token.colorPrimary }}>
+        <Flex vertical>
+            <UserProfile username="username" />
+            <FileTree />
+        </Flex>
+    </Flex>
+
 }
 
 export default SideBar;
