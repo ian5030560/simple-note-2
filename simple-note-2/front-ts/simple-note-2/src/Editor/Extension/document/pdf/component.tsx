@@ -3,20 +3,23 @@ import { Document, Page } from "react-pdf";
 import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents";
 import { $getNodeByKey, ElementFormatType, NodeKey } from 'lexical';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
-import { Skeleton, theme } from 'antd';
+import { Button, Flex, Spin, Typography } from 'antd';
 import { FaCaretLeft, FaCaretRight } from "react-icons/fa";
 import styles from "./component.module.css";
 import { useCallback, useRef, useState } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import PDFNode from './node';
 import 'react-pdf/dist/Page/TextLayer.css';
-
+import { RiLoader2Fill } from 'react-icons/ri';
+import FloatBoard from '../../UI/floatBoard';
+import AlignableBlock from '../../UI/alignable';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     '../../../../../node_modules/react-pdf/node_modules/pdfjs-dist/build/pdf.worker.min.js',
     import.meta.url,
 ).toString();
 
+const { Text } = Typography;
 interface PDFprop {
     format?: ElementFormatType | null;
     nodeKey: NodeKey;
@@ -32,7 +35,6 @@ interface PDFprop {
 const PDF = ({ url, width, index, height, ...prop }: PDFprop) => {
     const [show, setShow] = useState(false);
     const pagesRef = useRef(0);
-    const { token } = theme.useToken();
     const [editor] = useLexicalComposerContext();
 
     const handleClick = useCallback((diff: number) => {
@@ -43,25 +45,27 @@ const PDF = ({ url, width, index, height, ...prop }: PDFprop) => {
         })
     }, [editor, index, prop.nodeKey]);
 
-    return <BlockWithAlignableContents {...prop}>
-        <div className={styles.pageActionMask} onPointerEnter={() => setShow(true)} 
-            style={{width: width, height: height}}
-            onPointerLeave={() => setShow(false)}>
-            <Document file={url} noData={<p>此PDF檔案沒有內容</p>} error={<p>讀取發生錯誤</p>} loading={<Skeleton />}
-                onLoadSuccess={({ numPages }) => { pagesRef.current = numPages }}>
-                <Page pageNumber={index} width={width} height={height}/>
-            </Document>
+    return <AlignableBlock {...prop}>
 
+        <FloatBoard content={
             <div className={!show ? styles.pageActionContainer : styles.pageActionContainerEnter}>
-                <button className={styles.actionButton} style={{ backgroundColor: token.colorBgBase }}
-                    onClick={() => handleClick(-1)}><FaCaretLeft /></button>
-                <span>{index}/{pagesRef.current}</span>
-                <button className={styles.actionButton} style={{ backgroundColor: token.colorBgBase }}
-                    onClick={() => handleClick(1)}><FaCaretRight /></button>
+                <Button type='text' onClick={() => handleClick(-1)} icon={<FaCaretLeft />} size='small' />
+                <Text>{index}/{pagesRef.current}</Text>
+                <Button type='text' onClick={() => handleClick(1)} icon={<FaCaretRight />} size='small' />
             </div>
+        } placement="bottom" onEnter={() => setShow(true)} onLeave={() => setShow(false)}>
+            <div className={styles.pageActionMask} style={{ width: width, height: height }}>
+                <Document file={url} noData={<p className={styles.dangerText}>此PDF檔案沒有內容</p>} error={<p className={styles.dangerText}>讀取發生錯誤</p>}
+                    loading={<Flex justify='center' align='center'><Spin indicator={<RiLoader2Fill size={24} />} spinning /></Flex>}
+                    onLoadSuccess={({ numPages }) => { pagesRef.current = numPages }}>
+                    <Page pageNumber={index} />
+                </Document>
+            </div>
+        </FloatBoard>
 
-        </div>
-    </BlockWithAlignableContents>;
+    </AlignableBlock>;
+
+
 }
 
 export default PDF;

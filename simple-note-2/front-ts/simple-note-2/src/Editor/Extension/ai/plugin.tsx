@@ -1,49 +1,66 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Plugin } from "..";
-import { Placeholder } from "./component";
-import { useEffect, useRef, useState } from "react";
-import { mergeRegister, $getNearestBlockElementAncestorOrThrow } from "@lexical/utils";
-import { $getSelection, $isParagraphNode, $isRangeSelection} from "lexical";
-import { useWrapper } from "../../Draggable/component";
-import { useScroller } from "../basic/richtext/scroller";
+import { useCallback, useEffect, useState } from "react";
+import { mergeRegister } from "@lexical/utils";
+import { $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, KEY_TAB_COMMAND, SELECTION_CHANGE_COMMAND, TextNode} from "lexical";
+import "./plugin.css";
 
-function getCaretDOM(){
-    return window.getSelection()?.getRangeAt(0).getBoundingClientRect();
-}
-
-const DEFAULT = { top: -10000, left: -10000 };
 export const AIPlaceholderPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
-    const [text, setText] = useState("");
-    const [pos, setPos] = useState(DEFAULT);
-    const ref = useRef<HTMLDivElement>(null);
-    const wrapper = useWrapper();
+    const [key, setKey] = useState("");
+    const [text, setText] = useState("Hello");
+
+    const refresh = useCallback((k: string) => {
+        if(!key || k === key) return;
+        const element = editor.getElementByKey(key);
+        element?.setAttribute("data-text", "");
+        
+    }, [editor, key]);
 
     useEffect(() => {
         return mergeRegister(
-            editor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
-                    const selection = $getSelection();
-                    if ($isRangeSelection(selection) && selection.isCollapsed() && wrapper) {
-                        const node = selection.anchor.getNode();
-                        const bnode = $getNearestBlockElementAncestorOrThrow(node);
-                        let pos = DEFAULT;
-                        if ($isParagraphNode(bnode)) {
-                            let {x} = getCaretDOM()!;
-                            let element = editor.getElementByKey(node.getKey())!;
-                            let {y, height} = element.getBoundingClientRect();
-                            let {top, left} = wrapper.getBoundingClientRect();
-                            
-                            ref.current!.style.height = `${height}px`;
-                            pos = {left: x - left, top: y - top };
-                            setText("Hello");
-                        }
-                        setPos(pos);
+            editor.registerMutationListener(TextNode, (mutations) => {
+                Array.from(mutations).forEach(mutation =>{
+                    if(mutation[1] === "created"){
+                        let key = mutation[0];
+                        editor.getElementByKey(key)?.classList.add("simple-note-2-text-tag");
                     }
                 })
-            })
-        )
-    }, [editor, wrapper]);
+            }),
+            editor.registerTextContentListener(() => {
+                if(!key) return;
+                const element = editor.getElementByKey(key);
+                element?.setAttribute("data-text", text);
+            }),
 
-    return <Placeholder text={text} top={pos.top} left={pos.left} ref={ref}/>
+            editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+                const selection = $getSelection();
+                let key = "";
+                if($isRangeSelection(selection) && selection.isCollapsed()){
+                    const node = selection.anchor.getNode();
+                    let point = selection.getStartEndPoints()![0];
+                    let size = node.getTextContentSize();
+                    if($isTextNode(node) && point.offset === size){
+                        key = node.getKey();
+                    }
+                }
+                refresh(key);
+                setKey(key);
+                return false;
+            }, 4),
+            editor.registerCommand(KEY_TAB_COMMAND, (e) => {
+                if(key && text){
+                    e.preventDefault();
+                    const node = $getNodeByKey(key);
+                    if($isTextNode(node)){
+                        node.getWritable().__text += text;
+                        node.selectEnd();
+                    }
+                }
+                return true;
+            }, 4)
+        )
+    }, [editor, key, refresh, text]);
+
+    return null;
 }

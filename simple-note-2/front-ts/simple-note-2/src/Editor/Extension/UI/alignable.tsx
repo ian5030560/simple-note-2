@@ -32,7 +32,7 @@ type Props = Readonly<{
     }>;
 }>;
 
-export function AlignableBlock({
+export default function AlignableBlock({
     children,
     format,
     nodeKey,
@@ -124,6 +124,23 @@ export function AlignableBlock({
         );
     }, [clearSelection, editor, isSelected, nodeKey, onDelete, setSelected]);
 
+    const justifyContent = React.useMemo(() => {
+        switch(format){
+            case "left":
+            case "start":
+                return "flex-start";
+            case "center":
+                return "center";
+            case "right":
+            case "end":
+                return "flex-end";
+            case "justify":
+                return "space-between";
+            default:
+                return undefined;
+        }
+    }, [format]);
+
     return (
         <div
             className={[className.base, isSelected ? className.focus : null]
@@ -131,7 +148,9 @@ export function AlignableBlock({
                 .join(' ')}
             ref={ref}
             style={{
-                textAlign: format ? format : undefined,
+                display: "flex",
+                // textAlign: format ? format : undefined,
+                justifyContent: justifyContent
             }}>
             {children}
         </div>

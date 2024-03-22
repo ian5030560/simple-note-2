@@ -1,0 +1,7 @@
+.simple-note-2-embedBlock{
+    user-select: none;
+}
+
+.simple-note-2-embedBlock-focus{
+    outline: 2px solid skyblue;
+}

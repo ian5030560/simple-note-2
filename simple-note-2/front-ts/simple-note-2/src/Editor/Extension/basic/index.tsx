@@ -77,6 +77,10 @@ const BasicExtension: Extension = {
             ],
             ul: "simple-note-2-unordered-list",
         },
+        embedBlock: {
+            focus: "simple-note-2-embedBlock-focus",
+            base: "simple-note-2-embedBlock"
+        }
     }
 }
 

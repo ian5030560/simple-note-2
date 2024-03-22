@@ -1,17 +1,11 @@
 .pageActionMask{
-    position: relative;
     overflow: auto;
 }
 
 .pageActionContainer{
     display: flex;
-    position: absolute;
-    left: 50%;
-    bottom: 0;
     opacity: 0;
-    transform: translateX(-50%);
     transition: opacity 0.5s;
-    z-index: 1000;
 }
 
 .pageActionContainerEnter{
@@ -19,8 +13,6 @@
     opacity: 1;
 }
 
-.actionButton{
-    display: flex;
-    justify-content: center;
-    border: none;
+.dangerText{
+    color: red;
 }

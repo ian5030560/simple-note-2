@@ -6,6 +6,7 @@ import {
 import React, { ReactNode, Suspense } from "react";
 import { Skeleton } from "antd";
 import { Spread } from "lexical/LexicalEditor";
+import Load from "../UI/load";
 
 const LazyImageView = React.lazy(() => import("./component"));
 
@@ -90,7 +91,7 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
         return false;
     }
 
-    setSrc(src: string){
+    setSrc(src: string) {
         this.getWritable().__src = src;
     }
 
@@ -103,7 +104,7 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
     }
 
     decorate(): ReactNode {
-        return <Suspense fallback={<Skeleton.Image active={true} />}>
+        return <Load width={this.__width} height={this.__width}>
             <LazyImageView
                 src={this.__src}
                 alt={this.__alt}
@@ -111,12 +112,12 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
                 height={this.__height}
                 nodeKey={this.getKey()}
             />
-        </Suspense>
+        </Load>
     }
 
     static importJSON(_serializedNode: SerializedImageNode): ImageNode {
         const { src, alt, width, height } = _serializedNode;
-        
+
         const node = $createImageNode(src, alt, width, height);
 
         return node;
