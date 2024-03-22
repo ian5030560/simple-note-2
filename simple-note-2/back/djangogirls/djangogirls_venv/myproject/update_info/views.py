@@ -23,9 +23,21 @@ class UpdateInfoView(APIView):
     前端傳:\n
         帳號名(username, type: str),\n
         更新的資料(name: data, type: Info, 若Info中的項目為null, ignore it).\n
+        type: Info {
+            頭像(name: image): 文件網址(string),
+            主題(name: theme): Theme,
+            密碼(name: password): string
+            }
     後端回傳:\n
-        Response HTTP_200_OK if success.\n
-
+        if image != "":
+            Response HTTP_200_OK if success.\n
+            Response HTTP_400_BAD_REQUEST if failure.\n
+        if theme != "":
+            Response HTTP_201_CREATED if success.\n
+            Response HTTP_401_UNAUTHORIZED if failure.\n
+        if password !=:
+            Response HTTP_202_ACCEPTED if success.\n
+            Response HTTP_402_PAYMENT_REQUIRED if failure.\n
     其他例外:\n
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
@@ -43,12 +55,41 @@ class UpdateInfoView(APIView):
         try:
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
-            newname = data.get("name")  # 要更新的名稱
+            image = ""  # 預設頭像 = null
+            theme = ""  # 預設主題 = null
+            password = ""  # 預設密碼 = null
+            image = data.get("image")  # 更新的頭像
+            theme = data.get("theme")  # 更新的主題
+            password = data.get("password")  # 更新的密碼
             db = DB()
 
-            if 1:  # 更新成功(資料庫條件)
-                return Response(status=status.HTTP_200_OK)
+            if image != "":
+                updateImageValue = db.update_profile_photo_by_username(username, image)
+                if updateImageValue == 1:
+                    return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response(
+                        updateImageValue, status=status.HTTP_400_BAD_REQUEST
+                    )
+            if theme != "":
+                updateThemeValue = db.update_theme_by_username(username, theme)
+                if updateThemeValue == 1:
+                    return Response(status=status.HTTP_201_CREATED)
+                else:
+                    return Response(
+                        updateThemeValue, status=status.HTTP_401_UNAUTHORIZED
+                    )
 
+            if password != "":
+                updatePasswordValue = db.update_user_password_by_username(
+                    username, password
+                )
+                if updatePasswordValue == 1:
+                    return Response(status=status.HTTP_202_ACCEPTED)
+                else:
+                    return Response(
+                        updatePasswordValue, status=status.HTTP_402_PAYMENT_REQUIRED
+                    )
             # serializer
             serializer = UpdateInfoSerializer(data=data)
 
