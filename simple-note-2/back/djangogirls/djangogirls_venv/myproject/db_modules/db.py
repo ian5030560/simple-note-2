@@ -7,7 +7,7 @@ TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myp
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(BACK_DB)
+        self.conn = sqlite3.connect(TEST_DB)
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
@@ -77,6 +77,40 @@ class DB:
         self.cursor.execute(
             "SELECT user_password FROM User_Personal_Info WHERE user_email = ?;",
             (user_email,),
+        )
+        # 獲取查詢結果的第一行
+        row = self.cursor.fetchone()
+        # 如果有結果，取出 user_password 的值
+        if row:
+            user_password = row[0]
+            return user_password
+
+        else:
+            # 如果沒有結果，返回一個None
+            return None
+
+    # 給username和file_name查content_blob
+    def username_file_name_return_content_blob(self, username, file_name):
+        self.cursor.execute(
+            "SELECT content_blob FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND file_name = ?;",
+            (username, file_name),
+        )
+        # 獲取查詢結果的第一行
+        row = self.cursor.fetchone()
+        # 如果有結果，取出 user_password 的值
+        if row:
+            user_password = row[0]
+            return user_password
+
+        else:
+            # 如果沒有結果，返回一個None
+            return None
+
+    # 給username和file_name查content_mimetype
+    def username_file_name_return_content_mimetype(self, username, file_name):
+        self.cursor.execute(
+            "SELECT content_mimetype FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND file_name = ?;",
+            (username, file_name),
         )
         # 獲取查詢結果的第一行
         row = self.cursor.fetchone()
@@ -290,41 +324,99 @@ class DB:
         except sqlite3.Error as e:
             return e
 
-    # 給username插入或更新User_Personal_Info
-    # username, profile_photo, theme, user_password, login_status
-    def update_User_Personal_Info_by_username(
-        self, username, profile_photo, theme, user_password, login_status
-    ):
+    # 給username插入或更新profile_photo
+    def update_profile_photo_by_username(self, username, profile_photo):
         try:
+            # 直接執行 UPDATE 語句
             self.cursor.execute(
-                "SELECT * FROM User_Personal_Info WHERE username = ? ",
-                (username,),
+                "UPDATE User_Personal_Info SET profile_photo = ? WHERE username = ?;",
+                (profile_photo, username),
             )
-            # 獲取查詢結果的第一行
-            row = self.cursor.fetchone()
-
-            if row is None:
-                # 如果資料不存在，則使用 INSERT 插入新資料
+            # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
+            if self.cursor.rowcount == 0:
                 self.cursor.execute(
-                    "INSERT INTO User_Personal_Info (username, profile_photo, theme, user_password, login_status) VALUES (?, ?, ?, ?, ?);",
-                    (
-                        username,
-                        profile_photo,
-                        theme,
-                        user_password,
-                        login_status,
-                    ),
+                    "INSERT INTO User_Personal_Info (username, profile_photo) VALUES (?, ?);",
+                    (username, profile_photo),
                 )
-            else:
-                # 如果資料存在，則使用 UPDATE 更新資料
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            return e
+
+    # 給username插入或更新theme
+    def update_theme_by_username(self, username, theme):
+        try:
+            # 直接執行 UPDATE 語句
+            self.cursor.execute(
+                "UPDATE User_Personal_Info SET theme = ? WHERE username = ?;",
+                (theme, username),
+            )
+            # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
+            if self.cursor.rowcount == 0:
                 self.cursor.execute(
-                    "UPDATE User_Personal_Info SET profile_photo = ?, theme = ?, user_password = ?, login_status = ? WHERE username = ?;",
-                    (profile_photo, theme, user_password, login_status, username),
-                    )
+                    "INSERT INTO User_Personal_Info (username, theme) VALUES (?, ?);",
+                    (username, theme),
+                )
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            return e
+
+    def update_user_email_by_username(self, username, user_email):
+        try:
+            # 直接執行 UPDATE 語句
+            self.cursor.execute(
+                "UPDATE User_Personal_Info SET user_email = ? WHERE username = ?;",
+                (user_email, username),
+            )
+            # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
+            if self.cursor.rowcount == 0:
+                self.cursor.execute(
+                    "INSERT INTO User_Personal_Info (username, user_email) VALUES (?, ?);",
+                    (username, user_email),
+                )
             self.conn.commit()
             return True
         except sqlite3.Error as e:
             return False
+
+    # 給username插入或更新user_password
+    def update_user_password_by_username(self, username, user_password):
+        try:
+            # 直接執行 UPDATE 語句
+            self.cursor.execute(
+                "UPDATE User_Personal_Info SET user_password = ? WHERE username = ?;",
+                (user_password, username),
+            )
+            # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
+            if self.cursor.rowcount == 0:
+                self.cursor.execute(
+                    "INSERT INTO User_Personal_Info (username, user_password) VALUES (?, ?);",
+                    (username, user_password),
+                )
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            return e
+
+    # 給username插入或更新login_status
+    def update_login_status_by_username(self, username, login_status):
+        try:
+            # 直接執行 UPDATE 語句
+            self.cursor.execute(
+                "UPDATE User_Personal_Info SET login_status = ? WHERE username = ?;",
+                (login_status, username),
+            )
+            # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
+            if self.cursor.rowcount == 0:
+                self.cursor.execute(
+                    "INSERT INTO User_Personal_Info (username, login_status) VALUES (?, ?);",
+                    (username, login_status),
+                )
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            return e
 
     def close_connection(self):
         # 關閉游標和資料庫連接
@@ -333,4 +425,4 @@ class DB:
 
 
 my_db = DB()
-print(my_db.update_User_Personal_Info_by_username("user05","user05_photo","dark","user05_pw","0"))
+print(my_db.update_user_email_by_username("user07", "abc"))

@@ -51,10 +51,10 @@ class AddFileView(APIView):
             db = DB()
 
             returnValueInsertContent = db.filename_insert_content(
-                username, filename, content
+                self, username, filename, content
             )  # 透過content來新增資料
             returnValueInsertMimetype = db.insert_into_User_Note_Data_content_mimetype(
-                username, filename, mimetype
+                self, username, filename, mimetype
             )  # 透過mimetype來新增資料
 
             if (
