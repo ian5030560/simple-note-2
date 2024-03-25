@@ -3,8 +3,7 @@ import {
     SerializedLexicalNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput,
     $applyNodeReplacement,
 } from "lexical";
-import React, { ReactNode, Suspense } from "react";
-import { Skeleton } from "antd";
+import React, { ReactNode } from "react";
 import { Spread } from "lexical/LexicalEditor";
 import Load from "../UI/load";
 

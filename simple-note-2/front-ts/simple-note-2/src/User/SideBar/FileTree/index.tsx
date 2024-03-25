@@ -159,7 +159,7 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
                 (k) => handleDelete(k, setI_Children, createIndiviualNode),
                 true
             ),
-            children: i_children
+            children: i_children,
         },
         {
             key: "multiple",
@@ -178,6 +178,7 @@ const FileTree: React.FC<FileTreeProp> = (prop) => {
         treeData={rootData}
         rootStyle={{ backgroundColor: token.colorPrimary, }}
         onSelect={prop.onSelect}
+        onClick={(e) => e.stopPropagation()}
     />
 }
 

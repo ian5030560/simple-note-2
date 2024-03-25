@@ -1,6 +1,5 @@
 import { pdfjs } from 'react-pdf';
 import { Document, Page } from "react-pdf";
-import { BlockWithAlignableContents } from "@lexical/react/LexicalBlockWithAlignableContents";
 import { $getNodeByKey, ElementFormatType, NodeKey } from 'lexical';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import { Button, Flex, Spin, Typography } from 'antd';

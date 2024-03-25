@@ -4,99 +4,10 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getNodeByKey, CLICK_COMMAND } from "lexical";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import styles from "./component.module.css";
-import styled, {css} from "styled-components";
 import { RiEdit2Fill } from "react-icons/ri";
 import { OPEN_CANVAS } from "../canvas/plugin";
 import { Button } from "antd";
-
-enum Direction {
-    LEFT = "top: 50%; left: 0%; cursor: w-resize; transform: translate(-7px, -7px);",
-    TOPLEFT = "top: 0%; left: 0%; cursor: nw-resize; transform: translate(-7px, -7px);",
-    BOTTOMLEFT = "top: 100%; left: 0%; cursor: sw-resize; transform: translate(-7px, -7px);",
-    BOTTOM = "top: 100%; left: 50%; cursor: s-resize; transform: translate(-7px, -3.5px);",
-    BOTTOMRIGHT = "top: 100%; left: 100%; cursor: nwse-resize; transform: translate(-3.5px, -3.5px);",
-    RIGHT = "top: 50%; left: 100%; cursor: e-resize;",
-    TOPRIGHT = "top: 0%; left: 100%; cursor: ne-resize; transform: translate(0px, -7px);",
-    TOP = "top: 0%; left: 50%; cursor: n-resize; transform: translate(-7px, -7px);",
-}
-
-const HandlePin = styled.div<{$direction: string}>`
-    ${({$direction}) => css`${$direction}`}
-`
-
-interface ResizerProp {
-    children: React.ReactNode;
-    showHandle?: boolean
-    onResizeStart?: () => void;
-    onResize?: (offsetWidth: number, offsetHeight: number) => void;
-    onResizeEnd?: () => void;
-}
-const Resizer: React.FC<ResizerProp> = (prop) => {
-
-    const ref = useRef<HTMLDivElement>(null);
-    const directionRef = useRef<Direction>();
-    const startRef = useRef<{ x: number, y: number }>({ x: 0, y: 0 });
-
-    const handlePointerMove = useCallback((e: PointerEvent) => {
-        e.preventDefault();
-        const { clientX, clientY } = e;
-
-        const { x: startX, y: startY } = startRef.current;
-
-        let offsetX = clientX - startX;
-        let offsetY = clientY - startY;
-
-        let isHorizontal = directionRef.current === Direction.LEFT || directionRef.current === Direction.RIGHT;
-        let isVertical = directionRef.current === Direction.TOP || directionRef.current === Direction.BOTTOM;
-
-        let invertX = [Direction.LEFT, Direction.TOPLEFT, Direction.BOTTOMLEFT];
-        let isInvertX = directionRef.current ? invertX.includes(directionRef.current) : false;
-
-        let invertY = [Direction.TOP, Direction.TOPLEFT, Direction.TOPRIGHT];
-        let isInvertY = directionRef.current ? invertY.includes(directionRef.current) : false;
-
-
-        offsetX = isVertical ? 0 : isInvertX ? -offsetX : offsetX;
-        offsetY = isHorizontal ? 0 : isInvertY ? -offsetY : offsetY;
-
-        prop.onResize?.(offsetX, offsetY);
-
-    }, [prop]);
-
-    const handlePointerUp = useCallback(() => {
-        document.removeEventListener("pointermove", handlePointerMove);
-        document.removeEventListener("pointerup", handlePointerUp);
-        document.body.style.removeProperty("user-select");
-        prop.onResizeEnd?.();
-    }, [handlePointerMove, prop]);
-
-    const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>, direction: Direction) => {
-        e.preventDefault();
-        prop.onResizeStart?.();
-        directionRef.current = direction;
-        startRef.current = { x: e.clientX, y: e.clientY };
-        document.addEventListener("pointermove", handlePointerMove);
-        document.addEventListener("pointerup", handlePointerUp);
-        document.body.style.userSelect = "none";
-
-    }, [handlePointerMove, handlePointerUp, prop]);
-
-    return <div ref={ref}>
-        {prop.children}
-        {prop.showHandle &&
-            <>
-                <HandlePin className={styles.handlePin} $direction={Direction.BOTTOM} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOM)} />
-                <HandlePin className={styles.handlePin}  $direction={Direction.BOTTOMLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMLEFT)} />
-                <HandlePin className={styles.handlePin}  $direction={Direction.BOTTOMRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMRIGHT)} />
-                <HandlePin className={styles.handlePin}  $direction={Direction.LEFT} onPointerDown={(e) => handlePointerDown(e, Direction.LEFT)} />
-                <HandlePin className={styles.handlePin}  $direction={Direction.RIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.RIGHT)} />
-                <HandlePin className={styles.handlePin}  $direction={Direction.TOPLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPLEFT)} />
-                <HandlePin className={styles.handlePin}  $direction={Direction.TOPRIGHT} onPointerDown={(e) => handlePointerDown(e, Direction.TOPRIGHT)} />
-                <HandlePin className={styles.handlePin}  $direction={Direction.TOP} onPointerDown={(e) => handlePointerDown(e, Direction.TOP)} />
-            </>
-        }
-    </div>
-};
+import Resizer from "../UI/resizer";
 
 type ImageProp = ImageNodeProp;
 const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) => {

@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal } from "antd";
+import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal, FlexProps } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
 import FileTree from "./FileTree";
 import { useCookies } from "react-cookie";
 import User from "../../service/user";
 import SettingPanel from "./SettingPanel";
-import styles from "./index.module.css";
 
 const { Title } = Typography;
 
@@ -101,15 +100,19 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src }) => {
 
 
 const { Text } = Typography;
-const SideBar = ({className}: {className: string}) => {
+
+export interface SideBarProps extends Omit<FlexProps, "vertical" | "children"> {
+    className: string | undefined,
+    style?: React.CSSProperties,
+}
+const SideBar = ({ className, style, ...prop }: SideBarProps) => {
 
     const { token } = theme.useToken();
     const [{ username }] = useCookies(["username"]);
 
-    return <Flex
-        vertical
-        className={className}
-        style={{ backgroundColor: token.colorPrimary }}>
+    return <Flex vertical className={className}
+        style={{ backgroundColor: token.colorPrimary, ...style }}
+        {...prop}>
         <Flex vertical>
             <UserProfile username="username" />
             <FileTree />

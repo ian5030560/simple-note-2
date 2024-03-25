@@ -34,7 +34,7 @@ const Extensions: Extension[] = [
     ImageToTextExtension,
     VideoExtension,
     DocumentExtension,
-    // AIExtension,
+    AIExtension,
 ]
 
 export default Extensions;

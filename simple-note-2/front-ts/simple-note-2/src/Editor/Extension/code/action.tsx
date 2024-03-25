@@ -22,7 +22,7 @@ interface ActionToolProp {
     onSelect: (value: string) => void;
     copied: boolean;
 }
-const ActionTool = forwardRef((prop: ActionToolProp, ref: React.ForwardedRef<HTMLElement>) => {
+const Actions = forwardRef((prop: ActionToolProp, ref: React.ForwardedRef<HTMLElement>) => {
 
     return createPortal(<Flex className={styles.actionContainer} ref={ref}
         style={{ transform: `translate(${prop.left}px, ${prop.top}px)` }}
@@ -126,7 +126,7 @@ const CodeActionPlugin: Plugin = () => {
         })
     }, [editor]);
 
-    return wrapper ? <ActionTool top={pos.top} left={pos.left} anchor={wrapper} ref={ref}
+    return wrapper ? <Actions top={pos.top} left={pos.left} anchor={wrapper} ref={ref}
         language={lang} copied={copied} languages={LANGUAGES} 
         onCopy={handleCopy} onSelect={handleSelect}/> : null;
 }
