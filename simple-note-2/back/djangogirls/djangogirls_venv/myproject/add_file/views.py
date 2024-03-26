@@ -60,7 +60,7 @@ class AddFileView(APIView):
             if (
                 returnValueInsertContent and returnValueInsertMimetype
             ):  # 新增成功(透過content, mimetype都成功)
-                url = "localhost:8000/view_file/" + str(username) + str(filename)
+                url = "localhost:8000/view_file/" + str(username) + "/" + str(filename)
                 return Response(url, status=status.HTTP_200_OK)
 
             elif returnValueInsertContent != True:  # 透過content新增失敗

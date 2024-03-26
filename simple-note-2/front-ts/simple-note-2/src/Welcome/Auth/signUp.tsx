@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Flex, Form, Input, Typography, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal } from "./modal";
-// import { useCookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 import postData from "../../util/post";
 import { AuthProp, STATE, validateMessages } from "./constant";
 
