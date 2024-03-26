@@ -48,22 +48,22 @@ const TableActionPlugin: Plugin = () => {
         return [
             {
                 key: "addRowAbove",
-                label: "add row above",
+                label: "往上增加一列",
                 onClick: () => editor.update(() => $insertTableRow__EXPERIMENTAL(false)),
             },
             {
                 key: "addRowBelow",
-                label: "add row below",
+                label: "往下增加一列",
                 onClick: () => editor.update(() => $insertTableRow__EXPERIMENTAL(true)),
             },
             {
                 key: "addColumnLeft",
-                label: "add column left",
+                label: "往左增加一欄",
                 onClick: () => editor.update(() => $insertTableColumn__EXPERIMENTAL(false)),
             },
             {
                 key: "addColumnRight",
-                label: "add column right",
+                label: "往右增加一欄",
                 onClick: () => editor.update(() => $insertTableColumn__EXPERIMENTAL(true)),
             },
             {
@@ -73,12 +73,12 @@ const TableActionPlugin: Plugin = () => {
             },
             {
                 key: "deleteRow",
-                label: "delete row",
+                label: "刪除該列",
                 onClick: () => editor.update(() => $deleteTableRow__EXPERIMENTAL()),
             },
             {
                 key: "deleteColumn",
-                label: "delete column",
+                label: "刪除該欄",
                 onClick: () => editor.update(() => $deleteTableColumn__EXPERIMENTAL()),
             },
         ]

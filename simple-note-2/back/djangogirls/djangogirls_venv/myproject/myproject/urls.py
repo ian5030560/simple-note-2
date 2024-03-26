@@ -78,6 +78,11 @@ urlpatterns = [
     path("update_info/", UpdateInfoView.as_view(), name="update_info"),  # update_info
     path("add_theme/", AddThemeView.as_view(), name="add_theme"),  # add_theme
     path("gemma/", GemmaView.as_view(), name="gemma"),  # gemma
+    path(
+        "view_file/<str:username>/<str:filename>",
+        ViewFileView.as_view(),
+        name="view_file",
+    ),  # view_file, username, filename
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]

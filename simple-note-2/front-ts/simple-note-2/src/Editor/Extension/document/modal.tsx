@@ -15,11 +15,27 @@ const DocumentModal = () => {
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target || !e.target.files) return;
         let file = e.target.files[0];
-        editor.dispatchCommand(INSERT_FILE, {
-            name: "pdf", payload: {
-                width: 800, height: 400, src: URL.createObjectURL(file),
-            }
-        })
+        let [type, ...fileName] = file.name.split(".").reverse();
+        
+        switch (type) {
+            case "pdf":
+                editor.dispatchCommand(INSERT_FILE, {
+                    name: "pdf", 
+                    payload: {
+                        width: 800, height: 400, src: URL.createObjectURL(file),
+                    }
+                })
+                break;
+            default:
+                editor.dispatchCommand(INSERT_FILE, {
+                    name: type,
+                    payload: {
+                        src: URL.createObjectURL(file),
+                        name: file.name,
+                    }
+                })
+        }
+
 
         ref.current?.close();
     }, [editor]);
@@ -27,7 +43,7 @@ const DocumentModal = () => {
 
     return <Modal command={OPEN_DOCUMENT_MODAL} footer={null} ref={ref} title="上傳文件">
         <Button block type="primary" icon={<FaUpload />} onClick={() => inputRef.current?.click()}>上傳</Button>
-        <input type="file" accept=".pdf" style={{ display: "none" }} ref={inputRef} onChange={(e) => handleChange(e)} />
+        <input type="file" style={{ display: "none" }} ref={inputRef} onChange={(e) => handleChange(e)} />
     </Modal>
 }
 

@@ -18,14 +18,14 @@ const ToolButtons: React.FC<ToolButtonsProp> = ({ nodeKey, onDelete, onAdd, root
     return <Flex>
         {!root && <DeleteOutlined
             onClick={(e) => {
-                e.stopPropagation();
+                e.preventDefault();
                 onDelete?.(nodeKey);
             }}
         />}
 
         <PlusOutlined
             onClick={(e) => {
-                e.stopPropagation();;
+                e.preventDefault();
                 onAdd?.(nodeKey);
             }}
         />
@@ -50,7 +50,7 @@ const Node: React.FC<NodeProp> = (prop) => {
     // const { token } = theme.useToken();
 
     return <>
-        <Flex gap={"large"}>
+        <Flex gap={"large"} onClick={(e) => e.preventDefault()}>
             <Text ellipsis style={{ whiteSpace: "nowrap" }}>{prop.text}</Text>
             <ToolButtons
                 nodeKey={prop.nodeKey}

@@ -52,7 +52,7 @@ class UpdateFileView(APIView):
             filename = url.replace("localhost:8000/view_file/", "")
 
             returnValueInsertContent = db.filename_insert_content(
-                self, username, filename, content
+                username, filename, content
             )  # 透過content來新增資料
 
             if returnValueInsertContent:  # 新增成功(透過content, mimetype都成功)

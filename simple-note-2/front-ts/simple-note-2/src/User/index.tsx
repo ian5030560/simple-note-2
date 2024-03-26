@@ -49,7 +49,7 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
                         },
                         body: { padding: 0 }
                     }}>
-                    <SideBar className={styles.sideBar} />
+                    <SideBar className={styles.sideBar}/>
                 </Drawer>
         }
 

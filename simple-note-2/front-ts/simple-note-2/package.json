@@ -16,6 +16,7 @@
     "@types/react-speech-recognition": "^3.9.5",
     "antd": "^5.13.2",
     "colorjs.io": "^0.4.5",
+    "filesize": "^10.1.1",
     "lexical": "^0.13.1",
     "pdfjs-dist": "^4.0.379",
     "react": "^18.2.0",

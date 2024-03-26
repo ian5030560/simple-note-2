@@ -5,15 +5,11 @@ import PDFNode, { $createPDFNode } from "./pdf/node";
 import { LexicalCommand, LexicalNode, createCommand } from "lexical";
 import { mergeRegister, $insertNodeToNearestRoot } from "@lexical/utils";
 import DocumentModal from "./modal";
+import DocNode, { $createDocNode } from "./doc/node";
 
-export type DocumentName = "pdf"
 interface DocumentPayload {
-    name: DocumentName;
-    payload: {
-        width: number;
-        height: number;
-        src: string;
-    }
+    name: string;
+    payload: any;
 }
 export const INSERT_FILE: LexicalCommand<DocumentPayload> = createCommand();
 
@@ -21,8 +17,8 @@ const DocumentPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
 
     useEffect(() => {
-        if (!editor.hasNodes([PDFNode])) {
-            throw new Error("DocumentPlugin: PDFNode not registered in editor");
+        if (!editor.hasNodes([PDFNode, DocNode])) {
+            throw new Error("DocumentPlugin: PDFNode or DocNode not registered in editor");
         }
         return mergeRegister(
             editor.registerCommand(INSERT_FILE, (payload) => {
@@ -33,7 +29,7 @@ const DocumentPlugin: Plugin = () => {
                         node = $createPDFNode(p.width, p.height, p.src);
                         break;
                     default:
-                        throw new Error("Unknown Node");
+                        node = $createDocNode(p.src, p.name);
                 }
                 $insertNodeToNearestRoot(node);
                 return true;

@@ -18,4 +18,5 @@
     top: 50%;
     transform: translateY(-100%);
     position: fixed;
+    z-index: 1000;
 }

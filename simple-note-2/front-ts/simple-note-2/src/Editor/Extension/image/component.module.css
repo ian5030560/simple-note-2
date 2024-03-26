@@ -1,11 +1,3 @@
-.handlePin{
-    background-color: blue;
-    width: 7px;
-    height: 7px;
-    position: absolute;
-    z-index: 10000;
-}
-
 .imageEdit{
     position: absolute;
     border-radius: 8px;

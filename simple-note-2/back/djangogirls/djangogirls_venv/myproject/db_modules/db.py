@@ -7,7 +7,7 @@ TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myp
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(TEST_DB)
+        self.conn = sqlite3.connect(BACK_DB)
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
@@ -341,8 +341,8 @@ class DB:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            return False  
-    
+            return e
+
     # 給username插入或更新theme
     def update_theme_by_username(self, username, theme):
         try:
@@ -360,8 +360,8 @@ class DB:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            return False  
-    
+            return e
+
     def update_user_email_by_username(self, username, user_email):
         try:
             # 直接執行 UPDATE 語句
@@ -380,7 +380,6 @@ class DB:
         except sqlite3.Error as e:
             return False
 
-    
     # 給username插入或更新user_password
     def update_user_password_by_username(self, username, user_password):
         try:
@@ -398,8 +397,8 @@ class DB:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            return False
-    
+            return e
+
     # 給username插入或更新login_status
     def update_login_status_by_username(self, username, login_status):
         try:
@@ -417,7 +416,7 @@ class DB:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            return False        
+            return e
 
     def close_connection(self):
         # 關閉游標和資料庫連接

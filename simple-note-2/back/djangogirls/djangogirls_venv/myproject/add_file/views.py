@@ -51,16 +51,16 @@ class AddFileView(APIView):
             db = DB()
 
             returnValueInsertContent = db.filename_insert_content(
-                self, username, filename, content
+                username, filename, content
             )  # 透過content來新增資料
             returnValueInsertMimetype = db.insert_into_User_Note_Data_content_mimetype(
-                self, username, filename, mimetype
+                username, filename, mimetype
             )  # 透過mimetype來新增資料
 
             if (
                 returnValueInsertContent and returnValueInsertMimetype
             ):  # 新增成功(透過content, mimetype都成功)
-                url = "localhost:8000/view_file/" + str(filename)
+                url = "localhost:8000/view_file/" + str(username) + str(filename)
                 return Response(url, status=status.HTTP_200_OK)
 
             elif returnValueInsertContent != True:  # 透過content新增失敗
