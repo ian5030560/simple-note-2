@@ -35,20 +35,22 @@ class ViewFileView(APIView):
 
     def get(self, request, username, filename, format=None):
         db = DB()
-        output = [{"view_file": output.view_file} for output in ViewFile.objects.all()]
-        self.getUsername(username)
-        self.getFilename(filename)
 
-        # 將content和mimetype預設為空
-        content = ""
-        mimetype = ""
-        # 將content和mimetype從DB回傳
+        # Retrieve content and mimetype from the database
         content = db.username_file_name_return_content_blob(username, filename)
         mimetype = db.username_file_name_return_content_mimetype(username, filename)
-        if 1:  # 資料庫條件
+
+        # Check if content and mimetype are not None
+        if content is not None and mimetype is not None:
+            # Combine content and mimetype
             file_data = content + mimetype
+            # Return response with the file data
             return Response(file_data, status=status.HTTP_200_OK)
-        # close db connection
+        elif content is None or mimetype is None:
+            # If data not found, return HTTP 404 response
+            return Response("File not found", status=status.HTTP_404_NOT_FOUND)
+
+        # Close db connection
         db.close_connection()
 
     def post(self, request, format=None):
