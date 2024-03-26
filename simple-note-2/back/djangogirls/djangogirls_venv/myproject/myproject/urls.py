@@ -79,10 +79,15 @@ urlpatterns = [
     path("add_theme/", AddThemeView.as_view(), name="add_theme"),  # add_theme
     path("gemma/", GemmaView.as_view(), name="gemma"),  # gemma
     path(
+        "view_file/<str:username>",
+        ViewFileView.getUsername(),
+        name="view_file/<str:username>",
+    ),  # view_file/username
+    path(
         "view_file/<str:username>/<str:filename>",
-        ViewFileView.as_view(),
-        name="view_file",
-    ),  # view_file, username, filename
+        ViewFileView.getFilename(),
+        name="view_file/<str:username>/<str:filename>",
+    ),  # view_file/username/filename
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]
