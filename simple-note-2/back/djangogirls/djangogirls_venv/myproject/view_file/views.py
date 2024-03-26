@@ -27,12 +27,6 @@ class ViewFileView(APIView):
 
     serializer_class = ViewFileSerializer
 
-    def getUsername(self, username):
-        return username
-
-    def getFilename(self, filename):
-        return filename
-
     def get(self, request, username, filename, format=None):
         db = DB()
 

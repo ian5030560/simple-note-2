@@ -1,4 +1,6 @@
 import sqlite3
+import re
+import base64
 from os import mkdir
 
 BACK_DB = "db_modules\\pydb.db"
@@ -214,6 +216,9 @@ class DB:
         self, username, file_name, content_blob
     ):
         try:
+            # 將圖片數據進行 Base64 編碼
+            content_blob = base64.b64encode(content_blob).decode('utf-8')
+            
             self.cursor.execute(
                 "SELECT content_blob FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_name = ?;",
                 (
@@ -239,7 +244,7 @@ class DB:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            return False
+            return e
 
     # 給username和file_name來插入或更新content_mimetype
     def insert_into_User_Note_Data_content_mimetype(
@@ -425,4 +430,4 @@ class DB:
 
 
 my_db = DB()
-print(my_db.update_user_email_by_username("user07", "abc"))
+print(my_db.insert_into_User_Note_Data_content_blob("user01", "1","blobtest"))
