@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthModal, ForgetPwdModal } from "./modal";
 import postData from "../../util/post";
 import { STATE, validateMessages, AuthProp } from "./constant";
+import { useCookies } from "react-cookie";
 
 const { Title } = Typography;
 
@@ -13,7 +14,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
-    // const [, setCookie] = useCookies();
+    const [, setCookie] = useCookies();
     const values = Form.useWatch([], form);
 
     useEffect(() => {
@@ -33,7 +34,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
 
         values = {
             ...values,
-            id: "login",
+            id: "sign-in",
         };
 
         postData(

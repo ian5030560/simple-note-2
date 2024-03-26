@@ -1,22 +1,38 @@
 import { Button, Flex, FlexProps, theme, Typography } from "antd";
-import React, { useState } from "react"
+import React, { forwardRef, useEffect, useRef, useState } from "react"
 import Divider from "./Component/UI/divider";
 import { Plugin } from "../Extension/index";
 import styles from "./index.module.css";
-import { IoIosArrowDropup, IoIosArrowDropdown } from "react-icons/io";
+// import { IoIosArrowDropup, IoIosArrowDropdown } from "react-icons/io";
 
 interface ToolBarContainerProp extends FlexProps {
     $backgroundColor: string;
     $shadowColor: string;
     className: string | undefined;
 }
-const ToolBarContainer = ({ $backgroundColor, $shadowColor, className, ...prop }: ToolBarContainerProp) => <Flex className={[styles.toolBar, className].join(" ")} style={{ backgroundColor: $backgroundColor }} {...prop} />
+const ToolBarContainer = forwardRef(({ $backgroundColor, $shadowColor, className, ...prop }: ToolBarContainerProp, ref: React.Ref<HTMLElement>) => <Flex ref={ref} className={[styles.toolBar, className].join(" ")} style={{ backgroundColor: $backgroundColor }} {...prop} />)
 const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) => {
     const { token } = theme.useToken();
-    const [collapse, setCollapse] = useState(false);
+    const [collapse, setCollapse] = useState(true);
+    const ref = useRef<HTMLElement>(null);
 
-    return <div>
-        <ToolBarContainer
+    useEffect(() => {
+        function handleMouseMove(e: MouseEvent){
+            let {clientX, clientY} = e;
+            
+            if(ref.current){
+                let {x, width} = ref.current.getBoundingClientRect();
+                setCollapse(!(clientX >= x && clientX <= x + width && clientY <= 40));
+            }
+        }
+
+        window.addEventListener("mousemove", handleMouseMove);
+
+        return () => window.removeEventListener("mousemove", handleMouseMove);
+    }, []);
+
+    return <ToolBarContainer
+            ref={ref}
             $backgroundColor={token.colorBgBase}
             $shadowColor={token.colorText}
             justify="space-evenly"
@@ -30,13 +46,6 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
                 </React.Fragment>)
             }
         </ToolBarContainer>
-        <button style={{ backgroundColor: token.colorBgBase, }}
-            className={styles.collapsedButton}
-            onClick={() => setCollapse(prev => !prev)}>
-            <Typography>{!collapse ? <IoIosArrowDropup /> : <IoIosArrowDropdown />}</Typography>
-        </button>
-    </div>
-
 }
 
 export default ToolBarPlugin;
