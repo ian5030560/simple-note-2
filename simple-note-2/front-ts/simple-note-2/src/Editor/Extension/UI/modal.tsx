@@ -22,7 +22,7 @@ const Modal = forwardRef(({ command, onClose, onOk, onOpen, ...prop }: ModalProp
         isOpen: open,
         open: () => setOpen(true),
         close: () => setOpen(false),
-    }))
+    }),[open]);
 
     useEffect(() => {
         return editor.registerCommand(command, () => {

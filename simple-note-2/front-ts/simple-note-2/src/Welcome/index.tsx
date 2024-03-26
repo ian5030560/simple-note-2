@@ -7,9 +7,9 @@ import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import defaultTheme from "../theme/default";
 import Intro from "./Intro";
 import "../resource/root.css";
-// import { useCookies } from "react-cookie";
-// import User from "../service/user";
-// import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
+import User from "../service/user";
+import { useNavigate } from "react-router-dom";
 
 interface HeaderProp extends TopBarProp {
     backgroundColor: string,
@@ -64,22 +64,22 @@ const Index: React.FC<WelcomePageIndexProp> = ({darken, onDarken}) => {
 
     const [content, setContent] = useState<React.JSX.Element>(<Intro />);
     const {token} = theme.useToken();
-    // const [{username}] = useCookies(["username"]);
-    // const navigate = useNavigate();
+    const [{username}] = useCookies(["username"]);
+    const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     if(username){
-    //         User.checkLogin(username)
-    //         .then(async value => {
-    //             if(value){
-    //                 let {treeData, selected, content} = await User.loadInfo(username);
-    //                 navigate(`${selected}`);
-    //                 localStorage.setItem("treeData", treeData);
-    //                 localStorage.setItem("content", content);
-    //             }
-    //         })
-    //     }
-    // });
+    useEffect(() => {
+        if(username){
+            User.checkSignIn(username)
+            .then(async value => {
+                if(value){
+                    // let {treeData, selected, content} = await User.loadInfo(username);
+                    // navigate(`${selected}`);
+                    // localStorage.setItem("treeData", treeData);
+                    // localStorage.setItem("content", content);
+                }
+            })
+        }
+    });
 
     return <>
         <Header

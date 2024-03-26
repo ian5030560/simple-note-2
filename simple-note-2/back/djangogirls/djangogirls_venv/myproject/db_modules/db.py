@@ -87,7 +87,7 @@ class DB:
 
         else:
             # 如果沒有結果，返回一個None
-            return None    
+            return None
 
     # 給username和file_name查content_blob
     def username_file_name_return_content_blob(self, username, file_name):
@@ -97,10 +97,10 @@ class DB:
         )
         # 獲取查詢結果的第一行
         row = self.cursor.fetchone()
-        # 如果有結果，取出 content_blob 的值
+        # 如果有結果，取出 user_password 的值
         if row:
-            content_blob = row[0]
-            return content_blob
+            user_password = row[0]
+            return user_password
 
         else:
             # 如果沒有結果，返回一個None
@@ -114,10 +114,10 @@ class DB:
         )
         # 獲取查詢結果的第一行
         row = self.cursor.fetchone()
-        # 如果有結果，取出 content_mimetype 的值
+        # 如果有結果，取出 user_password 的值
         if row:
-            content_mimetype = row[0]
-            return content_mimetype
+            user_password = row[0]
+            return user_password
 
         else:
             # 如果沒有結果，返回一個None
