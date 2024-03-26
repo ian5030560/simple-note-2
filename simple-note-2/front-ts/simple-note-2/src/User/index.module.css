@@ -8,9 +8,9 @@
 }
 
 .collapsedButton{
-    top: 0;
+    top: 50%;
     left: 0;
-    transform: translateX(-100%);
+    transform: translate(-100%, -50%);
     position: absolute;
 }
 
