@@ -27,16 +27,20 @@ class ViewFileView(APIView):
 
     serializer_class = ViewFileSerializer
 
-    def get(self, request, format=None):
+    def get(self, request, username, filename, format=None):
         db = DB()
         output = [{"view_file": output.view_file} for output in ViewFile.objects.all()]
+        # 將content和mimetype預設為空
         content = ""
         mimetype = ""
-        # close db connection
-        db.close_connection()
+        # 將content和mimetype從DB回傳
+        content = db.username_file_name_return_content_blob(username, filename)
+        mimetype = db.username_file_name_return_content_mimetype(username, filename)
         if 1:  # 資料庫條件
             file_data = content + mimetype
             return Response(file_data, status=status.HTTP_200_OK)
+        # close db connection
+        db.close_connection()
 
     def post(self, request, format=None):
         try:
