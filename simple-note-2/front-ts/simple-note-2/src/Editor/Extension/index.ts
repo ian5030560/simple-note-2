@@ -10,6 +10,7 @@ import CodeExtension from "./code";
 import ImageToTextExtension from "./imageToText";
 import VideoExtension from "./video";
 import DocumentExtension from "./document";
+import ColumnLayoutExtension from "./columns";
 
 export type Plugin<T = {}> = React.FC<T>
 
@@ -35,6 +36,7 @@ const Extensions: Extension[] = [
     VideoExtension,
     DocumentExtension,
     AIExtension,
+    ColumnLayoutExtension,
 ]
 
 export default Extensions;

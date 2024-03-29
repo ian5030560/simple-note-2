@@ -2,6 +2,7 @@
     cursor: pointer;
     padding: 3px;
     border-radius: 8px;
+    position: relative;
 }
 
 :global(.simple-note-2-document:hover){

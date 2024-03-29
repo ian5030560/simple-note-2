@@ -3,6 +3,7 @@ import { $findMatchingParent } from "@lexical/utils";
 import { $getSelection, $isBlockElementNode, $isRangeSelection, ElementNode, LexicalEditor } from "lexical";
 import { $createHeadingNode, HeadingTagType } from "@lexical/rich-text";
 import {BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6} from "react-icons/bs";
+import {$insertNodeToNearestRoot} from "@lexical/utils";
 
 const heading = [
     {
@@ -41,16 +42,8 @@ const Heading: AddItem[] = heading.map((head) => {
         ...head,
         onSelect: (editor: LexicalEditor) => {
             editor.update(() => {
-                const selection = $getSelection();
-                if ($isRangeSelection(selection)) {
-                    let node = selection.anchor.getNode();
-                    if (!$isBlockElementNode(node)) {
-                        node = $findMatchingParent(node, (p) => $isBlockElementNode(p))! as ElementNode;
-                    }
-    
-                    const newNode = $createHeadingNode(head.value as HeadingTagType);
-                    node.insertAfter(newNode);
-                }
+                const newNode = $createHeadingNode(head.value as HeadingTagType);
+                $insertNodeToNearestRoot(newNode);
             })
         }
     }

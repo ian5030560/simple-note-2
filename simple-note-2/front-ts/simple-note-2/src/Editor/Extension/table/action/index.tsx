@@ -9,7 +9,7 @@ import { $isTableSelection, $getTableCellNodeFromLexicalNode,
     $insertTableColumn__EXPERIMENTAL, $insertTableRow__EXPERIMENTAL,
     $deleteTableColumn__EXPERIMENTAL, $deleteTableRow__EXPERIMENTAL,
 } from "@lexical/table";
-import { $getSelection, $isRangeSelection } from "lexical";
+import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND } from "lexical";
 import { mergeRegister } from "@lexical/utils";
 import styles from "./action.module.css";
 
@@ -22,8 +22,8 @@ const TableActionPlugin: Plugin = () => {
 
     useEffect(() => {
         return mergeRegister(
-            editor.registerUpdateListener(({ editorState }) => {
-                editorState.read(() => {
+            editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+                editor.update(() => {
                     const selection = $getSelection();
                     let position = DEFAULT;
 
@@ -40,7 +40,8 @@ const TableActionPlugin: Plugin = () => {
                     }
                     setPos(position);
                 })
-            })
+                return false;
+            }, 2)
         )
     }, [editor, wrapper]);
 

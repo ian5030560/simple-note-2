@@ -1,0 +1,4 @@
+:global(.simple-note-2-column-container){
+    display: grid;
+    gap: 3px;
+}

@@ -5,7 +5,7 @@ import PDFNode, { $createPDFNode } from "./pdf/node";
 import { LexicalCommand, LexicalNode, createCommand } from "lexical";
 import { mergeRegister, $insertNodeToNearestRoot } from "@lexical/utils";
 import DocumentModal from "./modal";
-import DocNode, { $createDocNode } from "./doc/node";
+import DocNode, { $createDocNode } from "./document/node";
 
 interface DocumentPayload {
     name: string;
