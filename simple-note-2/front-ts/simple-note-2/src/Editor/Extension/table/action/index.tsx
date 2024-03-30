@@ -1,49 +1,31 @@
-import { createPortal } from "react-dom";
 import { CiCircleChevDown } from "react-icons/ci";
 import { Plugin } from "../../index";
 import { Button, Dropdown, MenuProps } from "antd";
-import { cloneElement, useEffect, useMemo, useRef, useState } from "react";
-import { useWrapper } from "../../../Draggable/component";
+import { cloneElement, useCallback, useMemo, useRef } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isTableSelection, $getTableCellNodeFromLexicalNode, 
+import {
+    $isTableSelection, $getTableCellNodeFromLexicalNode,
     $insertTableColumn__EXPERIMENTAL, $insertTableRow__EXPERIMENTAL,
     $deleteTableColumn__EXPERIMENTAL, $deleteTableRow__EXPERIMENTAL,
+    TableCellNode, $isTableNode,
 } from "@lexical/table";
-import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND } from "lexical";
-import { mergeRegister } from "@lexical/utils";
+import { $getSelection, $isRangeSelection, BaseSelection } from "lexical";
 import styles from "./action.module.css";
+import Corner, { CornerRef } from "../../UI/corner";
+import { $findMatchingParent } from "@lexical/utils";
 
-const DEFAULT = { top: -10000, left: -10000 };
 const TableActionPlugin: Plugin = () => {
-    const [pos, setPos] = useState<{ top: number, left: number }>(DEFAULT);
-    const wrapper = useWrapper();
     const [editor] = useLexicalComposerContext();
-    const ref = useRef<HTMLButtonElement>(null);
+    const ref = useRef<CornerRef>(null);
 
-    useEffect(() => {
-        return mergeRegister(
-            editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
-                editor.update(() => {
-                    const selection = $getSelection();
-                    let position = DEFAULT;
-
-                    if ($isRangeSelection(selection) || $isTableSelection(selection)) {
-                        let node = $getTableCellNodeFromLexicalNode(selection.anchor.getNode());
-                        if(node){
-                            let {top, left, width} = editor.getElementByKey(node.getKey())!.getBoundingClientRect();
-                            let {top: ptop, left: pleft} = wrapper!.getBoundingClientRect();
-                            let {width: offset} = ref.current!.getBoundingClientRect();
-    
-                            position = {top: top - ptop, left: left - pleft + width - offset};
-                        }
-
-                    }
-                    setPos(position);
-                })
-                return false;
-            }, 2)
-        )
-    }, [editor, wrapper]);
+    const handleSelectionChange = useCallback((selection: BaseSelection | null) => {
+        if ($isRangeSelection(selection) || $isTableSelection(selection)) {
+            let node = $getTableCellNodeFromLexicalNode(selection.anchor.getNode());
+            if (node) ref.current?.place(node.getKey());
+            return;
+        }
+        ref.current?.leave();
+    }, []);
 
     const items: MenuProps["items"] = useMemo(() => {
         return [
@@ -82,19 +64,34 @@ const TableActionPlugin: Plugin = () => {
                 label: "刪除該欄",
                 onClick: () => editor.update(() => $deleteTableColumn__EXPERIMENTAL()),
             },
+            {
+                key: "deleteAll",
+                label: "刪除表格",
+                onClick: () => {
+                    editor.update(() => {
+                        const selection = $getSelection();
+                        if ($isRangeSelection(selection) || $isTableSelection(selection)) {
+                            let node = selection.anchor.getNode();
+                            let tableNode = $findMatchingParent(node, $isTableNode);
+                            if ($isTableNode(tableNode)) {
+                                tableNode.remove();
+                            }
+                        }
+                    })
+                },
+                danger: true,
+            }
         ]
     }, [editor]);
 
-    return wrapper ? createPortal(
+    return <Corner nodeType={TableCellNode} placement={["top", "right"]} trigger="selected"
+        onSeletionChange={handleSelectionChange} className="simple-note-2-table-cell-action-button-container" ref={ref}>
         <Dropdown menu={{ items }} trigger={["click"]} placement="bottom" autoAdjustOverflow
-            dropdownRender={(node) => cloneElement(node as React.JSX.Element, {className: styles.dropDown})}>
-            <div className="simple-note-2-table-cell-action-button-container"
-                style={{ transform: `translate(${pos.left}px, ${pos.top}px)` }}>
-                <Button type="text" className="simple-note-2-table-cell-action-button" ref={ref} icon={<CiCircleChevDown size={20}/>}/>
-            </div>
-        </Dropdown>,
-        wrapper
-    ) : null;
+            dropdownRender={(node) => cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
+            <Button type="text" className="simple-note-2-table-cell-action-button"
+                icon={<CiCircleChevDown size={20} />} />
+        </Dropdown>
+    </Corner>
 }
 
 export default TableActionPlugin;

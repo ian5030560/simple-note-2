@@ -1,4 +1,4 @@
-import { Flex } from "antd";
+import { Button, Flex, InputNumber } from "antd";
 import { useCallback, useMemo, useRef } from "react";
 import styles from "./modal.module.css";
 import { LexicalCommand, createCommand } from "lexical";
@@ -27,20 +27,20 @@ const TableModal = () => {
     }, [editor]);
 
     const footer = useMemo(() => {
-        return <button type="button" className={styles.tableFormButton} onClick={handleClick}>插入</button>
+        return <Button type="primary" onClick={handleClick}>插入</Button>
     }, [handleClick]);
 
     return <Modal command={OPEN_TABLE_MODAL} title="插入表格" ref={ref} footer={footer}>
         <Flex justify="center" align="center">
             <form>
                 <div className={styles.tableFormWrapper}>
-                    <label htmlFor="rows" className={styles.tableFormLabel}>Rows:</label>
-                    <input type="number" className={styles.tableFormInput} id="rows" ref={rowRef} />
+                    <label htmlFor="rows" className={styles.tableFormLabel}>列數:</label>
+                    <InputNumber id="rows" ref={rowRef} style={{width: "80%"}} defaultValue={3}/>
                 </div>
 
                 <div className={styles.tableFormWrapper}>
-                    <label htmlFor="cols" className={styles.tableFormLabel}>Columns:</label>
-                    <input type="number" className={styles.tableFormInput} id="cols" ref={colRef} />
+                    <label htmlFor="cols" className={styles.tableFormLabel}>欄數:</label>
+                    <InputNumber id="cols" ref={colRef} style={{width: "80%"}} defaultValue={3}/>
                 </div>
             </form>
         </Flex>

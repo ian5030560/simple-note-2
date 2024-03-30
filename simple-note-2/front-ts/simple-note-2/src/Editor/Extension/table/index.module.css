@@ -149,13 +149,7 @@
 }
 
 :global(.simple-note-2-table-cell-action-button-container) {
-    display: block;
-    left: 0px;
-    top: 0px;
-    position: absolute;
     z-index: 4;
-    width: 20px;
-    height: 20px;
 }
 
 :global(.simple-note-2-table-cell-action-button) {
