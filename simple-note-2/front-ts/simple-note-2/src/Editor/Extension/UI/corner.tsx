@@ -18,9 +18,11 @@ export interface CornerProp {
     onLeaveNode?: (key: string) => void;
     onSeletionChange?: (selection: BaseSelection | null) => void;
     trigger: "hover" | "selected";
-    style?: React.CSSProperties;
+    style?: Omit<React.CSSProperties, "transform">;
     className?: string | undefined;
     outside?: boolean;
+    autoWidth?: boolean;
+    autoHeight?: boolean;
 }
 const DEFAULT = { top: -10000, left: -10000 }
 const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>) => {
@@ -28,47 +30,54 @@ const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>)
     const [editor] = useLexicalComposerContext();
     const [pos, setPos] = useState(DEFAULT);
     const containerRef = useRef<HTMLDivElement>(null);
-    const keyRef = useRef<string | null>(null);
+    const [key, setKey] = useState<string>("");
 
     const place = useCallback((key: string) => {
-        keyRef.current = key;
         let element = editor.getElementByKey(key);
-        if (!element || !wrapper) return;
+        if (!element || !wrapper || !containerRef.current) return;
         const { x, y, width, height } = element.getBoundingClientRect();
         const { top: offsetTop, left: offsetLeft } = wrapper.getBoundingClientRect();
-        const { width: offsetWidth, height: offsetHeight } = containerRef.current!.getBoundingClientRect();
+        const { width: offsetWidth, height: offsetHeight } = containerRef.current.getBoundingClientRect();
 
-        let top = y - offsetTop + height / 2;
-        let left = x - offsetLeft + width / 2;
+        let top = y - offsetTop + height / 2 - offsetHeight / 2;
+        let left = x - offsetLeft + width / 2 - offsetWidth / 2;
         for (let p of prop.placement) {
             switch (p) {
                 case "top":
-                    top -= !prop.outside ? height / 2 : height / 2 + offsetHeight;
+                    top -= height / 2 + (!prop.outside ?  - offsetHeight / 2 : offsetHeight / 2);
                     break;
                 case "left":
-                    left -= !prop.outside ? width / 2 : width / 2 + offsetWidth;
+                    left -= width / 2 + (!prop.outside ? - offsetWidth / 2 : offsetWidth / 2);
                     break;
                 case "bottom":
-                    top += !prop.outside ? (height / 2 - offsetHeight) : height / 2;
+                    top += height / 2 + (!prop.outside ?  - offsetHeight / 2 : offsetHeight / 2);
                     break;
                 case "right":
-                    left += !prop.outside ? (width / 2 - offsetWidth) : width / 2;
+                    left += width / 2 + (!prop.outside ? - offsetWidth / 2 : offsetWidth / 2);
             }
         }
-
         setPos({ top: top, left: left });
-    }, [editor, prop.outside, prop.placement, wrapper]);
+        if(prop.autoWidth){
+            containerRef.current.style.width = width + "px";
+        }
+        
+        if(prop.autoHeight){
+            containerRef.current.style.height = height + "px";
+        }
+
+    }, [editor, prop.autoHeight, prop.autoWidth, prop.outside, prop.placement, wrapper]);
 
     useImperativeHandle(ref, () => ({
-        place: place,
+        place: (key) => { 
+            setKey(key); 
+            place(key); 
+        },
         leave: () => setPos(DEFAULT)
     }), [place]);
 
     useEffect(() => {
         let resizer = new ResizeObserver(() => {
-            if (keyRef.current) {
-                place(keyRef.current);
-            }
+            place(key);
         });
 
         resizer.observe(document.body);
@@ -76,13 +85,13 @@ const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>)
             resizer.unobserve(document.body);
             resizer.disconnect();
         }
-    }, [place]);
+    }, [key, place]);
 
     useEffect(() => {
         function handleEnter(key: string) {
             prop.onEnterNode?.(key);
             place(key);
-            keyRef.current = key;
+            setKey(key);
         }
 
         function handleLeave(e: PointerEvent, key: string) {
@@ -91,7 +100,7 @@ const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>)
             if (clientX >= x && clientX <= x + width && clientY >= y && clientY <= y + height) return;
             setPos(DEFAULT);
             prop.onLeaveNode?.(key);
-            keyRef.current = null;
+            setKey("");
         }
 
         let removeHover = prop.trigger === "hover" ? editor.registerMutationListener(prop.nodeType, mutations => {
@@ -109,10 +118,10 @@ const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>)
                     element?.removeEventListener("pointerenter", enter);
                     element?.removeEventListener("pointerleave", leave);
                     setPos(DEFAULT);
-                    keyRef.current = null;
+                    setKey("");
                 }
             })
-        }) : undefined;
+        }) : null;
 
         let removeSelect = prop.trigger === "selected" ? editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
             editor.update(() => prop.onSeletionChange?.($getSelection()));
@@ -121,8 +130,9 @@ const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>)
 
         let removeDestroy = editor.registerMutationListener(prop.nodeType, mutations => {
             Array.from(mutations).forEach(([, tag]) => {
-                if(tag === "destroyed"){
+                if (tag === "destroyed") {
                     setPos(DEFAULT);
+                    setKey("");
                 }
             })
         })

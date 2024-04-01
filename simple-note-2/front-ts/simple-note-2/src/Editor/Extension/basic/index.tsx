@@ -15,6 +15,7 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import styles from "./index.module.css";
 import SavePlugin from "./save";
 import EditorInstancePlugin from "./instance";
+import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
 
 const BasicExtension: Extension = {
     plugins: [
@@ -26,9 +27,10 @@ const BasicExtension: Extension = {
         <LinkPlugin />,
         <ListMaxLevelPlugin maxLevel={5} />,
         <ListPlugin />,
-        <FloatingLinkPlugin/>,
-        <SavePlugin/>,
-        <EditorInstancePlugin/>,
+        <FloatingLinkPlugin />,
+        <SavePlugin />,
+        <EditorInstancePlugin />,
+        <CheckListPlugin />,
     ],
 
     nodes: [
@@ -42,7 +44,7 @@ const BasicExtension: Extension = {
     ],
 
     styleSheet: styles,
-    
+
     theme: {
         ltr: "simple-note-2-ltr",
         rtl: "simple-note-2-ltr",
@@ -76,11 +78,14 @@ const BasicExtension: Extension = {
                 "simple-note-2-ordered-nested-list-5",
             ],
             ul: "simple-note-2-unordered-list",
+            checklist: "simple-note-2-checked-list",
+            listitemChecked: "simple-note-2-checked-list-checked",
+            listitemUnchecked: "simple-note-2-checked-list-unchecked",
         },
         embedBlock: {
             focus: "simple-note-2-embedBlock-focus",
             base: "simple-note-2-embedBlock"
-        }
+        },
     }
 }
 

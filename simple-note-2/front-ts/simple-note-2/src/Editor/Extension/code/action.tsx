@@ -8,6 +8,7 @@ import { GiConfirmed } from "react-icons/gi";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { CODE_LANGUAGE_FRIENDLY_NAME_MAP } from "@lexical/code";
 import Corner from "../UI/corner";
+import styles from "./action.module.css";
 
 function getAllLanguages() {
     const options = [];
@@ -24,9 +25,10 @@ const CodeActionPlugin: Plugin = () => {
     const [key, setKey] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
     const [lang, setLang] = useState(LANGUAGES[0][0]);
+    const [show, setShow] = useState(false);
 
     const handleEnter = useCallback((key: string) => {
-
+        setShow(true);
         editor.update(() => {
             let node = $getNodeByKey(key!) as CodeNode;
             let lang = node.getLanguage();
@@ -37,6 +39,7 @@ const CodeActionPlugin: Plugin = () => {
     }, [editor]);
 
     const handleLeave = useCallback(() => {
+        setShow(false);
         setCopied(false);
         setKey(null);
     }, []);
@@ -59,7 +62,7 @@ const CodeActionPlugin: Plugin = () => {
     }, [editor, key]);
 
     return <Corner nodeType={CodeNode} placement={["top", "right"]} trigger="hover"
-        onEnterNode={handleEnter} onLeaveNode={handleLeave}>
+        onEnterNode={handleEnter} onLeaveNode={handleLeave} className={styles[show ? "show" : "notShow"]}>
         <Select onSelect={handleSelect} style={{ minWidth: 100 }}
             size="small" value={lang}
             options={LANGUAGES.map(language => ({

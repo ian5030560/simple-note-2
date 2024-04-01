@@ -1,4 +1,4 @@
-import { $createParagraphNode, $getNodeByKey, $getSelection, $isRangeSelection, ElementNode, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ARROW_UP_COMMAND, LexicalCommand, LexicalNode, createCommand } from "lexical";
+import { $createParagraphNode, $getSelection, $isRangeSelection, ElementNode, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ARROW_UP_COMMAND, LexicalCommand, LexicalNode, createCommand } from "lexical";
 import { Plugin } from "..";
 import Modal, { ModalRef } from "../UI/modal";
 import { useEffect, useRef } from "react";
@@ -12,12 +12,13 @@ import ColumnAction from "./action";
 
 export const INSERT_COLUMNS: LexicalCommand<number> = createCommand();
 export const OPEN_COLUMN_MODAL: LexicalCommand<void> = createCommand();
+export const APPEND_COLUMNS: LexicalCommand<number> = createCommand();
 const ColumnLayoutModal = () => {
     const ref = useRef<ModalRef>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const [editor] = useLexicalComposerContext();
 
-    return <Modal command={OPEN_COLUMN_MODAL} ref={ref} title="插入欄位" width={300} 
+    return <Modal command={OPEN_COLUMN_MODAL} ref={ref} title="插入欄位" width={300}
         onOk={() => {
             let value = inputRef.current?.value;
             if (value) {
@@ -25,14 +26,14 @@ const ColumnLayoutModal = () => {
             }
             ref.current?.close();
         }}>
-        <InputNumber min={1} max={10} size="large" ref={inputRef} style={{width: "100%"}}/>
+        <InputNumber min={1} max={10} size="large" ref={inputRef} style={{ width: "100%" }} defaultValue={3} />
     </Modal>;
 }
 
 const ColumnLayoutPlugin: Plugin = () => {
 
     const [editor] = useLexicalComposerContext();
-    const {token} = theme.useToken();
+    const { token } = theme.useToken();
 
     const onEscape = (before: boolean) => {
         const selection = $getSelection();
@@ -73,6 +74,7 @@ const ColumnLayoutPlugin: Plugin = () => {
 
         return false;
     };
+
 
     useEffect(() => {
 
@@ -115,29 +117,38 @@ const ColumnLayoutPlugin: Plugin = () => {
             }),
             editor.registerMutationListener(ColumnItemNode, (mutations) => {
                 Array.from(mutations).forEach(mutation => {
-                    if(mutation[1] === "updated" || mutation[1] === "created"){
+                    if (mutation[1] === "updated" || mutation[1] === "created") {
                         editor.getElementByKey(mutation[0])!.style.border = `1px solid ${token.colorText}`
                     }
                 })
             }),
-            editor.registerMutationListener(ColumnContainerNode, (mutations) => {
-                Array.from(mutations).forEach(mutation =>{
-                    if(mutation[1] === "updated"){
-                        editor.update(() => {
-                            let node = $getNodeByKey(mutation[0]) as ColumnContainerNode;
-                            if(node.getChildrenSize() === 0){
-                                node.remove();
+            editor.registerCommand(APPEND_COLUMNS, (payload) => {
+                editor.update(() => {
+                    const selection = $getSelection();
+                    if ($isRangeSelection(selection)) {
+                        let node: LexicalNode | null = selection.anchor.getNode();
+                        if (!$isColumnItemNode(node)) {
+                            node = $findMatchingParent(node, $isColumnItemNode);
+                        }
+                        if ($isColumnItemNode(node)) {
+                            let pnode = $findMatchingParent(node, $isColumnContainerNode);
+                            if($isColumnContainerNode(pnode)){
+                                pnode.setNumber(pnode.getChildrenSize() + payload);
+                                for (let i = 0; i < payload; i++) {
+                                    node.insertAfter($createColumnItemNode().append($createParagraphNode()));
+                                }
                             }
-                        })
+                        }
                     }
                 })
-            })
+                return false;
+            }, 4),
         )
     }, [editor, token.colorText]);
 
     return <>
         <ColumnLayoutModal />
-        <ColumnAction/>
+        <ColumnAction />
     </>;
 }
 

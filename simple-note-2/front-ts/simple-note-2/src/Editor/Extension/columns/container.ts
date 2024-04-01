@@ -59,7 +59,7 @@ export class ColumnContainerNode extends ElementNode {
 
     exportDOM(): DOMExportOutput {
         const element = document.createElement('div');
-        element.style.gridTemplateColumns = `repeat(${this.__number} 1fr)`;
+        element.style.gridTemplateColumns = `repeat(${this.__number}, 1fr)`;
         element.setAttribute('data-column-container', 'true');
         element.setAttribute("data-column-number", this.__number + "");
         return { element };
@@ -67,9 +67,8 @@ export class ColumnContainerNode extends ElementNode {
 
     updateDOM(prevNode: ColumnContainerNode, dom: HTMLElement): boolean {
         if (prevNode.__number !== this.__number) {
-            console.log(2);
             dom.setAttribute("data-column-number", this.__number + "");
-            dom.style.gridTemplateColumns = `repeat(${this.__number} 1fr)`;
+            dom.style.gridTemplateColumns = `repeat(${this.__number}, 1fr)`;
         }
         return false;
     }
@@ -114,7 +113,6 @@ export class ColumnContainerNode extends ElementNode {
     }
 
     setNumber(value: number) {
-        console.log(1);
         this.getWritable().__number = value;
     }
 }
