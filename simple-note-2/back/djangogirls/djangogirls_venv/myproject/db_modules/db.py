@@ -1,5 +1,4 @@
 import sqlite3
-import re
 import base64
 from os import mkdir
 
@@ -217,7 +216,7 @@ class DB:
     ):
         try:
             # 將圖片數據進行 Base64 編碼
-            content_blob = base64.b64encode(content_blob).decode('utf-8')
+            content_blob = base64.b64encode(str(content_blob)).decode('utf-8')
             
             self.cursor.execute(
                 "SELECT content_blob FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_name = ?;",
