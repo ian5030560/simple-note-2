@@ -1,0 +1,8 @@
+:global(.simple-note-2-column-container){
+    display: grid;
+    gap: 5px;
+}
+
+:global(.simple-note-2-column-item){
+    min-height: 50px;
+}

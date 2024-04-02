@@ -6,7 +6,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
 import { $isLinkNode, LinkNode } from "@lexical/link";
-import { theme, Button } from "antd";
+import { theme, Button, Input, InputRef } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -18,83 +18,91 @@ const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|
 function validateUrl(url: string): boolean {
     return url === 'https://' || URL_REGEX.test(url);
 }
-
 const LinkPlugin: Plugin = () => <LexicalLinkPlugin validateUrl={validateUrl} />
 
 export default LinkPlugin;
 
 const PADDING = 8;
-interface FloatingProp extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>{
-    $backgroundColor: string;
-    style: React.CSSProperties;
-}
-const Floating = ({$backgroundColor, style, ...prop}: FloatingProp) => <div className={styles.floatingLink} {...prop} style={{backgroundColor: $backgroundColor, ...style}}/>;
 
-interface FloatingLinkProp {
+interface LinkProp {
     url?: string,
     top: number,
     left: number,
-    inputRef: React.Ref<HTMLInputElement>,
+    inputRef: React.Ref<InputRef>,
     editable: boolean;
     onEditClick: (e: React.MouseEvent) => void;
     onDiscardClick: (e: React.MouseEvent) => void;
 }
-const Link: React.FC<FloatingLinkProp> = (prop) => {
+const Link = React.forwardRef((prop: LinkProp, ref: React.Ref<HTMLDivElement>) => {
     const { token } = theme.useToken();
 
-    return <Floating
-        style={{
+    return <div
+        className={styles.floatingLink}
+        style={{ 
+            backgroundColor: token.colorBgBase,
             transform: `translate(${prop.left}px, ${prop.top}px)`
         }}
-        $backgroundColor={token.colorBgBase}
+        ref={ref}
     >
-
         <a href={prop.url} style={{ display: !prop.editable ? undefined : "none" }}>{prop.url}</a>
-        <input type="url" ref={prop.inputRef} placeholder="https://..." style={{ display: prop.editable ? undefined : "none" }} />
-
-        <span style={{ width: 5 }} />
+        <Input type="url" ref={prop.inputRef} placeholder="http://..." style={{ display: prop.editable ? undefined : "none" }} />
         <Button icon={<CiEdit size={20} />} onClick={(e) => prop.onEditClick(e)} />
         <Button icon={<FaTrash size={20} />} onClick={(e) => prop.onDiscardClick(e)} />
-    </Floating>
-}
+    </div>
+})
 
 const DEFAULT = { x: -10000, y: -10000 };
 export const FloatingLinkPlugin: Plugin = () => {
 
     const [editor] = useLexicalComposerContext();
-    const [url, setUrl] = useState<string | undefined>(undefined);
+    const [url, setUrl] = useState<string>("");
     const [pos, setPos] = useState(DEFAULT);
     const [editable, setEditable] = useState(false);
-    const inputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<InputRef>(null);
     const wrapper = useWrapper();
+    const fRef = useRef<HTMLDivElement>(null);
 
     const showLink = useCallback(() => {
         editor.update(() => {
             const selection = $getSelection();
             if ($isRangeSelection(selection)) {
                 let node = selection.anchor.getNode();
-                let parent = $findMatchingParent(node, (n) => $isLinkNode(n)) as LinkNode | null;
-            
-                let url: string | undefined = undefined;
-                let position: { x: number, y: number } = DEFAULT;
+                let parent = $findMatchingParent(node, $isLinkNode) as LinkNode | null;
+
+                let url = "";
+                let position = DEFAULT;
                 if (parent) {
                     url = parent.getURL();
-                    let element = editor.getElementByKey(parent.getKey())!;
-                    let { x, y, height } = element.getBoundingClientRect();
-                    let {top, left} = wrapper!.getBoundingClientRect();
+                    let element = editor.getElementByKey(parent.getKey());
 
-                    position = { x: x - left, y: y - top - height - PADDING * 3 };
-                    inputRef.current!.value = url;
+                    if(!element || !wrapper || !fRef.current) return;
+
+                    let { x, y } = element.getBoundingClientRect();
+                    let { top, left } = wrapper.getBoundingClientRect();
+                    let {height} = fRef.current.getBoundingClientRect();
+
+                    position = { x: x - left, y: y - top - height };
+                    inputRef.current!.input!.value = url;
                 }
                 setEditable(false);
                 setUrl(url);
                 setPos(position);
-                
             }
         });
 
         return false;
     }, [editor, wrapper]);
+
+    useEffect(() => {
+        let resizer = new ResizeObserver(() => {
+            showLink();
+        });
+        resizer.observe(document.body);
+        return () => {
+            resizer.unobserve(document.body);
+            resizer.disconnect();
+        }
+    }, [showLink]);
 
     useEffect(() => {
         return mergeRegister(
@@ -105,7 +113,7 @@ export const FloatingLinkPlugin: Plugin = () => {
 
     const handleEditClick = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
-        if (editable) editor.dispatchCommand(TOGGLE_LINK_COMMAND, inputRef.current!.value);
+        if (editable) editor.dispatchCommand(TOGGLE_LINK_COMMAND, inputRef.current!.input!.value);
         setEditable(prev => !prev);
     }, [editable, editor]);
 
@@ -121,6 +129,7 @@ export const FloatingLinkPlugin: Plugin = () => {
             onEditClick={handleEditClick}
             onDiscardClick={handleDiscardClick}
             inputRef={inputRef}
+            ref={fRef}
         />, wrapper
     ) : null;
 }

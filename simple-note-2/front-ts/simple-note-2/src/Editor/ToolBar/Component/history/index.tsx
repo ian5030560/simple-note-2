@@ -4,7 +4,7 @@ import { RedoOutlined, UndoOutlined } from "@ant-design/icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {UNDO_COMMAND, REDO_COMMAND} from "lexical";
 
-const Track: React.FC = () => {
+const History: React.FC = () => {
     const [editor] = useLexicalComposerContext();
     
     return <Flex>
@@ -13,4 +13,4 @@ const Track: React.FC = () => {
     </Flex>
 }
 
-export default Track;
+export default History;

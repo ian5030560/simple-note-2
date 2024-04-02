@@ -1,4 +1,4 @@
-import { EditorThemeClasses, Klass, LexicalNode } from "lexical";
+import { EditorThemeClasses, Klass, LexicalNode, LexicalNodeReplacement } from "lexical";
 import Extensions, { CSSModule, Extension } from "./Extension"
 
 type LoaderType = Required<Extension>;
@@ -7,7 +7,7 @@ function load(): LoaderType {
 
     let plugins: Exclude<React.ReactNode, undefined>[] = [];
     let theme: EditorThemeClasses = {};
-    let nodes: Klass<LexicalNode>[] = [];
+    let nodes: (Klass<LexicalNode> | LexicalNodeReplacement)[] = [];
     let styleSheet: CSSModule = {};
 
     for(let extension of Extensions){

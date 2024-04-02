@@ -6,7 +6,6 @@ import { createPortal } from "react-dom";
 import DraggableElement, { AddItem, DndProvider, DropLine, useWrapper } from "./component";
 import { useDrop, useDragOver, useDragStart } from "./dnd";
 import { moveElement, resetElement, resetLine, useDndDispatch, setId } from "./redux";
-import { theme } from "antd";
 import { getBlockFromPoint } from "./util";
 import { useScroller } from "../Extension/basic/richtext/scroller";
 
@@ -18,7 +17,7 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
     const [editor] = useLexicalComposerContext();
     const wrapper = useWrapper();
     const scroller = useScroller();
-    const { token } = theme.useToken();
+
     const handleDragStart = useDragStart();
     const handleDragOver = useDragOver();
     const handleDrop = useDrop();

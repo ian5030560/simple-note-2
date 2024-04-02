@@ -19,8 +19,8 @@ export const useDragStart: DndHanlder<"react"> = () => {
         if(eventFiles(e.nativeEvent)[0]) return false;
 
         if (!e.dataTransfer || !id) return false;
-        const element = editor.getElementByKey(id);
-        e.dataTransfer.setDragImage(element!, 0, 0);
+        const element = editor.getElementByKey(id)!;
+        e.dataTransfer.setDragImage(element, 0, 0);
         
     }, [editor, id]);
 

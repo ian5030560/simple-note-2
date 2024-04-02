@@ -10,6 +10,8 @@ import CodeExtension from "./code";
 import ImageToTextExtension from "./imageToText";
 import VideoExtension from "./video";
 import DocumentExtension from "./document";
+import ColumnLayoutExtension from "./columns";
+import { LexicalNodeReplacement } from "lexical";
 
 export type Plugin<T = {}> = React.FC<T>
 
@@ -19,7 +21,7 @@ export interface CSSModule{
 
 export interface Extension {
     plugins: Exclude<React.ReactNode, undefined>[],
-    nodes?: Klass<LexicalNode>[],
+    nodes?: (Klass<LexicalNode> | LexicalNodeReplacement)[],
     theme?: EditorThemeClasses,
     styleSheet?: CSSModule
 }
@@ -34,7 +36,8 @@ const Extensions: Extension[] = [
     ImageToTextExtension,
     VideoExtension,
     DocumentExtension,
-    AIExtension,
+    // AIExtension,
+    ColumnLayoutExtension,
 ]
 
 export default Extensions;

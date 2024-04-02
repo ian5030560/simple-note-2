@@ -54,7 +54,7 @@ export default class DocNode extends DecoratorNode<React.JSX.Element>{
 
     decorate(): JSX.Element {
         return <Load width={"inherit"} height={"inherit"}>
-                <Document src={this.__src} name={this.__name}/>
+                <Document src={this.__src} name={this.__name} nodeKey={this.__key}/>
             </Load>
     }
 

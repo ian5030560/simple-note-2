@@ -1,5 +1,5 @@
 import { Extension } from "..";
-import DocNode from "./doc/node";
+import DocNode from "./document/node";
 import PDFNode from "./pdf/node";
 import DocumentPlugin from "./plugin";
 import styles from "./index.module.css";
