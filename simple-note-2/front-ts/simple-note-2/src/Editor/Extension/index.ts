@@ -36,7 +36,7 @@ const Extensions: Extension[] = [
     ImageToTextExtension,
     VideoExtension,
     DocumentExtension,
-    // AIExtension,
+    AIExtension,
     ColumnLayoutExtension,
 ]
 
