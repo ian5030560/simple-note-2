@@ -10,8 +10,8 @@ RUN pip install --upgrade pip
 COPY ./requirements.txt /djangogirls/djangogirls_venv/myproject/requirements.txt
 RUN pip install -r requirements.txt
 
-COPY entrypoint.sh /djangogirls/djangogirls_venv/entrypoint.sh
+# COPY entrypoint.sh /djangogirls/djangogirls_venv/entrypoint.sh
 
 COPY . /djangogirls/djangogirls_venv/myproject
 
-ENTRYPOINT ["/djangogirls/djangogirls_venv/entrypoint.sh"]
+# ENTRYPOINT ["/djangogirls/djangogirls_venv/entrypoint.sh"]
