@@ -1,5 +1,4 @@
 import sqlite3
-import base64
 from os import mkdir
 
 BACK_DB = "db_modules\\pydb.db"
@@ -8,7 +7,7 @@ TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myp
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(BACK_DB)
+        self.conn = sqlite3.connect(TEST_DB)
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
@@ -215,9 +214,6 @@ class DB:
         self, username, file_name, content_blob
     ):
         try:
-            # 將圖片數據進行 Base64 編碼
-            content_blob = base64.b64encode(str(content_blob)).decode('utf-8')
-            
             self.cursor.execute(
                 "SELECT content_blob FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_name = ?;",
                 (
@@ -422,6 +418,61 @@ class DB:
         except sqlite3.Error as e:
             return e
 
+    #給username插入themeData的資料
+    def username_insert_themeData(
+        self,
+        username,
+        theme_name,
+        color_light_primary,
+        color_light_base_bg,
+        color_dark_primary,
+        color_dark_base_bg,
+    ):
+        try:
+            self.cursor.execute(
+                "SELECT id FROM User_Personal_Info WHERE username = ?",
+                (username,),
+            )
+            # 獲取查詢結果的第一行
+            row = self.cursor.fetchone()
+            if row is None:
+                return "username not exist"
+            else:
+                user_id = row[0]
+                # 檢查是否存在具有相同條件的資料
+                self.cursor.execute(
+                    "SELECT * FROM User_Personal_Theme_Data WHERE user_id = ? AND theme_name = ? AND color_light_primary = ? AND color_light_base_bg = ? AND color_dark_primary = ? AND color_dark_base_bg = ?",
+                    (
+                        user_id,
+                        theme_name,
+                        color_light_primary,
+                        color_light_base_bg,
+                        color_dark_primary,
+                        color_dark_base_bg,
+                    ),
+                )
+                existing_row = self.cursor.fetchone()
+                if existing_row:
+                    # 如果存在相同條件的資料，則不執行插入操作
+                    return "Data already exists"
+                else:
+                    # 執行插入操作
+                    self.cursor.execute(
+                        "INSERT INTO User_Personal_Theme_Data (user_id, theme_name, color_light_primary, color_light_base_bg, color_dark_primary, color_dark_base_bg) VALUES (?, ?, ?, ?, ?, ?)",
+                        (
+                            user_id,
+                            theme_name,
+                            color_light_primary,
+                            color_light_base_bg,
+                            color_dark_primary,
+                            color_dark_base_bg,
+                        ),
+                    )
+                    self.conn.commit()
+                    return True
+        except sqlite3.Error as e:
+            return e
+
     def close_connection(self):
         # 關閉游標和資料庫連接
         self.cursor.close()
@@ -429,4 +480,4 @@ class DB:
 
 
 my_db = DB()
-print(my_db.insert_into_User_Note_Data_content_blob("user01", "1","blobtest"))
+print(my_db.username_insert_themeData("user099", "black", 1, 2, 3, 5))
