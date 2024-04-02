@@ -19,9 +19,8 @@ from django.middleware.csrf import get_token
 
 class GemmaView(APIView):
     """
-    取得個人資訊: get_info\n
     前端傳:\n
-        帳號名(username, type: str).\n
+        指令.\n
     後端回傳:\n
         Response HTTP_200_OK if success.\n
 
