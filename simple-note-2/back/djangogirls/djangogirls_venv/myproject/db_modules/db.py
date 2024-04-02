@@ -1,13 +1,12 @@
 import sqlite3
-from os import mkdir
 
 BACK_DB = "db_modules\\pydb.db"
 TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myproject\db_modules\pydb.db"
-
+SERVER_DB = "C:\\Users\\Administrator\\Documents\\GitHub\\simple-note-2\\simple-note-2\\back\\djangogirls\\djangogirls_venv\\myproject\\db_modules\\pydb.db"
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(BACK_DB)
+        self.conn = sqlite3.connect(SERVER_DB)
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
@@ -479,5 +478,5 @@ class DB:
         self.conn.close()
 
 
-my_db = DB()
+# my_db = DB()
 # print(my_db.username_insert_themeData("user099", "black", 1, 2, 3, 5))

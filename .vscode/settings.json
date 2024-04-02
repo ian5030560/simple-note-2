@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./simple-note-2/back/djangogirls/djangogirls_venv/myproject"
+    ]
+}
