@@ -10,7 +10,7 @@ import { MarkNode } from "@lexical/mark";
 import LinkPlugin, { FloatingLinkPlugin } from "./link";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
-import ListMaxLevelPlugin from "./listMaxLevel";
+import ListMaxLevelPlugin from "./list/listMaxLevel";
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import styles from "./index.module.css";
 import SavePlugin from "./save";
@@ -39,8 +39,8 @@ const BasicExtension: Extension = {
         QuoteNode,
         LinkNode,
         AutoLinkNode,
-        ListItemNode,
         ListNode,
+        ListItemNode,
     ],
 
     styleSheet: styles,

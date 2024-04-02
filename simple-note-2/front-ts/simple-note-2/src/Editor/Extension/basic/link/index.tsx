@@ -102,7 +102,7 @@ export const FloatingLinkPlugin: Plugin = () => {
             resizer.unobserve(document.body);
             resizer.disconnect();
         }
-    }, []);
+    }, [showLink]);
 
     useEffect(() => {
         return mergeRegister(
