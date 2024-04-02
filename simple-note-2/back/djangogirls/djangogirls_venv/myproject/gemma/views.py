@@ -1,4 +1,3 @@
-# views.py
 import sys
 import json
 
@@ -13,15 +12,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 
-"""@csrf_exempt"""
-"""@csrf_protect"""
-
-
 class GemmaView(APIView):
     """
-    取得個人資訊: get_info\n
     前端傳:\n
-        帳號名(username, type: str).\n
+        指令.\n
     後端回傳:\n
         Response HTTP_200_OK if success.\n
 
@@ -33,14 +27,13 @@ class GemmaView(APIView):
     serializer_class = GemmaSerializer
 
     def get(self, request, format=None):
-        output = [{"gemma": output.gemma} for output in Gemma.objects.all()]
-        return Response("get")
+        output = [{"gemma": obj.gemma} for obj in Gemma.objects.all()]
+        return Response(output)
 
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            text = data.get("text")  # 帳號名稱
-            db = DB()
+            text = data.get("text")  # 文字內容
 
             import subprocess
 
@@ -82,13 +75,11 @@ class GemmaView(APIView):
 
         # Handle JSON decoding error
         except json.JSONDecodeError:
-            username = None
+            text = None
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    def csrf(self, request):
+        return JsonResponse({"csrfToken": get_token(request)})
 
-def csrf(self, request):
-    return JsonResponse({"csrfToken": get_token(request)})
-
-
-def ping(self, request):
-    return JsonResponse({"result": "OK"})
+    def ping(self, request):
+        return JsonResponse({"result": "OK"})
