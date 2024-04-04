@@ -1,8 +1,7 @@
-import { Flex, Button, FlexProps, Dropdown, MenuProps, Select } from "antd";
+import { Flex, Button, Dropdown, MenuProps } from "antd";
 import React, { useState, useEffect } from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
-import { dndStore, useDndSelector } from "./redux";
-import { Provider } from "react-redux";
+import { useDndState } from "./redux";
 import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import styles from "./component.module.css";
@@ -44,22 +43,19 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
     </Dropdown>
 }
 
-export interface DraggableElementProp extends Omit<FlexProps, "children" | "draggable"> {
+export interface DraggableElementProp {
     addList: AddItem[],
-    style?: Omit<React.CSSProperties, "position" | "top" | "left">,
 }
-const DraggableElement = ({ addList, style, ...flexProps }: DraggableElementProp) => {
-    const element = useDndSelector(state => state.dnd.element);
+const DraggableElement = React.forwardRef((
+    { addList }: DraggableElementProp, ref: React.Ref<HTMLElement>
+) => {
+
+    const { element } = useDndState();
 
     return <Flex
-        style={{
-            top: element.top - 3,
-            left: element.left,
-            ...style
-        }}
-        className={styles.draggable}
-        draggable={true}
-        {...flexProps}>
+        ref={ref} className={styles.draggable} draggable={true}
+        style={{ transform: `translate(${element.x}px, ${element.y}px)` }}
+    >
         <AddMenu searchList={addList}>
             <Button
                 contentEditable={false}
@@ -76,7 +72,7 @@ const DraggableElement = ({ addList, style, ...flexProps }: DraggableElementProp
             icon={<HolderOutlined />}
         />
     </Flex>
-}
+})
 
 export default DraggableElement;
 
@@ -93,19 +89,11 @@ export const useWrapper = () => {
     return wrapper;
 }
 
-export interface DropLineProp extends Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "id" | "children"> {
-    style?: Omit<React.CSSProperties, "top" | "left" | "position">
-}
-export const DropLine: React.FC<DropLineProp> = ({ style, ...prop }) => {
-    const line = useDndSelector(state => state.dnd.line);
-
+export const DropLine = () => {
+    const { line } = useDndState();
     return <div className={styles.dropLine}
         style={{
-            top: line.top,
-            left: line.left,
-            position: "absolute",
-            ...style
-        }} {...prop} />
+            width: line.width, height: line.height,
+            transform: `translate(${line.x}px, ${line.y}px)`
+        }} />
 }
-
-export const DndProvider = ({ children }: { children: React.ReactNode }) => <Provider store={dndStore}>{children}</Provider>;

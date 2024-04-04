@@ -1,0 +1,13 @@
+.commentLane, .commentLaneHide{
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    transition: transform 0.3s;
+    will-change: transform;
+    height: 70%;
+    width: 25%
+}
+
+.commentLaneHide{
+    transform: translateX(100%);
+}

@@ -12,6 +12,7 @@ import VideoExtension from "./video";
 import DocumentExtension from "./document";
 import ColumnLayoutExtension from "./columns";
 import { LexicalNodeReplacement } from "lexical";
+import CommentExtension from "./comment";
 
 export type Plugin<T = {}> = React.FC<T>
 
@@ -38,6 +39,7 @@ const Extensions: Extension[] = [
     DocumentExtension,
     AIExtension,
     ColumnLayoutExtension,
+    CommentExtension,
 ]
 
 export default Extensions;
