@@ -1,0 +1,33 @@
+.commentLane, .commentLaneHide{
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    transition: transform 0.3s;
+    will-change: transform;
+    height: 70%;
+    width: 25%;
+    overflow-y: auto;
+}
+
+.commentLaneHide{
+    transform: translateX(100%);
+}
+
+.commentInput{
+    outline: none;
+    min-height: 40px;
+    border-radius: 3px;
+}
+
+.commentInput:focus{
+    box-shadow: 0 0 0 3px skyblue;
+}
+.commentInputContainer{
+    position: relative;
+}
+
+.commentButton{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
