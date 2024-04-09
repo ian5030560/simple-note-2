@@ -1,14 +1,13 @@
 import sqlite3
+from PIL import Image
+from os import mkdir
 
 BACK_DB = "db_modules\\pydb.db"
 TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myproject\db_modules\pydb.db"
-
-
 class DB:
     def __init__(self):
         self.conn = sqlite3.connect(BACK_DB)
         self.cursor = self.conn.cursor()
-
     def check_signin(self, username, user_password):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱和密碼
         self.cursor.execute(
@@ -19,7 +18,6 @@ class DB:
         row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
-
     # check_register
     def check_register_username(self, username):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱
@@ -30,10 +28,8 @@ class DB:
         row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
-
     def check_register_user_email(self, user_email):
         # 使用 SQL 查詢檢查是否有相同的使用者電子郵件
-
         self.cursor.execute(
             "SELECT * FROM User_Personal_Info WHERE user_email = ?;", (user_email,)
         )
@@ -41,7 +37,6 @@ class DB:
         row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
-
     def insert_into_User_Register_Data(self, username, user_email, user_password):
         try:
             # 新增資料到 User_Personal_Info 表格
@@ -52,10 +47,8 @@ class DB:
             )
             self.conn.commit()
             return True
-
         except sqlite3.Error as e:
             return False
-
     def check_signin_status(self, username):
         self.cursor.execute(
             "SELECT login_status FROM User_Personal_Info WHERE username = ?;",
@@ -67,11 +60,9 @@ class DB:
         if row:
             login_status = row[0]
             return login_status
-
         else:
             # 如果沒有結果，返回一個None
             return None
-
     def useremail_to_userpassword(self, user_email):
         self.cursor.execute(
             "SELECT user_password FROM User_Personal_Info WHERE user_email = ?;",
@@ -83,11 +74,9 @@ class DB:
         if row:
             user_password = row[0]
             return user_password
-
         else:
             # 如果沒有結果，返回一個None
             return None
-
     # 給username和note_name查content_blob
     def username_note_name_return_content_blob(self, username, note_name):
         self.cursor.execute(
@@ -103,8 +92,6 @@ class DB:
         else:
             # 如果沒有結果，返回一個 None
             return None
-
-
     # 給username和note_name查content_mimetype
     def username_note_name_return_content_mimetype(self, username, note_name):
         self.cursor.execute(
@@ -120,7 +107,6 @@ class DB:
         else:
             # 如果沒有結果，返回一個 None
             return None
-
     def change_login_status(self, username):
         self.cursor.execute(
             "SELECT login_status FROM User_Personal_Info WHERE username = ?;",
@@ -130,10 +116,8 @@ class DB:
         row = self.cursor.fetchone()
         if row:
             current_status = row[0]
-
             # row 0 改為 1，1 改為 0
             new_status = 1 if current_status == 0 else 0
-
             # UPDATE更新 login_status
             self.cursor.execute(
                 "UPDATE User_Personal_Info SET login_status = ? WHERE username = ?;",
@@ -144,7 +128,6 @@ class DB:
             return True
         else:
             return f"No result found for {username}"
-
     # 透過username和title_id插入內容
     def filename_insert_content(self, username, title_id, content):
         try:
@@ -158,7 +141,6 @@ class DB:
             # 獲取查詢結果的第一行
             row = self.cursor.fetchone()
             print(row)
-
             if row is None:
                 # 如果資料不存在，則使用 INSERT 插入新資料
                 self.cursor.execute(
@@ -175,7 +157,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-
     # 透過username和title_id回傳內容
     def filename_load_content(self, username, title_id):
         try:
@@ -189,10 +170,8 @@ class DB:
             # 獲取查詢結果的第一行
             row = self.cursor.fetchone()
             return row
-
         except sqlite3.Error as e:
             return "Error"
-
     # 傳user_id和note_name到User_Note_Data裡
     def insert_user_id_note_name_User_Note_Data(self, username, note_name):
         try:
@@ -203,10 +182,8 @@ class DB:
             )
             self.conn.commit()
             return True
-
         except sqlite3.Error as e:
             return False
-
     # 給username和note_name來插入或更新content_blob
     def insert_into_User_Note_Data_content_blob(
         self, username, note_name, content_blob
@@ -222,7 +199,6 @@ class DB:
             )
             # 獲取查詢結果的第一行
             row = self.cursor.fetchone()
-
             if row is None:
                 # 如果資料不存在，則使用 INSERT 插入新資料
                 self.cursor.execute(
@@ -239,7 +215,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-
     # 給username和note_name來插入或更新content_mimetype
     def insert_into_User_Note_Data_content_mimetype(
         self, username, note_name, content_mimetype
@@ -254,7 +229,6 @@ class DB:
             )
             # 獲取查詢結果的第一行
             row = self.cursor.fetchone()
-
             if row is None:
                 # 如果資料不存在，則使用 INSERT 插入新資料
                 self.cursor.execute(
@@ -271,7 +245,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-
     # 給username和note_name來刪除整行
     def delete_User_Note_Data_username_to_note_name(self, username, note_name):
         try:
@@ -282,10 +255,8 @@ class DB:
             )
             self.conn.commit()
             return True
-
         except sqlite3.Error as e:
             return e
-
     # 用username得到User_Personal_Info
     def get_User_Personal_Info_by_username(
         self,
@@ -300,10 +271,8 @@ class DB:
             row = self.cursor.fetchone()
             self.conn.commit()
             return row
-
         except sqlite3.Error as e:
             return e
-
     # 插入User_Personal_Theme_Data的theme by username
     def insert_User_theme_by_username(
         self,
@@ -319,10 +288,8 @@ class DB:
                 ),
             )
             return True
-
         except sqlite3.Error as e:
             return e
-
     # 給username插入或更新profile_photo
     def update_profile_photo_by_username(self, username, profile_photo):
         try:
@@ -341,7 +308,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-
     # 給username插入或更新theme
     def update_theme_by_username(self, username, theme):
         try:
@@ -360,7 +326,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-
     def update_user_email_by_username(self, username, user_email):
         try:
             # 直接執行 UPDATE 語句
@@ -378,7 +343,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return False
-
     # 給username插入或更新user_password
     def update_user_password_by_username(self, username, user_password):
         try:
@@ -397,7 +361,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-
     # 給username插入或更新login_status
     def update_login_status_by_username(self, username, login_status):
         try:
@@ -416,7 +379,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-
     # 給username插入themeData的資料
     def username_insert_themeData(
         self,
@@ -471,12 +433,9 @@ class DB:
                     return True
         except sqlite3.Error as e:
             return e
-
     def close_connection(self):
         # 關閉游標和資料庫連接
         self.cursor.close()
         self.conn.close()
-
-
 my_db = DB()
 print(my_db.username_insert_themeData("user099", "black", 1, 2, 3, 5))
