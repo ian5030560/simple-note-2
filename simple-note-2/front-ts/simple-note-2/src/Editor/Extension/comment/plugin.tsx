@@ -11,7 +11,7 @@ export const INSERT_COMMENT: LexicalCommand<void> = createCommand();
 const CommentPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
 
-    useEffect(() => {
+    useEffect(() => { wfewef
         return mergeRegister(
             editor.registerCommand(INSERT_COMMENT, () => {
                 let selection = $getSelection();
