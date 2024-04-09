@@ -72,10 +72,7 @@ const Index: React.FC<WelcomePageIndexProp> = ({darken, onDarken}) => {
             User.checkSignIn(username)
             .then(async value => {
                 if(value){
-                    // let {treeData, selected, content} = await User.loadInfo(username);
-                    // navigate(`${selected}`);
-                    // localStorage.setItem("treeData", treeData);
-                    // localStorage.setItem("content", content);
+                    navigate("user");
                 }
             })
         }

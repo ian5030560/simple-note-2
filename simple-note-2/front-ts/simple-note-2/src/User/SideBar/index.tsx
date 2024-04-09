@@ -6,22 +6,25 @@ import FileTree from "./FileTree";
 import { useCookies } from "react-cookie";
 import User from "../../service/user";
 import SettingPanel from "./SettingPanel";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 
-interface UserProfileProp {
-    username?: string;
-    src?: string;
-    onLogout?: () => void;
-    onSet?: () => void;
-}
+// interface UserProfileProp {
+//     username: string;
+//     src?: string;
+//     onLogout?: () => void;
+//     onSet?: () => void;
+// }
 
-const UserProfile: React.FC<UserProfileProp> = ({ username, src }) => {
+const UserProfile = () => {
 
     const { token } = theme.useToken();
     const [logOutOpen, setLogOutOpen] = useState(false);
     const [settingOpen, setSettingOpen] = useState(false);
     const [api, contextHolder] = notification.useNotification();
+    const [{ username }, , removeCookies] = useCookies(["username"]);
+    const navigate = useNavigate();
 
     const items = [
         {
@@ -52,18 +55,22 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src }) => {
     const handleLogoutOk = useCallback(() => {
         setLogOutOpen(false);
 
-        // User.userLogOut(username)
-        //     .then((value) => {
-        //         if (!value) {
-        //             api.error(
-        //                 {
-        //                     message: "登出發生錯誤，請重新登出",
-        //                     placement: "top",
-        //                 }
-        //             )
-        //         }
-        //     })
-    }, []);
+        User.userLogOut(username)
+            .then((value) => {
+                if (!value) {
+                    api.error(
+                        {
+                            message: "登出發生錯誤，請重新登出",
+                            placement: "top",
+                        }
+                    )
+                }
+                else{
+                    removeCookies("username");
+                    navigate("/");
+                }
+            })
+    }, [api, navigate, removeCookies, username]);
 
     return <Flex
         align="baseline"
@@ -73,8 +80,9 @@ const UserProfile: React.FC<UserProfileProp> = ({ username, src }) => {
         <Avatar
             size={"large"}
             shape="square"
-            icon={src ? null : <UserOutlined />}
-            src={src}
+            icon={<UserOutlined/>}
+            // icon={src ? null : <UserOutlined />}
+            // src={src}
         />
         <Title level={4} ellipsis>{username}</Title>
         <Dropdown
@@ -108,13 +116,12 @@ export interface SideBarProps extends Omit<FlexProps, "vertical" | "children"> {
 const SideBar = ({ className, style, ...prop }: SideBarProps) => {
 
     const { token } = theme.useToken();
-    const [{ username }] = useCookies(["username"]);
 
     return <Flex vertical className={className}
         style={{ backgroundColor: token.colorPrimary, ...style }}
         {...prop}>
         <Flex vertical>
-            <UserProfile username="username" />
+            <UserProfile/>
             <FileTree />
         </Flex>
     </Flex>

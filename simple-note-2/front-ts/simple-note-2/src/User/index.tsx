@@ -4,7 +4,6 @@ import SideBar from "./SideBar";
 import Editor from "../Editor";
 import defaultTheme from "../theme/default";
 import { BulbButton } from "../Welcome";
-import { useCookies } from "react-cookie";
 import ThemeProvider, { ThemeContext } from "../theme";
 import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
 import styles from "./index.module.css";

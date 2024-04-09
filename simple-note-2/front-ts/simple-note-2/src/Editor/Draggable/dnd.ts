@@ -1,82 +1,89 @@
 import { useCallback } from "react";
-import { moveLine, resetLine, setId, useDndDispatch, useDndSelector } from "./redux";
+import { useDndAction, useDndState } from "./redux";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey } from "lexical";
 import { getBlockFromPoint } from "./util";
-import {eventFiles} from "@lexical/rich-text";
+import { eventFiles } from "@lexical/rich-text";
 
-type NativeDndHandler = (...args: any[]) => (e: DragEvent) => any;
-type ReactDndHanlder = (...args: any[]) => React.DragEventHandler<HTMLElement>;
-type HandleType = "native" | "react";
-type DndHanlder<T extends HandleType> = T extends "native" ? NativeDndHandler : ReactDndHanlder;
-
-export const useDragStart: DndHanlder<"react"> = () => {
+const HEIGHT = 3;
+export const DRAGGABLE_TAG = "draggable-item";
+const useDnd = () => {
     const [editor] = useLexicalComposerContext();
-    const id = useDndSelector(state => state.dnd.dragId);
+    const action = useDndAction();
+    const { dragId: id, line } = useDndState();
 
-    const handleDragStart = useCallback((e: React.DragEvent) => {
+    const handleDragStart = useCallback((e: DragEvent) => {
 
-        if(eventFiles(e.nativeEvent)[0]) return false;
+        if (eventFiles(e)[0]) return;
 
-        if (!e.dataTransfer || !id) return false;
+        if (!e.dataTransfer || !id) return;
         const element = editor.getElementByKey(id)!;
         e.dataTransfer.setDragImage(element, 0, 0);
-        
-    }, [editor, id]);
 
-    return handleDragStart;
-}
+        let { width } = element.getBoundingClientRect();
+        action.resizeLine(width, HEIGHT);
+        action.setDraggable(true);
 
+    }, [action, editor, id]);
 
-export const useDragOver: DndHanlder<"native"> = () => {
-    const dispatch = useDndDispatch();
-    const [editor] = useLexicalComposerContext();
-
-    const handleDragOver = useCallback((e: DragEvent): boolean => {
+    const handleDragOver = useCallback((e: DragEvent) => {
         e.preventDefault();
 
-        if(!e.dataTransfer || eventFiles(e)[0]) return false;
+        if (!e.dataTransfer || eventFiles(e)[0]) return false;
+        let { clientY: mouseY } = e;
+     
+        let overElement = getBlockFromPoint(editor, e.clientX, e.clientY);
+    
+        if (!overElement || !overElement.hasAttribute(DRAGGABLE_TAG)) return false;
 
-        let { target: overElement, clientY: mouseY } = e as {target: HTMLElement | null, clientY: number};
+        let { x, y, width, height } = overElement.getBoundingClientRect();
+        const { top, left } = overElement.parentElement!.getBoundingClientRect();
+        const { marginTop, marginBottom } = window.getComputedStyle(overElement);
 
-        if (!overElement?.hasAttribute("draggable-item")) overElement = getBlockFromPoint(editor, e.clientX, e.clientY);
-        if (!overElement) return false;
+        let overHalf = mouseY > (y + height / 2);
 
-        const { top: overTop } = overElement.getBoundingClientRect();
-        const { marginTop, marginBottom, height } = window.getComputedStyle(overElement);
+        if (!overHalf) {
+            let previous = overElement.previousElementSibling;
+            if (!previous) {
+                y -= HEIGHT;
+            }
+            else {
+                const { marginBottom: pMarginBottom } = window.getComputedStyle(previous);
+                let offset = Math.max(parseFloat(pMarginBottom), parseFloat(marginTop)) / 2;
+                y -= offset;
+            }
+        }
+        else {
+            let next = overElement.nextElementSibling;
+            y += height;
+            if (!next) {
+                y += HEIGHT;
+            }
+            else {
+                const { marginTop: nMarginTop } = window.getComputedStyle(next);
+                let offset = Math.max(parseFloat(nMarginTop), parseFloat(marginBottom)) / 2;
+                y += offset;
+            }
+        }
 
-        let overHalf = mouseY > (overTop + parseFloat(height) / 2);
-        
-        let top = overElement.offsetTop;
-        top = !overHalf ? top - parseFloat(marginTop) / 2 :
-            top + parseFloat(height) + parseFloat(marginBottom) / 2;
+        x -= left;
+        y -= top;
 
-        let left = overElement.offsetLeft!
-
-        dispatch(moveLine({ top: top, left: left }));
-
+        action.moveLine(x, y);
+        action.resizeLine(width, HEIGHT);
         return true;
-    }, [dispatch, editor]);
-
-    return handleDragOver;
-}
-
-export const useDrop: DndHanlder<"native"> = () => {
-    const [editor] = useLexicalComposerContext();
-    const line = useDndSelector(state => state.dnd.line);
-    const id = useDndSelector(state => state.dnd.dragId);
-    const dispatch = useDndDispatch();
+    }, [action, editor]);
 
     const handleDrop = useCallback((e: DragEvent) => {
 
-        if(!e.dataTransfer || eventFiles(e)[0]) return false;
+        if (!e.dataTransfer || eventFiles(e)[0]) return false;
 
-        let dropElement = e.target as HTMLElement | null;
-        if (!dropElement?.hasAttribute("draggable-item")) dropElement = getBlockFromPoint(editor, e.clientX, e.clientY);
-        if(!dropElement) return false;
+        let dropElement = getBlockFromPoint(editor, e.clientX, e.clientY);
+
+        if (!dropElement || !dropElement.hasAttribute(DRAGGABLE_TAG)) return false;
 
         editor.update(() => {
-            let dropKey = dropElement!.getAttribute("draggable-item");
+            let dropKey = dropElement!.getAttribute(DRAGGABLE_TAG);
             let dragKey = id;
 
             if (!dragKey || !dropKey) return false;
@@ -86,10 +93,10 @@ export const useDrop: DndHanlder<"native"> = () => {
 
             if (!dragNode || !dropNode || dragKey === dropKey) return;
 
-            const mouseAt = line.top + dropElement!.parentElement!.getBoundingClientRect().top;
+            const mouseAt = line.y + editor.getRootElement()!.getBoundingClientRect().top;
 
-            const dropRect = dropElement!.getBoundingClientRect();
-            const half = dropRect.top + dropRect.height / 2;
+            const { top, height } = dropElement!.getBoundingClientRect();
+            const half = top + height / 2;
 
             if (mouseAt < half) {
                 dropNode.insertBefore(dragNode);
@@ -98,12 +105,15 @@ export const useDrop: DndHanlder<"native"> = () => {
                 dropNode.insertAfter(dragNode);
             }
 
-            dispatch(setId(undefined));
-            dispatch(resetLine());
+            action.setId(id);
+            action.resetLine();
         })
 
+        action.setDraggable(false);
         return true;
-    }, [dispatch, editor, id, line.top]);
+    }, [action, editor, id, line.y]);
 
-    return handleDrop
+    return { handleDragStart, handleDragOver, handleDrop }
 }
+
+export default useDnd;

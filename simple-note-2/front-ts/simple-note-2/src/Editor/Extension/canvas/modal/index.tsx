@@ -1,71 +1,60 @@
-import { Modal, Flex } from "antd";
-import React, { useCallback, useRef, useState } from "react";
+import { Flex } from "antd";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { IoIosSave, IoIosRedo, IoIosUndo } from "react-icons/io";
 import styles from "./modal.module.css";
 import useStep from "./step";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { CanvasToolBar } from "./tool";
 import { $isImageNode } from "../../image/node";
-import { $getNodeByKey } from "lexical";
+import { $getNodeByKey, createCommand, LexicalCommand } from "lexical";
 import { INSERT_IMAGE } from "../../image/plugin";
 import postData from "../../../../util/post";
+import Modal, { ModalRef } from "./../../UI/modal";
 
 export type CanvasData = {
     image: HTMLImageElement,
     key: string,
 }
-
-const DEFAULT = { width: 800, height: 500 };
+export const OPEN_CANVAS: LexicalCommand<CanvasData | null> = createCommand();
 const ERASER = "eraser";
-interface CanvasModalProp {
-    open: boolean;
-    data: CanvasData | null;
-    onClose?: () => void;
-}
-const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
+const CanvasModal = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const contextRef = useRef<CanvasRenderingContext2D | null>(null);
-    const [color, setColor] = useState<string | null>(null);
+    const [color, setColor] = useState<string | undefined>(undefined);
     const startRef = useRef({ x: 0, y: 0 });
     const [size, setSize] = useState<number>();
     const step = useStep(canvasRef.current);
     const [editor] = useLexicalComposerContext();
+    const ref = useRef<ModalRef>(null);
+    const [data, setData] = useState<CanvasData | null>(null);
 
-    const handleOpenChange = useCallback((open: boolean) => {
-        if (open) {
-            let canvas = canvasRef.current!;
-
-            let width = DEFAULT.width;
-            let height = DEFAULT.height;
-
-            if (prop.data) {
-                let { width: imageWidth, height: imageHeight } = prop.data.image.getBoundingClientRect();
-                let wr = width / imageWidth;
-                let hr = height / imageHeight;
-                width = imageWidth * Math.min(wr, hr);
-                height = imageHeight * Math.min(wr, hr);
+    useEffect(() => {
+        return editor.registerCommand(OPEN_CANVAS, payload => {
+            if (payload) {
+                setData(payload);
+                let canvas = canvasRef.current;
+                if (canvas) {
+                    canvas.width = payload.image.width;
+                    canvas.height = payload.image.height;
+                    canvas.style.width = payload.image.width + "px";
+                    canvas.style.height = payload.image.height + "px";
+                }
             }
-            canvas.width = width;
-            canvas.height = height;
-            canvas.style.width = `${width}px`;
-            canvas.style.height = `${height}px`;
-            contextRef.current = canvas.getContext("2d");
-
-        }
-    }, [prop.data]);
+            return false;
+        }, 4);
+    }, [editor]);
 
     const handlePointerEnter = useCallback(() => {
-        let context = contextRef.current!;
-        if (!color || !context) return;
-
+        contextRef.current = canvasRef.current!.getContext("2d");
+        if (!color || !contextRef.current) return;
         if (color === ERASER) {
-            context.globalCompositeOperation = "destination-out";
+            contextRef.current.globalCompositeOperation = "destination-out";
         }
         else {
-            context.strokeStyle = color;
+            contextRef.current.strokeStyle = color;
         }
 
-        if (size) context.lineWidth = size;
+        if (size) contextRef.current.lineWidth = size;
     }, [color, size]);
 
     const handlePointerMove = useCallback((e: PointerEvent) => {
@@ -99,32 +88,30 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
         canvasRef.current?.removeEventListener("pointermove", handlePointerMove);
     }, [handlePointerMove]);
 
+
     const handleExport = useCallback(() => {
         if (!step || !step.isDirty()) return;
 
-        let data = step.export();
-        if (!prop.data) {
-            let src = URL.createObjectURL(data);
+        let blob = step.export();
+        if (!blob) {
+            let src = URL.createObjectURL(blob);
             editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         }
         else {
             editor.update(() => {
-                const node = $getNodeByKey(prop.data!.key);
+                const node = $getNodeByKey(data!.key);
                 if ($isImageNode(node)) {
                     // postData("http://localhost:8000/update_file/", {
                     //     username: "user",
                     //     content: data,
                     //     url: "http://localhost:8000/view_file/428220824_717405110214191_1896139774089273018_n.jpg"
                     // })
-                    let src = URL.createObjectURL(data);
+                    let src = URL.createObjectURL(blob);
                     node.setSrc(src);
                 }
             })
         }
-        step.clear();
-        prop.onClose?.();
-
-    }, [editor, prop, step]);
+    }, [data, editor, step]);
 
     const handleClose = useCallback(() => {
         if (step?.isDirty()) {
@@ -132,11 +119,11 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
             if (result) handleExport();
         }
         step?.clear();
-        prop.onClose?.();
+        setData(null);
+    }, [handleExport, step]);
 
-    }, [handleExport, prop, step]);
-
-    return <Modal onCancel={handleClose} open={prop.open} footer={null} centered width={900} afterOpenChange={handleOpenChange}>
+    return <Modal command={OPEN_CANVAS} ref={ref} footer={null} title="繪畫"
+        width={data ? data.image.width + 50 : undefined} onClose={handleClose}>
         <Flex justify="center" align="center" vertical>
             <Flex justify="center" vertical>
                 <Flex justify="end" align="center" style={{ marginBottom: 5 }}>
@@ -155,9 +142,8 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
                     <button className={styles["access-button"]} onClick={handleExport}><IoIosSave size={30} /></button>
                 </Flex>
                 <canvas
-                    ref={canvasRef}
-                    className={styles.canvas}
-                    style={{ backgroundImage: prop.data ? `url(${prop.data.image.src})` : undefined }}
+                    ref={canvasRef} className={styles.canvas}
+                    style={{ backgroundImage: data ? `url(${data.image.src})` : undefined }}
                     onPointerDown={handlePointerDown}
                     onPointerEnter={handlePointerEnter}
                     onPointerUp={handlePointerUp}
@@ -171,8 +157,7 @@ const CanvasModal: React.FC<CanvasModalProp> = (prop) => {
                 />
             </Flex>
         </Flex>
-
-    </Modal>;
+    </Modal>
 }
 
 export default CanvasModal;

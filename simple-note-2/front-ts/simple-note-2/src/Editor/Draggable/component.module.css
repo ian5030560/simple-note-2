@@ -1,9 +1,10 @@
 .handleButton {
     cursor: grab;
     font-size: 2em;
-    :active{
-        cursor: grabbing;
-    }
+}
+
+.handleButton:active{
+    cursor: grabbing;
 }
 
 .dropDown{
@@ -13,18 +14,23 @@
     border-radius: 8px;
 }
 
-.draggable{
-    position: absolute;
-    :active{
-        opacity: 0.3;
-    }
-}
-
 .wrapper{
     position: relative;
 }
 
+.draggable{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.draggable:active{
+    opacity: 0.3;
+}
+
 .dropLine{
+    position: absolute;
+    top: 0;
+    left: 0;
     border: 3px solid skyblue;
-    width: 80%;
 }

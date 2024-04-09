@@ -1,4 +1,4 @@
-import { OPEN_CANVAS } from "../Extension/canvas/plugin";
+import { OPEN_CANVAS } from "../Extension/canvas/modal";
 import { AddItem } from "../Draggable/component";
 import { FaPaintBrush } from "react-icons/fa";
 

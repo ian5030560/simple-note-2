@@ -1,9 +1,10 @@
 .editable {
     padding: 0 10%;
-    margin-top: 5%;
+    padding-top: 5%;
     outline: none;
 }
 
 .editor-scroller{
-    overflow-y: auto;
+    overflow: hidden auto;
+    cursor: text;
 }
