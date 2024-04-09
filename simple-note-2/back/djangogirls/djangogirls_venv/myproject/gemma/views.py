@@ -5,7 +5,6 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import Gemma  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -34,29 +33,13 @@ class GemmaView(APIView):
         try:
             data = json.loads(request.body)
             text = data.get("text")  # 文字內容
+            
+            import ollama
 
-            import subprocess
-
-            # Define the command
-            command = "ollama run gemma"
-
-            # Execute the command
-            process = subprocess.Popen(
-                command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
-            process = subprocess.Popen(
-                text, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            )
-
-            # Wait for the process to finish and get the output
-            stdout, stderr = process.communicate()
-
-            # Print the output
-            if stdout:
-                print("Output:", stdout.decode())
-            if stderr:
-                print("Error:", stderr.decode())
-
+            answer = (((ollama.chat(model="gemma", messages=[{"role": "user", "content": text}]))["message"])["content"])
+            if answer:
+                return Response(answer, status=status.HTTP_200_OK)
+            
             # serializer
             serializer = GemmaSerializer(data=data)
 
@@ -70,8 +53,6 @@ class GemmaView(APIView):
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:
