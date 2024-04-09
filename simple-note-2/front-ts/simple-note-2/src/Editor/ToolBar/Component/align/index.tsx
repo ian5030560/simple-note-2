@@ -32,14 +32,16 @@ const Align: React.FC = () => {
         if ($isRangeSelection(selection) || $isNodeSelection(selection)) {
             let node = selection.getNodes()[0];
 
-            if($isElementNode(node) || $isDecoratorBlockNode(node)){
-                text = node.__format as string;
+            let tmp: ElementNode | DecoratorBlockNode | null;
+            tmp = $isElementNode(node) || $isDecoratorBlockNode(node) ? node :
+                $findMatchingParent(node, p => $isElementNode(p) || $isDecoratorBlockNode(p)) as ElementNode | DecoratorBlockNode | null;
+
+            if($isElementNode(tmp)){
+                text = tmp.getFormatType();
             }
-            else{
-                let parent = $findMatchingParent(node, p => $isElementNode(p) || $isDecoratorBlockNode(p)) as ElementNode | DecoratorBlockNode | null;
-                if(parent){
-                    text = parent.__format as string;
-                }
+
+            if($isDecoratorBlockNode(tmp)){
+                text = tmp.__format;
             }
         }
 
@@ -50,7 +52,7 @@ const Align: React.FC = () => {
     useEffect(() => {
         return mergeRegister(
             editor.registerCommand(SELECTION_CHANGE_COMMAND, handleSelect, 1),
-            editor.registerUpdateListener(({editorState}) => editorState.read(handleSelect)),
+            editor.registerUpdateListener(({ editorState }) => editorState.read(handleSelect)),
         );
     })
 

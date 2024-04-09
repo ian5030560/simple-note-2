@@ -31,7 +31,7 @@ const Extensions: Extension[] = [
     BasicExtension,
     SpeechToTextExtension,
     ImageExtension,
-    CanvasExtension,
+    // CanvasExtension,
     TableExtension,
     CodeExtension,
     ImageToTextExtension,
@@ -39,7 +39,7 @@ const Extensions: Extension[] = [
     DocumentExtension,
     AIExtension,
     ColumnLayoutExtension,
-    CommentExtension,
+    // CommentExtension,
 ]
 
 export default Extensions;

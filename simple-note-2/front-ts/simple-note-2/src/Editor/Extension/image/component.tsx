@@ -3,10 +3,6 @@ import ImageNode, { ImageNodeProp } from "./node";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey, CLICK_COMMAND } from "lexical";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
-import styles from "./component.module.css";
-import { RiEdit2Fill } from "react-icons/ri";
-import { OPEN_CANVAS } from "../canvas/plugin";
-import { Button } from "antd";
 import Resizer from "../UI/resizer";
 
 type ImageProp = ImageNodeProp;
@@ -44,13 +40,12 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
         if(e.target === imageRef.current){
             setSelected(!isSelected);
         }
-        
         return false;
     }, [isSelected, setSelected]);
 
-    const handleEdit = useCallback(() => {
-        editor.dispatchCommand(OPEN_CANVAS, {image: imageRef.current!, key: nodeKey!});
-    }, [editor, nodeKey]);
+    // const handleEdit = useCallback(() => {
+    //     editor.dispatchCommand(OPEN_CANVAS, {image: imageRef.current!, key: nodeKey!});
+    // }, [editor, nodeKey]);
 
     useEffect(() => {
         return editor.registerCommand(CLICK_COMMAND, handleClick, 1);
@@ -65,7 +60,7 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
                 minWidth: MAX ? MAX / 4 : undefined,
             }}
             ref={imageRef} />
-        <Button className={styles.imageEdit} onClick={handleEdit} style={{visibility: isSelected ? "visible" : "hidden"}} icon={<RiEdit2Fill size={20}/>}/>
+        {/* <Button className={styles.imageEdit} onClick={handleEdit} style={{visibility: isSelected ? "visible" : "hidden"}} icon={<RiEdit2Fill size={20}/>}/> */}
     </Resizer>;
 }
 

@@ -3,19 +3,19 @@
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     align-items: center;
-    overflow-x: auto;
-    overflow-y: hidden;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;}
+    overflow: auto hidden;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
 
 .notCollapsed{
     max-height: 50px;
-    transition: max-height 0.2s linear;
+    transition: max-height 0.1s linear;
 }
 
 .collapsed{
     max-height: 0;
     padding: 0;
-    transition: max-height 0.2s linear;
+    transition: max-height 0.1s linear;
 }
 
 .collapsedButton{
@@ -23,6 +23,7 @@
     top: 100%;
     left: 50%;
     transform: translateX(-50%);
+    z-index: 1000;
 }
 
 .collapsedButtonHide{

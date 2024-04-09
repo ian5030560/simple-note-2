@@ -22,16 +22,18 @@ const useDnd = () => {
 
         let { width } = element.getBoundingClientRect();
         action.resizeLine(width, HEIGHT);
+        action.setDraggable(true);
 
     }, [action, editor, id]);
 
     const handleDragOver = useCallback((e: DragEvent) => {
         e.preventDefault();
-        
+
         if (!e.dataTransfer || eventFiles(e)[0]) return false;
         let { clientY: mouseY } = e;
-        
+     
         let overElement = getBlockFromPoint(editor, e.clientX, e.clientY);
+    
         if (!overElement || !overElement.hasAttribute(DRAGGABLE_TAG)) return false;
 
         let { x, y, width, height } = overElement.getBoundingClientRect();
@@ -77,6 +79,7 @@ const useDnd = () => {
         if (!e.dataTransfer || eventFiles(e)[0]) return false;
 
         let dropElement = getBlockFromPoint(editor, e.clientX, e.clientY);
+
         if (!dropElement || !dropElement.hasAttribute(DRAGGABLE_TAG)) return false;
 
         editor.update(() => {
@@ -106,6 +109,7 @@ const useDnd = () => {
             action.resetLine();
         })
 
+        action.setDraggable(false);
         return true;
     }, [action, editor, id, line.y]);
 

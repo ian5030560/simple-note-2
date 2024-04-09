@@ -7,57 +7,34 @@ type Comment = {
     id: string,
     timestamp: number,
 };
+type Item = [string, Comment[]]
 type Collection = Map<string, Comment[]>;
-type CommentData = [string, Array<Comment>];
-class Store{
-    
+class Store{    
     private _collection: Collection;
     
-    constructor(comments?: Array<CommentData>){
+    constructor(comments?: Array<Item>){
         this._collection = new Map(comments) || new Map();
     }
 
-    add(comment: Comment, collectionID?: string){
-        let id = collectionID || this.randomCollectionID();
-        let arr = this._collection.get(id) || [];
-        arr.push(comment);
-        this._collection.set(id, arr);
+    createItem(): Comment[] | undefined{
+        let id = this.getItemId();
+        this._collection.set(id, []);
+        return this.getItem(id);
     }
 
-    update(commentID: string, content: string, collectionID: string){
-        let arr = this._collection.get(collectionID);
-        if(!arr) return;
-
-        for(let comment of arr){
-            if(comment.id === commentID){
-                comment.content = content;
-                this._collection.set(collectionID, arr);
-                break;
-            }
-        }
+    getItem(id: string): Comment[] | undefined{
+        return this._collection.get(id);
     }
 
-    delete(commentID: string, collectionID: string){
-        let arr = this._collection.get(collectionID);
-        if(!arr) return;
-
-        for(let comment of arr){
-            if(comment.id === commentID){
-                arr.splice(arr.indexOf(comment), 1);
-                break;
-            }
-        }
+    deleteItem(id: string): boolean{
+        return this._collection.delete(id);
     }
 
-    private randomCollectionID(){
+    private getItemId(): string{
         return getRandomString(10);
-    }
-
-    getCollection(){
-        return this._collection;
     }
 }
 
-export default function useStore(comments: Array<CommentData>){
+export default function useStore(comments: Array<Item>){
     return useMemo(() => new Store(comments), [comments]);
 }

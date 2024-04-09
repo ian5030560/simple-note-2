@@ -7,6 +7,7 @@ import { CiEdit } from "react-icons/ci";
 import { INSERT_IMAGE } from "./plugin";
 import postData from "../../../util/post";
 import Modal, { ModalRef } from "../UI/modal";
+import { useCookies } from "react-cookie";
 
 export const OPEN_IMAGE_MODAL: LexicalCommand<boolean> = createCommand();
 
@@ -16,7 +17,7 @@ const ImageModal: React.FC = () => {
     const urlRef = useRef<InputRef>(null);
     const fileRef = useRef<HTMLInputElement>(null);
     const ref = useRef<ModalRef>(null);
-   
+    const [{username}] = useCookies(["username"]);
 
     const handleURL = useCallback(() => {
         let url = urlRef.current!.input!.value;
@@ -29,16 +30,16 @@ const ImageModal: React.FC = () => {
     const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
         if(!e.target.files) return;
         let file = e.target.files[0];
-        let src = await postData("http://localhost:8000/add_file/", {
-            username: "user02",
-            filename: file.name,
-            content: file,
-            mimetype: file.type,
-        }).then(res => res.text());
+        // let src = await postData("http://localhost:8000/add_file/", {
+        //     username: username,
+        //     filename: file.name,
+        //     content: file,
+        //     mimetype: file.type,
+        // }).then(res => res.text());
 
-        src = src.substring(1, src.length - 1);
-        console.log(src);
-        // let src = URL.createObjectURL(file);
+        // src = src.substring(1, src.length - 1);
+        // console.log(src);
+        let src = URL.createObjectURL(file);
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         fileRef.current!.value = "";
         ref.current?.close();

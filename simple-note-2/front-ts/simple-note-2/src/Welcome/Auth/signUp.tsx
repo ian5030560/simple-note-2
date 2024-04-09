@@ -68,20 +68,13 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
 
     return <>
         <Form
-            form={form}
-            size="large"
-            validateMessages={validateMessages}
-            labelWrap
-            labelCol={{
-                span: 4,
-            }}
-            style={{ width: "40%" }}
-            autoComplete="on"
-            onFinish={handleFinished}
+            form={form} size="large" validateMessages={validateMessages}
+            labelWrap style={{ width: "40%" }}
+            autoComplete="on" onFinish={handleFinished}
         >
             <Title>註冊</Title>
             <Form.Item
-                label="username"
+                label="帳號"
                 name="username"
                 rules={[
                     {
@@ -92,7 +85,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                 <Input />
             </Form.Item>
             <Form.Item
-                label="email"
+                label="信箱"
                 name="email"
                 rules={[
                     {
@@ -104,7 +97,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                 <Input type="email" />
             </Form.Item>
             <Form.Item
-                label="password"
+                label="密碼"
                 name="password"
                 rules={[
                     {
@@ -118,7 +111,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
             </Form.Item>
             <Form.Item
                 wrapperCol={{
-                    offset: 4,
+                    offset: 2,
                 }}
             >
                 <Flex justify="space-between">
@@ -129,10 +122,10 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                             disabled={!submittable}
                             loading={state === STATE.SUCCESS}
                         >
-                            submit
+                            提交
                         </Button>
                         <Button type="primary" htmlType="reset">
-                            clear
+                            清除
                         </Button>
                     </Space>
                     <Space>

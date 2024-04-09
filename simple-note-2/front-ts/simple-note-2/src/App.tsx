@@ -10,7 +10,7 @@ export default function App(): React.JSX.Element {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<WelcomePage />} />
-        <Route path=":file" element={<UserPage />} />
+        <Route path="user" element={<UserPage />} />
         <Route path="theme" element={<ThemePage />} />
       </Routes>
     </BrowserRouter>

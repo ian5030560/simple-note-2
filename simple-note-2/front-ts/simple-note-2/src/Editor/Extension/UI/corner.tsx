@@ -136,11 +136,16 @@ const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>)
                 }
             })
         })
+        
+        let removeUpdate = prop.trigger === "selected" ? editor.registerUpdateListener(({editorState}) => {
+            editorState.read(() => prop.onSeletionChange?.($getSelection()));
+        }) : null;
 
         return () => {
             removeHover?.();
             removeSelect?.();
             removeDestroy();
+            removeUpdate?.(); 
         }
     }, [editor, place, prop, prop.nodeType]);
 

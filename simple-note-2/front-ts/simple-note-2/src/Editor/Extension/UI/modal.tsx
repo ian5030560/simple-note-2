@@ -9,7 +9,7 @@ export type ModalRef = {
     close: () => void;
 }
 export interface ModalProp extends Omit<ModalProps, "open" | "onCancel" | "onOk"> {
-    command: LexicalCommand<void>;
+    command: LexicalCommand<any>;
     onClose?: () => void;
     onOk?: () => void;
     onOpen?: () => void;

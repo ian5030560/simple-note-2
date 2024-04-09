@@ -14,7 +14,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
-    const [, setCookie] = useCookies();
+    const [, setCookie] = useCookies(["username"]);
     const values = Form.useWatch([], form);
 
     useEffect(() => {
@@ -41,26 +41,27 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             "http://localhost:8000/signin/",
             values,
         )
-            .then(res => setState(res.status === 200 || res.status === 201 ? STATE.SUCCESS : STATE.FAILURE))
+            .then(res => {
+                if (res.status === 200 || res.status === 201) {
+                    setCookie("username", values["username"]);
+                    setState(STATE.SUCCESS);
+                }
+                else {
+                    setState(STATE.FAILURE);
+                }
+
+            })
             .catch(() => setState(STATE.FAILURE));
     };
 
     return <>
         <Form
-            form={form}
-            size="large"
-            validateMessages={validateMessages}
-            labelWrap
-            labelCol={{
-                span: 4,
-            }}
-            style={{ width: "40%" }}
-            autoComplete="on"
-            onFinish={handleFinished}
+            form={form} size="large" validateMessages={validateMessages}
+            labelWrap style={{ width: "40%" }} autoComplete="on" onFinish={handleFinished}
         >
             <Title>登入</Title>
             <Form.Item
-                label="username"
+                label="帳號"
                 name="username"
                 rules={[
                     {
@@ -71,7 +72,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 <Input />
             </Form.Item>
             <Form.Item
-                label="password"
+                label="密碼"
                 name="password"
                 rules={[
                     {
@@ -85,7 +86,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             </Form.Item>
             <Form.Item
                 wrapperCol={{
-                    offset: 4,
+                    offset: 2,
                 }}
             >
                 <Flex justify="space-between">
@@ -96,10 +97,10 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                             disabled={!submittable}
                             loading={state === STATE.SUCCESS}
                         >
-                            submit
+                            提交
                         </Button>
                         <Button type="primary" htmlType="reset">
-                            clear
+                            清除
                         </Button>
                     </Space>
                     <Space>

@@ -90,9 +90,10 @@ export const useWrapper = () => {
 }
 
 export const DropLine = () => {
-    const { line } = useDndState();
+    const { line, isDragging } = useDndState();
     return <div className={styles.dropLine}
         style={{
+            visibility: isDragging ? "visible" : "hidden",
             width: line.width, height: line.height,
             transform: `translate(${line.x}px, ${line.y}px)`
         }} />
