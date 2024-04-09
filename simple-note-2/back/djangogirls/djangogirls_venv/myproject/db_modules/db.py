@@ -1,6 +1,4 @@
 import sqlite3
-from PIL import Image
-from os import mkdir
 
 BACK_DB = "db_modules\\pydb.db"
 TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myproject\db_modules\pydb.db"
