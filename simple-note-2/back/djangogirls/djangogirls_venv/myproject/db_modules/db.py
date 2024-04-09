@@ -1,13 +1,14 @@
 import sqlite3
-from PIL import Image
-from os import mkdir
 
-BACK_DB = "db_modules\\pydb.db"
+BACK_DB = "db_modules/pydb.db"
 TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myproject\db_modules\pydb.db"
+
+
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(BACK_DB)
+        self.conn = sqlite3.connect(TEST_DB)
         self.cursor = self.conn.cursor()
+
     def check_signin(self, username, user_password):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱和密碼
         self.cursor.execute(
@@ -18,6 +19,7 @@ class DB:
         row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
+
     # check_register
     def check_register_username(self, username):
         # 使用 SQL 查詢檢查是否有相同的使用者名稱
@@ -28,6 +30,7 @@ class DB:
         row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
+
     def check_register_user_email(self, user_email):
         # 使用 SQL 查詢檢查是否有相同的使用者電子郵件
         self.cursor.execute(
@@ -37,6 +40,7 @@ class DB:
         row = self.cursor.fetchone()
         # 如果有相同的資料，回傳 True；否則回傳 False
         return bool(row)
+
     def insert_into_User_Register_Data(self, username, user_email, user_password):
         try:
             # 新增資料到 User_Personal_Info 表格
@@ -49,6 +53,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return False
+
     def check_signin_status(self, username):
         self.cursor.execute(
             "SELECT login_status FROM User_Personal_Info WHERE username = ?;",
@@ -63,6 +68,8 @@ class DB:
         else:
             # 如果沒有結果，返回一個None
             return None
+
+    # 給useremail查password
     def useremail_to_userpassword(self, user_email):
         self.cursor.execute(
             "SELECT user_password FROM User_Personal_Info WHERE user_email = ?;",
@@ -77,6 +84,7 @@ class DB:
         else:
             # 如果沒有結果，返回一個None
             return None
+
     # 給username和note_name查content_blob
     def username_note_name_return_content_blob(self, username, note_name):
         self.cursor.execute(
@@ -92,6 +100,7 @@ class DB:
         else:
             # 如果沒有結果，返回一個 None
             return None
+
     # 給username和note_name查content_mimetype
     def username_note_name_return_content_mimetype(self, username, note_name):
         self.cursor.execute(
@@ -107,6 +116,7 @@ class DB:
         else:
             # 如果沒有結果，返回一個 None
             return None
+
     def change_login_status(self, username):
         self.cursor.execute(
             "SELECT login_status FROM User_Personal_Info WHERE username = ?;",
@@ -128,6 +138,7 @@ class DB:
             return True
         else:
             return f"No result found for {username}"
+
     # 透過username和title_id插入內容
     def filename_insert_content(self, username, title_id, content):
         try:
@@ -157,6 +168,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
+
     # 透過username和title_id回傳內容
     def filename_load_content(self, username, title_id):
         try:
@@ -171,7 +183,8 @@ class DB:
             row = self.cursor.fetchone()
             return row
         except sqlite3.Error as e:
-            return "Error"
+            return e
+
     # 傳user_id和note_name到User_Note_Data裡
     def insert_user_id_note_name_User_Note_Data(self, username, note_name):
         try:
@@ -183,68 +196,55 @@ class DB:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            return False
-    # 給username和note_name來插入或更新content_blob
-    def insert_into_User_Note_Data_content_blob(
-        self, username, note_name, content_blob
-    ):
-        try:
-            
-            self.cursor.execute(
-                "SELECT content_blob FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND note_name = ?;",
-                (
-                    username,
-                    note_name,
-                ),
-            )
-            # 獲取查詢結果的第一行
-            row = self.cursor.fetchone()
-            if row is None:
-                # 如果資料不存在，則使用 INSERT 插入新資料
-                self.cursor.execute(
-                    "INSERT INTO User_Note_Data (user_id, note_name, content_blob) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
-                    (username, note_name, content_blob),
-                )
-            else:
-                # 如果資料存在，則使用 UPDATE 更新資料
-                self.cursor.execute(
-                    "UPDATE User_Note_Data SET content_blob = ? WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND note_name = ?;",
-                    (content_blob, username, note_name),
-                )
-            self.conn.commit()
-            return True
-        except sqlite3.Error as e:
             return e
-    # 給username和note_name來插入或更新content_mimetype
-    def insert_into_User_Note_Data_content_mimetype(
-        self, username, note_name, content_mimetype
-    ):
+
+    #給username, note_name 插入 content_blob, content_mimetype
+    #username or note_name 不存在會傳回錯誤。
+    def insert_User_File_Data_content_blob_and_content_mimetype(self, username, note_name, content_blob, content_mimetype):
         try:
-            self.cursor.execute(
-                "SELECT content_mimetype FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND note_name = ?;",
-                (
-                    username,
-                    note_name,
-                ),
-            )
-            # 獲取查詢結果的第一行
-            row = self.cursor.fetchone()
-            if row is None:
-                # 如果資料不存在，則使用 INSERT 插入新資料
-                self.cursor.execute(
-                    "INSERT INTO User_Note_Data (user_id, note_name, content_mimetype) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
-                    (username, note_name, content_mimetype),
-                )
-            else:
-                # 如果資料存在，則使用 UPDATE 更新資料
-                self.cursor.execute(
-                    "UPDATE User_Note_Data SET content_mimetype = ? WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND note_name = ?;",
-                    (content_mimetype, username, note_name),
-                )
-            self.conn.commit()
-            return True
+            self.cursor.execute("SELECT id FROM User_Personal_Info WHERE username=?;", (username,))
+            user_id = self.cursor.fetchone()
+            if user_id is None:
+                return "Error: Username does not exist"
+
+            self.cursor.execute("SELECT id FROM User_Note_Data WHERE user_id = ? AND note_name = ?;", (user_id[0], note_name))
+            note_id = self.cursor.fetchone()
+            if note_id is None:
+                return "Error: Note name does not exist"
+
+            self.cursor.execute("INSERT INTO User_File_Data (note_id, content_blob , content_mimetype) VALUES (?, ? ,?);", (note_id[0], content_blob ,content_mimetype))
+            self.conn.commit()  
+            return "Insert successful !!!"
+
         except sqlite3.Error as e:
-            return e
+            return f"Error: {str(e)}"
+
+
+    #給username, note_name update content_blob and content_mimetype
+    #username or note_name 不存在會傳回錯誤。
+    def update_User_File_Data_content_blob_and_content_mimetype(self, username, note_name, content_blob, content_mimetype):
+        try:
+            # check username exist
+            self.cursor.execute("SELECT id FROM User_Personal_Info WHERE username=?;", (username,))
+            user_id = self.cursor.fetchone()
+            if user_id is None:
+                return "Error: Username does not exist"
+
+            # check note_name exist
+            self.cursor.execute("SELECT id FROM User_Note_Data WHERE user_id = ? AND note_name = ?;", (user_id[0], note_name))
+            note_id = self.cursor.fetchone()
+            if note_id is None:
+                return "Error: Note name does not exist"
+
+            # update content_blob and content_mimetype
+            self.cursor.execute("UPDATE User_File_Data SET content_blob = ?, content_mimetype = ? WHERE note_id = ?;", (content_blob, content_mimetype, note_id[0]))
+            self.conn.commit()
+            return "Update successful !!!"
+
+        except sqlite3.Error as e:
+            return f"Error: {str(e)}"
+
+
     # 給username和note_name來刪除整行
     def delete_User_Note_Data_username_to_note_name(self, username, note_name):
         try:
@@ -257,6 +257,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
+
     # 用username得到User_Personal_Info
     def get_User_Personal_Info_by_username(
         self,
@@ -273,6 +274,7 @@ class DB:
             return row
         except sqlite3.Error as e:
             return e
+
     # 插入User_Personal_Theme_Data的theme by username
     def insert_User_theme_by_username(
         self,
@@ -290,6 +292,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
+
     # 給username插入或更新profile_photo
     def update_profile_photo_by_username(self, username, profile_photo):
         try:
@@ -308,6 +311,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
+
     # 給username插入或更新theme
     def update_theme_by_username(self, username, theme):
         try:
@@ -326,6 +330,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
+
     def update_user_email_by_username(self, username, user_email):
         try:
             # 直接執行 UPDATE 語句
@@ -343,6 +348,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return False
+
     # 給username插入或更新user_password
     def update_user_password_by_username(self, username, user_password):
         try:
@@ -361,6 +367,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
+
     # 給username插入或更新login_status
     def update_login_status_by_username(self, username, login_status):
         try:
@@ -379,6 +386,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
+
     # 給username插入themeData的資料
     def username_insert_themeData(
         self,
@@ -433,9 +441,12 @@ class DB:
                     return True
         except sqlite3.Error as e:
             return e
+
     def close_connection(self):
         # 關閉游標和資料庫連接
         self.cursor.close()
         self.conn.close()
+
+
 my_db = DB()
-print(my_db.username_insert_themeData("user099", "black", 1, 2, 3, 5))
+print(my_db.update_User_File_Data_content_blob_and_content_mimetype("user01", "abc","updateblob","type1"))
