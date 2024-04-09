@@ -13,7 +13,7 @@ interface ToolBarContainerProp extends FlexProps {
 const ToolBarContainer = forwardRef(({ $backgroundColor, $shadowColor, className, ...prop }: ToolBarContainerProp, ref: React.Ref<HTMLElement>) => <Flex ref={ref} className={[styles.toolBar, className].join(" ")} style={{ backgroundColor: $backgroundColor }} {...prop} />)
 const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) => {
     const { token } = theme.useToken();
-    const [collapse, setCollapse] = useState(true);
+    const [collapse, setCollapse] = useState(false);
     const ref = useRef<HTMLElement>(null);
     const [hide, setHide] = useState(false);
 
@@ -39,7 +39,7 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
         }
     }, []);
 
-    return <div style={{position: "relative"}}>
+    return <div style={{position: "relative"}} id="toolbar-container">
         <ToolBarContainer
             $backgroundColor={token.colorBgBase}
             $shadowColor={token.colorText}

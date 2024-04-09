@@ -8,7 +8,7 @@ TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myp
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(TEST_DB)
+        self.conn = sqlite3.connect(BACK_DB)
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
@@ -419,7 +419,7 @@ class DB:
         except sqlite3.Error as e:
             return e
 
-    #給username插入themeData的資料
+    # 給username插入themeData的資料
     def username_insert_themeData(
         self,
         username,

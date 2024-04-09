@@ -39,8 +39,8 @@ const PDF = ({ url, width, index, height, ...prop }: PDFprop) => {
     const handleClick = useCallback((diff: number) => {
         editor.update(() => {
             const node = $getNodeByKey(prop.nodeKey) as PDFNode;
-            let id = (index + diff) % (pagesRef.current + 1)
-            node.setIndex(id === 0 ? 1 : id);
+            let id = (index + diff) % (pagesRef.current);
+            node.setIndex(id === 0 ? pagesRef.current : id);
         })
     }, [editor, index, prop.nodeKey]);
 

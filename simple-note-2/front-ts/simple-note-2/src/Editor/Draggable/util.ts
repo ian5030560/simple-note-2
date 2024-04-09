@@ -5,14 +5,14 @@ function elementContains(posx: number, posy: number, element: HTMLElement) {
     if (!element) return false;
 
     let { x, y, width, height } = element.getBoundingClientRect();
-    let { marginBottom } = window.getComputedStyle(element);
+    let { marginBottom, marginTop } = window.getComputedStyle(element);
     let pstyle = window.getComputedStyle(element.parentElement!);
     let offsetLeft = parseFloat(pstyle.paddingLeft);
     let offsetRight = parseFloat(pstyle.paddingRight);
 
     return posx >= x - offsetLeft &&
         posx <= x + width + offsetRight &&
-        posy >= y &&
+        posy >= y - parseFloat(marginTop) &&
         posy <= y + height + parseFloat(marginBottom);
 }
 

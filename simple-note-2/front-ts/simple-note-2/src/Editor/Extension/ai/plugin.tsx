@@ -2,7 +2,10 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { Plugin } from "..";
 import { useCallback, useEffect, useState } from "react";
 import { mergeRegister } from "@lexical/utils";
-import { $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, KEY_TAB_COMMAND, SELECTION_CHANGE_COMMAND, TextNode} from "lexical";
+import {
+    $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, KEY_TAB_COMMAND,
+    SELECTION_CHANGE_COMMAND, TextNode
+} from "lexical";
 import "./plugin.css";
 
 export const AIPlaceholderPlugin: Plugin = () => {
@@ -11,24 +14,24 @@ export const AIPlaceholderPlugin: Plugin = () => {
     const [text, setText] = useState("Hello");
 
     const refresh = useCallback((k: string) => {
-        if(!key || k === key) return;
+        if (!key || k === key) return;
         const element = editor.getElementByKey(key);
         element?.setAttribute("data-text", "");
-        
+
     }, [editor, key]);
 
     useEffect(() => {
         return mergeRegister(
             editor.registerMutationListener(TextNode, (mutations) => {
-                Array.from(mutations).forEach(mutation =>{
-                    if(mutation[1] === "created"){
+                Array.from(mutations).forEach(mutation => {
+                    if (mutation[1] === "created") {
                         let key = mutation[0];
                         editor.getElementByKey(key)?.classList.add("simple-note-2-text-tag");
                     }
                 })
             }),
             editor.registerTextContentListener(() => {
-                if(!key) return;
+                if (!key) return;
                 const element = editor.getElementByKey(key);
                 element?.setAttribute("data-text", text);
             }),
@@ -36,11 +39,11 @@ export const AIPlaceholderPlugin: Plugin = () => {
             editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
                 const selection = $getSelection();
                 let key = "";
-                if($isRangeSelection(selection) && selection.isCollapsed()){
+                if ($isRangeSelection(selection) && selection.isCollapsed()) {
                     const node = selection.anchor.getNode();
                     let point = selection.getStartEndPoints()![0];
                     let size = node.getTextContentSize();
-                    if($isTextNode(node) && point.offset === size){
+                    if ($isTextNode(node) && point.offset === size) {
                         key = node.getKey();
                     }
                 }
@@ -49,15 +52,16 @@ export const AIPlaceholderPlugin: Plugin = () => {
                 return false;
             }, 4),
             editor.registerCommand(KEY_TAB_COMMAND, (e) => {
-                if(key && text){
+                if (key && text) {
                     e.preventDefault();
                     const node = $getNodeByKey(key);
-                    if($isTextNode(node)){
+                    if ($isTextNode(node)) {
                         node.getWritable().__text += text;
                         node.selectEnd();
+                        return true;
                     }
                 }
-                return true;
+                return false;
             }, 4)
         )
     }, [editor, key, refresh, text]);
