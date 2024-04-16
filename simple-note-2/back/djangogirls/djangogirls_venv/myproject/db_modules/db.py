@@ -139,14 +139,14 @@ class DB:
         else:
             return f"No result found for {username}"
 
-    # 透過username和title_id插入內容
-    def filename_insert_content(self, username, title_id, content):
+    # 透過username和file_title_id插入內容
+    def filename_insert_content(self, username, file_title_id, content):
         try:
             self.cursor.execute(
-                "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND title_id = ?;",
+                "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND file_title_id = ?;",
                 (
                     username,
-                    title_id,
+                    file_title_id,
                 ),
             )
             # 獲取查詢結果的第一行
@@ -155,28 +155,28 @@ class DB:
             if row is None:
                 # 如果資料不存在，則使用 INSERT 插入新資料
                 self.cursor.execute(
-                    "INSERT INTO User_Note_Data (user_id, title_id, content) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
-                    (username, title_id, content),
+                    "INSERT INTO User_Note_Data (user_id, file_title_id, content) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
+                    (username, file_title_id, content),
                 )
             else:
                 # 如果資料存在，則使用 UPDATE 更新資料
                 self.cursor.execute(
-                    "UPDATE User_Note_Data SET content = ?, title_id = ? WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?);",
-                    (content, title_id, username),
+                    "UPDATE User_Note_Data SET content = ?, file_title_id = ? WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?);",
+                    (content, file_title_id, username),
                 )
             self.conn.commit()
             return True
         except sqlite3.Error as e:
             return e
 
-    # 透過username和title_id回傳內容
-    def filename_load_content(self, username, title_id):
+    # 透過username和file_title_id回傳內容
+    def filename_load_content(self, username, file_title_id):
         try:
             self.cursor.execute(
-                "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND title_id = ?;",
+                "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_title_id = ?;",
                 (
                     username,
-                    title_id,
+                    file_title_id,
                 ),
             )
             # 獲取查詢結果的第一行
@@ -186,17 +186,20 @@ class DB:
             return e
 
     # insert user_id和note_name到User_Note_Data裡
-    def insert_user_id_note_name_User_Note_Data(self, username, note_name):
+    def insert_user_id_note_name_User_Note_Data(self, username, note_name ,file_title_id):
         try:
-            user_data = (username, note_name)
+            user_data = (username, note_name , file_title_id)
             self.cursor.execute(
-                "INSERT INTO User_Note_Data (user_id, note_name) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?);",
+                "INSERT INTO User_Note_Data (user_id, note_name ,file_title_id) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?,?);",
                 user_data,
             )
             self.conn.commit()
             return True
         except sqlite3.Error as e:
             return e
+        
+
+    
 
     # 給username, note_name 插入 content_blob, content_mimetype
     # username or note_name 不存在會傳回錯誤。
@@ -262,7 +265,19 @@ class DB:
 
         except sqlite3.Error as e:
             return f"Error: {str(e)}"
-
+    # 給username和file_title_id來刪除整行
+    def delete_User_Note_Data_username_file_title_id(self, username, file_title_id):
+        try:
+            user_data = (username, file_title_id)
+            self.cursor.execute(
+                "DELETE FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_title_id = ?;",
+                user_data,
+            )
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            return e
+    
     # 給username和note_name來刪除整行
     def delete_User_Note_Data_username_to_note_name(self, username, note_name):
         try:
@@ -468,7 +483,7 @@ class DB:
 
 my_db = DB()
 print(
-    my_db.update_User_File_Data_content_blob_and_content_mimetype(
-        "user01", "abc", "updateblob", "type1"
+    my_db.insert_user_id_note_name_User_Note_Data(
+        "user01", "abc", "2",
     )
 )
