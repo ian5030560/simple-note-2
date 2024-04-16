@@ -11,7 +11,7 @@ export const INSERT_COMMENT: LexicalCommand<void> = createCommand();
 const CommentPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
 
-    useEffect(() => { wfewef
+    useEffect(() => { 
         return mergeRegister(
             editor.registerCommand(INSERT_COMMENT, () => {
                 let selection = $getSelection();
@@ -45,7 +45,7 @@ const CommentPlugin: Plugin = () => {
             editor.registerMutationListener(MarkNode, (mutations) => {
                 Array.from(mutations).forEach(([key, tag]) => {
                     if(tag === "destroyed"){
-                        b
+                        
                     }
                 })
             })

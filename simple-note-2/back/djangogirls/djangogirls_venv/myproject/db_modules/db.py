@@ -198,52 +198,70 @@ class DB:
         except sqlite3.Error as e:
             return e
 
-    #給username, note_name 插入 content_blob, content_mimetype
-    #username or note_name 不存在會傳回錯誤。
-    def insert_User_File_Data_content_blob_and_content_mimetype(self, username, note_name, content_blob, content_mimetype):
+    # 給username, note_name 插入 content_blob, content_mimetype
+    # username or note_name 不存在會傳回錯誤。
+    def insert_User_File_Data_content_blob_and_content_mimetype(
+        self, username, note_name, content_blob, content_mimetype
+    ):
         try:
-            self.cursor.execute("SELECT id FROM User_Personal_Info WHERE username=?;", (username,))
+            self.cursor.execute(
+                "SELECT id FROM User_Personal_Info WHERE username=?;", (username,)
+            )
             user_id = self.cursor.fetchone()
             if user_id is None:
                 return "Error: Username does not exist"
 
-            self.cursor.execute("SELECT id FROM User_Note_Data WHERE user_id = ? AND note_name = ?;", (user_id[0], note_name))
+            self.cursor.execute(
+                "SELECT id FROM User_Note_Data WHERE user_id = ? AND note_name = ?;",
+                (user_id[0], note_name),
+            )
             note_id = self.cursor.fetchone()
             if note_id is None:
                 return "Error: Note name does not exist"
 
-            self.cursor.execute("INSERT INTO User_File_Data (note_id, content_blob , content_mimetype) VALUES (?, ? ,?);", (note_id[0], content_blob ,content_mimetype))
-            self.conn.commit()  
+            self.cursor.execute(
+                "INSERT INTO User_File_Data (note_id, content_blob , content_mimetype) VALUES (?, ? ,?);",
+                (note_id[0], content_blob, content_mimetype),
+            )
+            self.conn.commit()
             return "Insert successful !!!"
 
         except sqlite3.Error as e:
             return f"Error: {str(e)}"
 
-
-    #給username, note_name update content_blob and content_mimetype
-    #username or note_name 不存在會傳回錯誤。
-    def update_User_File_Data_content_blob_and_content_mimetype(self, username, note_name, content_blob, content_mimetype):
+    # 給username, note_name update content_blob and content_mimetype
+    # username or note_name 不存在會傳回錯誤。
+    def update_User_File_Data_content_blob_and_content_mimetype(
+        self, username, note_name, content_blob, content_mimetype
+    ):
         try:
             # check username exist
-            self.cursor.execute("SELECT id FROM User_Personal_Info WHERE username=?;", (username,))
+            self.cursor.execute(
+                "SELECT id FROM User_Personal_Info WHERE username=?;", (username,)
+            )
             user_id = self.cursor.fetchone()
             if user_id is None:
                 return "Error: Username does not exist"
 
             # check note_name exist
-            self.cursor.execute("SELECT id FROM User_Note_Data WHERE user_id = ? AND note_name = ?;", (user_id[0], note_name))
+            self.cursor.execute(
+                "SELECT id FROM User_Note_Data WHERE user_id = ? AND note_name = ?;",
+                (user_id[0], note_name),
+            )
             note_id = self.cursor.fetchone()
             if note_id is None:
                 return "Error: Note name does not exist"
 
             # update content_blob and content_mimetype
-            self.cursor.execute("UPDATE User_File_Data SET content_blob = ?, content_mimetype = ? WHERE note_id = ?;", (content_blob, content_mimetype, note_id[0]))
+            self.cursor.execute(
+                "UPDATE User_File_Data SET content_blob = ?, content_mimetype = ? WHERE note_id = ?;",
+                (content_blob, content_mimetype, note_id[0]),
+            )
             self.conn.commit()
             return "Update successful !!!"
 
         except sqlite3.Error as e:
             return f"Error: {str(e)}"
-
 
     # 給username和note_name來刪除整行
     def delete_User_Note_Data_username_to_note_name(self, username, note_name):
@@ -449,4 +467,8 @@ class DB:
 
 
 my_db = DB()
-print(my_db.update_User_File_Data_content_blob_and_content_mimetype("user01", "abc","updateblob","type1"))
+print(
+    my_db.update_User_File_Data_content_blob_and_content_mimetype(
+        "user01", "abc", "updateblob", "type1"
+    )
+)
