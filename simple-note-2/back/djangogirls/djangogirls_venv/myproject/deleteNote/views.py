@@ -5,7 +5,7 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import GetNote  # 新建檔案改這個
+from .models import DeleteNote  # 新建檔案改這個
 from db_modules.db import DB  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
@@ -17,23 +17,25 @@ from django.middleware.csrf import get_token
 """@csrf_protect"""
 
 
-class GetNoteView(APIView):
+class DeleteNoteView(APIView):
     """
-    取得筆記: getNote\n
-        前端傳: \n
+    刪除筆記: deleteNote\n
+        前端傳:\n
             帳號名(name: username, type: str)\n
             筆記id(name: noteId, type: str)\n
-        後端回: 筆記內容(type: str)\n
+        後端回: status code 200 if success\n
 
     其他例外:\n
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
-    serializer_class = GetNoteSerializer
+    serializer_class = DeleteNoteSerializer
 
     def get(self, request, format=None):
-        output = [{"getNote": output.getNote} for output in GetNote.objects.all()]
+        output = [
+            {"deleteNote": output.deleteNote} for output in DeleteNote.objects.all()
+        ]
         return Response("get")
 
     def post(self, request, format=None):
@@ -43,15 +45,15 @@ class GetNoteView(APIView):
             noteId = data.get("noteId")  # 筆記ID
             db = DB()
 
-            returnNoteContent = db.filename_load_content(
+            returnStatus = db.delete_User_Note_Data_username_file_title_id(
                 username, noteId
-            )  # 透過noteId來取得資料
+            )  # 透過username, noteId來刪除資料
 
-            if returnNoteContent:  # 取得成功
-                return Response(returnNoteContent, status=status.HTTP_200_OK)
+            if returnStatus:  # 刪除成功
+                return Response(status=status.HTTP_200_OK)
 
             # serializer
-            serializer = GetNoteSerializer(data=data)
+            serializer = DeleteNoteSerializer(data=data)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()

@@ -19,16 +19,12 @@ from django.middleware.csrf import get_token
 
 class AddNoteView(APIView):
     """
-    前端傳來:\n
-        帳號名(name: username, type: str),\n
-        文件名(name: filename, type: str),\n
-        文件內容(name: content, type: blob),\n
-        mimetype(name: mimetype, type: string).\n
-    後端回傳:\n
-        Str: localhost:8000/view_file/"filename", Response HTTP_200_OK.\n
-        Str: sqlite error.\n
-            insert content error: HTTP_400_BAD_REQUEST.\n
-            insert mimetype error: HTTP_401_UNAUTHORIZED.\n
+    增加筆記: addNote\n
+        前端傳: \n
+            帳號名(name: username, type: str)\n
+            筆記id(name: noteId, type: str)\n
+            筆記名稱(name: noteame, type: str)\n
+        後端回: status code 200 if success\n
 
     其他例外:\n
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
@@ -46,14 +42,15 @@ class AddNoteView(APIView):
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
             noteId = data.get("noteId")  # 筆記ID
+            notename = data.get("notename")  # 筆記名稱
             db = DB()
 
-            returnNoteContent = db.filename_load_content(
-                username, noteId
-            )  # 透過noteId來取得資料
+            returnStatus = db.insert_user_id_note_name_User_Note_Data(
+                username, notename, noteId
+            )  # 透過username, notename, noteId來新增資料
 
-            if returnNoteContent:  # 取得成功
-                return Response(returnNoteContent, status=status.HTTP_200_OK)
+            if returnStatus:  # 新增成功
+                return Response(status=status.HTTP_200_OK)
 
             # serializer
             serializer = AddNoteSerializer(data=data)
