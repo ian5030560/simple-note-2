@@ -185,7 +185,7 @@ class DB:
         except sqlite3.Error as e:
             return e
 
-    # 傳user_id和note_name到User_Note_Data裡
+    # insert user_id和note_name到User_Note_Data裡
     def insert_user_id_note_name_User_Note_Data(self, username, note_name):
         try:
             user_data = (username, note_name)
@@ -440,7 +440,7 @@ class DB:
                     self.conn.commit()
                     return True
         except sqlite3.Error as e:
-            return e
+            return e   
 
     def close_connection(self):
         # 關閉游標和資料庫連接
