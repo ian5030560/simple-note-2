@@ -52,6 +52,7 @@ class AddFileView(APIView):
             returnValue = db.update_User_File_Data_content_blob_and_content_mimetype(
                 username, filename, content, mimetype
             )  # 透過content來新增資料
+            print(returnValue)
             if returnValue == "Update successful !!!":
                 returnValue = True
             else:
