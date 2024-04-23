@@ -31,8 +31,8 @@ class ViewFileView(APIView):
         db = DB()
 
         # Retrieve content and mimetype from the database
-        content = db.username_file_name_return_content_blob(username, filename)
-        mimetype = db.username_file_name_return_content_mimetype(username, filename)
+        content = db.username_note_name_return_content_blob(username, filename)
+        mimetype = db.username_note_name_return_content_mimetype(username, filename)
 
         # Check if content and mimetype are not None
         if content is not None and mimetype is not None:

@@ -49,29 +49,23 @@ class AddFileView(APIView):
             content = data.get("content")  # 文件內容
             mimetype = data.get("mimetype")  # 媒體種類
             db = DB()
+            if db.update_User_File_Data_content_blob_and_content_mimetype(
+                username, filename, content, mimetype
+            ):
+                returnValue
+            else:
+                returnValue = (
+                    db.insert_User_File_Data_content_blob_and_content_mimetype(
+                        username, filename, content, mimetype
+                    )
+                )  # 透過content來新增資料
 
-            returnValueInsertContent = db.filename_insert_content(
-                username, filename, content
-            )  # 透過content來新增資料
-            returnValueInsertMimetype = db.insert_into_User_Note_Data_content_mimetype(
-                username, filename, mimetype
-            )  # 透過mimetype來新增資料
-
-            if (
-                returnValueInsertContent and returnValueInsertMimetype
-            ):  # 新增成功(透過content, mimetype都成功)
+            if returnValue:  # 新增成功(透過content, mimetype都成功)
                 url = "localhost:8000/view_file/" + str(username) + "/" + str(filename)
                 return Response(url, status=status.HTTP_200_OK)
 
-            elif returnValueInsertContent != True:  # 透過content新增失敗
-                return Response(
-                    returnValueInsertContent, status=status.HTTP_400_BAD_REQUEST
-                )
-
-            elif returnValueInsertMimetype != True:  # 透過mimetype新增失敗
-                return Response(
-                    returnValueInsertMimetype, status=status.HTTP_401_UNAUTHORIZED
-                )
+            elif returnValue != True:
+                return Response(returnValue, status=status.HTTP_401_UNAUTHORIZED)
 
             # serializer
             serializer = AddFileSerializer(data=data)
