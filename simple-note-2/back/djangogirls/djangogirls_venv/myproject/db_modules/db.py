@@ -52,7 +52,7 @@ class DB:
             self.conn.commit()
             return True
         except sqlite3.Error as e:
-            return False
+            return e
 
     def check_signin_status(self, username):
         self.cursor.execute(
