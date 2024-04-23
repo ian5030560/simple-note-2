@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
+    "@excalidraw/excalidraw": "^0.17.3",
     "@lexical/react": "^0.13.1",
     "@reduxjs/toolkit": "^2.1.0",
     "@testing-library/jest-dom": "^5.17.0",
@@ -17,8 +18,10 @@
     "antd": "^5.13.2",
     "colorjs.io": "^0.4.5",
     "filesize": "^10.1.1",
+    "katex": "^0.16.10",
     "lexical": "^0.13.1",
     "pdfjs-dist": "^4.0.379",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-cookie": "^7.0.2",
     "react-dom": "^18.2.0",

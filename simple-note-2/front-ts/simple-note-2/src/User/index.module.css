@@ -1,6 +1,7 @@
 .sideBar{
     height: 100%;
     overflow: auto;
+    padding: 24px 12px;
 }
 
 .button{

@@ -1,6 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Plugin } from "..";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { mergeRegister } from "@lexical/utils";
 import {
     $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, KEY_DOWN_COMMAND, KEY_TAB_COMMAND,
