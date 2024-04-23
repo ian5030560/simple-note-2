@@ -6,7 +6,7 @@ TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myp
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(BACK_DB)
+        self.conn = sqlite3.connect(TEST_DB)
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
@@ -482,10 +482,5 @@ class DB:
 
 
 my_db = DB()
-print(
-    my_db.insert_user_id_note_name_User_Note_Data(
-        "user01",
-        "abc",
-        "2",
-    )
-)
+print(my_db. username_note_name_return_content_blob('user01','個人筆記',))
+
