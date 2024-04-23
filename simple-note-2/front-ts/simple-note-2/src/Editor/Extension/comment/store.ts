@@ -1,5 +1,4 @@
-import { useMemo } from "react";
-import getRandomString from "../../../util/random";
+import { useEffect, useMemo, useState } from "react";
 
 type Comment = {
     author: string,
@@ -7,34 +6,42 @@ type Comment = {
     id: string,
     timestamp: number,
 };
-type Item = [string, Comment[]]
-type Collection = Map<string, Comment[]>;
-class Store{    
+type Item = {
+    title: string,
+    comments: Comment[]
+}
+type Collection = Map<string, Item>;
+type ItemData = [string, Item];
+class Store{
     private _collection: Collection;
     
-    constructor(comments?: Array<Item>){
+    constructor(comments?: Array<ItemData>){
         this._collection = new Map(comments) || new Map();
     }
 
-    createItem(): Comment[] | undefined{
-        let id = this.getItemId();
-        this._collection.set(id, []);
-        return this.getItem(id);
+    createItem(id: string, title: string){
+        this._collection.set(id, {
+            title: title,
+            comments: [],
+        });
+
+        return this._collection.get(id)!;
     }
 
-    getItem(id: string): Comment[] | undefined{
+    getItem(id: string){
         return this._collection.get(id);
     }
 
-    deleteItem(id: string): boolean{
+    deleteItem(id: string){
         return this._collection.delete(id);
     }
 
-    private getItemId(): string{
-        return getRandomString(10);
+    public get collection() {
+        return this._collection;
     }
 }
 
-export default function useStore(comments: Array<Item>){
-    return useMemo(() => new Store(comments), [comments]);
+export default function useStore(comments: Array<ItemData>){
+    const [store] = useState(new Store(comments));
+    return store;
 }

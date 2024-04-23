@@ -1,15 +1,20 @@
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Plugin } from "..";
-import { $getSelection, $isRangeSelection, $isTextNode, LexicalCommand, SELECTION_CHANGE_COMMAND, createCommand } from "lexical";
+import { $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, LexicalCommand, SELECTION_CHANGE_COMMAND, createCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $wrapSelectionInMarkNode, $getMarkIDs, MarkNode, $createMarkNode } from "@lexical/mark";
+import { $wrapSelectionInMarkNode, $getMarkIDs, MarkNode, $createMarkNode, $isMarkNode } from "@lexical/mark";
 import getRandomString from "../../../util/random";
-import { CommentPool } from "./component";
+import CommentPool from "./component";
 import { mergeRegister, registerNestedElementResolver } from "@lexical/utils";
+import useStore from "./store";
+import { useCookies } from "react-cookie";
 
 export const INSERT_COMMENT: LexicalCommand<void> = createCommand();
 const CommentPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
+    const store = useStore([]);
+    const [title, setTitle] = useState("");
+    const [{username}] = useCookies(["username"]);
 
     useEffect(() => { 
         return mergeRegister(
@@ -26,8 +31,8 @@ const CommentPlugin: Plugin = () => {
                     if($isRangeSelection(selection)){
                         let node = selection.anchor.getNode();
                         if($isTextNode(node)){
-                            let id = $getMarkIDs(node, selection.anchor.offset);
-                            
+                            // let ids = $getMarkIDs(node, selection.anchor.offset);
+                            setTitle(selection.getTextContent());
                         }
                     }
                 })
@@ -44,15 +49,51 @@ const CommentPlugin: Plugin = () => {
 
             editor.registerMutationListener(MarkNode, (mutations) => {
                 Array.from(mutations).forEach(([key, tag]) => {
+                    if(tag === "created"){
+                        editor.update(() => {
+                            const node = $getNodeByKey(key);
+                            if($isMarkNode(node)){
+                                let ids = node.getIDs();
+                                for(let id of ids){
+                                    if(!store.getItem(id)){
+                                        console.log(title);
+                                        store.createItem(id, title);
+                                    }
+                                }
+                            }
+                        })
+                    }
                     if(tag === "destroyed"){
                         
                     }
                 })
             })
         )
-    }, [editor]);
+    }, [editor, store, title]);
 
-    return <CommentPool />;
+    const handleAdd = useCallback((id: string, text: string) => {
+        let item = store.getItem(id);
+        if(!item) return;
+        item.comments.push({
+            id: getRandomString(5),
+            author: username,
+            content: text,
+            timestamp: Date.now(),
+        })
+    }, [store, username]);
+
+    
+    return <CommentPool items={Array.from(store.collection).map(([key, item]) => {
+        return { 
+            title: item.title,
+            id: key,
+            items: item.comments.map(i => ({
+                author: i.author,
+                timestamp: i.timestamp,
+                text: i.content, 
+            })),
+        } 
+    })} onAdd={handleAdd}/>;
 }
 
 export default CommentPlugin;

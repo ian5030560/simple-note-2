@@ -8,7 +8,7 @@ import { CanvasToolBar } from "./tool";
 import { $isImageNode } from "../../image/node";
 import { $getNodeByKey, createCommand, LexicalCommand } from "lexical";
 import { INSERT_IMAGE } from "../../image/plugin";
-import postData from "../../../../util/post";
+import postData from "../../../../util/api";
 import Modal, { ModalRef } from "./../../UI/modal";
 
 export type CanvasData = {

@@ -57,6 +57,10 @@ INSTALLED_APPS = [
     "add_theme",
     "gemma",
     "add_content",
+    "getNote",
+    "addNote",
+    "deleteNote",
+    "saveNote",
 ]
 
 MIDDLEWARE = [

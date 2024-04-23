@@ -1,30 +1,23 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal, FlexProps } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
 import FileTree from "./FileTree";
 import { useCookies } from "react-cookie";
-import User from "../../service/user";
 import SettingPanel from "./SettingPanel";
 import { useNavigate } from "react-router-dom";
+import useAPI, { APIs } from "../../util/api";
 
 const { Title } = Typography;
 
-// interface UserProfileProp {
-//     username: string;
-//     src?: string;
-//     onLogout?: () => void;
-//     onSet?: () => void;
-// }
-
-const UserProfile = () => {
-
+const UserProfile = ({ style }: { style?: React.CSSProperties }) => {
     const { token } = theme.useToken();
-    const [logOutOpen, setLogOutOpen] = useState(false);
+    const [signOutOpen, setSignOutOpen] = useState(false);
     const [settingOpen, setSettingOpen] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const [{ username }, , removeCookies] = useCookies(["username"]);
     const navigate = useNavigate();
+    const signOut = useAPI(APIs.signOut);
 
     const items = [
         {
@@ -45,17 +38,17 @@ const UserProfile = () => {
                 setSettingOpen(true)
                 break;
             case "log out":
-                setLogOutOpen(true);
+                setSignOutOpen(true);
                 break;
             default:
                 break;
         }
     }
 
-    const handleLogoutOk = useCallback(() => {
-        setLogOutOpen(false);
+    const handleSignOutOk = useCallback(() => {
+        setSignOutOpen(false);
 
-        User.userLogOut(username)
+        signOut(username)
             .then((value) => {
                 if (!value) {
                     api.error(
@@ -65,24 +58,20 @@ const UserProfile = () => {
                         }
                     )
                 }
-                else{
+                else {
                     removeCookies("username");
                     navigate("/");
                 }
             })
-    }, [api, navigate, removeCookies, username]);
+    }, [api, navigate, removeCookies, signOut, username]);
 
-    return <Flex
-        align="baseline"
-        gap="small"
-        style={{ padding: token.padding }}
-    >
+    return <Flex align="baseline" gap="small" style={style}>
         <Avatar
             size={"large"}
             shape="square"
-            icon={<UserOutlined/>}
-            // icon={src ? null : <UserOutlined />}
-            // src={src}
+            icon={<UserOutlined />}
+        // icon={src ? null : <UserOutlined />}
+        // src={src}
         />
         <Title level={4} ellipsis>{username}</Title>
         <Dropdown
@@ -93,11 +82,11 @@ const UserProfile = () => {
             <EllipsisOutlined style={{ color: token.colorText }} />
         </Dropdown>
         <Modal
-            open={logOutOpen} centered title="登出" okText="是" cancelText="否"
+            open={signOutOpen} centered title="登出" okText="是" cancelText="否"
             okButtonProps={{ danger: true, }}
             cancelButtonProps={{ type: "default" }}
-            onOk={handleLogoutOk}
-            onCancel={() => setLogOutOpen(false)}
+            onOk={handleSignOutOk}
+            onCancel={() => setSignOutOpen(false)}
         >
             <Text>是否確定登出</Text>
         </Modal>
@@ -120,10 +109,8 @@ const SideBar = ({ className, style, ...prop }: SideBarProps) => {
     return <Flex vertical className={className}
         style={{ backgroundColor: token.colorPrimary, ...style }}
         {...prop}>
-        <Flex vertical>
-            <UserProfile/>
-            <FileTree />
-        </Flex>
+        <UserProfile style={{ marginBottom: 12 }} />
+        <FileTree />
     </Flex>
 
 }

@@ -19,16 +19,11 @@ from django.middleware.csrf import get_token
 
 class GetNoteView(APIView):
     """
-    前端傳來:\n
-        帳號名(name: username, type: str),\n
-        文件名(name: filename, type: str),\n
-        文件內容(name: content, type: blob),\n
-        mimetype(name: mimetype, type: string).\n
-    後端回傳:\n
-        Str: localhost:8000/view_file/"filename", Response HTTP_200_OK.\n
-        Str: sqlite error.\n
-            insert content error: HTTP_400_BAD_REQUEST.\n
-            insert mimetype error: HTTP_401_UNAUTHORIZED.\n
+    取得筆記: getNote\n
+        前端傳: \n
+            帳號名(name: username, type: str)\n
+            筆記id(name: noteId, type: str)\n
+        後端回: 筆記內容(type: str)\n
 
     其他例外:\n
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n

@@ -54,6 +54,10 @@ from update_info.views import UpdateInfoView
 from add_theme.views import AddThemeView
 from gemma.views import GemmaView
 from add_content.views import AddContentView
+from addNote.views import AddNoteView
+from deleteNote.views import DeleteNoteView
+from saveNote.views import SaveNoteView
+from getNote.views import GetNoteView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -91,6 +95,10 @@ urlpatterns = [
         name="view_file/<username>/<filename>",
     ),  # view_file/username/filename
     path("add_content/", AddContentView.as_view(), name="add_content"),  # add_content
+    path("getNote/", GetNoteView.as_view(), name="getNote"),  # getNote
+    path("addNote/", AddNoteView.as_view(), name="addNote"),  # addNote
+    path("deleteNote/", DeleteNoteView.as_view(), name="deleteNote"),  # deleteNote
+    path("saveNote/", SaveNoteView.as_view(), name="saveNote"),  # saveNote
     path("csrf/", views.csrf),
     path("ping/", views.ping),
 ]

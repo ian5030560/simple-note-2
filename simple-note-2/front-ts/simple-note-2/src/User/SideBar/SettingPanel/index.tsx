@@ -2,7 +2,7 @@ import { Modal, Flex, Image, Input, Button, Select, Typography, InputRef } from 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import styles from "./index.module.css";
-import postData from "../../../util/post";
+import useAPI, { APIs } from "../../../util/api";
 
 type Info = {
     username: string;
@@ -26,7 +26,9 @@ const SettingPanel = (prop: SettingPanelProp) => {
     const [info, setInfo] = useState<Info>();
     const [pwdModal, contextHolder] = Modal.useModal();
     const pwdRef = useRef<InputRef>(null);
-
+    const getInfo = useAPI(APIs.getInfo);
+    const updateInfo = useAPI(APIs.updateInfo);
+    
     useEffect(() => {
         // postData("http://localhost:8000/get_info/", {
         //     username: "user",

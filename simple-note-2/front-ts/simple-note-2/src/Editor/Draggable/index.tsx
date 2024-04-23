@@ -32,7 +32,6 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
         let { x, y } = elem.getBoundingClientRect();
         let { top, left } = wrapper.getBoundingClientRect();
         let { width } = ref.current.getBoundingClientRect();
-
         action.setId(elem.getAttribute(DRAGGABLE_TAG)!);
         action.moveElement(x - left - width, y - top);
 

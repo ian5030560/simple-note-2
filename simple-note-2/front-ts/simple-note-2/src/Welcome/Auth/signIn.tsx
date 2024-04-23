@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Typography, Flex, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal, ForgetPwdModal } from "./modal";
-import postData from "../../util/post";
+import { APIs } from "../../util/api";
 import { STATE, validateMessages, AuthProp } from "./constant";
 import { useCookies } from "react-cookie";
+import useAPI from "../../util/api";
 
 const { Title } = Typography;
 
@@ -16,12 +17,12 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [submittable, setSubmittable] = useState(false);
     const [, setCookie] = useCookies(["username"]);
     const values = Form.useWatch([], form);
+    const signIn = useAPI(APIs.signIn);
 
     useEffect(() => {
-        form
-            .validateFields({
-                validateOnly: true,
-            })
+        form.validateFields({
+            validateOnly: true,
+        })
             .then(
                 () => setSubmittable(true),
                 () => setSubmittable(false)
@@ -37,10 +38,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             id: "sign-in",
         };
 
-        postData(
-            "http://localhost:8000/signin/",
-            values,
-        )
+        signIn(values)
             .then(res => {
                 if (res.status === 200 || res.status === 201) {
                     setCookie("username", values["username"]);
@@ -85,9 +83,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 <Input.Password />
             </Form.Item>
             <Form.Item
-                wrapperCol={{
-                    offset: 2,
-                }}
+                wrapperCol={{ offset: 2, }}
             >
                 <Flex justify="space-between">
                     <Space>
@@ -122,7 +118,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 open: state === STATE.SUCCESS,
                 onSuccessClose: () => {
                     setState(() => null);
-                    navigate(0);
+                    navigate("user");
                 }
             }}
 

@@ -1,125 +1,70 @@
-import React, { useState } from "react";
-import { Modal, Input, Flex, Typography, theme, ModalProps } from "antd";
+import { SetStateAction, createContext, useContext, useState } from "react";
+import { Modal, Input, Flex, Typography, Button, TreeDataNode } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { determineWhiteOrBlack } from "../../../util/color";
 
 const { Text } = Typography;
 
-interface ToolButtonsProp {
-    nodeKey: string,
-    onDelete: (key: string) => void,
-    onAdd: (key: string) => void,
-    root: boolean
+interface NodeProp {
+    title: string;
+    nodeKey: string;
+    onAdd: (key: string, text: string) => void;
+    onDelete: (key: string, text: string) => void;
+    root?: boolean;
 }
-const ToolButtons: React.FC<ToolButtonsProp> = ({ nodeKey, onDelete, onAdd, root }) => {
+export default function Node(prop: NodeProp) {
 
-    // const { token } = theme.useToken();
+    const [add, setAdd] = useState(false);
+    const [deleted, setDelete] = useState(false);
+    const [input, setInput] = useState("");
 
-    return <Flex>
-        {!root && <DeleteOutlined
-            onClick={(e) => {
-                e.preventDefault();
-                onDelete?.(nodeKey);
-            }}
-        />}
-
-        <PlusOutlined
-            onClick={(e) => {
-                e.preventDefault();
-                onAdd?.(nodeKey);
-            }}
-        />
+    return <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
+        <Text>{prop.title}</Text>
+        <Flex>
+            {
+                !prop.root && <Button icon={<DeleteOutlined />} type="text" size="small" onClick={(e) => { e.preventDefault(); setDelete(true) }} />
+            }
+            <Button icon={<PlusOutlined />} type="text" size="small" onClick={(e) => { e.preventDefault(); setAdd(true) }} />
+        </Flex>
+        <Modal open={add} onCancel={() => setAdd(false)}
+            title="輸入名稱" okText="確認" cancelText="取消"
+            onOk={() => {
+                setAdd(false);
+                prop.onAdd?.(prop.nodeKey, input);
+                setInput(() => "");
+            }}>
+            <Input value={input} placeholder="請輸入..." onChange={(e) => setInput(() => e.target.value)} />
+        </Modal>
+        <Modal open={deleted}
+            onCancel={() => setDelete(false)}
+            onOk={() => { setDelete(false); prop.onDelete?.(prop.nodeKey, prop.title) }}
+            title={`刪除${prop.title}`} okButtonProps={{ danger: true, type: "primary" }} okText="是"
+            cancelButtonProps={{ danger: true, type: "default" }} cancelText="否"
+        >
+            <Text>是否刪除{prop.title}</Text>
+        </Modal >
     </Flex>
 }
 
-interface NodeProp {
-    text: React.ReactNode,
-    nodeKey: string,
-    onAdd: (key: string, text: React.ReactNode) => void,
-    onDelete: (key: string, text: React.ReactNode) => void,
-    root: boolean,
-    addModalRender: React.ReactNode,
-    deleteModalRender: React.ReactNode,
-    addModalProp: ModalProps,
-    deleteModalProp: ModalProps
-}
-const Node: React.FC<NodeProp> = (prop) => {
+const FileNodeState = createContext<TreeDataNode[]>([]);
+const FileNodeDispatch = createContext<React.Dispatch<SetStateAction<TreeDataNode[]>>>(() => { });
 
-    const [openAdd, setOpenAdd] = useState(false);
-    const [openDelete, setOpenDelte] = useState(false);
-    // const { token } = theme.useToken();
+export const FileNodeProvider = ({ children }: { children: React.ReactNode }) => {
+    const [nodes, setNodes] = useState<TreeDataNode[]>([{
+        key: "individual",
+        title: "個人筆記",
+        children: [],
+    }]);
 
-    return <>
-        <Flex gap={"large"} onClick={(e) => e.preventDefault()}>
-            <Text ellipsis style={{ whiteSpace: "nowrap" }}>{prop.text}</Text>
-            <ToolButtons
-                nodeKey={prop.nodeKey}
-                onAdd={() => setOpenAdd(true)}
-                onDelete={() => setOpenDelte(true)}
-                root={prop.root}
-            />
-        </Flex>
-        <Modal open={openAdd}
-            onCancel={() => setOpenAdd(false)}
-            onOk={() => { setOpenAdd(false); prop.onAdd?.(prop.nodeKey, prop.text) }}
-            {...prop.addModalProp}>
-            {prop.addModalRender}
-        </Modal>
-        <Modal open={openDelete}
-            onCancel={() => setOpenDelte(false)}
-            onOk={() => { setOpenDelte(false); prop.onDelete?.(prop.nodeKey, prop.text) }}
-            {...prop.deleteModalProp}
-        >
-            {prop.deleteModalRender}
-        </Modal>
-    </>
+    return <FileNodeState.Provider value={nodes}>
+        <FileNodeDispatch.Provider value={setNodes}>
+            {children}
+        </FileNodeDispatch.Provider>
+    </FileNodeState.Provider>
 }
 
-type IndividualProp = Pick<NodeProp, "text" | "nodeKey" | "onAdd" | "onDelete" | "root">;
+export function useFileNodes(): [TreeDataNode[], React.Dispatch<SetStateAction<TreeDataNode[]>>] {
+    const nodes = useContext(FileNodeState);
+    const setNodes = useContext(FileNodeDispatch);
 
-const IndividualNode: React.FC<IndividualProp> = ({ text, nodeKey, onAdd, onDelete, root }) => {
-
-    const [input, setInput] = useState("");
-
-    return <Node
-        text={text}
-        nodeKey={nodeKey}
-        onAdd={() => {
-            onAdd?.(nodeKey, input);
-            setInput(() => "");
-        }}
-        onDelete={onDelete}
-        root={root}
-        addModalRender={<Input value={input} placeholder="請輸入..." onChange={(e) => setInput(() => e.target.value)} />}
-        addModalProp={{ title: "輸入名稱" }}
-        deleteModalRender={<Text>是否刪除{text}</Text>}
-        deleteModalProp={{
-            title: `刪除${text}`,
-            okText: "是",
-            okType: "danger",
-            cancelText: "否"
-        }}
-    />
+    return [nodes, setNodes];
 }
-
-export type NodeCreater = (
-    text: React.ReactNode,
-    nodeKey: string,
-    onAdd: (key: string, text: React.ReactNode) => void,
-    onDelete: (key: string, text: React.ReactNode) => void,
-    root: boolean
-) => React.JSX.Element;
-
-export const createIndiviualNode: NodeCreater = (
-    text,
-    nodeKey,
-    onAdd,
-    onDelete,
-    root
-) => <IndividualNode
-        text={text}
-        nodeKey={nodeKey}
-        onAdd={onAdd}
-        onDelete={onDelete}
-        root={root}
-    />;

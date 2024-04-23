@@ -6,7 +6,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
 import { $isLinkNode, LinkNode } from "@lexical/link";
-import { theme, Button, Input, InputRef } from "antd";
+import { Button, Input, InputRef } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -22,8 +22,6 @@ const LinkPlugin: Plugin = () => <LexicalLinkPlugin validateUrl={validateUrl} />
 
 export default LinkPlugin;
 
-const PADDING = 8;
-
 interface LinkProp {
     url?: string,
     top: number,
@@ -34,14 +32,10 @@ interface LinkProp {
     onDiscardClick: (e: React.MouseEvent) => void;
 }
 const Link = React.forwardRef((prop: LinkProp, ref: React.Ref<HTMLDivElement>) => {
-    const { token } = theme.useToken();
 
     return <div
         className={styles.floatingLink}
-        style={{ 
-            backgroundColor: token.colorBgBase,
-            transform: `translate(${prop.left}px, ${prop.top}px)`
-        }}
+        style={{ transform: `translate(${prop.left}px, ${prop.top}px)` }}
         ref={ref}
     >
         <a href={prop.url} style={{ display: !prop.editable ? undefined : "none" }}>{prop.url}</a>
@@ -75,11 +69,11 @@ export const FloatingLinkPlugin: Plugin = () => {
                     url = parent.getURL();
                     let element = editor.getElementByKey(parent.getKey());
 
-                    if(!element || !wrapper || !fRef.current) return;
+                    if (!element || !wrapper || !fRef.current) return;
 
                     let { x, y } = element.getBoundingClientRect();
                     let { top, left } = wrapper.getBoundingClientRect();
-                    let {height} = fRef.current.getBoundingClientRect();
+                    let { height } = fRef.current.getBoundingClientRect();
 
                     position = { x: x - left, y: y - top - height };
                     inputRef.current!.input!.value = url;

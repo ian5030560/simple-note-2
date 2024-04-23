@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import TopBar, { TopBarProp } from "./topbar";
 import Brand from "./brand";
 import { Flex, ConfigProvider, FloatButton, theme } from "antd";
@@ -6,10 +6,6 @@ import Auth from "./Auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import defaultTheme from "../theme/default";
 import Intro from "./Intro";
-import "../resource/root.css";
-import { useCookies } from "react-cookie";
-import User from "../service/user";
-import { useNavigate } from "react-router-dom";
 
 interface HeaderProp extends TopBarProp {
     backgroundColor: string,
@@ -26,7 +22,7 @@ const Header: React.FC<HeaderProp> = (prop: HeaderProp) => {
         <Brand />
         <TopBar
             onIntroClick={prop.onIntroClick}
-            onAuthClick={prop.onAuthClick}   
+            onAuthClick={prop.onAuthClick}
         />
     </Flex>
 }
@@ -45,14 +41,14 @@ const WelcomePage: React.FC = () => {
     const handleClick = () => {
         setDarken(!darken);
     }
-    
+
     return <ConfigProvider
         theme={{
             ...defaultTheme(darken),
             algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
         }}
     >
-        <Index darken={darken} onDarken={handleClick}/>
+        <Index darken={darken} onDarken={handleClick} />
     </ConfigProvider>
 }
 
@@ -60,23 +56,10 @@ interface WelcomePageIndexProp {
     darken: boolean,
     onDarken: () => void
 }
-const Index: React.FC<WelcomePageIndexProp> = ({darken, onDarken}) => {
+const Index: React.FC<WelcomePageIndexProp> = ({ darken, onDarken }) => {
 
     const [content, setContent] = useState<React.JSX.Element>(<Intro />);
-    const {token} = theme.useToken();
-    const [{username}] = useCookies(["username"]);
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if(username){
-            User.checkSignIn(username)
-            .then(async value => {
-                if(value){
-                    navigate("user");
-                }
-            })
-        }
-    });
+    const { token } = theme.useToken();
 
     return <>
         <Header

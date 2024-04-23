@@ -3,8 +3,8 @@ import { Flex, Form, Input, Typography, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal } from "./modal";
 import { useCookies } from "react-cookie";
-import postData from "../../util/post";
 import { AuthProp, STATE, validateMessages } from "./constant";
+import useAPI, {APIs} from "../../util/api";
 
 const { Title } = Typography;
 
@@ -16,19 +16,15 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
     const [submittable, setSubmittable] = useState<boolean>(false);
     const [state, setState] = useState<STATE | null>();
     const values = Form.useWatch([], form);
+    const signUp = useAPI(APIs.signUp);
 
     useEffect(() => {
-        form
-            .validateFields({
+        form.validateFields({
                 validateOnly: true,
             })
             .then(
-                () => {
-                    setSubmittable(true);
-                },
-                () => {
-                    setSubmittable(false);
-                }
+                () => setSubmittable(true),
+                () => setSubmittable(false)
             );
     }, [form, values]);
 
@@ -41,10 +37,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
             id: "register",
         };
 
-        postData(
-            "http://localhost:8000/signin/",
-            values,
-        )
+        signUp(values)
             .then(res => {
                 setState(res.status === 200 || res.status === 201 ? STATE.SUCCESS : STATE.FAILURE);
                 setCause(() => {

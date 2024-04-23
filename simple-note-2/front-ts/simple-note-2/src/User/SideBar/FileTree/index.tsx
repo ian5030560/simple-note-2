@@ -1,21 +1,17 @@
 import React, { SetStateAction, useState } from "react"
 import { Tree, theme, TreeDataNode } from "antd";
-import { NodeCreater, createIndiviualNode } from "./node";
-import { Key, EventDataNode } from "rc-tree/lib/interface";
+import Node from "./node";
+import useAPI, { APIs } from "../../../util/api";
+import { useCookies } from "react-cookie";
+import { useFileNodes } from "./node";
 
-interface FileDataType extends TreeDataNode {
-    key: string,
-    title: string | React.JSX.Element,
-    children: FileDataType[],
-    name: React.ReactNode,
-}
-
-function findTargetByKey(key: string, origin: FileDataType[]) {
+function findTargetByKey(key: string, origin: TreeDataNode[]) {
     let indice = key.split("-");
 
     let tmp = origin;
     for (let i of indice.slice(1)) {
-        tmp = tmp[parseInt(i)].children
+        if (!tmp[parseInt(i)].children) break;
+        tmp = tmp[parseInt(i)].children!;
     }
 
     return tmp;
@@ -33,152 +29,71 @@ function getParentKey(key: string) {
     return result;
 }
 
-type SelectInfo = {
-    event: "select",
-    selected: boolean;
-    node: EventDataNode<TreeDataNode>;
-    selectedNodes: TreeDataNode[];
-    nativeEvent: MouseEvent;
+function changeSubtreeKey(t: TreeDataNode[], p: string) {
+    
+    for (let index in t) {
+        let key = `${p}-${index}`;
+        t[index].key = key;
+        if (t[index].children) {
+            changeSubtreeKey(t[index].children!, key);
+        }
+
+    }
 }
-
-interface FileTreeProp {
-    individual?: FileDataType[],
-    mutiple?: FileDataType[],
-    onSelect?: (selectedKeys: Key[], info: SelectInfo) => void;
-}
-
-const FileTree: React.FC<FileTreeProp> = (prop) => {
-
+const FileTree = () => {
+    const addNote = useAPI(APIs.addNote);
+    const [{ username }] = useCookies(["username"]);
     const { token } = theme.useToken();
-    const [i_children, setI_Children] = useState<FileDataType[]>(!prop.individual ? [] :
-        prop.individual.map((data): FileDataType => {
-            return {
-                key: data.key,
-                title: createIndiviualNode(
-                    data.title,
-                    data.key,
-                    (k, t) => handleAdd(k, t, setI_Children, createIndiviualNode),
-                    (k) => handleDelete(k, setI_Children, createIndiviualNode),
-                    false
-                ),
-                children: data.children,
-                name: data.name
-            }
-        })
-    );
+    // const [i_nodes, setI_Nodes] = useState<TreeDataNode[]>(!prop.individual ? [] : prop.individual);
+    // const [m_nodes, setM_Nodes] = useState<TreeDataNode[]>(!prop.multiple ? [] : prop.multiple);
+    const [nodes, setNodes] = useFileNodes();
 
-    const [m_children, setM_Children] = useState<FileDataType[]>(!prop.mutiple ? [] :
-        prop.mutiple.map((data): FileDataType => {
-            return {
-                key: data.key,
-                title: createIndiviualNode(
-                    data.title,
-                    data.key,
-                    (k, t) => handleAdd(k, t, setM_Children, createIndiviualNode),
-                    (k) => handleDelete(k, setM_Children, createIndiviualNode),
-                    false
-                ),
-                children: data.children,
-                name: data.name
-            }
-        })
-    );
+    const handleAdd = (nodeKey: string, text: string) => {
 
-    const handleAdd = (
-        nodeKey: string,
-        text: React.ReactNode,
-        setChildren: React.Dispatch<SetStateAction<FileDataType[]>>,
-        createNode: NodeCreater
-    ) => {
-
-        setChildren(prev => {
-            let target = findTargetByKey(nodeKey, prev);
+        setNodes(prev => {
+            let arr = prev[0].children!;
+            let target = findTargetByKey(nodeKey, arr);
 
             let key = `${nodeKey}-${target.length}`;
             target.push({
                 key: key,
-                title: createNode(
-                    text,
-                    key,
-                    (k, t) => handleAdd(k, t, setChildren, createNode),
-                    (k) => handleDelete(k, setChildren, createNode),
-                    false
-                ),
+                title: text,
                 children: [],
-                name: text
-            })
-
-            return [...prev]
-        })
-    }
-
-
-    const handleDelete = (
-        nodeKey: string,
-        setChildren: React.Dispatch<SetStateAction<FileDataType[]>>,
-        createNode: NodeCreater) => {
-
-        setChildren(prev => {
-
-            let parent = getParentKey(nodeKey);
-            let target = findTargetByKey(parent, prev);
-            let i = parseInt(nodeKey.charAt(nodeKey.length - 1));
-            target.splice(i, 1);
-
-            function changeSubtreeKey(t: FileDataType[], p: string) {
-
-                for (let index in t) {
-                    let key = `${p}-${index}`;
-
-                    t[index].key = key;
-                    t[index].title = createNode(
-                        t[index].name,
-                        key,
-                        (k, t) => handleAdd(k, t, setChildren, createNode),
-                        (k) => handleDelete(k, setChildren, createNode),
-                        false
-                    )
-
-                    changeSubtreeKey(t[index].children, key);
-                }
-            }
-
-            changeSubtreeKey(target, parent);
-
+            });
+            
             return [...prev];
         })
     }
 
-    const rootData: TreeDataNode[] = [
-        {
-            key: "individual",
-            title: createIndiviualNode(
-                "個人筆記",
-                "individual",
-                (k, t) => handleAdd(k, t, setI_Children, createIndiviualNode),
-                (k) => handleDelete(k, setI_Children, createIndiviualNode),
-                true
-            ),
-            children: i_children,
-        },
-        {
-            key: "multiple",
-            title: createIndiviualNode(
-                "多人協作",
-                "multiple",
-                (k, t) => handleAdd(k, t, setM_Children, createIndiviualNode),
-                (k) => handleDelete(k, setM_Children, createIndiviualNode),
-                true
-            ),
-            children: m_children
-        }
-    ]
 
-    return <Tree
-        treeData={rootData}
-        rootStyle={{ backgroundColor: token.colorPrimary, }}
-        onSelect={prop.onSelect}
-        onClick={(e) => e.stopPropagation()}
+    const handleDelete = (nodeKey: string) => {
+
+        setNodes(prev => {
+            const arr = nodes[0].children!;
+            let parent = getParentKey(nodeKey);
+            let target = findTargetByKey(parent, arr);
+            let i = parseInt(nodeKey.charAt(nodeKey.length - 1));
+            target.splice(i, 1);
+    
+            changeSubtreeKey(target, parent);
+
+            return [...prev];
+        });
+    }
+
+    return <Tree treeData={nodes} rootStyle={{ backgroundColor: token.colorPrimary }} blockNode
+        titleRender={(data) => {
+            const { title, key } = data as { title: string, key: string };
+            return <Node
+                title={title}
+                nodeKey={key}
+                onAdd={(key, text) => handleAdd(key, text)}
+                onDelete={(key) => handleDelete(key)}
+                root={key === "individual" || key === "multiple"}
+            />
+        }}
+        selectable={false}
+        defaultExpandAll
     />
 }
 

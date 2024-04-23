@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, Result, Modal, Input, notification } from "antd";
-import postData from "../../util/post";
+import useAPI, { APIs } from "../../util/api";
 
 interface ForgetProp {
   open: boolean,
@@ -10,11 +10,12 @@ interface ForgetProp {
 export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
+  const forgetPassword = useAPI(APIs.forgetPassword);
 
   const handleFinished = (values: any) => {
-
     setLoading(true);
-    postData("http://localhost:8000/forget_password/", values)
+
+    forgetPassword(values)
       .then((res) => {
         setLoading(false);
         if (res.status === 200) {
@@ -47,35 +48,30 @@ export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
             rules={[
               {
                 required: true,
-                message: "Please enter an username",
+                message: "輸入你的帳號",
               },
             ]}
           >
-            <Input type="text" placeholder="輸入你的username" />
+            <Input type="text" placeholder="輸入你的帳號" />
           </Form.Item>
           <Form.Item
             name={"email"}
             rules={[
               {
                 required: true,
-                message: "Please enter an email address",
+                message: "輸入你的信箱",
               },
               {
                 type: "email",
-                message: "email address is not available",
+                message: "輸入的信箱不正確",
               },
             ]}
           >
             <Input type="email" name="email" placeholder="輸入你的email" />
           </Form.Item>
           <Form.Item>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ minWidth: "100%" }}
-              loading={loading}
-            >
-              submit
+            <Button type="primary" htmlType="submit" style={{ minWidth: "100%" }} loading={loading}>
+              提交
             </Button>
           </Form.Item>
         </Form>
@@ -106,45 +102,45 @@ interface AuthProp {
 
 export const AuthModal: React.FC<AuthProp> = ({ success, failure }) => {
   return <>
-      <Modal
+    <Modal
+      title={success.title}
+      open={success.open}
+      closeIcon={null}
+      footer={[
+        <Button
+          type="primary"
+          onClick={() => success.onSuccessClose()}
+          key="s-ok"
+        >
+          ok
+        </Button>,
+      ]}
+    >
+      <Result
+        status="success"
         title={success.title}
-        open={success.open}
-        closeIcon={null}
-        footer={[
-          <Button
-            type="primary"
-            onClick={() => success.onSuccessClose()}
-            key="s-ok"
-          >
-            ok
-          </Button>,
-        ]}
-      >
-        <Result
-          status="success"
-          title={success.title}
-          subTitle={success.subtitle}
-        />
-      </Modal>
-      <Modal
+        subTitle={success.subtitle}
+      />
+    </Modal>
+    <Modal
+      title={failure.title}
+      open={failure.open}
+      closeIcon={null}
+      footer={[
+        <Button
+          type="primary"
+          onClick={() => failure.onFailureClose()}
+          key="f-ok"
+        >
+          ok
+        </Button>,
+      ]}
+    >
+      <Result
+        status="error"
         title={failure.title}
-        open={failure.open}
-        closeIcon={null}
-        footer={[
-          <Button
-            type="primary"
-            onClick={() => failure.onFailureClose()}
-            key="f-ok"
-          >
-            ok
-          </Button>,
-        ]}
-      >
-        <Result
-          status="error"
-          title={failure.title}
-          subTitle={failure.subtitle}
-        />
-      </Modal>
-    </>
+        subTitle={failure.subtitle}
+      />
+    </Modal>
+  </>
 };

@@ -5,19 +5,19 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { AiOutlineFileImage, AiOutlineUpload } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
 import { INSERT_IMAGE } from "./plugin";
-import postData from "../../../util/post";
 import Modal, { ModalRef } from "../UI/modal";
 import { useCookies } from "react-cookie";
+import useAPI, { APIs } from "../../../util/api";
 
 export const OPEN_IMAGE_MODAL: LexicalCommand<boolean> = createCommand();
-
 const ImageModal: React.FC = () => {
 
     const [editor] = useLexicalComposerContext();
     const urlRef = useRef<InputRef>(null);
     const fileRef = useRef<HTMLInputElement>(null);
     const ref = useRef<ModalRef>(null);
-    const [{username}] = useCookies(["username"]);
+    const [{ username }] = useCookies(["username"]);
+    const addFile = useAPI(APIs.addFile);
 
     const handleURL = useCallback(() => {
         let url = urlRef.current!.input!.value;
@@ -28,9 +28,9 @@ const ImageModal: React.FC = () => {
     }, [editor]);
 
     const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
-        if(!e.target.files) return;
+        if (!e.target.files) return;
         let file = e.target.files[0];
-        // let src = await postData("http://localhost:8000/add_file/", {
+        // let src = await addFile({
         //     username: username,
         //     filename: file.name,
         //     content: file,
@@ -54,11 +54,11 @@ const ImageModal: React.FC = () => {
                 <Button
                     type="primary" block
                     icon={<AiOutlineUpload />}
-                    onClick={() => {fileRef.current!.click()}}
+                    onClick={() => { fileRef.current!.click() }}
                 >
                     上傳
                 </Button>
-                <input type="file" accept="image/*" style={{display: "none"}} ref={fileRef} onChange={handleFile}/>
+                <input type="file" accept="image/*" style={{ display: "none" }} ref={fileRef} onChange={handleFile} />
             </>
         },
         {

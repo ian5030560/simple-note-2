@@ -6,7 +6,7 @@ TEST_DB = "D:\simple-note-2\simple-note-2\\back\djangogirls\djangogirls_venv\myp
 
 class DB:
     def __init__(self):
-        self.conn = sqlite3.connect(TEST_DB)
+        self.conn = sqlite3.connect(BACK_DB)
         self.cursor = self.conn.cursor()
 
     def check_signin(self, username, user_password):
@@ -140,7 +140,7 @@ class DB:
             return f"No result found for {username}"
 
     # 透過username和file_title_id插入內容
-    def filename_insert_content(self, username, file_title_id, content):
+    def update_content_username_file_title_id(self, username, file_title_id, content):
         try:
             self.cursor.execute(
                 "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND file_title_id = ?;",
@@ -186,9 +186,11 @@ class DB:
             return e
 
     # insert user_id和note_name到User_Note_Data裡
-    def insert_user_id_note_name_User_Note_Data(self, username, note_name ,file_title_id):
+    def insert_user_id_note_name_User_Note_Data(
+        self, username, note_name, file_title_id
+    ):
         try:
-            user_data = (username, note_name , file_title_id)
+            user_data = (username, note_name, file_title_id)
             self.cursor.execute(
                 "INSERT INTO User_Note_Data (user_id, note_name ,file_title_id) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?,?);",
                 user_data,
@@ -197,9 +199,6 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-        
-
-    
 
     # 給username, note_name 插入 content_blob, content_mimetype
     # username or note_name 不存在會傳回錯誤。
@@ -265,6 +264,7 @@ class DB:
 
         except sqlite3.Error as e:
             return f"Error: {str(e)}"
+
     # 給username和file_title_id來刪除整行
     def delete_User_Note_Data_username_file_title_id(self, username, file_title_id):
         try:
@@ -277,7 +277,7 @@ class DB:
             return True
         except sqlite3.Error as e:
             return e
-    
+
     # 給username和note_name來刪除整行
     def delete_User_Note_Data_username_to_note_name(self, username, note_name):
         try:
@@ -473,7 +473,7 @@ class DB:
                     self.conn.commit()
                     return True
         except sqlite3.Error as e:
-            return e   
+            return e
 
     def close_connection(self):
         # 關閉游標和資料庫連接
@@ -484,6 +484,8 @@ class DB:
 my_db = DB()
 print(
     my_db.insert_user_id_note_name_User_Note_Data(
-        "user01", "abc", "2",
+        "user01",
+        "abc",
+        "2",
     )
 )
