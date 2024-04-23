@@ -58,7 +58,21 @@ class AddFileView(APIView):
                 return Response(url, status=status.HTTP_200_OK)
 
             elif returnValue != "Update successful !!!":
-                return Response(returnValue, status=status.HTTP_401_UNAUTHORIZED)
+                returnValue = (
+                    db.insert_User_File_Data_content_blob_and_content_mimetype(
+                        username, filename, content, mimetype
+                    )
+                )
+                if returnValue == "Insert successful !!!":
+                    url = (
+                        "localhost:8000/view_file/"
+                        + str(username)
+                        + "/"
+                        + str(filename)
+                    )
+                    return Response(url, status=status.HTTP_201_CREATED)
+                elif returnValue != "Insert successful !!!":
+                    return Response(returnValue, status=status.HTTP_401_UNAUTHORIZED)
 
             # serializer
             serializer = AddFileSerializer(data=data)
