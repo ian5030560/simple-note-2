@@ -49,19 +49,13 @@ class AddFileView(APIView):
             content = data.get("content")  # 文件內容
             mimetype = data.get("mimetype")  # 媒體種類
             db = DB()
-            if (
-                db.update_User_File_Data_content_blob_and_content_mimetype(
-                    username, filename, content, mimetype
-                )
-                == "Update successful !!!"
-            ):
+            returnValue = db.update_User_File_Data_content_blob_and_content_mimetype(
+                username, filename, content, mimetype
+            )  # 透過content來新增資料
+            if returnValue == "Update successful !!!":
                 returnValue = True
             else:
-                returnValue = (
-                    db.insert_User_File_Data_content_blob_and_content_mimetype(
-                        username, filename, content, mimetype
-                    )
-                )  # 透過content來新增資料
+                returnValue = False
 
             if returnValue:  # 新增成功(透過content, mimetype都成功)
                 url = "localhost:8000/view_file/" + str(username) + "/" + str(filename)
