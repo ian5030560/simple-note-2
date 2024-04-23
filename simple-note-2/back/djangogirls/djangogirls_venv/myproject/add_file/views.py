@@ -54,15 +54,10 @@ class AddFileView(APIView):
             )  # 透過content來新增資料
             print(returnValue)
             if returnValue == "Update successful !!!":
-                returnValue = True
-            else:
-                returnValue = False
-
-            if returnValue:  # 新增成功(透過content, mimetype都成功)
                 url = "localhost:8000/view_file/" + str(username) + "/" + str(filename)
                 return Response(url, status=status.HTTP_200_OK)
 
-            elif returnValue != True:
+            elif returnValue != "Update successful !!!":
                 return Response(returnValue, status=status.HTTP_401_UNAUTHORIZED)
 
             # serializer
