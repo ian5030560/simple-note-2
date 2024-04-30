@@ -4,4 +4,7 @@
 *.pyc
 *.pyc
 *.db
-simple-note-2/back/djangogirls/djangogirls_venv/pyvenv.cfg
+simple-note-2/back/djangogirls/djangogirlsVenv/pyvenv.cfg
+simple-note-2/back/djangogirls/djangogirlsVenv/Lib
+simple-note-2/back/djangogirls/djangogirlsVenv/Include
+simple-note-2/back/djangogirls/djangogirlsVenv/Scripts

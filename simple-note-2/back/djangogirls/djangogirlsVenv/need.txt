@@ -1,0 +1,133 @@
+*** POST的錯誤一律回傳status code***
+
+
+--- 帳號名(name: username, type: string)---
+
+新增文件:add_file/view_file
+	兩個網址
+	網址一: for 上傳文件，方法: POST
+
+		前端傳: 
+			帳號名(name: username, type: str)、
+			文件名(name: filename)、
+			文件內容(name: content, type: blob)、
+			mimetype(name: mimetype, type: string)
+
+		#1.資料庫: #add_file
+			拿:
+				帳號名(name: username, type: str)、
+				文件名(name: filename)、
+				文件內容(name: content, type: blob)、
+				mimetype(name: mimetype, type: string)
+			傳回:
+				成功:True
+				失敗:False
+
+		後端回傳: 一個網址(網址二的prefix/文件名)
+
+	網址二: #擱置.
+		for view文件或下載文件，方法: GET
+
+刪除文件:delete_file
+	一個網址，方法: POST
+
+		前端傳: 帳號名(name: username, type: str)、
+			文件網址(name: url(新增文件所提供的網址), type:str)
+
+		#2.資料庫: #delete_file
+			拿:
+				帳號名(name: username, type: str)、
+				文件名(name: filename)
+			傳回:
+				成功:True
+				失敗:False
+
+		後端回傳: status code 200 if success
+
+
+更新文件:update_file
+	一個網址，方法: POST
+
+		前端傳: 帳號名(name: username, type: str)、
+			文件名(name: filename)、
+			文件內容(name: content, type: blob)
+
+		#3.資料庫: #update_file
+			拿: 
+				帳號名(name: username, type: str)、
+				文件名(name: filename)、
+				文件內容(name: content, type: blob)
+			傳回:
+				成功:True
+				失敗:False
+
+		後端回傳: status code 200 if success
+
+---
+type: Theme{
+	colorLightPrimary: string
+	colorLightBaseBg: string
+	colorDarkPrimary: string
+	colorDarkBaseBg: string
+}
+
+type: Info{
+	頭像(name: image): 文件網址(string),
+										
+	主題(name: theme): Theme,
+	密碼(name: password): string
+}
+---
+
+取得個人資訊:get_info
+	一個網址，方法: POST
+
+		前端傳: 帳號名(name: username, type: str)
+
+		#4.資料庫: #get_info
+			拿: 
+				帳號名(name: username, type: str)
+			傳回:
+			
+		後端回傳: {頭像(name: image(圖片網址), type: str), themes: Array<{colorLightPrimary: string
+										   colorLightBaseBg: string
+										   colorDarkPrimary: string
+										   colorDarkBaseBg: string
+										   isUsing: boolean(是否使用中)
+									    }>}
+
+更新個人資訊:update_info
+	一個網址，方法: POST
+
+		前端傳: 帳號名(name: username, type: str)、
+			更新的資料(name: data, type: Info, 若Info中的項目為null，ignore it)
+
+		#5.資料庫: #update_info
+			拿: 
+				帳號名(name: username, type: str)
+				更新的資料(name: data, type: Info)
+			傳回:
+				成功:True
+				失敗:False
+
+		後端回傳: status code 200 if success
+
+		
+新增主題:add_theme
+	一個網址，方法: POST
+
+		前端傳: 帳號名(name: username, type: str)、
+			主題(name: theme, type: Theme)
+
+		#6.資料庫: #add_theme
+			拿:
+				帳號名(name: username, type: str)、
+				主題(name: theme, type: Theme)
+			傳回:
+				成功:True
+				失敗:False
+
+		後端回傳: status code 200 if success
+	
+	
+		
