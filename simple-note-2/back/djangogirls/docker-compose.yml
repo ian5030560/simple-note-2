@@ -6,12 +6,12 @@ services:
     ports:
       - 8000:8000
     build:
-      context: ./djangogirls_venv
+      context: ./djangogirlsVenv
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./djangogirls_venv/myproject:/djangogirls/djangogirls_venv/myproject
+      - ./djangogirlsVenv/myproject:/djangogirls/djangogirlsVenv/myproject
 
 
     environment:
       - DEBUG=1
-    working_dir: /djangogirls/djangogirls_venv/myproject
+    working_dir: /djangogirls/djangogirlsVenv/myproject

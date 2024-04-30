@@ -25,6 +25,26 @@ class GemmaView(APIView):
 
     serializer_class = GemmaSerializer
 
+    def ai(self, text):
+        from openai import OpenAI
+        
+        AI_client = OpenAI(
+        base_url="http://140.127.74.249:8000/v1",
+        api_key="nknusumlab"
+        )
+
+        output = AI_client.chat.completions.create(
+            model="Breeze-7B-32k-Instruct-v1_0",
+            messages=[
+                {"role": "user", "content": text}
+            ],
+            max_tokens=4000,
+            temperature=0.7,
+            top_p=0.3
+        )
+
+        return (output.choices[0].message.content)
+
     def get(self, request, format=None):
         output = [{"gemma": obj.gemma} for obj in Gemma.objects.all()]
         return Response(output)
@@ -34,9 +54,9 @@ class GemmaView(APIView):
             data = json.loads(request.body)
             text = data.get("text")  # 文字內容
             
-            import ollama
-
-            answer = (((ollama.chat(model="gemma", messages=[{"role": "user", "content": text}]))["message"])["content"])
+            # AI對話
+            answer = self.ai(text)
+            
             if answer:
                 return Response(answer, status=status.HTTP_200_OK)
             
