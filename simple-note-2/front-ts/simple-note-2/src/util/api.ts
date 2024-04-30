@@ -1,18 +1,19 @@
 import { useCallback } from "react";
 
 export enum APIs {
-  signIn = "http://localhost:8000/signin/",
-  signUp = "http://localhost:8000/signin/",
-  forgetPassword = "http://localhost:8000/forget_password/",
+  signIn = "http://localhost:8000/registerAndLogin/",
+  signUp = "http://localhost:8000/registerAndLogin/",
+  forgetPassword = "http://localhost:8000/forgetPassword/",
   signOut = "http://localhost:8000/signout/",
-  addFile = "http://localhost:8000/add_file/",
-  deleteFile = "http://localhost:8000/delete_file/",
-  getInfo = "http://localhost:8000/get_info/",
-  updateInfo = "http://localhost:8000/update_info/",
+  addFile = "http://localhost:8000/newMediaFile/",
+  deleteFile = "http://localhost:8000/deleteMediaFile/",
+  getInfo = "http://localhost:8000/getInfo/",
+  updateInfo = "http://localhost:8000/updateInfo/",
   getNote = "http://localhost:8000/getNote/",
-  addNote = "http://localhost:8000/addNote/",
+  addNote = "http://localhost:8000/newNote/",
   deleteNote = "http://localhost:8000/deleteNote/",
   saveNote = "http://localhost:8000/saveNote/",
+
 }
 
 type APICallBack<T> = (data: T) => Promise<Response>;
