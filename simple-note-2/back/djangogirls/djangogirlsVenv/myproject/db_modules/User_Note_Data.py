@@ -187,5 +187,26 @@ def delete_note_by_usernames_note_title_id(usernames, note_title_id):
         session.rollback()
         return str(e)
 
+# 給username和note_name來刪除整行
+def delete_note_by_usernames_note_name(usernames, note_name):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter((User_Personal_Info.usernames == usernames))
+        .first()
+    )
+    try:
+        stmt = delete(User_Note_Data).where(
+            and_(
+                User_Note_Data.user_id == user_id_query[0],
+                User_Note_Data.note_name == note_name,
+            )
+        )
+        session.execute(stmt)
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        session.rollback()
+        return str(e)    
 
-print(delete_note_by_usernames_note_title_id("user02", 2))
+
+print(delete_note_by_usernames_note_name("user02", "BBB"))

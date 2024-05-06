@@ -265,122 +265,122 @@ class DB:
         except sqlite3.Error as e:
             return f"Error: {str(e)}"
 
-    # 給username和file_title_id來刪除整行
-    def delete_User_Note_Data_username_file_title_id(self, username, file_title_id):
-        try:
-            user_data = (username, file_title_id)
-            self.cursor.execute(
-                "DELETE FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_title_id = ?;",
-                user_data,
-            )
-            self.conn.commit()
-            return True
-        except sqlite3.Error as e:
-            return e
+    # # 給username和file_title_id來刪除整行
+    # def delete_User_Note_Data_username_file_title_id(self, username, file_title_id):
+    #     try:
+    #         user_data = (username, file_title_id)
+    #         self.cursor.execute(
+    #             "DELETE FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_title_id = ?;",
+    #             user_data,
+    #         )
+    #         self.conn.commit()
+    #         return True
+    #     except sqlite3.Error as e:
+    #         return e
 
-    # 給username和note_name來刪除整行
-    def delete_User_Note_Data_username_to_note_name(self, username, note_name):
-        try:
-            user_data = (username, note_name)
-            self.cursor.execute(
-                "DELETE FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND note_name = ?;",
-                user_data,
-            )
-            self.conn.commit()
-            return True
-        except sqlite3.Error as e:
-            return e
+    # # 給username和note_name來刪除整行
+    # def delete_User_Note_Data_username_to_note_name(self, username, note_name):
+    #     try:
+    #         user_data = (username, note_name)
+    #         self.cursor.execute(
+    #             "DELETE FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND note_name = ?;",
+    #             user_data,
+    #         )
+    #         self.conn.commit()
+    #         return True
+    #     except sqlite3.Error as e:
+    #         return e
 
-    # 用username得到User_Personal_Info
-    def get_User_Personal_Info_by_username(
-        self,
-        username,
-    ):
-        try:
-            self.cursor.execute(
-                "SELECT * FROM User_Personal_Info WHERE username = ?;",
-                (username,),
-            )
-            # 獲取查詢結果的第一行
-            row = self.cursor.fetchone()
-            self.conn.commit()
-            return row
-        except sqlite3.Error as e:
-            return e
+    # # 用username得到User_Personal_Info
+    # def get_User_Personal_Info_by_username(
+    #     self,
+    #     username,
+    # ):
+    #     try:
+    #         self.cursor.execute(
+    #             "SELECT * FROM User_Personal_Info WHERE username = ?;",
+    #             (username,),
+    #         )
+    #         # 獲取查詢結果的第一行
+    #         row = self.cursor.fetchone()
+    #         self.conn.commit()
+    #         return row
+    #     except sqlite3.Error as e:
+    #         return e
 
-    # 插入User_Personal_Theme_Data的theme by username
-    def insert_User_theme_by_username(
-        self,
-        username,
-        theme_name,
-    ):
-        try:
-            self.cursor.execute(
-                "INSERT INTO User_Personal_Theme_Data (user_id, theme_name) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?);",
-                (
-                    username,
-                    theme_name,
-                ),
-            )
-            return True
-        except sqlite3.Error as e:
-            return e
+    # # 插入User_Personal_Theme_Data的theme by username
+    # def insert_User_theme_by_username(
+    #     self,
+    #     username,
+    #     theme_name,
+    # ):
+    #     try:
+    #         self.cursor.execute(
+    #             "INSERT INTO User_Personal_Theme_Data (user_id, theme_name) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?);",
+    #             (
+    #                 username,
+    #                 theme_name,
+    #             ),
+    #         )
+    #         return True
+    #     except sqlite3.Error as e:
+    #         return e
 
-    # 給username插入或更新profile_photo
-    def update_profile_photo_by_username(self, username, profile_photo):
-        try:
-            # 直接執行 UPDATE 語句
-            self.cursor.execute(
-                "UPDATE User_Personal_Info SET profile_photo = ? WHERE username = ?;",
-                (profile_photo, username),
-            )
-            # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
-            if self.cursor.rowcount == 0:
-                self.cursor.execute(
-                    "INSERT INTO User_Personal_Info (username, profile_photo) VALUES (?, ?);",
-                    (username, profile_photo),
-                )
-            self.conn.commit()
-            return True
-        except sqlite3.Error as e:
-            return e
+    # # 給username插入或更新profile_photo
+    # def update_profile_photo_by_username(self, username, profile_photo):
+    #     try:
+    #         # 直接執行 UPDATE 語句
+    #         self.cursor.execute(
+    #             "UPDATE User_Personal_Info SET profile_photo = ? WHERE username = ?;",
+    #             (profile_photo, username),
+    #         )
+    #         # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
+    #         if self.cursor.rowcount == 0:
+    #             self.cursor.execute(
+    #                 "INSERT INTO User_Personal_Info (username, profile_photo) VALUES (?, ?);",
+    #                 (username, profile_photo),
+    #             )
+    #         self.conn.commit()
+    #         return True
+    #     except sqlite3.Error as e:
+    #         return e
 
-    # 給username插入或更新theme
-    def update_theme_by_username(self, username, theme):
-        try:
-            # 直接執行 UPDATE 語句
-            self.cursor.execute(
-                "UPDATE User_Personal_Info SET theme = ? WHERE username = ?;",
-                (theme, username),
-            )
-            # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
-            if self.cursor.rowcount == 0:
-                self.cursor.execute(
-                    "INSERT INTO User_Personal_Info (username, theme) VALUES (?, ?);",
-                    (username, theme),
-                )
-            self.conn.commit()
-            return True
-        except sqlite3.Error as e:
-            return e
+    # # 給username插入或更新theme
+    # def update_theme_by_username(self, username, theme):
+    #     try:
+    #         # 直接執行 UPDATE 語句
+    #         self.cursor.execute(
+    #             "UPDATE User_Personal_Info SET theme = ? WHERE username = ?;",
+    #             (theme, username),
+    #         )
+    #         # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
+    #         if self.cursor.rowcount == 0:
+    #             self.cursor.execute(
+    #                 "INSERT INTO User_Personal_Info (username, theme) VALUES (?, ?);",
+    #                 (username, theme),
+    #             )
+    #         self.conn.commit()
+    #         return True
+    #     except sqlite3.Error as e:
+    #         return e
 
-    def update_user_email_by_username(self, username, user_email):
-        try:
-            # 直接執行 UPDATE 語句
-            self.cursor.execute(
-                "UPDATE User_Personal_Info SET user_email = ? WHERE username = ?;",
-                (user_email, username),
-            )
-            # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
-            if self.cursor.rowcount == 0:
-                self.cursor.execute(
-                    "INSERT INTO User_Personal_Info (username, user_email) VALUES (?, ?);",
-                    (username, user_email),
-                )
-            self.conn.commit()
-            return True
-        except sqlite3.Error as e:
-            return False
+    # def update_user_email_by_username(self, username, user_email):
+    #     try:
+    #         # 直接執行 UPDATE 語句
+    #         self.cursor.execute(
+    #             "UPDATE User_Personal_Info SET user_email = ? WHERE username = ?;",
+    #             (user_email, username),
+    #         )
+    #         # 如果沒有影響任何行，表示沒有找到對應的使用者名稱，因此插入新資料
+    #         if self.cursor.rowcount == 0:
+    #             self.cursor.execute(
+    #                 "INSERT INTO User_Personal_Info (username, user_email) VALUES (?, ?);",
+    #                 (username, user_email),
+    #             )
+    #         self.conn.commit()
+    #         return True
+    #     except sqlite3.Error as e:
+    #         return False
 
     # 給username插入或更新user_password
     def update_user_password_by_username(self, username, user_password):
