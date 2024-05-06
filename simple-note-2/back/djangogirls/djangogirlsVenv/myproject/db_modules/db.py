@@ -185,20 +185,20 @@ class DB:
     #     except sqlite3.Error as e:
     #         return e
 
-    # insert user_id和note_name到User_Note_Data裡
-    def insert_user_id_note_name_User_Note_Data(
-        self, username, note_name, file_title_id
-    ):
-        try:
-            user_data = (username, note_name, file_title_id)
-            self.cursor.execute(
-                "INSERT INTO User_Note_Data (user_id, note_name ,file_title_id) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?,?);",
-                user_data,
-            )
-            self.conn.commit()
-            return True
-        except sqlite3.Error as e:
-            return e
+    # # insert user_id和note_name到User_Note_Data裡
+    # def insert_user_id_note_name_User_Note_Data(
+    #     self, username, note_name, file_title_id
+    # ):
+    #     try:
+    #         user_data = (username, note_name, file_title_id)
+    #         self.cursor.execute(
+    #             "INSERT INTO User_Note_Data (user_id, note_name ,file_title_id) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?,?);",
+    #             user_data,
+    #         )
+    #         self.conn.commit()
+    #         return True
+    #     except sqlite3.Error as e:
+    #         return e
 
     # 給username, note_name 插入 content_blob, content_mimetype
     # username or note_name 不存在會傳回錯誤。
