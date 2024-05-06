@@ -18,11 +18,10 @@ class User_Personal_Theme_Data(Base):
     color_dark_base_bg = Column(String(256))
     user_id = Column(Integer)
     
-Session = sessionmaker(bind=engine)
-session = Session()
 
 def create_session():
     Session = sessionmaker(bind=engine)
     session = Session()
-
     return session    
+
+session = create_session()

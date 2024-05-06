@@ -85,37 +85,37 @@ class DB:
     #         # 如果沒有結果，返回一個None
     #         return None
 
-    # 給username和note_name查content_blob
-    def username_note_name_return_content_blob(self, username, note_name):
-        self.cursor.execute(
-            "SELECT content_blob FROM User_File_Data WHERE note_id = (SELECT id FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND note_name = ?);",
-            (username, note_name),
-        )
-        # 獲取查詢結果的第一行
-        row = self.cursor.fetchone()
-        # 如果有結果，取出 content_blob 的值
-        if row:
-            content_blob = row[0]
-            return content_blob
-        else:
-            # 如果沒有結果，返回一個 None
-            return None
+    # # 給username和note_name查content_blob
+    # def username_note_name_return_content_blob(self, username, note_name):
+    #     self.cursor.execute(
+    #         "SELECT content_blob FROM User_File_Data WHERE note_id = (SELECT id FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND note_name = ?);",
+    #         (username, note_name),
+    #     )
+    #     # 獲取查詢結果的第一行
+    #     row = self.cursor.fetchone()
+    #     # 如果有結果，取出 content_blob 的值
+    #     if row:
+    #         content_blob = row[0]
+    #         return content_blob
+    #     else:
+    #         # 如果沒有結果，返回一個 None
+    #         return None
 
-    # 給username和note_name查content_mimetype
-    def username_note_name_return_content_mimetype(self, username, note_name):
-        self.cursor.execute(
-            "SELECT content_mimetype FROM User_File_Data WHERE note_id = (SELECT id FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND note_name = ?);",
-            (username, note_name),
-        )
-        # 獲取查詢結果的第一行
-        row = self.cursor.fetchone()
-        # 如果有結果，取出 content_mimetype 的值
-        if row:
-            content_mimetype = row[0]
-            return content_mimetype
-        else:
-            # 如果沒有結果，返回一個 None
-            return None
+    # # 給username和note_name查content_mimetype
+    # def username_note_name_return_content_mimetype(self, username, note_name):
+    #     self.cursor.execute(
+    #         "SELECT content_mimetype FROM User_File_Data WHERE note_id = (SELECT id FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND note_name = ?);",
+    #         (username, note_name),
+    #     )
+    #     # 獲取查詢結果的第一行
+    #     row = self.cursor.fetchone()
+    #     # 如果有結果，取出 content_mimetype 的值
+    #     if row:
+    #         content_mimetype = row[0]
+    #         return content_mimetype
+    #     else:
+    #         # 如果沒有結果，返回一個 None
+    #         return None
 
     # def change_login_status(self, username):
     #     self.cursor.execute(
@@ -139,51 +139,51 @@ class DB:
     #     else:
     #         return f"No result found for {username}"
 
-    # 透過username和file_title_id插入內容
-    def update_content_username_file_title_id(self, username, file_title_id, content):
-        try:
-            self.cursor.execute(
-                "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND file_title_id = ?;",
-                (
-                    username,
-                    file_title_id,
-                ),
-            )
-            # 獲取查詢結果的第一行
-            row = self.cursor.fetchone()
-            print(row)
-            if row is None:
-                # 如果資料不存在，則使用 INSERT 插入新資料
-                self.cursor.execute(
-                    "INSERT INTO User_Note_Data (user_id, file_title_id, content) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
-                    (username, file_title_id, content),
-                )
-            else:
-                # 如果資料存在，則使用 UPDATE 更新資料
-                self.cursor.execute(
-                    "UPDATE User_Note_Data SET content = ?, file_title_id = ? WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?);",
-                    (content, file_title_id, username),
-                )
-            self.conn.commit()
-            return True
-        except sqlite3.Error as e:
-            return e
+    # # 透過username和file_title_id插入內容
+    # def update_content_username_file_title_id(self, username, file_title_id, content):
+    #     try:
+    #         self.cursor.execute(
+    #             "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info where username=?) AND file_title_id = ?;",
+    #             (
+    #                 username,
+    #                 file_title_id,
+    #             ),
+    #         )
+    #         # 獲取查詢結果的第一行
+    #         row = self.cursor.fetchone()
+    #         print(row)
+    #         if row is None:
+    #             # 如果資料不存在，則使用 INSERT 插入新資料
+    #             self.cursor.execute(
+    #                 "INSERT INTO User_Note_Data (user_id, file_title_id, content) VALUES ((SELECT id FROM User_Personal_Info WHERE username = ?), ?, ?);",
+    #                 (username, file_title_id, content),
+    #             )
+    #         else:
+    #             # 如果資料存在，則使用 UPDATE 更新資料
+    #             self.cursor.execute(
+    #                 "UPDATE User_Note_Data SET content = ?, file_title_id = ? WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?);",
+    #                 (content, file_title_id, username),
+    #             )
+    #         self.conn.commit()
+    #         return True
+    #     except sqlite3.Error as e:
+    #         return e
 
-    # 透過username和file_title_id回傳內容
-    def filename_load_content(self, username, file_title_id):
-        try:
-            self.cursor.execute(
-                "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_title_id = ?;",
-                (
-                    username,
-                    file_title_id,
-                ),
-            )
-            # 獲取查詢結果的第一行
-            row = self.cursor.fetchone()
-            return row
-        except sqlite3.Error as e:
-            return e
+    # # 透過username和file_title_id回傳內容
+    # def filename_load_content(self, username, file_title_id):
+    #     try:
+    #         self.cursor.execute(
+    #             "SELECT content FROM User_Note_Data WHERE user_id = (SELECT id FROM User_Personal_Info WHERE username = ?) AND file_title_id = ?;",
+    #             (
+    #                 username,
+    #                 file_title_id,
+    #             ),
+    #         )
+    #         # 獲取查詢結果的第一行
+    #         row = self.cursor.fetchone()
+    #         return row
+    #     except sqlite3.Error as e:
+    #         return e
 
     # insert user_id和note_name到User_Note_Data裡
     def insert_user_id_note_name_User_Note_Data(
