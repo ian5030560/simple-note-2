@@ -156,6 +156,38 @@ def update_user_email_by_username(usernames_input, user_email_input):
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)
+# 給username更新user_password
+def update_user_password_by_usernames(usernames_input, user_password_input):
+    stmt = (
+        update(User_Personal_Info)
+        .where(User_Personal_Info.usernames == usernames_input)
+        .values(user_password=user_password_input)
+    )
+    try:
+        session.execute(stmt)
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        return str(e)
+
+# 給username更新login_status
+def update_user_login_status_by_usernames(usernames_input, login_status_input):
+    stmt = (
+        update(User_Personal_Info)
+        .where(User_Personal_Info.usernames == usernames_input)
+        .values(login_status=login_status_input)
+    )
+    try:
+        session.execute(stmt)
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        return str(e)    
+        
 
 
 # 給username去change login_status
@@ -174,4 +206,4 @@ def change_login_status(username):
         return None
 
 
-pprint(update_user_email_by_username("user01","user011@gmail.com"))
+pprint(update_user_login_status_by_usernames("user01",0))
