@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import NewNote  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -43,17 +46,18 @@ class NewNoteView(APIView):
             username = data.get("username")  # 帳號名稱
             noteId = data.get("noteId")  # 筆記ID
             notename = data.get("notename")  # 筆記名稱
-            db = DB()
 
-            returnStatus = db.insert_user_id_note_name_User_Note_Data(
+            returnStatus = User_Note_Data.insert_user_id_note_name(
                 username, notename, noteId
             )  # 透過username, notename, noteId來新增資料
 
             if returnStatus:  # 新增成功
                 return Response(status=status.HTTP_200_OK)
+            elif returnStatus != True:  # error
+                return Response(returnStatus, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
-            serializer = AddNoteSerializer(data=data)
+            serializer = NewNoteSerializer(data=data)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
@@ -64,9 +68,6 @@ class NewNoteView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import Logout  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -37,11 +40,13 @@ class LogoutView(APIView):
         try:
             data = json.loads(request.body)
             username = data.get("username")
-
-            db = DB()
-            if db.change_login_status(username) == True:
+            updateStatus = User_Personal_Info.update_user_login_status_by_usernames(
+                username
+            )
+            if updateStatus == True:
                 return Response(status=status.HTTP_200_OK)
-
+            elif updateStatus != True:
+                return Response(updateStatus, status=status.HTTP_400_BAD_REQUEST)
             serializer = LogoutSerializer(data=data)
 
             # serializer
@@ -54,9 +59,6 @@ class LogoutView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

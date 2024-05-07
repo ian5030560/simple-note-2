@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import UpdateMediaFile  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -46,14 +49,16 @@ class UpdateMediaFileView(APIView):
             username = data.get("username")  # 帳號名稱
             url = data.get("url")  # 文件網址
             content = data.get("content")  # 文件內容
-            db = DB()
+            mimetype = data.get("mimetype")  # 文件型態
 
             # 更新帳號名稱所屬文件網址之內容
             # 將網址前贅詞刪除，留下filename
             filename = url.replace("localhost:8000/viewMediaFile/", "")
 
-            returnValueInsertContent = db.filename_insert_content(
-                username, filename, content
+            returnValueInsertContent = (
+                User_File_Data.update_content_blob_mimetype_by_usernames_note_name(
+                    username, filename, content, mimetype
+                )
             )  # 透過content來新增資料
 
             if returnValueInsertContent:  # 新增成功(透過content, mimetype都成功)
@@ -78,9 +83,6 @@ class UpdateMediaFileView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

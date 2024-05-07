@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import NewTheme  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -42,11 +45,13 @@ class NewThemeView(APIView):
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
             theme = data.get("theme")  # 主題
-            db = DB()
-            addTheme = db.insert_User_theme_by_username(username, theme)
+
+            addTheme = User_Personal_Theme_Data.insert_theme_name_by_username(
+                username, theme
+            )
             if addTheme:  # 新增主題成功(資料庫條件)
                 return Response(status=status.HTTP_200_OK)
-            elif addTheme != 1:
+            elif addTheme != True:  # error
                 return Response(addTheme, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
@@ -61,9 +66,6 @@ class NewThemeView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

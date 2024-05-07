@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import NewMediaFile  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -26,9 +29,7 @@ class NewMediaFileView(APIView):
         mimetype(name: mimetype, type: string).\n
     後端回傳:\n
         Str: localhost:8000/view_file/"filename", Response HTTP_200_OK.\n
-        Str: sqlite error.\n
-            insert content error: HTTP_400_BAD_REQUEST.\n
-            insert mimetype error: HTTP_401_UNAUTHORIZED.\n
+        Str: insert error: HTTP_400_BAD_REQUEST.\n
 
     其他例外:\n
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
@@ -51,12 +52,13 @@ class NewMediaFileView(APIView):
             filename = data.get("filename")  # 文件名稱
             content = data.get("content")  # 文件內容
             mimetype = data.get("mimetype")  # 媒體種類
-            db = DB()
-            returnValue = db.update_User_File_Data_content_blob_and_content_mimetype(
-                username, filename, content, mimetype
+
+            returnValue = (
+                User_File_Data.update_content_blob_mimetype_by_usernames_note_name(
+                    username, filename, content, mimetype
+                )
             )  # 透過content來新增資料
-            print(returnValue)
-            if returnValue == "Update successful !!!":
+            if returnValue == True:
                 url = (
                     "localhost:8000/viewMediaFile/"
                     + str(username)
@@ -65,22 +67,8 @@ class NewMediaFileView(APIView):
                 )
                 return Response(url, status=status.HTTP_200_OK)
 
-            elif returnValue != "Update successful !!!":
-                returnValue = (
-                    db.insert_User_File_Data_content_blob_and_content_mimetype(
-                        username, filename, content, mimetype
-                    )
-                )
-                if returnValue == "Insert successful !!!":
-                    url = (
-                        "localhost:8000/viewMediaFile/"
-                        + str(username)
-                        + "/"
-                        + str(filename)
-                    )
-                    return Response(url, status=status.HTTP_201_CREATED)
-                elif returnValue != "Insert successful !!!":
-                    return Response(returnValue, status=status.HTTP_401_UNAUTHORIZED)
+            elif returnValue != True:
+                return Response(returnValue, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = NewMediaFileSerializer(data=data)
@@ -94,9 +82,6 @@ class NewMediaFileView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

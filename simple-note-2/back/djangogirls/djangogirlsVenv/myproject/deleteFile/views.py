@@ -6,12 +6,16 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import DeleteFile  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
+
 
 """@csrf_exempt"""
 """@csrf_protect"""
@@ -43,12 +47,12 @@ class DeleteFileView(APIView):
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
             url = data.get("url")  # 要刪除的文件網址
-            db = DB()
 
             # 刪除帳號名稱所屬文件
             # 將網址前贅詞刪除，留下filename
             url.replace("localhost:8000/view_file/", "")
 
+            # 2024/5/7 還沒寫
             deleteFileValue = db.delete_User_Note_Data_username_to_file_name(
                 self, username, url
             )  # 呼叫資料庫的刪除方法

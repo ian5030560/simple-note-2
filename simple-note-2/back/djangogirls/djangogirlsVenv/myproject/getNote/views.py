@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import GetNote  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -23,7 +26,9 @@ class GetNoteView(APIView):
         前端傳: \n
             帳號名(name: username, type: str)\n
             筆記id(name: noteId, type: str)\n
-        後端回: 筆記內容(type: str)\n
+        後端回:
+            筆記內容(type: str), HTTP_200_OK\n
+            HTTP_400 if error
 
     其他例外:\n
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
@@ -41,14 +46,15 @@ class GetNoteView(APIView):
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
             noteId = data.get("noteId")  # 筆記ID
-            db = DB()
 
-            returnNoteContent = db.filename_load_content(
+            returnNoteContent = User_Note_Data.check_content(
                 username, noteId
             )  # 透過noteId來取得資料
-
+            returnNoteContent = returnNoteContent[0]
             if returnNoteContent:  # 取得成功
                 return Response(returnNoteContent, status=status.HTTP_200_OK)
+            elif returnNoteContent == False:  # error
+                return Response(returnNoteContent, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = GetNoteSerializer(data=data)
@@ -62,9 +68,6 @@ class GetNoteView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

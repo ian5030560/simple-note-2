@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import UpdateInfo  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -61,16 +64,19 @@ class UpdateInfoView(APIView):
             image = data.get("image")  # 更新的頭像
             theme = data.get("theme")  # 更新的主題
             password = data.get("password")  # 更新的密碼
-            db = DB()
 
+            # 2024/5/7 缺check isNull
             if image != "":
-                updateImageValue = db.update_profile_photo_by_username(username, image)
+                updateImageValue = User_Personal_Info.insert_profile_photo_by_username(
+                    username, image
+                )
                 if updateImageValue == 1:
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response(
                         updateImageValue, status=status.HTTP_400_BAD_REQUEST
                     )
+
             if theme != "":
                 updateThemeValue = db.update_theme_by_username(username, theme)
                 if updateThemeValue == 1:
@@ -102,9 +108,6 @@ class UpdateInfoView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

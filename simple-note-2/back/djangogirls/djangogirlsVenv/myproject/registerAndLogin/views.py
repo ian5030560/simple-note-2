@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import RegisterAndLogin
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -54,19 +57,23 @@ class RegisterAndLoginView(APIView):
 
             serializer = RegisterAndLoginSerializer(data=data)
 
-            db = DB()
-
             if id == "sign-in":
-                if db.check_signin(username, password):  # 登入成功
-                    if db.change_login_status(username):
+                if User_Personal_Info.check_username_password(
+                    username, password
+                ):  # 登入成功
+                    if User_Personal_Info.update_user_login_status_by_usernames(
+                        username, 1
+                    ):
                         return Response(status=status.HTTP_200_OK)
+                    else:
+                        return Response(status=status.HTTP_400_BAD_REQUEST)
 
                 else:  # 登入失敗
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                    return Response(status=status.HTTP_401_UNAUTHORIZED)
 
             elif id == "register":
-                check_username = db.check_register_username(username)
-                check_email = db.check_register_user_email(email)
+                check_username = User_Personal_Info.check_username(username)
+                check_email = User_Personal_Info.check_email(email)
 
                 if check_username:
                     return Response(
@@ -80,8 +87,8 @@ class RegisterAndLoginView(APIView):
                     elif not check_email:  # email不重複，可以註冊
                         print(
                             "register:",
-                            db.insert_into_User_Register_Data(
-                                username, email, password
+                            User_Personal_Info.insert_username_password_email(
+                                username, password, email
                             ),
                         )
                         return Response(status=status.HTTP_201_CREATED)
@@ -99,9 +106,6 @@ class RegisterAndLoginView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

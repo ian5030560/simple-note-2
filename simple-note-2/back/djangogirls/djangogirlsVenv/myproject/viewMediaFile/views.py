@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import ViewMediaFile  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -28,11 +31,10 @@ class ViewMediaFileView(APIView):
     serializer_class = ViewMediaFileSerializer
 
     def get(self, request, username, filename, format=None):
-        db = DB()
 
         # Retrieve content and mimetype from the database
-        content = db.username_note_name_return_content_blob(username, filename)
-        mimetype = db.username_note_name_return_content_mimetype(username, filename)
+        content = User_File_Data.check_content_blob_mimetype(username, filename)[0][0]
+        mimetype = User_File_Data.check_content_blob_mimetype(username, filename)[0][1]
 
         # Check if content and mimetype are not None
         if content is not None and mimetype is not None:
@@ -43,9 +45,6 @@ class ViewMediaFileView(APIView):
         elif content is None or mimetype is None:
             # If data not found, return HTTP 404 response
             return Response("File not found", status=status.HTTP_404_NOT_FOUND)
-
-        # Close db connection
-        db.close_connection()
 
     def post(self, request, format=None):
         try:

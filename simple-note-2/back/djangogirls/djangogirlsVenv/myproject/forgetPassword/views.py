@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import ForgetPassword  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -26,6 +29,7 @@ class ForgetPasswordView(APIView):
     """
     email:\n
        Email成功寄出: Response HTTP_200_OK.\n
+       Error: Response HTTP_400.\n
 
     其他例外:\n
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
@@ -46,24 +50,26 @@ class ForgetPasswordView(APIView):
             data = json.loads(request.body)
             email = data.get("email")
             username = data.get("username")
-            db = DB()
 
-            password = db.useremail_to_userpassword(email)  # from DB get password
-            # 電子郵件內容
-            email_template = render_to_string(
-                "change_password.html",
-                {"username": username},
-            )
+            password = User_Personal_Info.search_password(email)  # from DB get password
+            if password:
+                # 電子郵件內容
+                email_template = render_to_string(
+                    "change_password.html",
+                    {"username": username},
+                )
 
-            email = EmailMessage(
-                "更改密碼通知信",  # 電子郵件標題
-                email_template + str(password),  # 電子郵件內容
-                settings.EMAIL_HOST_USER,  # 寄件者
-                [email],  # 收件者
-            )
-            email.fail_silently = False
-            if email.send():
-                return Response(status=status.HTTP_200_OK)
+                email = EmailMessage(
+                    "更改密碼通知信",  # 電子郵件標題
+                    email_template + str(password),  # 電子郵件內容
+                    settings.EMAIL_HOST_USER,  # 寄件者
+                    [email],  # 收件者
+                )
+                email.fail_silently = False
+                if email.send():
+                    return Response(status=status.HTTP_200_OK)
+            elif password == False:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
 

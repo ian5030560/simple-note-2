@@ -129,7 +129,7 @@ def check_content(usernames, note_title_id):
         return contenet_query
     except SQLAlchemyError as e:
         session.rollback()
-        return str(e)
+        return False
 
 
 # insert user_id,note_name,note_title_id 到User_Note_Data裡
@@ -211,4 +211,4 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         return str(e)
 
 
-print(delete_note_by_usernames_note_name("user02", "BBB"))
+print(check_content("user01", "1"))

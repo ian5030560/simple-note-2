@@ -90,6 +90,7 @@ def check_status(username):
         return None
 
 
+# 2024/5/7回傳值有問題
 # check User_Personal_Info by usernames
 def check_user_personal_info(usernames):
     user = session.query(User_Personal_Info).filter_by(usernames=usernames).first()
@@ -102,7 +103,7 @@ def search_password(email):
     if result:
         return result.user_password
     else:
-        return None
+        return False
 
 
 # 插入username,password,user_email到資料庫
@@ -115,6 +116,7 @@ def insert_username_password_email(username, password, email):
     return True
 
 
+# 2024/5/7 缺check是存在
 # insert_profile_photo_by_username
 def insert_profile_photo_by_username(usernames_input, profile_photo_input):
     new_profile_photo = User_Personal_Info(
@@ -209,4 +211,4 @@ def change_login_status(username):
         return None
 
 
-pprint(update_user_login_status_by_usernames("user01", 0))
+pprint(check_user_personal_info("user01"))

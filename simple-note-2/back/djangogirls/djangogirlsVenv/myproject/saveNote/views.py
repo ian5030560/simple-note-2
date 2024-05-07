@@ -6,7 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import SaveNote  # 新建檔案改這個
-from db_modules.db import DB  # 資料庫來的檔案
+from db_modules import User_File_Data  # 資料庫來的檔案
+from db_modules import User_Note_Data  # 資料庫來的檔案
+from db_modules import User_Personal_Info  # 資料庫來的檔案
+from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -43,14 +46,15 @@ class SaveNoteView(APIView):
             username = data.get("username")  # 帳號名稱
             noteId = data.get("noteId")  # 筆記ID
             content = data.get("content")  # 筆記內容
-            db = DB()
 
-            returnStatus = db.update_content_username_file_title_id(
+            returnStatus = User_Note_Data.update_content(
                 username, noteId, content
             )  # 透過username, noteId, content來更新資料
 
             if returnStatus:  # 更新成功
                 return Response(status=status.HTTP_200_OK)
+            elif returnStatus != True:  # error
+                return Response(returnStatus, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = SaveNoteSerializer(data=data)
@@ -64,9 +68,6 @@ class SaveNoteView(APIView):
                 print("serializer is not valid", end="")
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:
