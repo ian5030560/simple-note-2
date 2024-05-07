@@ -7,7 +7,7 @@ from User_Personal_Info import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 
 Base = declarative_base()
-engine_url = "mysql+pymysql://root:w83dk4xup6@localhost:3306/simplenote2db"
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
