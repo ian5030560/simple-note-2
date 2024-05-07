@@ -6,9 +6,10 @@ from sqlalchemy.orm import sessionmaker
 from User_Note_Data import User_Note_Data
 from User_Personal_Info import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
+import os
 
 Base = declarative_base()
-engine_url = "mysql+pymysql://root:w83dk4xup6@localhost:3306/simplenote2db"
+engine_url = os.environ.get("env")
 engine = create_engine(engine_url, echo=True)
 
 

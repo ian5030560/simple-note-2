@@ -5,9 +5,10 @@ from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
 from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
+import os
 
 Base = declarative_base()
-engine_url = "mysql+pymysql://root:w83dk4xup6@localhost:3306/simplenote2db"
+engine_url = os.environ.get("env")
 engine = create_engine(engine_url, echo=True)
 
 
@@ -156,6 +157,8 @@ def update_user_email_by_username(usernames_input, user_email_input):
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)
+
+
 # 給username更新user_password
 def update_user_password_by_usernames(usernames_input, user_password_input):
     stmt = (
@@ -172,6 +175,7 @@ def update_user_password_by_usernames(usernames_input, user_password_input):
         session.rollback()
         return str(e)
 
+
 # 給username更新login_status
 def update_user_login_status_by_usernames(usernames_input, login_status_input):
     stmt = (
@@ -186,8 +190,7 @@ def update_user_login_status_by_usernames(usernames_input, login_status_input):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        return str(e)    
-        
+        return str(e)
 
 
 # 給username去change login_status
@@ -206,4 +209,4 @@ def change_login_status(username):
         return None
 
 
-pprint(update_user_login_status_by_usernames("user01",0))
+pprint(update_user_login_status_by_usernames("user01", 0))

@@ -5,9 +5,10 @@ from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
 from User_Personal_Info import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
+import os
 
 Base = declarative_base()
-engine_url = "mysql+pymysql://root:w83dk4xup6@localhost:3306/simplenote2db"
+engine_url = os.environ.get("env")
 engine = create_engine(engine_url, echo=True)
 
 
@@ -92,4 +93,4 @@ def insert_themeData_by_usernames(
         return str(e)
 
 
-print(insert_themeData_by_usernames("user01", "blue" , "1","2","3","4"))
+print(insert_themeData_by_usernames("user01", "blue", "1", "2", "3", "4"))

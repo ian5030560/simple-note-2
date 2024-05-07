@@ -6,9 +6,10 @@ from sqlalchemy.orm import sessionmaker
 from User_Personal_Info import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
+import os
 
 Base = declarative_base()
-engine_url = "mysql+pymysql://root:w83dk4xup6@localhost:3306/simplenote2db"
+engine_url = os.environ.get("env")
 engine = create_engine(engine_url, echo=True)
 
 
@@ -187,6 +188,7 @@ def delete_note_by_usernames_note_title_id(usernames, note_title_id):
         session.rollback()
         return str(e)
 
+
 # 給username和note_name來刪除整行
 def delete_note_by_usernames_note_name(usernames, note_name):
     user_id_query = (
@@ -206,7 +208,7 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         return True
     except SQLAlchemyError as e:
         session.rollback()
-        return str(e)    
+        return str(e)
 
 
 print(delete_note_by_usernames_note_name("user02", "BBB"))
