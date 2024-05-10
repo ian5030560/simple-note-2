@@ -9,7 +9,8 @@ import datetime
 import os
 
 Base = declarative_base()
-engine_url = os.environ.get("env")
+# engine_url = os.environ.get("env")
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3307/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
@@ -75,6 +76,48 @@ def update_content(usernames, note_title_id, content):
         return str(e)
 
 
+# check_content by usernames and note_title_id
+def check_content(usernames, note_title_id):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter((User_Personal_Info.usernames == usernames))
+        .first()
+    )
+    try:
+        contenet_query = (
+            session.query(User_Note_Data.content)
+            .filter(
+                and_(
+                    User_Note_Data.user_id == user_id_query[0],
+                    User_Note_Data.note_title_id == note_title_id,
+                )
+            )
+            .first()
+        )
+        return contenet_query
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False
+    
+#check all user's notes
+def check_user_all_notes(usernames_input):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter((User_Personal_Info.usernames == usernames_input))
+        .first()
+    )
+
+    try:
+        result = session.query(User_Note_Data.note_name, User_Note_Data.note_title_id).filter(User_Note_Data.user_id == user_id_query[0]).all()
+        return result
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False
+    
+
+
+
 # 給usernames,note_title_id insert content
 def insert_content(usernames, note_title_id, content):
     user_id_query = (
@@ -106,30 +149,6 @@ def insert_content(usernames, note_title_id, content):
     except SQLAlchemyError as e:
         session.rollback()
         return str(e)
-
-
-# check_content by usernames and note_title_id
-def check_content(usernames, note_title_id):
-    user_id_query = (
-        session.query(User_Personal_Info.id)
-        .filter((User_Personal_Info.usernames == usernames))
-        .first()
-    )
-    try:
-        contenet_query = (
-            session.query(User_Note_Data.content)
-            .filter(
-                and_(
-                    User_Note_Data.user_id == user_id_query[0],
-                    User_Note_Data.note_title_id == note_title_id,
-                )
-            )
-            .first()
-        )
-        return contenet_query
-    except SQLAlchemyError as e:
-        session.rollback()
-        return False
 
 
 # insert user_id,note_name,note_title_id 到User_Note_Data裡
@@ -211,4 +230,4 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         return str(e)
 
 
-print(check_content("user01", "1"))
+print(check_user_all_notes("user01"))

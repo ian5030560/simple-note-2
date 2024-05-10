@@ -7,9 +7,12 @@ from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
 import os
 
+
+# engine_url = os.environ.get("env")
 Base = declarative_base()
-engine_url = os.environ.get("env")
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3307/simplenote2db"
 engine = create_engine(engine_url, echo=True)
+
 
 
 class User_Personal_Info(Base):
@@ -39,6 +42,7 @@ class User_Personal_Info(Base):
         self.user_email = user_email
         self.user_password = user_password
         self.login_status = login_status
+
 
 
 def create_session():
@@ -94,7 +98,28 @@ def check_status(username):
 # check User_Personal_Info by usernames
 def check_user_personal_info(usernames):
     user = session.query(User_Personal_Info).filter_by(usernames=usernames).first()
-    return user
+    if user:
+        return {
+            "id": user.id,
+            "profile_photo": user.profile_photo,
+            "theme_id": user.theme_id,
+            "usernames": user.usernames,
+            "user_email": user.user_email,
+            "user_password": user.user_password,
+            "login_status": user.login_status
+        }
+    else:
+        return False
+
+
+
+# check profile photo by username
+def check_profile_photo_by_username(usernames_input):
+    result = session.query(User_Personal_Info).filter_by(usernames=usernames_input).first()
+    if result:
+        return result.profile_photo
+    else:
+        return False 
 
 
 # 給user_email查password
@@ -116,7 +141,6 @@ def insert_username_password_email(username, password, email):
     return True
 
 
-# 2024/5/7 缺check是存在
 # insert_profile_photo_by_username
 def insert_profile_photo_by_username(usernames_input, profile_photo_input):
     new_profile_photo = User_Personal_Info(
