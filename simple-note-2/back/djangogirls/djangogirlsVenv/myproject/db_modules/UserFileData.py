@@ -7,9 +7,9 @@ from UserNoteData import User_Note_Data
 from UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import os
-engine_url = os.environ.get("env")
+
 Base = declarative_base()
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+engine_url = os.environ.get("env")
 engine = create_engine(engine_url, echo=True)
 
 
@@ -125,4 +125,4 @@ def update_content_blob_mimetype_by_usernames_note_name(
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        return str(e)
+        return False

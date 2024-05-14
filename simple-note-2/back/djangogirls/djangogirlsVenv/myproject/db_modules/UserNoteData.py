@@ -7,9 +7,9 @@ from UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 import os
-engine_url = os.environ.get("env")
+
 Base = declarative_base()
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+engine_url = os.environ.get("env")
 engine = create_engine(engine_url, echo=True)
 
 
@@ -129,7 +129,28 @@ def check_content(usernames, note_title_id):
         return contenet_query
     except SQLAlchemyError as e:
         session.rollback()
-        return str(e)
+        return False
+
+
+# check all user's notes
+def check_user_all_notes(usernames_input):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter((User_Personal_Info.usernames == usernames_input))
+        .first()
+    )
+
+    try:
+        result = (
+            session.query(User_Note_Data.note_name, User_Note_Data.note_title_id)
+            .filter(User_Note_Data.user_id == user_id_query[0])
+            .all()
+        )
+        return result
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False
 
 
 # insert user_id,note_name,note_title_id 到User_Note_Data裡
@@ -188,6 +209,7 @@ def delete_note_by_usernames_note_title_id(usernames, note_title_id):
         session.rollback()
         return str(e)
 
+
 # 給username和note_name來刪除整行
 def delete_note_by_usernames_note_name(usernames, note_name):
     user_id_query = (
@@ -207,7 +229,7 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         return True
     except SQLAlchemyError as e:
         session.rollback()
-        return str(e)    
+        return str(e)
 
 
-print(delete_note_by_usernames_note_name("user02", "BBB"))
+print(check_content("user01", "1"))
