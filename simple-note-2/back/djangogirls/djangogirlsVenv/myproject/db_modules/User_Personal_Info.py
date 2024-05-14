@@ -7,7 +7,7 @@ from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
 import os
 
-
+ 
 # engine_url = os.environ.get("env")
 Base = declarative_base()
 engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3307/simplenote2db"
