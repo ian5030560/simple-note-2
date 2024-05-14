@@ -1,7 +1,8 @@
-import { SetStateAction, createContext, useContext, useState } from "react";
+import { useState } from "react";
 import { Modal, Input, Flex, Typography, Button, TreeDataNode } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-
+import useSupply, { createSupply, useSupplier } from "../../../util/supply";
+ 
 const { Text } = Typography;
 
 interface NodeProp {
@@ -45,26 +46,18 @@ export default function Node(prop: NodeProp) {
     </Flex>
 }
 
-const FileNodeState = createContext<TreeDataNode[]>([]);
-const FileNodeDispatch = createContext<React.Dispatch<SetStateAction<TreeDataNode[]>>>(() => { });
+const FileNodeSupply = createSupply<TreeDataNode[]>();
+export const useFileNodes = () => useSupply(FileNodeSupply);
+export function FileNodeProvider({ children }: { children: React.ReactNode }) {
+    const Supplier = useSupplier(FileNodeSupply,
+        [{
+            key: "individual",
+            title: "個人筆記",
+            children: [],
+        }]
+    );
 
-export const FileNodeProvider = ({ children }: { children: React.ReactNode }) => {
-    const [nodes, setNodes] = useState<TreeDataNode[]>([{
-        key: "individual",
-        title: "個人筆記",
-        children: [],
-    }]);
-
-    return <FileNodeState.Provider value={nodes}>
-        <FileNodeDispatch.Provider value={setNodes}>
-            {children}
-        </FileNodeDispatch.Provider>
-    </FileNodeState.Provider>
-}
-
-export function useFileNodes(): [TreeDataNode[], React.Dispatch<SetStateAction<TreeDataNode[]>>] {
-    const nodes = useContext(FileNodeState);
-    const setNodes = useContext(FileNodeDispatch);
-
-    return [nodes, setNodes];
+    return <Supplier>
+        {children}
+    </Supplier>
 }

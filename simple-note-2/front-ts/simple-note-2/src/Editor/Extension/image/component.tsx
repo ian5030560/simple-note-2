@@ -43,10 +43,6 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
         return false;
     }, [isSelected, setSelected]);
 
-    // const handleEdit = useCallback(() => {
-    //     editor.dispatchCommand(OPEN_CANVAS, {image: imageRef.current!, key: nodeKey!});
-    // }, [editor, nodeKey]);
-
     useEffect(() => {
         return editor.registerCommand(CLICK_COMMAND, handleClick, 1);
     }, [editor, handleClick]);
@@ -60,7 +56,6 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
                 minWidth: MAX ? MAX / 4 : undefined,
             }}
             ref={imageRef} />
-        {/* <Button className={styles.imageEdit} onClick={handleEdit} style={{visibility: isSelected ? "visible" : "hidden"}} icon={<RiEdit2Fill size={20}/>}/> */}
     </Resizer>;
 }
 

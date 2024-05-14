@@ -1,9 +1,10 @@
-import React, { SetStateAction, useState } from "react"
-import { Tree, theme, TreeDataNode } from "antd";
+import React from "react"
+import { Tree, theme, TreeDataNode, Button } from "antd";
 import Node from "./node";
 import useAPI, { APIs } from "../../../util/api";
 import { useCookies } from "react-cookie";
 import { useFileNodes } from "./node";
+import { FaPlus } from "react-icons/fa6";
 
 function findTargetByKey(key: string, origin: TreeDataNode[]) {
     let indice = key.split("-");
@@ -30,7 +31,7 @@ function getParentKey(key: string) {
 }
 
 function changeSubtreeKey(t: TreeDataNode[], p: string) {
-    
+
     for (let index in t) {
         let key = `${p}-${index}`;
         t[index].key = key;
@@ -44,13 +45,13 @@ const FileTree = () => {
     const addNote = useAPI(APIs.addNote);
     const [{ username }] = useCookies(["username"]);
     const { token } = theme.useToken();
-    // const [i_nodes, setI_Nodes] = useState<TreeDataNode[]>(!prop.individual ? [] : prop.individual);
-    // const [m_nodes, setM_Nodes] = useState<TreeDataNode[]>(!prop.multiple ? [] : prop.multiple);
     const [nodes, setNodes] = useFileNodes();
 
     const handleAdd = (nodeKey: string, text: string) => {
 
         setNodes(prev => {
+            if (!prev) return prev;
+
             let arr = prev[0].children!;
             let target = findTargetByKey(nodeKey, arr);
 
@@ -60,7 +61,7 @@ const FileTree = () => {
                 title: text,
                 children: [],
             });
-            
+
             return [...prev];
         })
     }
@@ -69,32 +70,36 @@ const FileTree = () => {
     const handleDelete = (nodeKey: string) => {
 
         setNodes(prev => {
-            const arr = nodes[0].children!;
+            if (!prev) return prev;
+            const arr = prev[0].children!;
             let parent = getParentKey(nodeKey);
             let target = findTargetByKey(parent, arr);
             let i = parseInt(nodeKey.charAt(nodeKey.length - 1));
             target.splice(i, 1);
-    
+
             changeSubtreeKey(target, parent);
 
             return [...prev];
         });
     }
 
-    return <Tree treeData={nodes} rootStyle={{ backgroundColor: token.colorPrimary }} blockNode
-        titleRender={(data) => {
-            const { title, key } = data as { title: string, key: string };
-            return <Node
-                title={title}
-                nodeKey={key}
-                onAdd={(key, text) => handleAdd(key, text)}
-                onDelete={(key) => handleDelete(key)}
-                root={key === "individual" || key === "multiple"}
-            />
-        }}
-        selectable={false}
-        defaultExpandAll
-    />
+    return <>
+        <Tree treeData={nodes} rootStyle={{ backgroundColor: token.colorPrimary }} blockNode
+            titleRender={(data) => {
+                const { title, key } = data as { title: string, key: string };
+                return <Node
+                    title={title}
+                    nodeKey={key}
+                    onAdd={(key, text) => handleAdd(key, text)}
+                    onDelete={(key) => handleDelete(key)}
+                    root={key === "individual" || key === "multiple"}
+                />
+            }}
+            selectable={false}
+            defaultExpandAll
+        />
+        <Button icon={<FaPlus/>} type="text" block/>
+    </>
 }
 
 export default FileTree;

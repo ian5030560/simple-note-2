@@ -18,19 +18,19 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
     const [hide, setHide] = useState(false);
 
     useEffect(() => {
-        function handleMouseMove(e: MouseEvent){
-            let {clientX, clientY} = e;
-            
-            if(ref.current){
-                let {x, width} = ref.current.parentElement!.getBoundingClientRect();
+        function handleMouseMove(e: MouseEvent) {
+            let { clientX, clientY } = e;
+
+            if (ref.current) {
+                let { x, width } = ref.current.parentElement!.getBoundingClientRect();
                 setHide(!(clientX >= x && clientX <= x + width && clientY <= 70));
             }
         }
 
-        function handleMouseLeave(){
+        function handleMouseLeave() {
             setHide(true);
         }
-        
+
         document.addEventListener("mousemove", handleMouseMove);
         document.addEventListener("mouseleave", handleMouseLeave);
         return () => {
@@ -39,7 +39,7 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
         }
     }, []);
 
-    return <div style={{position: "relative"}} id="toolbar-container">
+    return <div style={{ position: "relative" }} id="toolbar-container">
         <ToolBarContainer
             $backgroundColor={token.colorBgBase}
             $shadowColor={token.colorText}
@@ -54,9 +54,9 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
                 </React.Fragment>)
             }
         </ToolBarContainer>
-        <Button type="primary" icon={collapse ? <IoIosArrowDropdown/> : <IoIosArrowDropup/>} 
+        <Button type="primary" icon={collapse ? <IoIosArrowDropdown /> : <IoIosArrowDropup />}
             className={`${styles.collapsedButton} ${(hide && collapse) ? styles.collapsedButtonHide : ""}`}
-           ref={ref} onClick={() => setCollapse(prev => !prev)} size="small" shape="circle"/>
+            ref={ref} onClick={() => setCollapse(prev => !prev)} size="small" shape="circle" />
     </div>
 }
 

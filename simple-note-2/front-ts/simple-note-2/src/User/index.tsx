@@ -1,22 +1,21 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ConfigProvider, theme, Button, Grid, Drawer, Layout } from "antd";
 import SideBar from "./SideBar";
 import Editor from "../Editor";
-import defaultTheme from "../theme/default";
 import { BulbButton } from "../Welcome";
-import ThemeProvider, { ThemeContext } from "../theme";
 import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
 import styles from "./index.module.css";
 import { FileNodeProvider } from "./SideBar/FileTree/node";
+import ThemeProvider, { switchTheme, useThemeSeed } from "../theme";
 
 const User: React.FC = () => {
 
     const [darken, setDarken] = useState(false);
-    const context = useContext(ThemeContext);
+    const [seed] = useThemeSeed();
 
     return <ConfigProvider
         theme={{
-            ...context?.theme(darken),
+            ...switchTheme(darken, seed),
             algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm
         }}
     >
@@ -44,7 +43,7 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
             <Sider collapsible trigger={null} collapsedWidth={0} collapsed={collapse} style={{ display: !lg ? "none" : "block" }}>
                 {context}
             </Sider>
-            <Drawer open={!collapse && !lg} onClick={() => setCollapse(true)} placement="left"
+            <Drawer open={!collapse && !lg} onClick={() => setCollapse(true)} placement="left" width={300}
                 styles={{
                     header: { backgroundColor: token.colorPrimary },
                     body: { backgroundColor: token.colorPrimary, padding: 0 },
@@ -63,7 +62,7 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
 }
 
 const UserPage = () => {
-    return <ThemeProvider defaultTheme={defaultTheme}>
+    return <ThemeProvider>
         <User />
     </ThemeProvider>
 }

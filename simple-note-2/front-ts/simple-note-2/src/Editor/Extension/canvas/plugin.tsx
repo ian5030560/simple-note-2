@@ -1,6 +1,6 @@
 import { Plugin } from "../index";
 import { $getNodeByKey, $isNodeSelection, BaseSelection, LexicalCommand, createCommand } from "lexical";
-import CanvasModal, { CanvasData, OPEN_CANVAS } from "./modal";
+import CanvasModal from "./modal";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
@@ -37,7 +37,7 @@ const CanvasPlugin: Plugin = () => {
                 image.width = width;
                 image.height = height;
                 image.src = node.getSrc();
-                editor.dispatchCommand(OPEN_CANVAS, ({image, key}));
+                // editor.dispatchCommand(OPEN_CANVAS, ({image, key}));
             }
         })
     }, [editor, key]);
