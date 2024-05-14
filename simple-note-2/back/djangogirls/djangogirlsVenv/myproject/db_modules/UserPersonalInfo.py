@@ -5,14 +5,10 @@ from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
 from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
-import os
 
- 
-# engine_url = os.environ.get("env")
 Base = declarative_base()
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3307/simplenote2db"
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
-
 
 
 class User_Personal_Info(Base):
@@ -42,7 +38,6 @@ class User_Personal_Info(Base):
         self.user_email = user_email
         self.user_password = user_password
         self.login_status = login_status
-
 
 
 def create_session():
@@ -94,32 +89,10 @@ def check_status(username):
         return None
 
 
-# 2024/5/7回傳值有問題
 # check User_Personal_Info by usernames
 def check_user_personal_info(usernames):
     user = session.query(User_Personal_Info).filter_by(usernames=usernames).first()
-    if user:
-        return {
-            "id": user.id,
-            "profile_photo": user.profile_photo,
-            "theme_id": user.theme_id,
-            "usernames": user.usernames,
-            "user_email": user.user_email,
-            "user_password": user.user_password,
-            "login_status": user.login_status
-        }
-    else:
-        return False
-
-
-
-# check profile photo by username
-def check_profile_photo_by_username(usernames_input):
-    result = session.query(User_Personal_Info).filter_by(usernames=usernames_input).first()
-    if result:
-        return result.profile_photo
-    else:
-        return False 
+    return user
 
 
 # 給user_email查password
@@ -128,7 +101,7 @@ def search_password(email):
     if result:
         return result.user_password
     else:
-        return False
+        return None
 
 
 # 插入username,password,user_email到資料庫
@@ -183,8 +156,6 @@ def update_user_email_by_username(usernames_input, user_email_input):
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)
-
-
 # 給username更新user_password
 def update_user_password_by_usernames(usernames_input, user_password_input):
     stmt = (
@@ -201,7 +172,6 @@ def update_user_password_by_usernames(usernames_input, user_password_input):
         session.rollback()
         return str(e)
 
-
 # 給username更新login_status
 def update_user_login_status_by_usernames(usernames_input, login_status_input):
     stmt = (
@@ -216,7 +186,8 @@ def update_user_login_status_by_usernames(usernames_input, login_status_input):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        return str(e)
+        return str(e)    
+        
 
 
 # 給username去change login_status
@@ -235,4 +206,4 @@ def change_login_status(username):
         return None
 
 
-pprint(check_user_personal_info("user01"))
+pprint(update_user_login_status_by_usernames("user01",0))

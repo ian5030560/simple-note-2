@@ -3,14 +3,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker
-from User_Note_Data import User_Note_Data
-from User_Personal_Info import User_Personal_Info
+from UserNoteData import User_Note_Data
+from UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
-import os
 
 Base = declarative_base()
-# engine_url = os.environ.get("env")
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3307/simplenote2db"
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
@@ -127,6 +125,3 @@ def update_content_blob_mimetype_by_usernames_note_name(
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)
- 
-
-print(check_content_blob_mimetype("user01", "note1")[0][1])
