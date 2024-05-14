@@ -5,9 +5,10 @@ from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
 from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
-
+import os
+engine_url = os.environ.get("env")
 Base = declarative_base()
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
