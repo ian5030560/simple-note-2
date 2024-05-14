@@ -5,6 +5,7 @@ from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
 from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
+import os
 
 Base = declarative_base()
 engine_url = os.environ.get("env")
