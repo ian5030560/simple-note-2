@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import DeleteNote  # 新建檔案改這個
-from db_modules import User_File_Data  # 資料庫來的檔案
-from db_modules import User_Note_Data  # 資料庫來的檔案
-from db_modules import User_Personal_Info  # 資料庫來的檔案
-from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
+from db_modules import UserFileData  # 資料庫來的檔案
+from db_modules import UserNoteData  # 資料庫來的檔案
+from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -49,7 +49,7 @@ class DeleteNoteView(APIView):
             username = data.get("username")  # 帳號名稱
             noteId = data.get("noteId")  # 筆記ID
 
-            returnStatus = User_Note_Data.delete_note_by_usernames_note_title_id(
+            returnStatus = UserNoteData.delete_note_by_usernames_note_title_id(
                 username, noteId
             )  # 透過username, noteId來刪除資料
 
@@ -72,8 +72,6 @@ class DeleteNoteView(APIView):
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

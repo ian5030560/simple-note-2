@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import UpdateInfo  # 新建檔案改這個
-from db_modules import User_File_Data  # 資料庫來的檔案
-from db_modules import User_Note_Data  # 資料庫來的檔案
-from db_modules import User_Personal_Info  # 資料庫來的檔案
-from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
+from db_modules import UserFileData  # 資料庫來的檔案
+from db_modules import UserNoteData  # 資料庫來的檔案
+from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -59,26 +59,45 @@ class UpdateInfoView(APIView):
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
             image = ""  # 預設頭像 = null
-            theme = ""  # 預設主題 = null
+            themeName = ""  # 預設name = null
+            themeData = "" # 預設data = null
             password = ""  # 預設密碼 = null
             image = data.get("image")  # 更新的頭像
-            theme = data.get("theme")  # 更新的主題
+            theme = data.get('theme["data"]')  # 更新的主題
+            themeName = theme["name"]
+            themeData = theme["data"]
             password = data.get("password")  # 更新的密碼
 
+            # theme: {
+            #    name: ,
+            #    data 
+            # }
+            
             # 2024/5/7 缺check isNull
             if image != "":
-                updateImageValue = User_Personal_Info.insert_profile_photo_by_username(
-                    username, image
-                )
-                if updateImageValue == 1:
+                checkImageExist = UserPersonalInfo.check_profile_photo_by_username(image)
+                if checkImageExist != False:
+                    insertImageValue = UserPersonalInfo.update_profile_photo_by_username(username, image)
+                else:
+                    insertImageValue = UserPersonalInfo.insert_profile_photo_by_username(
+                        username, image
+                    )
+                if insertImageValue == 1:
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response(
-                        updateImageValue, status=status.HTTP_400_BAD_REQUEST
+                        insertImageValue, status=status.HTTP_400_BAD_REQUEST
                     )
 
+            # 2024/5/14 缺check theme method
             if theme != "":
-                updateThemeValue = db.update_theme_by_username(username, theme)
+                checkThemeExist = UserPersonalThemeData.check_profile_photo_by_username(image)
+                if checkThemeExist != False:
+                    insertThemeValue = UserPersonalThemeData.update_profile_photo_by_username(username, image)
+                else:
+                    insertThemeValue = UserPersonalThemeData.insert_profile_photo_by_username(
+                        username, image
+                    )
                 if updateThemeValue == 1:
                     return Response(status=status.HTTP_201_CREATED)
                 else:
@@ -87,15 +106,20 @@ class UpdateInfoView(APIView):
                     )
 
             if password != "":
-                updatePasswordValue = db.update_user_password_by_username(
+                checkPasswordeExist = UserPersonalInfo.check_username_password(
                     username, password
                 )
-                if updatePasswordValue == 1:
-                    return Response(status=status.HTTP_202_ACCEPTED)
-                else:
-                    return Response(
-                        updatePasswordValue, status=status.HTTP_402_PAYMENT_REQUIRED
-                    )
+                if checkPasswordeExist == 1:
+                    updatePassword = UserPersonalInfo.update_user_password_by_usernames(
+                    username, password
+                )
+                    if updatePassword == True:
+                        return Response(status=status.HTTP_202_ACCEPTED)
+                    else:
+                        return Response(
+                             status=status.HTTP_402_PAYMENT_REQUIRED
+                        )
+                    
             # serializer
             serializer = UpdateInfoSerializer(data=data)
 

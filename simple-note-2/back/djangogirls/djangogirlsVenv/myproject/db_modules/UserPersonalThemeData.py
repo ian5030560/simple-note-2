@@ -31,6 +31,7 @@ def create_session():
 
 session = create_session()
 
+# 2024/5/14 add check theme exist
 
 # insert_theme_name_by_username
 def insert_theme_name_by_username(usernames_input, theme_name_input):

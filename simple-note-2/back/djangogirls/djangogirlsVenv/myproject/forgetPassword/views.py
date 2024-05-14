@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import ForgetPassword  # 新建檔案改這個
-from db_modules import User_File_Data  # 資料庫來的檔案
-from db_modules import User_Note_Data  # 資料庫來的檔案
-from db_modules import User_Personal_Info  # 資料庫來的檔案
-from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
+from db_modules import UserFileData  # 資料庫來的檔案
+from db_modules import UserNoteData  # 資料庫來的檔案
+from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -51,7 +51,7 @@ class ForgetPasswordView(APIView):
             email = data.get("email")
             username = data.get("username")
 
-            password = User_Personal_Info.search_password(email)  # from DB get password
+            password = UserPersonalInfo.search_password(email)  # from DB get password
             if password:
                 # 電子郵件內容
                 email_template = render_to_string(
@@ -85,8 +85,6 @@ class ForgetPasswordView(APIView):
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:

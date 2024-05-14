@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import NewNote  # 新建檔案改這個
-from db_modules import User_File_Data  # 資料庫來的檔案
-from db_modules import User_Note_Data  # 資料庫來的檔案
-from db_modules import User_Personal_Info  # 資料庫來的檔案
-from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
+from db_modules import UserFileData  # 資料庫來的檔案
+from db_modules import UserNoteData  # 資料庫來的檔案
+from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -47,7 +47,7 @@ class NewNoteView(APIView):
             noteId = data.get("noteId")  # 筆記ID
             notename = data.get("notename")  # 筆記名稱
 
-            returnStatus = User_Note_Data.insert_user_id_note_name(
+            returnStatus = UserNoteData.insert_user_id_note_name(
                 username, notename, noteId
             )  # 透過username, notename, noteId來新增資料
 

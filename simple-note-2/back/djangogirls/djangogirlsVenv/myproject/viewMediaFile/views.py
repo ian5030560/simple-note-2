@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import ViewMediaFile  # 新建檔案改這個
-from db_modules import User_File_Data  # 資料庫來的檔案
-from db_modules import User_Note_Data  # 資料庫來的檔案
-from db_modules import User_Personal_Info  # 資料庫來的檔案
-from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
+from db_modules import UserFileData  # 資料庫來的檔案
+from db_modules import UserNoteData  # 資料庫來的檔案
+from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -33,8 +33,8 @@ class ViewMediaFileView(APIView):
     def get(self, request, username, filename, format=None):
 
         # Retrieve content and mimetype from the database
-        content = User_File_Data.check_content_blob_mimetype(username, filename)[0][0]
-        mimetype = User_File_Data.check_content_blob_mimetype(username, filename)[0][1]
+        content = UserFileData.check_content_blob_mimetype(username, filename)[0][0]
+        mimetype = UserFileData.check_content_blob_mimetype(username, filename)[0][1]
 
         # Check if content and mimetype are not None
         if content is not None and mimetype is not None:
