@@ -3,12 +3,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
-from .UserPersonalInfo import User_Personal_Info
+from UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import os
- 
+
 Base = declarative_base()
 engine_url = os.environ.get("env")
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3307/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
@@ -32,6 +33,21 @@ def create_session():
 session = create_session()
 
 # 2024/5/14 add check theme exist
+def check_theme_name(usernames_input, theme_name_input):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter((User_Personal_Info.usernames == usernames_input))
+        .first()
+    )
+    result = (
+        session.query(User_Personal_Theme_Data)
+        .filter_by(user_id=user_id_query[0], theme_name=theme_name_input)
+        .first()
+    )
+    if result:
+        return True
+    else:
+        return False
 
 # insert_theme_name_by_username
 def insert_theme_name_by_username(usernames_input, theme_name_input):
@@ -94,4 +110,4 @@ def insert_themeData_by_usernames(
         return str(e)
 
 
-print(insert_themeData_by_usernames("user01", "blue", "1", "2", "3", "4"))
+print(check_theme_name("user01", "blue"))
