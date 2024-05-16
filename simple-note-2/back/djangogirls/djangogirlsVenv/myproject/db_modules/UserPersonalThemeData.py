@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
-from UserPersonalInfo import User_Personal_Info
+from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import os
 

@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import UpdateInfo  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
-from db_modules import UserNoteData  # 資料庫來的檔案
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
-from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from ..db_modules import UserFileData  # 資料庫來的檔案
+from ..db_modules import UserNoteData  # 資料庫來的檔案
+from ..db_modules import UserPersonalInfo  # 資料庫來的檔案
+from ..db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -90,10 +90,12 @@ class UpdateInfoView(APIView):
                     )
 
             # 2024/5/14 缺check theme method
+            # 2024/5/16 缺update theme name and data
             if theme != "":
-                checkThemeExist = UserPersonalThemeData.check_profile_photo_by_username(image)
-                if checkThemeExist != False:
-                    insertThemeValue = UserPersonalThemeData.update_profile_photo_by_username(username, image)
+                checkThemeExist = UserPersonalThemeData.check_theme_name(username, themeName)
+                if checkThemeExist == True: # theme exist
+                    insertThemeNameValue = UserPersonalThemeData.insert_theme_name_by_username(username, themeName)
+                    insertThemeDataValue = UserPersonalThemeData.insert_themeData_by_usernames(username, themeData)
                 else:
                     insertThemeValue = UserPersonalThemeData.insert_profile_photo_by_username(
                         username, image

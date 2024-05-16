@@ -3,8 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker
-from UserNoteData import User_Note_Data
-from UserPersonalInfo import User_Personal_Info
+from .UserNoteData import User_Note_Data
+from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import os
 
@@ -66,12 +66,13 @@ def check_file_name(file_name_input):
         .first()
     )
     if result:
+        # if exists return file_name
         return result[0]
     else:
         return False
 
 
-# 給username, note_name 插入 content_blob, content_mimetype,note_id,file_name
+# 給username, note_name 插入 content_blob, content_mimetype, note_id, file_name
 def insert_content_blob_mimetype_by_usernames_note_name(
     usernames_input,
     note_name_input,
