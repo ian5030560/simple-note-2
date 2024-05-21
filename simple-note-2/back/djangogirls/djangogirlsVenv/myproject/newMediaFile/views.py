@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import NewMediaFile  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
-from db_modules import UserNoteData  # 資料庫來的檔案
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
-from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from ..db_modules import UserFileData  # 資料庫來的檔案
+from ..db_modules import UserNoteData  # 資料庫來的檔案
+from ..db_modules import UserPersonalInfo  # 資料庫來的檔案
+from ..db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -52,10 +52,12 @@ class NewMediaFileView(APIView):
             filename = data.get("filename")  # 文件名稱
             content = data.get("content")  # 文件內容
             mimetype = data.get("mimetype")  # 媒體種類
-
+            notename = data.get("notename") # 2024/5/16 缺notename
+            # 2024/5/16 缺chack file exists
+            checkExistValue = UserFileData
             returnValue = (
-                UserFileData.update_content_blob_mimetype_by_usernames_note_name(
-                    username, filename, content, mimetype
+                UserFileData.insert_content_blob_mimetype_by_usernames_note_name(
+                    username, notename, content, mimetype, filename
                 )
             )  # 透過content來新增資料
             if returnValue == True:
