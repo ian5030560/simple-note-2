@@ -2,9 +2,9 @@ import { Modal, Flex, Image, Input, Button, Select, Typography, InputRef, Select
 import { useCallback, useEffect, useRef } from "react";
 import styles from "./index.module.css";
 import useAPI, { APIs } from "../../../util/api";
-import { Info, useInfo } from "../info";
-import { defaultSeed, testSeed, useThemeSeed } from "../../../theme";
+import { useInfoAction, useInfoContext } from "../info";
 import { useCookies } from "react-cookie";
+import { defaultSeed, testSeed } from "../../../theme";
 
 interface SettingPanelProp {
     open: boolean;
@@ -13,34 +13,56 @@ interface SettingPanelProp {
 }
 const SettingPanel = (prop: SettingPanelProp) => {
 
-    const [info, setInfo] = useInfo();
     const [pwdModal, contextHolder] = Modal.useModal();
     const pwdRef = useRef<InputRef>(null);
     const getInfo = useAPI(APIs.getInfo);
     const updateInfo = useAPI(APIs.updateInfo);
-    const [, setSeed] = useThemeSeed();
-    const [{username}] = useCookies(["username"]);
+    const [{ username }] = useCookies(["username"]);
+    const { picture, themes } = useInfoContext();
+    const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
+
     const settingRef = useRef({
-        theme: info?.themes.find(value => value.isUsing),
-        picture: info?.picture
+        theme: 0,
+        picture: picture
     });
+
+    useEffect(() => {
+        updateThemes(
+            [
+                {
+                    name: "預設",
+                    data: {
+                        isUsing: true,
+                        ...defaultSeed,
+                    },
+                },
+                {
+                    name: "測試",
+                    data: {
+                        isUsing: false,
+                        ...testSeed,
+                    }
+                }
+            ]
+        )
+    }, [updateThemes]);
 
     // useEffect(() => {
     //     getInfo({ username: username})
     //     .then((res) => res.json())
     //     .then((res) => {
-    //         setInfo({
-    //             username: username,
-    //             picture: res.image,
-    //             themes: res.themes,
-    //         })
+    //         updatePicture(res.picture);
+    //         updateThemes(res.themes);    
     //     })
     //     .catch(() => {});
-    // }, [getInfo, setInfo, username]);
+    // }, [getInfo, updatePicture, updateThemes, username]);
 
     const handleOk = useCallback(() => {
+        let { theme, picture } = settingRef.current;
+        updateThemeUsage(theme);
+        updatePicture(picture);
         prop.onOk();
-    }, [prop]);
+    }, [prop, updatePicture, updateThemeUsage]);
 
     const handleChangePassword = useCallback(async () => {
         const confirmed = await pwdModal.confirm({
@@ -52,10 +74,10 @@ const SettingPanel = (prop: SettingPanelProp) => {
 
     }, [pwdModal]);
 
-    const options: SelectProps["options"] = info?.themes.map((item, index) => ({
-        value: `theme-${index}`,
-        label: `theme-${index}`,
-        item: item,
+    const options: SelectProps["options"] = themes.map((item, index) => ({
+        value: index,
+        label: `${item.name}`,
+        item: item.data,
     }));
 
     return <Modal open={prop.open} onCancel={prop.onCancel} centered title="設定"
@@ -68,14 +90,15 @@ const SettingPanel = (prop: SettingPanelProp) => {
 
         <div style={{ width: 300 }}>
             <Flex style={{ marginBottom: 8 }} align="center">
-                <Image width={50} height={50} src={info?.picture} wrapperStyle={{ marginRight: 8 }} />
-                <Typography.Title level={3} style={{ flex: 1, textAlign: "center" }}>{info?.username || "username"}</Typography.Title>
+                <Image width={50} height={50} src={picture} wrapperStyle={{ marginRight: 8 }} />
+                <Typography.Title level={3} style={{ flex: 1, textAlign: "center" }}>{username}</Typography.Title>
             </Flex>
 
             <Flex align="center" style={{ marginBottom: 8 }}>
                 <Typography.Text style={{ marginRight: 8 }}>主題</Typography.Text>
                 <Select className={styles.select}
                     options={options}
+                    defaultValue={options?.find(opt => opt.item.isUsing)?.value}
                     optionRender={(prop) => {
                         return <Flex justify="space-between" key={prop.key}>
                             <Typography.Text>{prop.label}</Typography.Text>
@@ -91,21 +114,11 @@ const SettingPanel = (prop: SettingPanelProp) => {
                                 }
                             </Flex>
                         </Flex>
-                    }} 
-                    onChange={(val) => {
-                        if(!options) return;
-                        for(let option of options){
-                            option.item.isUsing = false;
-                            if(option.value !== val) continue;
-                            option.item.isUsing = true;
-                            let pic = settingRef.current.picture;
-                            settingRef.current = {
-                                theme: option.item,
-                                picture: pic,
-                            }
-                            console.log(settingRef.current);
-                        }
-                    }}/>
+                    }}
+                    onChange={(val, option) => {
+                        if (!options) return;
+                        settingRef.current.theme = val as number;
+                    }} />
             </Flex>
 
             <Flex>

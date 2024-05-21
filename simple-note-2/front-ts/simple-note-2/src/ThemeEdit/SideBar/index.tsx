@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
     Switch, Typography, theme, Row, Col, ColorPicker, Space, Flex, Button,
+    message,
 } from "antd";
 import { Color } from "antd/es/color-picker/color"
 import { SwitchClickEventHandler } from "antd/es/switch";
@@ -48,6 +49,7 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
     const [lightNeutral, setLightNeutral] = useState(light.neutral ? light.neutral : token.colorBgBase);
     const [darkPrimary, setDarkPrimary] = useState(dark.primary ? dark.primary : token.colorPrimary);
     const [darkNeutral, setDarkNeutral] = useState(dark.neutral ? dark.neutral : token.colorBgBase);
+    const [api, contextHolder] = message.useMessage();
 
     const handleLightPrimary: ColorHandler = (color) => {
         setLightPrimary(color.toHexString());

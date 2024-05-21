@@ -10,9 +10,7 @@ const ThemePage = () => {
     const [pageDarken, setPageDarken] = useState(false);
 
     return <ConfigProvider
-        theme={{
-            algorithm: pageDarken ? theme.darkAlgorithm : theme.defaultAlgorithm
-        }}
+        theme={{algorithm: pageDarken ? theme.darkAlgorithm : theme.defaultAlgorithm}}
     >
         <Index />
         <BulbButton lighten={!pageDarken} onClick={() => setPageDarken(prev => !prev)} />

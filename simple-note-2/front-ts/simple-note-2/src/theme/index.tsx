@@ -1,19 +1,8 @@
-import useSupply, { createSupply, useSupplier } from "../util/supply";
-
 export type ThemeSeed = {
     colorLightPrimary: string;
     colorLightNeutral: string;
     colorDarkNeutral: string;
     colorDarkPrimary: string;
-}
-const ThemeSeedSupply = createSupply<ThemeSeed>();
-export const useThemeSeed = () => useSupply(ThemeSeedSupply);
-export default function ThemeProvider({ children }: { children: React.ReactNode }){
-    const Supplier = useSupplier(ThemeSeedSupply);
-
-    return <Supplier>
-        {children}
-    </Supplier>
 }
 
 export const defaultSeed: ThemeSeed = {

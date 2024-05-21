@@ -5,17 +5,19 @@ import Editor from "../Editor";
 import { BulbButton } from "../Welcome";
 import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
 import styles from "./index.module.css";
-import { FileNodeProvider } from "./SideBar/FileTree/node";
-import ThemeProvider, { switchTheme, useThemeSeed } from "../theme";
+import { switchTheme } from "../theme";
+import { useInfoContext } from "./SideBar/info";
 
 const User: React.FC = () => {
 
     const [darken, setDarken] = useState(false);
-    const [seed] = useThemeSeed();
+    const { themes } = useInfoContext();
+
+    const seed = useMemo(() => themes.find(theme => theme.data.isUsing), [themes]);
 
     return <ConfigProvider
         theme={{
-            ...switchTheme(darken, seed),
+            ...switchTheme(darken, seed?.data),
             algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm
         }}
     >
@@ -39,19 +41,16 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
     const context = useMemo(() => <SideBar className={styles.sideBar} />, []);
 
     return <Layout style={{ minHeight: "100%", ...rootStyle }}>
-        <FileNodeProvider>
-            <Sider collapsible trigger={null} collapsedWidth={0} collapsed={collapse} style={{ display: !lg ? "none" : "block" }}>
-                {context}
-            </Sider>
-            <Drawer open={!collapse && !lg} onClick={() => setCollapse(true)} placement="left" width={300}
-                styles={{
-                    header: { backgroundColor: token.colorPrimary },
-                    body: { backgroundColor: token.colorPrimary, padding: 0 },
-                }}>
-                {context}
-            </Drawer>
-        </FileNodeProvider>
-
+        <Sider collapsible trigger={null} collapsedWidth={0} collapsed={collapse} style={{ display: !lg ? "none" : "block" }}>
+            {context}
+        </Sider>
+        <Drawer open={!collapse && !lg} onClick={() => setCollapse(true)} placement="left" width={300}
+            styles={{
+                header: { backgroundColor: token.colorPrimary },
+                body: { backgroundColor: token.colorPrimary, padding: 0 },
+            }}>
+            {context}
+        </Drawer>
         <Content style={{ position: "relative" }}>
             <Button type="primary" icon={!collapse ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}
                 className={`${styles.button} ${!collapse ? styles.collapsedButton : styles['collapsedButton-collapsing']}`}
@@ -61,10 +60,4 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
     </Layout>
 }
 
-const UserPage = () => {
-    return <ThemeProvider>
-        <User />
-    </ThemeProvider>
-}
-
-export default UserPage;
+export default User;
