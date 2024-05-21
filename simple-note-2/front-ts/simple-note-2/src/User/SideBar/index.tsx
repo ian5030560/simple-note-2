@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal, FlexProps } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
@@ -7,6 +7,7 @@ import { useCookies } from "react-cookie";
 import SettingPanel from "./SettingPanel";
 import { useNavigate } from "react-router-dom";
 import useAPI, { APIs } from "../../util/api";
+import { InfoSupplier, useInfo } from "./info";
 
 const { Title } = Typography;
 
@@ -18,6 +19,7 @@ const UserProfile = ({ style }: { style?: React.CSSProperties }) => {
     const [{ username }, , removeCookies] = useCookies(["username"]);
     const navigate = useNavigate();
     const signOut = useAPI(APIs.signOut);
+    const [info] = useInfo();
 
     const items = [
         {
@@ -70,8 +72,7 @@ const UserProfile = ({ style }: { style?: React.CSSProperties }) => {
             size={"large"}
             shape="square"
             icon={<UserOutlined />}
-        // icon={src ? null : <UserOutlined />}
-        // src={src}
+            src={info?.picture}
         />
         <Title level={4} ellipsis>{username}</Title>
         <Dropdown
@@ -106,12 +107,14 @@ const SideBar = ({ className, style, ...prop }: SideBarProps) => {
 
     const { token } = theme.useToken();
 
-    return <Flex vertical className={className}
-        style={{ backgroundColor: token.colorPrimary, ...style }}
-        {...prop}>
-        <UserProfile style={{ marginBottom: 12 }} />
-        <FileTree />
-    </Flex>
+    return <InfoSupplier>
+        <Flex vertical className={className}
+            style={{ backgroundColor: token.colorPrimary, ...style }}
+            {...prop}>
+            <UserProfile style={{ marginBottom: 12 }} />
+            <FileTree />
+        </Flex>
+    </InfoSupplier>
 
 }
 

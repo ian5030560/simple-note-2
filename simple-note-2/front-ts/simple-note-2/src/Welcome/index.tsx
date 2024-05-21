@@ -4,8 +4,8 @@ import Brand from "./brand";
 import { Flex, ConfigProvider, FloatButton, theme } from "antd";
 import Auth from "./Auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
-import defaultTheme from "../theme/default";
 import Intro from "./Intro";
+import { switchTheme, defaultSeed } from "../theme";
 
 interface HeaderProp extends TopBarProp {
     backgroundColor: string,
@@ -44,7 +44,7 @@ const WelcomePage: React.FC = () => {
 
     return <ConfigProvider
         theme={{
-            ...defaultTheme(darken),
+            ...switchTheme(darken, defaultSeed),
             algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
         }}
     >

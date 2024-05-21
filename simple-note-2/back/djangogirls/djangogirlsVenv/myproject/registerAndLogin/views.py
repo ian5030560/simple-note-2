@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import RegisterAndLogin
-from db_modules import User_File_Data  # 資料庫來的檔案
-from db_modules import User_Note_Data  # 資料庫來的檔案
-from db_modules import User_Personal_Info  # 資料庫來的檔案
-from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
+from ..db_modules import UserFileData  # 資料庫來的檔案
+from ..db_modules import UserNoteData  # 資料庫來的檔案
+from ..db_modules import UserPersonalInfo  # 資料庫來的檔案
+from ..db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -58,10 +58,10 @@ class RegisterAndLoginView(APIView):
             serializer = RegisterAndLoginSerializer(data=data)
 
             if id == "sign-in":
-                if User_Personal_Info.check_username_password(
+                if UserPersonalInfo.check_username_password(
                     username, password
                 ):  # 登入成功
-                    if User_Personal_Info.update_user_login_status_by_usernames(
+                    if UserPersonalInfo.update_user_login_status_by_usernames(
                         username, 1
                     ):
                         return Response(status=status.HTTP_200_OK)
@@ -72,8 +72,8 @@ class RegisterAndLoginView(APIView):
                     return Response(status=status.HTTP_401_UNAUTHORIZED)
 
             elif id == "register":
-                check_username = User_Personal_Info.check_username(username)
-                check_email = User_Personal_Info.check_email(email)
+                check_username = UserPersonalInfo.check_username(username)
+                check_email = UserPersonalInfo.check_email(email)
 
                 if check_username:
                     return Response(
@@ -87,7 +87,7 @@ class RegisterAndLoginView(APIView):
                     elif not check_email:  # email不重複，可以註冊
                         print(
                             "register:",
-                            User_Personal_Info.insert_username_password_email(
+                            UserPersonalInfo.insert_username_password_email(
                                 username, password, email
                             ),
                         )

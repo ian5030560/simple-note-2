@@ -3,7 +3,7 @@ import SideBar from "./SideBar";
 import { Row, Col, ConfigProvider, theme } from "antd";
 import Preview from "./Preview";
 import { BulbButton } from "../Welcome";
-import defaultTheme from "../theme/default";
+import { defaultSeed } from "../theme";
 
 const ThemePage = () => {
 
@@ -23,10 +23,10 @@ const ThemePage = () => {
 
 const Index = () => {
     const [darken, setDarken] = useState(false);
-    const [lightPrimary, setLightPrimary] = useState(defaultTheme(false).token!.colorPrimary!);
-    const [lightNeutral, setLightNeutral] = useState(defaultTheme(false).token!.colorBgBase!);
-    const [darkPrimary, setDarkPrimary] = useState(defaultTheme(true).token!.colorPrimary!);
-    const [darkNeutral, setDarkNeutral] = useState(defaultTheme(true).token!.colorBgBase!);
+    const [lightPrimary, setLightPrimary] = useState(defaultSeed.colorLightPrimary);
+    const [lightNeutral, setLightNeutral] = useState(defaultSeed.colorLightNeutral);
+    const [darkPrimary, setDarkPrimary] = useState(defaultSeed.colorDarkPrimary);
+    const [darkNeutral, setDarkNeutral] = useState(defaultSeed.colorDarkNeutral);
     const { token } = theme.useToken();
 
     const handleColor = (color: string, setColor: React.Dispatch<React.SetStateAction<string>>) => {

@@ -1,19 +1,40 @@
-import React, { createContext, useState } from "react";
-import { ThemeConfigHandler } from "./default";
+import useSupply, { createSupply, useSupplier } from "../util/supply";
 
-interface ThemeContextProp{
-    theme: ThemeConfigHandler,
-    themeSetter: React.Dispatch<ThemeConfigHandler>;
+export type ThemeSeed = {
+    colorLightPrimary: string;
+    colorLightNeutral: string;
+    colorDarkNeutral: string;
+    colorDarkPrimary: string;
 }
-export const ThemeContext = createContext<ThemeContextProp | null>(null);
+const ThemeSeedSupply = createSupply<ThemeSeed>();
+export const useThemeSeed = () => useSupply(ThemeSeedSupply);
+export default function ThemeProvider({ children }: { children: React.ReactNode }){
+    const Supplier = useSupplier(ThemeSeedSupply);
 
-const ThemeProvider = ({children, defaultTheme}: {children: React.ReactNode, defaultTheme: ThemeConfigHandler}) => {
-
-    const [theme, setTheme] = useState<ThemeConfigHandler>(() => defaultTheme);
-    
-    return <ThemeContext.Provider value={{theme: theme, themeSetter: setTheme}}>
+    return <Supplier>
         {children}
-    </ThemeContext.Provider>
+    </Supplier>
 }
 
-export default ThemeProvider;
+export const defaultSeed: ThemeSeed = {
+    colorLightPrimary: "#8696A7",
+    colorLightNeutral: "#FFFCEC",
+    colorDarkPrimary: "#8696A7",
+    colorDarkNeutral: "#3C3C3C",
+}
+
+export const testSeed: ThemeSeed = {
+    colorLightPrimary: "red",
+    colorLightNeutral: "white",
+    colorDarkPrimary: "red",
+    colorDarkNeutral: "black",
+}
+
+export function switchTheme(dark: boolean, seed?: ThemeSeed) {
+    return {
+        token: {
+            colorPrimary: seed ? dark ? seed.colorDarkPrimary : seed.colorLightPrimary : dark ? defaultSeed.colorDarkPrimary : defaultSeed.colorLightPrimary,
+            colorBgBase: seed ? dark ? seed.colorDarkNeutral : seed.colorLightNeutral : dark ? defaultSeed.colorDarkNeutral : defaultSeed.colorLightNeutral,
+        }
+    }
+}

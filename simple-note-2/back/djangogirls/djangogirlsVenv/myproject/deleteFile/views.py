@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import DeleteFile  # 新建檔案改這個
-from db_modules import User_File_Data  # 資料庫來的檔案
-from db_modules import User_Note_Data  # 資料庫來的檔案
-from db_modules import User_Personal_Info  # 資料庫來的檔案
-from db_modules import User_Personal_Theme_Data  # 資料庫來的檔案
+from ..db_modules import UserFileData  # 資料庫來的檔案
+from ..db_modules import UserNoteData  # 資料庫來的檔案
+from ..db_modules import UserPersonalInfo  # 資料庫來的檔案
+from ..db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -53,6 +53,7 @@ class DeleteFileView(APIView):
             url.replace("localhost:8000/view_file/", "")
 
             # 2024/5/7 還沒寫
+            # 2024/5/14 還沒寫
             deleteFileValue = db.delete_User_Note_Data_username_to_file_name(
                 self, username, url
             )  # 呼叫資料庫的刪除方法
@@ -76,8 +77,6 @@ class DeleteFileView(APIView):
                 print(serializer.errors)
                 return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
-            # close db connection
-            db.close_connection()
 
         # Handle JSON decoding error
         except json.JSONDecodeError:
