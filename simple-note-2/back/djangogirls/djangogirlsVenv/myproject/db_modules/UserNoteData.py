@@ -7,9 +7,12 @@ from UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 import os
+from dotenv import load_dotenv
+# 加載 .env 文件中的環境變數
+load_dotenv()
 
 Base = declarative_base()
-engine_url = os.environ.get("env")
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 

@@ -9,8 +9,8 @@ from sqlalchemy.exc import SQLAlchemyError
 import os
 
 Base = declarative_base()
-engine_url = os.environ.get("env")
-engine = create_engine(engine_url, echo=True)
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+engine = create_engine(engine_url)
 
 
 class User_File_Data(Base):
@@ -126,3 +126,5 @@ def update_content_blob_mimetype_by_usernames_note_name(
         # 回朔防止資料庫損壞
         session.rollback()
         return False
+
+print(check_content_blob_mimetype("user01","note1"))
