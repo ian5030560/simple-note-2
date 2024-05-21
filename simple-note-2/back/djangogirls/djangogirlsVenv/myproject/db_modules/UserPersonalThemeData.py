@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, insert
+from sqlalchemy import and_, create_engine, insert, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
@@ -9,7 +9,7 @@ import os
 
 Base = declarative_base()
 engine_url = os.environ.get("env")
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3307/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
@@ -32,7 +32,8 @@ def create_session():
 
 session = create_session()
 
-# 2024/5/14 add check theme exist
+
+# check_theme_name
 def check_theme_name(usernames_input, theme_name_input):
     user_id_query = (
         session.query(User_Personal_Info.id)
@@ -44,10 +45,75 @@ def check_theme_name(usernames_input, theme_name_input):
         .filter_by(user_id=user_id_query[0], theme_name=theme_name_input)
         .first()
     )
+    session.close()
     if result:
         return True
     else:
         return False
+
+
+# update_theme_name_by_username
+def update_theme_name(usernames_input, old_theme_name_input, new_theme_name_input):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter((User_Personal_Info.usernames == usernames_input))
+        .first()
+    )
+    try:
+        stmt = (
+            update(User_Personal_Theme_Data)
+            .where(
+                and_(
+                    User_Personal_Theme_Data.user_id == user_id_query[0],
+                    User_Personal_Theme_Data.theme_name == old_theme_name_input,
+                )
+            )
+            .values(theme_name=new_theme_name_input)
+        )
+        session.execute(stmt)
+        session.commit()
+        return True
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(e)
+        return False
+    finally:
+        session.close()
+        
+#update theme data by username and theme name
+def update_themeData_by_usernames(usernames_input,theme_name_input,color_light_primary_input,color_light_base_bg_input,color_dark_primary_input,color_dark_base_bg_input):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter((User_Personal_Info.usernames == usernames_input))
+        .first()
+    )
+    try:
+        stmt = (
+            update(User_Personal_Theme_Data)
+            .where(
+                and_(
+                    User_Personal_Theme_Data.user_id == user_id_query[0],
+                    User_Personal_Theme_Data.theme_name == theme_name_input,
+                )
+            )
+            .values(
+                color_light_primary=color_light_primary_input,
+                color_light_base_bg=color_light_base_bg_input,
+                color_dark_primary=color_dark_primary_input,
+                color_dark_base_bg=color_dark_base_bg_input,
+            )
+        )
+        session.execute(stmt)
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(e)
+        return False
+    finally:
+        session.close()
+    
 
 # insert_theme_name_by_username
 def insert_theme_name_by_username(usernames_input, theme_name_input):
@@ -76,7 +142,10 @@ def insert_theme_name_by_username(usernames_input, theme_name_input):
 
     except SQLAlchemyError as e:
         session.rollback()
-        return str(e)
+        print(e)
+        return False
+    finally:
+        session.close()
 
 
 def insert_themeData_by_usernames(
@@ -108,6 +177,8 @@ def insert_themeData_by_usernames(
     except SQLAlchemyError as e:
         session.rollback()
         return str(e)
+    finally:
+        session.close()
 
 
-print(check_theme_name("user01", "blue"))
+print(update_themeData_by_usernames("user01","light",5,5,5,5))

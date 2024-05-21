@@ -10,7 +10,7 @@ import os
 
 Base = declarative_base()
 engine_url = os.environ.get("env")
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3307/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
@@ -59,15 +59,30 @@ def check_content_blob_mimetype(username, note_name):
 
 
 # give file_name check file_name
-def check_file_name(file_name_input):
-    result = (
-        session.query(User_File_Data.file_name)
-        .filter(User_File_Data.file_name == file_name_input)
+def check_file_name(usernames_input, note_name_input, file_name_input):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter(User_Personal_Info.usernames == usernames_input)
         .first()
     )
-    if result:
-        # if exists return file_name
-        return result[0]
+    note_id_query = (
+        session.query(User_Note_Data.id)
+        .filter(
+            and_(
+                User_Note_Data.user_id == user_id_query[0],
+                User_Note_Data.note_name == note_name_input,
+            )
+        )
+        .first()
+    )
+    stmt = (
+        session.query(User_File_Data.file_name)
+        .filter(User_File_Data.note_id == note_id_query[0])
+        .first()
+    )
+
+    if stmt[0] == file_name_input:
+        return True
     else:
         return False
 
@@ -181,4 +196,4 @@ def update_content_blob_mimetype_by_usernames_note_name(
         return False
 
 
-print(update_file_name("user01","note1","file2"))
+print(check_file_name("user01", "note1", "file1"))
