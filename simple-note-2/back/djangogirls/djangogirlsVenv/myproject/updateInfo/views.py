@@ -64,8 +64,13 @@ class UpdateInfoView(APIView):
             password = ""  # 預設密碼 = null
             image = data.get("image")  # 更新的頭像
             theme = data.get('theme["data"]')  # 更新的主題
-            themeName = theme["name"]
+            themeName = theme["oldName"]
+            themeName = theme["NewName"]
             themeData = theme["data"]
+            colorLightPrimary = themeData["colorLightPrimary"]
+            colorLightNeutral = themeData["colorLightNeutral"]
+            colorDarkPrimary = themeData["colorDarkPrimary"]
+            colorDarkNeutral = themeData["colorDarkNeutral"]
             password = data.get("password")  # 更新的密碼
 
             # theme: {
@@ -93,18 +98,19 @@ class UpdateInfoView(APIView):
             # 2024/5/16 缺update theme name and data
             if theme != "":
                 checkThemeExist = UserPersonalThemeData.check_theme_name(username, themeName)
+                # 2024/5/21 不管
                 if checkThemeExist == True: # theme exist
                     insertThemeNameValue = UserPersonalThemeData.insert_theme_name_by_username(username, themeName)
                     insertThemeDataValue = UserPersonalThemeData.insert_themeData_by_usernames(username, themeData)
                 else:
-                    insertThemeValue = UserPersonalThemeData.insert_profile_photo_by_username(
-                        username, image
+                    insertThemeValue = UserPersonalThemeData.insert_themeData_by_usernames(
+                        colorLightPrimary, colorLightNeutral, colorDarkPrimary, colorDarkNeutral
                     )
-                if updateThemeValue == 1:
+                if insertThemeValue == 1:
                     return Response(status=status.HTTP_201_CREATED)
                 else:
                     return Response(
-                        updateThemeValue, status=status.HTTP_401_UNAUTHORIZED
+                        insertThemeValue, status=status.HTTP_401_UNAUTHORIZED
                     )
 
             if password != "":

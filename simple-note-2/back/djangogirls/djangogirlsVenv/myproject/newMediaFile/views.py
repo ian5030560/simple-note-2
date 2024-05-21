@@ -54,7 +54,12 @@ class NewMediaFileView(APIView):
             mimetype = data.get("mimetype")  # 媒體種類
             notename = data.get("notename") # 2024/5/16 缺notename
             # 2024/5/16 缺chack file exists
-            checkExistValue = UserFileData
+            checkExistValue = UserFileData.check_file_name(username, filename, notename)
+            
+            # if exist, change name
+            if checkExistValue == True:
+                filename += "(1)"
+
             returnValue = (
                 UserFileData.insert_content_blob_mimetype_by_usernames_note_name(
                     username, notename, content, mimetype, filename
