@@ -97,15 +97,15 @@ class UpdateInfoView(APIView):
             # 2024/5/14 缺check theme method
             # 2024/5/16 缺update theme name and data
             if theme != "":
-                checkThemeExist = UserPersonalThemeData.check_theme_name(username, themeName)
                 # 2024/5/21 不管
-                if checkThemeExist == True: # theme exist
-                    insertThemeNameValue = UserPersonalThemeData.insert_theme_name_by_username(username, themeName)
-                    insertThemeDataValue = UserPersonalThemeData.insert_themeData_by_usernames(username, themeData)
-                else:
-                    insertThemeValue = UserPersonalThemeData.insert_themeData_by_usernames(
-                        colorLightPrimary, colorLightNeutral, colorDarkPrimary, colorDarkNeutral
-                    )
+                # checkThemeExist = UserPersonalThemeData.check_theme_name(username, themeName)
+                # if checkThemeExist == True: # theme exist
+                #     insertThemeNameValue = UserPersonalThemeData.insert_theme_name_by_username(username, themeName)
+                #     insertThemeDataValue = UserPersonalThemeData.insert_themeData_by_usernames(username, themeData)
+                # else:s
+                insertThemeValue = UserPersonalThemeData.insert_themeData_by_usernames(
+                    colorLightPrimary, colorLightNeutral, colorDarkPrimary, colorDarkNeutral
+                )
                 if insertThemeValue == 1:
                     return Response(status=status.HTTP_201_CREATED)
                 else:
