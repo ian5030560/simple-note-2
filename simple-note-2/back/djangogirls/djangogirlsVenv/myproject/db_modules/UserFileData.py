@@ -3,8 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker
-from .UserNoteData import User_Note_Data
-from .UserPersonalInfo import User_Personal_Info
+from UserNoteData import User_Note_Data
+from UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import os
 
