@@ -9,7 +9,8 @@ import os
 
 Base = declarative_base()
 # engine_url = os.environ.get("env")
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+engine_url = "mysql+pymysql://root@localhost/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:Qwer1234@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
@@ -17,7 +18,7 @@ engine = create_engine(engine_url, echo=True)
 class User_Personal_Info(Base):
     __tablename__ = "User_Personal_Info"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    profile_photo = Column(BLOB)
+    profile_photo = Column(TEXT)
     theme_id = Column(Integer)
     usernames = Column(String(256))
     user_email = Column(String(256))
@@ -140,13 +141,16 @@ def insert_username_password_email(username, password, email):
 
 # insert_profile_photo_by_username
 def insert_profile_photo_by_username(usernames_input, profile_photo_input):
-    new_profile_photo = User_Personal_Info(
-        usernames=usernames_input, profile_photo=profile_photo_input
-    )
-    session.add(new_profile_photo)
-    session.commit()
-    return True
-
+    try:
+        new_profile_photo = User_Personal_Info(
+            usernames=usernames_input, profile_photo=profile_photo_input
+        )
+        session.add(new_profile_photo)
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        print(e)
+        return False
 
 # update_profile_photo_by_username
 def update_profile_photo_by_username(usernames_input, profile_photo_input):
@@ -160,6 +164,7 @@ def update_profile_photo_by_username(usernames_input, profile_photo_input):
         session.commit()
         return True
     except SQLAlchemyError as e:
+        print(e)
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)

@@ -13,7 +13,8 @@ export enum APIs {
   addNote = "http://localhost:8000/newNote/",
   deleteNote = "http://localhost:8000/deleteNote/",
   saveNote = "http://localhost:8000/saveNote/",
-
+  addTheme = "http://localhost:8000/newTheme/",
+  loadNoteTree = "http://localhost:8000/loadNoteTree/",
 }
 
 type APICallBack<T> = (data: T) => Promise<Response>;

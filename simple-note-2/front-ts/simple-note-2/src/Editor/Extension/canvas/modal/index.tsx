@@ -4,6 +4,7 @@ import { createCommand, LexicalCommand } from "lexical";
 import Modal, { ModalRef } from "./../../UI/modal";
 import { Excalidraw } from "@excalidraw/excalidraw";
 import { AppState, BinaryFiles, ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
+import { INSERT_CANVAS } from "../plugin";
 
 export const OPEN_CANVAS: LexicalCommand<ExcalidrawInitialDataState | null> = createCommand();
 const CanvasModal = () => {
@@ -19,7 +20,8 @@ const CanvasModal = () => {
         }, 4);
     })
 
-    const handleChange = useCallback((elements: ExcalidrawInitialDataState["elements"], appState: AppState, files: BinaryFiles) => {
+    const handleChange = useCallback((elements: ExcalidrawInitialDataState["elements"],
+        appState: AppState, files: BinaryFiles) => {
         setState(prev => ({
             appState: appState,
             elements: elements,
@@ -28,8 +30,13 @@ const CanvasModal = () => {
         }))
     }, []);
 
-    return <Modal command={OPEN_CANVAS} ref={ref} title="繪畫" styles={{body: {height: 400}}} width={800}>
-        <Excalidraw excalidrawAPI={apiCallback} initialData={state} onChange={handleChange}/>
+    const handleOk = useCallback(() => {
+        editor.dispatchCommand(INSERT_CANVAS, state as ExcalidrawInitialDataState | undefined);
+    }, [editor, state]);
+
+    return <Modal command={OPEN_CANVAS} ref={ref} title="繪畫" styles={{ body: { height: 400 } }}
+        width={800} okText="儲存" cancelText="取消" onOk={handleOk}>
+        <Excalidraw excalidrawAPI={apiCallback} initialData={state} onChange={handleChange} />
     </Modal>
 }
 

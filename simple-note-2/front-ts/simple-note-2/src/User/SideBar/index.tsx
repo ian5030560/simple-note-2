@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal, FlexProps } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
@@ -67,12 +67,20 @@ const UserProfile = ({ style }: { style?: React.CSSProperties }) => {
             })
     }, [api, navigate, removeCookies, signOut, username]);
 
+    // const src = useMemo(() => {
+    //     if(!picture) return undefined;
+        
+    //     let result = URL.createObjectURL(new Blob([decodeURI((picture as any).replace(/%/g, "%25"))]));
+    //     URL.revokeObjectURL(result);
+    //     return result;
+    // }, [picture]);
+
     return <Flex align="baseline" gap="small" style={style}>
         <Avatar
             size={"large"}
             shape="square"
             icon={<UserOutlined />}
-            src={picture}
+            src={picture ? picture : undefined}
         />
         <Title level={4} ellipsis>{username}</Title>
         <Dropdown

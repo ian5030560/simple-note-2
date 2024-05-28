@@ -10,7 +10,8 @@ import os
 
 Base = declarative_base()
 # engine_url = os.environ.get("env")
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+engine_url = "mysql+pymysql://root@localhost/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:Qwer1234@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
@@ -35,7 +36,8 @@ def create_session():
 
 
 # 給username,note_name return對應的content_blob and mimetype
-def check_content_blob_mimetype(username, note_name):
+def check_content_blob_mimetype(username, file_name):
+    print(username, file_name)
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == username)
@@ -46,11 +48,13 @@ def check_content_blob_mimetype(username, note_name):
         .filter(
             and_(
                 User_Note_Data.user_id == user_id_query[0],
-                User_Note_Data.note_name == note_name,
+                User_Note_Data.note_name == file_name,
             )
         )
         .first()
     )
+    
+    
     result = (
         session.query(User_File_Data.content_blob, User_File_Data.content_mimetype)
         .filter(User_File_Data.note_id == note_id_query[0])
@@ -76,12 +80,15 @@ def check_file_name(usernames_input, note_name_input, file_name_input):
         )
         .first()
     )
+    
     stmt = (
         session.query(User_File_Data.file_name)
         .filter(User_File_Data.note_id == note_id_query[0])
         .first()
     )
 
+    if not stmt: return False
+     
     if stmt[0] == file_name_input:
         return True
     else:
@@ -96,6 +103,7 @@ def insert_content_blob_mimetype_by_usernames_note_name(
     content_mimetype_input,
     file_name_input,
 ):
+    content_blob_input = content_blob_input.encode('utf-8')
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
@@ -124,7 +132,8 @@ def insert_content_blob_mimetype_by_usernames_note_name(
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        return str(e)
+        print(e)
+        return False
 
 
 # Give username note_name file_name update file_name

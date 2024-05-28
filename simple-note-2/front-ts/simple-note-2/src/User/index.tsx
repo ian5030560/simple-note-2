@@ -13,7 +13,7 @@ const User: React.FC = () => {
     const [darken, setDarken] = useState(false);
     const { themes } = useInfoContext();
 
-    const seed = useMemo(() => themes.find(theme => theme.data.isUsing), [themes]);
+    const seed = useMemo(() => themes?.find(theme => theme.data.isUsing), [themes]);
 
     return <ConfigProvider
         theme={{

@@ -1,11 +1,48 @@
 import { Modal, Flex, Image, Input, Button, Select, Typography, InputRef, SelectProps } from "antd"
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./index.module.css";
 import useAPI, { APIs } from "../../../util/api";
 import { useInfoAction, useInfoContext } from "../info";
 import { useCookies } from "react-cookie";
 import { defaultSeed, testSeed } from "../../../theme";
+import { UploadOutlined } from "@ant-design/icons";
+import { ButtonProps } from "antd";
 
+type UploadProps = Omit<ButtonProps, "type"> & { onUpload: (src: string) => void };
+const Upload = ({ onUpload, ...prop }: UploadProps) => {
+    const [enter, setEnter] = useState(false);
+    const ref = useRef<HTMLInputElement>(null);
+    const { picture } = useInfoContext();
+
+    // const src = useMemo(() => {
+    //     if (!picture) return undefined;
+        
+    //     let result = URL.createObjectURL(new Blob([decodeURI((picture as any).replace(/%/g, "%25"))]));
+    //     URL.revokeObjectURL(result);
+    //     return result;
+    // }, [picture]);
+
+    return <>
+        <Image src={picture ? picture : undefined}
+            onClick={() => ref.current?.click()}
+            width={80} height={80} preview={false}
+            wrapperStyle={{ marginRight: 8, display: picture ? "initial" : "none", cursor: "pointer" }} />
+        <Button icon={<UploadOutlined />} type={enter ? "primary" : "default"}
+            onMouseEnter={() => setEnter(true)} onMouseLeave={() => setEnter(false)}
+            onClick={() => ref.current?.click()} {...prop}
+            style={{ display: picture ? "none" : "initial", cursor: "pointer" }}
+        />
+        <input type="file" style={{ display: "none" }} ref={ref}
+            onChange={() => {
+                let files = ref.current?.files;
+                if (files && files[0]) {
+                    let reader = new FileReader();
+                    reader.onload = () => onUpload(reader.result as string);
+                    reader.readAsDataURL(files[0]);
+                }
+            }} />
+    </>
+}
 interface SettingPanelProp {
     open: boolean;
     onOk: () => void;
@@ -18,12 +55,12 @@ const SettingPanel = (prop: SettingPanelProp) => {
     const getInfo = useAPI(APIs.getInfo);
     const updateInfo = useAPI(APIs.updateInfo);
     const [{ username }] = useCookies(["username"]);
-    const { picture, themes } = useInfoContext();
+    const { themes } = useInfoContext();
     const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
 
-    const settingRef = useRef({
-        theme: 0,
-        picture: picture
+    const settingRef = useRef<{ theme: number, picture: string }>({
+        theme: -1,
+        picture: "",
     });
 
     useEffect(() => {
@@ -47,22 +84,46 @@ const SettingPanel = (prop: SettingPanelProp) => {
         )
     }, [updateThemes]);
 
-    // useEffect(() => {
-    //     getInfo({ username: username})
-    //     .then((res) => res.json())
-    //     .then((res) => {
-    //         updatePicture(res.picture);
-    //         updateThemes(res.themes);    
-    //     })
-    //     .catch(() => {});
-    // }, [getInfo, updatePicture, updateThemes, username]);
+    useEffect(() => {
+        getInfo({ username: username })
+            .then((res) => res.json())
+            .then((res) => {
+                updatePicture(res.profile_photo);
+                // updateThemes(res.themes);    
+            })
+            .catch(() => { });
+    }, [getInfo, updatePicture, updateThemes, username]);
 
-    const handleOk = useCallback(() => {
+    const handleOk = useCallback(async () => {
         let { theme, picture } = settingRef.current;
-        updateThemeUsage(theme);
-        updatePicture(picture);
+
+        updateInfo({
+            username: username,
+            image: picture,
+            data: {
+                // theme: {
+                //     data: {
+                //         oldName: themes.find(theme => theme.data.isUsing)!.name,
+                //         newName: themes[theme].name
+                //     }
+                // }
+            }
+        })
+            .then(res => {
+                console.log(res);
+                if (res.status !== 200) return;
+                // updateThemeUsage(theme);
+                settingRef.current = {
+                    theme: -1,
+                    picture: ""
+                }
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+
         prop.onOk();
-    }, [prop, updatePicture, updateThemeUsage]);
+    }, [prop, updateInfo, username]);
 
     const handleChangePassword = useCallback(async () => {
         const confirmed = await pwdModal.confirm({
@@ -74,7 +135,7 @@ const SettingPanel = (prop: SettingPanelProp) => {
 
     }, [pwdModal]);
 
-    const options: SelectProps["options"] = themes.map((item, index) => ({
+    const options: SelectProps["options"] = themes?.map((item, index) => ({
         value: index,
         label: `${item.name}`,
         item: item.data,
@@ -90,7 +151,11 @@ const SettingPanel = (prop: SettingPanelProp) => {
 
         <div style={{ width: 300 }}>
             <Flex style={{ marginBottom: 8 }} align="center">
-                <Image width={50} height={50} src={picture} wrapperStyle={{ marginRight: 8 }} />
+                {
+                    // picture ? <Image width={80} height={80} src={picture} wrapperStyle={{ marginRight: 8 }} preview={false} /> :
+                    //     <UploadButton size="large" onUpload={handleUpload} />
+                    <Upload onUpload={(src) => { settingRef.current.picture = src }} />
+                }
                 <Typography.Title level={3} style={{ flex: 1, textAlign: "center" }}>{username}</Typography.Title>
             </Flex>
 
@@ -115,7 +180,7 @@ const SettingPanel = (prop: SettingPanelProp) => {
                             </Flex>
                         </Flex>
                     }}
-                    onChange={(val, option) => {
+                    onChange={(val) => {
                         if (!options) return;
                         settingRef.current.theme = val as number;
                     }} />

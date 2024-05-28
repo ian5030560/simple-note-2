@@ -16,7 +16,7 @@ const ADDLIST: AddItem[] = [
     ...Heading,
     Image,
     SpeechToText,
-    // Canvas,
+    Canvas,
     Table,
     Code,
     ImageToText,

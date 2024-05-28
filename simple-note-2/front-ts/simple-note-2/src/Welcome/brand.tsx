@@ -1,9 +1,7 @@
 import React from "react";
-import {Typography, Flex, Image} from "antd";
+import {Flex, Image} from "antd";
 import Note from "../resource/notesbook.png";
 import styles from "./index.module.css";
-
-const {Title} = Typography;
 
 const NoteImage: React.FC = () => <Image src={Note} alt="" width={64} height={64} preview={false}/>
 

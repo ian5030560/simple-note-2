@@ -6,10 +6,10 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import UpdateInfo  # 新建檔案改這個
-from ..db_modules import UserFileData  # 資料庫來的檔案
-from ..db_modules import UserNoteData  # 資料庫來的檔案
-from ..db_modules import UserPersonalInfo  # 資料庫來的檔案
-from ..db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from db_modules import UserFileData  # 資料庫來的檔案
+from db_modules import UserNoteData  # 資料庫來的檔案
+from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -59,18 +59,23 @@ class UpdateInfoView(APIView):
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
             image = ""  # 預設頭像 = null
-            themeName = ""  # 預設name = null
+            theme = ""  # 預設name = null
+            themeOldName = ""
+            themeNewName = ""
             themeData = "" # 預設data = null
             password = ""  # 預設密碼 = null
             image = data.get("image")  # 更新的頭像
+            
             theme = data.get('theme["data"]')  # 更新的主題
-            themeName = theme["oldName"]
-            themeName = theme["NewName"]
-            themeData = theme["data"]
-            colorLightPrimary = themeData["colorLightPrimary"]
-            colorLightNeutral = themeData["colorLightNeutral"]
-            colorDarkPrimary = themeData["colorDarkPrimary"]
-            colorDarkNeutral = themeData["colorDarkNeutral"]
+            if theme:         
+                themeOldName = theme["oldName"]
+                themeNewName = theme["newName"]
+                themeData = theme["data"]
+                if themeData:
+                    colorLightPrimary = themeData["colorLightPrimary"]
+                    colorLightNeutral = themeData["colorLightNeutral"]
+                    colorDarkPrimary = themeData["colorDarkPrimary"]
+                    colorDarkNeutral = themeData["colorDarkNeutral"]
             password = data.get("password")  # 更新的密碼
 
             # theme: {
@@ -80,14 +85,16 @@ class UpdateInfoView(APIView):
             
             # 2024/5/7 缺check isNull
             if image != "":
-                checkImageExist = UserPersonalInfo.check_profile_photo_by_username(image)
+                checkImageExist = UserPersonalInfo.check_profile_photo_by_username(username)
                 if checkImageExist != False:
+                    print(1)
                     insertImageValue = UserPersonalInfo.update_profile_photo_by_username(username, image)
                 else:
+                    print(2)
                     insertImageValue = UserPersonalInfo.insert_profile_photo_by_username(
                         username, image
                     )
-                if insertImageValue == 1:
+                if insertImageValue == True:
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response(

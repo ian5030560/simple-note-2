@@ -3,7 +3,7 @@ import React from "react";
 import BasicExtension from "./basic";
 import SpeechToTextExtension from "./speechToText";
 import ImageExtension from "./image";
-// import CanvasExtension from "./canvas";
+import CanvasExtension from "./canvas";
 import TableExtension from "./table";
 import AIExtension from "./ai";
 import CodeExtension from "./code";
@@ -31,7 +31,7 @@ const Extensions: Extension[] = [
     BasicExtension,
     SpeechToTextExtension,
     ImageExtension,
-    // CanvasExtension,
+    CanvasExtension,
     TableExtension,
     CodeExtension,
     ImageToTextExtension,

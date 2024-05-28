@@ -39,10 +39,10 @@ const ImagePlugin: Plugin = () => {
                     Array.from(mutations.entries()).forEach(([key, type]) => {
                         if(type === "destroyed"){
                             let element = editor.getElementByKey(key) as HTMLImageElement;
-                            // deleteFile({
-                            //     username: "user",
-                            //     url: "http://localhost:8000/view_file/428220824_717405110214191_1896139774089273018_n.jpg",
-                            // })
+                            deleteFile({
+                                username: "user",
+                                url: "http://localhost:8000/view_file/428220824_717405110214191_1896139774089273018_n.jpg",
+                            })
                         }
                     })
                 })

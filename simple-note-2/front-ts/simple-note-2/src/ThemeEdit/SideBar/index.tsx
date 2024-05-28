@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
     Switch, Typography, theme, Row, Col, ColorPicker, Space, Flex, Button,
     message,
+    Modal,
+    Input,
+    InputRef,
 } from "antd";
 import { Color } from "antd/es/color-picker/color"
 import { SwitchClickEventHandler } from "antd/es/switch";
 import { TiExport } from "react-icons/ti";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+import useAPI, { APIs } from "../../util/api";
+import { useCookies } from "react-cookie";
 
 const { Text, Title } = Typography;
 
@@ -50,7 +56,11 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
     const [darkPrimary, setDarkPrimary] = useState(dark.primary ? dark.primary : token.colorPrimary);
     const [darkNeutral, setDarkNeutral] = useState(dark.neutral ? dark.neutral : token.colorBgBase);
     const [api, contextHolder] = message.useMessage();
-
+    const { confirm } = Modal;
+    const addTheme = useAPI(APIs.addTheme);
+    const [{ username }] = useCookies(["username"]);
+    const ref = useRef<InputRef>(null);
+    
     const handleLightPrimary: ColorHandler = (color) => {
         setLightPrimary(color.toHexString());
         light.onPrimaryChange?.(color.toHexString());
@@ -72,18 +82,50 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
     }
 
     const handleExport = () => {
-        window.alert([
-            lightPrimary,
-            lightNeutral,
-            darkPrimary,
-            darkNeutral,
-        ])
+        confirm({
+            title: "新增主題",
+            icon: <ExclamationCircleFilled />,
+            content: <>
+                <Input placeholder="輸入主題名稱" ref={ref}/>
+                <ul>
+                    <li>{lightPrimary}</li>
+                    <li>{lightNeutral}</li>
+                    <li>{darkPrimary}</li>
+                    <li>{darkNeutral}</li>
+                </ul>
+            </>,
+            okText: "確認",
+            cancelText: "取消",
+            onOk: () => {
+                let name = ref.current?.input?.value;
+                addTheme({
+                    username: username,
+                    theme: {
+                        name: name,
+                        data: {
+                            colorLightPrimary: lightPrimary,
+                            colorLightNeutral: lightNeutral,
+                            colorDarkPrimary: darkPrimary,
+                            colorDarkNeutral: darkNeutral
+                        },
+                    }
+                })
+                    .then(() => {
+                        api.success({ content: "新增成功!" });
+                    })
+                    .catch(() => {
+                        api.error({ content: "新增失敗，請重新上傳" })
+                    })
+
+                ref.current!.input!.value = "";
+            },
+            onCancel: () => ref.current!.input!.value = ""
+        })
     }
 
     return <Space direction="vertical">
-
         <Flex justify="end" align="center" style={{ padding: token.padding, paddingBottom: "0px" }}>
-            <Button type="primary" icon={<TiExport />} style={{marginRight: 8}} onClick={handleExport}>export</Button>
+            <Button type="primary" icon={<TiExport />} style={{ marginRight: 8 }} onClick={handleExport}>export</Button>
             <Switch unCheckedChildren="亮" checkedChildren="暗" onClick={onDarkenClick} />
         </Flex>
 
@@ -99,6 +141,7 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
         <ColorBar color={darkNeutral} title="DarkNeutral"
             decription="Used for background and surfaces for dark theme"
             onChange={handleDarkNeutral} />
+        {contextHolder}
     </Space>
 };
 
