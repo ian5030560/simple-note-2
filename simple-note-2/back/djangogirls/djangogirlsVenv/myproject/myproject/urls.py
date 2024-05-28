@@ -81,10 +81,15 @@ urlpatterns = [
         name="viewMediaFile/<username>",
     ),  # viewMediaFile/username
     path(
-        "viewMediaFile/<username>/<filename>",
+        "viewMediaFile/<username>/<notename>",
         ViewMediaFileView.as_view(),
-        name="viewMediaFile/<username>/<filename>",
+        name="viewMediaFile/<username>/<notename>",
     ),  # viewMediaFile/username/filename
+    path(
+        "viewMediaFile/<username>/<notename>/<filename>",
+        ViewMediaFileView.as_view(),
+        name="viewMediaFile/<username>/<notename>/<filename>",
+    ),  # viewMediaFile/username/notename/filename
     path("getNote/", GetNoteView.as_view(), name="getNote"),  # getNote
     path("newNote/", NewNoteView.as_view(), name="newNote"),  # newNote
     path("deleteNote/", DeleteNoteView.as_view(), name="deleteNote"),  # deleteNote

@@ -70,6 +70,8 @@ class NewMediaFileView(APIView):
                     "localhost:8000/viewMediaFile/"
                     + str(username)
                     + "/"
+                    + str(notename)
+                    + "/"
                     + str(filename)
                 )
                 return Response(url, status=status.HTTP_200_OK)
