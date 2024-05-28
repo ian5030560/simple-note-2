@@ -36,11 +36,11 @@ def create_session():
 
 
 # 給username,note_name return對應的content_blob and mimetype
-def check_content_blob_mimetype(username, file_name):
-    print(username, file_name)
+def check_content_blob_mimetype(username_input, note_name_input, file_name_input):
+
     user_id_query = (
         session.query(User_Personal_Info.id)
-        .filter(User_Personal_Info.usernames == username)
+        .filter(User_Personal_Info.usernames == username_input)
         .first()
     )
     note_id_query = (
@@ -48,16 +48,20 @@ def check_content_blob_mimetype(username, file_name):
         .filter(
             and_(
                 User_Note_Data.user_id == user_id_query[0],
-                User_Note_Data.note_name == file_name,
+                User_Note_Data.note_name == note_name_input,
             )
         )
         .first()
     )
-    
-    
+
     result = (
         session.query(User_File_Data.content_blob, User_File_Data.content_mimetype)
-        .filter(User_File_Data.note_id == note_id_query[0])
+        .filter(
+            and_(
+                User_File_Data.note_id == note_id_query[0],
+                User_File_Data.file_name == file_name_input,
+            )
+        )
         .all()
     )
     return result
@@ -80,15 +84,16 @@ def check_file_name(usernames_input, note_name_input, file_name_input):
         )
         .first()
     )
-    
+
     stmt = (
         session.query(User_File_Data.file_name)
         .filter(User_File_Data.note_id == note_id_query[0])
         .first()
     )
 
-    if not stmt: return False
-     
+    if not stmt:
+        return False
+
     if stmt[0] == file_name_input:
         return True
     else:
@@ -103,7 +108,7 @@ def insert_content_blob_mimetype_by_usernames_note_name(
     content_mimetype_input,
     file_name_input,
 ):
-    content_blob_input = content_blob_input.encode('utf-8')
+    content_blob_input = content_blob_input.encode("utf-8")
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
