@@ -62,8 +62,9 @@ def check_content_blob_mimetype(username_input, note_name_input, file_name_input
                 User_File_Data.file_name == file_name_input,
             )
         )
-        .all()
+        .first()
     )
+    
     return result
 
 

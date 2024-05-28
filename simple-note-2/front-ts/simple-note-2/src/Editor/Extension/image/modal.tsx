@@ -30,7 +30,7 @@ const ImageModal: React.FC = () => {
     const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         let file = e.target.files[0];
-        console.log(await file.text());
+        
         let src = await addFile({
             username: username,
             filename: file.name,
@@ -40,9 +40,9 @@ const ImageModal: React.FC = () => {
         }).then(res => res.text());
 
         src = src.substring(1, src.length - 1);
-        console.log(src);
+        
         // let src = URL.createObjectURL(file);
-        editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
+        editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: "http://" + src });
         fileRef.current!.value = "";
         ref.current?.close();
     }, [addFile, editor, username]);
