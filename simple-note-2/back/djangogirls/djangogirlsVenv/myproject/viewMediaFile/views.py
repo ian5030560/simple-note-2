@@ -30,11 +30,11 @@ class ViewMediaFileView(APIView):
 
     serializer_class = ViewMediaFileSerializer
 
-    def get(self, request, username, filename, format=None):
+    def get(self, request, username, notename, filename, format=None):
 
         # Retrieve content and mimetype from the database
-        content = UserFileData.check_content_blob_mimetype(username, filename)[0][0]
-        mimetype = UserFileData.check_content_blob_mimetype(username, filename)[0][1]
+        content = UserFileData.check_content_blob_mimetype(username, notename, filename)[0][0]
+        mimetype = UserFileData.check_content_blob_mimetype(username, notename, filename)[0][1]
 
         # Check if content and mimetype are not None
         if content is not None and mimetype is not None:
