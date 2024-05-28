@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "getInfo",
     "getNote",
     "logout",
+    "loadNoteTree",
     "newMediaFile",
     "newNote",
     "newTheme",

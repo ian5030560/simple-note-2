@@ -34,6 +34,7 @@ sys.path.append("..saveNote")
 sys.path.append("..updateInfo")
 sys.path.append("..updateMediaFile")
 sys.path.append("..viewMediaFile")
+sys.path.append("..loadNoteTree")
 
 # new url import here
 from django.urls import path
@@ -54,6 +55,7 @@ from newNote.views import NewNoteView
 from deleteNote.views import DeleteNoteView
 from saveNote.views import SaveNoteView
 from getNote.views import GetNoteView
+from loadNoteTree.views import LoadNoteTreeView
 
 # urls
 urlpatterns = [
@@ -94,4 +96,5 @@ urlpatterns = [
     path("newNote/", NewNoteView.as_view(), name="newNote"),  # newNote
     path("deleteNote/", DeleteNoteView.as_view(), name="deleteNote"),  # deleteNote
     path("saveNote/", SaveNoteView.as_view(), name="saveNote"),  # saveNote
+    path("loadNoteTree/", LoadNoteTreeView.as_view(), name="loadNoteTree"),  # loadNoteTree
 ]
