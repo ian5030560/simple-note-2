@@ -11,11 +11,11 @@ from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
-
+import base64
 """@csrf_exempt"""
 """@csrf_protect"""
 
@@ -35,18 +35,22 @@ class ViewMediaFileView(APIView):
         # Retrieve content and mimetype from the database
         content = UserFileData.check_content_blob_mimetype(username, notename, filename)[0]
         mimetype = UserFileData.check_content_blob_mimetype(username, notename, filename)[1]
-
+        # filename = UserFileData.check_file_name(username, notename, filename)
         # Check if content and mimetype are not None
         if content is not None and mimetype is not None:
             # Combine content and mimetype
-            # file_data = content + mimetype
+            # file_data = str(content) + mimetype
             # print(file_data)
             # Return response with the file data
-            return Response(content, status=status.HTTP_200_OK, content_type=mimetype)
+            # print(content.decode('utf-8'))
+            response = HttpResponse(content, status=status.HTTP_200_OK, content_type=mimetype)
+            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
+
         elif content is None or mimetype is None:
             # If data not found, return HTTP 404 response
             return Response("File not found", status=status.HTTP_404_NOT_FOUND)
 
+        return response
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)

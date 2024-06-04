@@ -7,7 +7,7 @@ import {
     SELECTION_CHANGE_COMMAND, TextNode
 } from "lexical";
 import "./plugin.css";
-import getRandomString from "../../../util/random";
+import { uuid } from "../../../util/random";
 
 const TEXT_TAG = "simple-note-2-text-tag"
 export const AIPlaceholderPlugin: Plugin = () => {
@@ -30,7 +30,7 @@ export const AIPlaceholderPlugin: Plugin = () => {
 
     useEffect(() => {
         let id = setInterval(() => {
-            let rtext = getRandomString(10);
+            let rtext = uuid(10);
             if (rtext !== text) {
                 setText(rtext);
             }

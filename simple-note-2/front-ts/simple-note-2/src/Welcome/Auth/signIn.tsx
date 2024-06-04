@@ -15,9 +15,10 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
-    const [, setCookie] = useCookies(["username"]);
+    const [{ note }, setCookie] = useCookies(["username", "note"]);
     const values = Form.useWatch([], form);
     const signIn = useAPI(APIs.signIn);
+    const loadNoteTree = useAPI(APIs.loadNoteTree);
 
     useEffect(() => {
         form.validateFields({
@@ -33,19 +34,23 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
 
         setState(STATE.LOADING);
 
-        values = {
-            ...values,
-            id: "sign-in",
-        };
+        values = { ...values, id: "sign-in", };
 
         signIn(values)
-            .then(res => {
-                if (res.status === 200 || res.status === 201) {
-                    setCookie("username", values["username"]);
-                    setState(STATE.SUCCESS);
+            .then(async res => {
+                if (!(res.status === 200 || res.status === 201)) {
+                    setState(STATE.FAILURE);
                 }
                 else {
-                    setState(STATE.FAILURE);
+                    setCookie("username", values["username"]);
+
+                    let notes = await loadNoteTree({ username: values["username"] })
+                        .then(async (res) => JSON.parse(await res.json()))
+                        .catch((err) => console.log(err))
+
+                    setCookie("note", notes[0].key.split("/")[0])
+
+                    setState(STATE.SUCCESS);
                 }
 
             })
@@ -58,27 +63,11 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             labelWrap style={{ width: "40%" }} autoComplete="on" onFinish={handleFinished}
         >
             <Title>登入</Title>
-            <Form.Item
-                label="帳號"
-                name="username"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-            >
+            <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
-            <Form.Item
-                label="密碼"
-                name="password"
-                rules={[
-                    {
-                        required: true,
-                        min: 8,
-                        max: 30,
-                    },
-                ]}
+            <Form.Item label="密碼" name="password"
+                rules={[{ required: true, min: 8, max: 30, }]}
             >
                 <Input.Password />
             </Form.Item>
@@ -118,7 +107,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 open: state === STATE.SUCCESS,
                 onSuccessClose: () => {
                     setState(() => null);
-                    navigate("user");
+                    navigate(note);
                 }
             }}
 

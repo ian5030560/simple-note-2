@@ -2,12 +2,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Plugin } from "..";
 import { $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, LexicalCommand, SELECTION_CHANGE_COMMAND, createCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $wrapSelectionInMarkNode, $getMarkIDs, MarkNode, $createMarkNode, $isMarkNode } from "@lexical/mark";
-import getRandomString from "../../../util/random";
+import { $wrapSelectionInMarkNode, MarkNode, $createMarkNode, $isMarkNode } from "@lexical/mark";
 import CommentPool from "./component";
 import { mergeRegister, registerNestedElementResolver } from "@lexical/utils";
 import useStore from "./store";
 import { useCookies } from "react-cookie";
+import { uuid } from "../../../util/random";
 
 export const INSERT_COMMENT: LexicalCommand<void> = createCommand();
 const CommentPlugin: Plugin = () => {
@@ -21,7 +21,7 @@ const CommentPlugin: Plugin = () => {
             editor.registerCommand(INSERT_COMMENT, () => {
                 let selection = $getSelection();
                 if ($isRangeSelection(selection) && !selection.isCollapsed()) {
-                    $wrapSelectionInMarkNode(selection, selection.isBackward(), getRandomString(10));
+                    $wrapSelectionInMarkNode(selection, selection.isBackward(), uuid(10));
                 }
                 return false;
             }, 1),
@@ -75,7 +75,7 @@ const CommentPlugin: Plugin = () => {
         let item = store.getItem(id);
         if(!item) return;
         item.comments.push({
-            id: getRandomString(5),
+            id: uuid(5),
             author: username,
             content: text,
             timestamp: Date.now(),

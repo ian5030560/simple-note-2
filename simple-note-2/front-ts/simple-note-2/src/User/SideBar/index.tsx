@@ -67,22 +67,16 @@ const UserProfile = ({ style }: { style?: React.CSSProperties }) => {
             })
     }, [api, navigate, removeCookies, signOut, username]);
 
-    // const src = useMemo(() => {
-    //     if(!picture) return undefined;
-        
-    //     let result = URL.createObjectURL(new Blob([decodeURI((picture as any).replace(/%/g, "%25"))]));
-    //     URL.revokeObjectURL(result);
-    //     return result;
-    // }, [picture]);
 
-    return <Flex align="baseline" gap="small" style={style}>
+    return <Flex align="center" gap="large" style={style}>
         <Avatar
             size={"large"}
             shape="square"
             icon={<UserOutlined />}
             src={picture ? picture : undefined}
         />
-        <Title level={4} ellipsis>{username}</Title>
+
+        <Title is="span" level={4} ellipsis style={{fontSize: "1.5em", fontWeight: 600}}>{username}</Title>
         <Dropdown
             menu={{ items, onClick: handleClick }}
             trigger={["click"]}

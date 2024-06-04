@@ -1,6 +1,6 @@
 import { Plugin } from "../../index";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { EditorState } from "lexical";
 import useAPI, { APIs } from "../../../../util/api";
 import { useCookies } from "react-cookie";
@@ -17,26 +17,26 @@ const SavePlugin: Plugin = () => {
 
     useEffect(() => {
         function handleLoad() {
-            // getNote({
-            //     username: username,
-            //     noteId: file
-            // })
-            //     .then((res) => res.json())
-            //     .then((res) => setState(res))
-            //     .catch(() => {
-            //         Modal.error({
-            //             title: "載入發生錯誤",
-            //             content: "請重新整理頁面",
-            //             footer: <div style={{direction: "rtl"}}>
-            //                 <Button type="primary" danger
-            //                     onClick={() => window.location.reload()}>重新整理</Button>
-            //             </div>,
-            //             closeIcon: null
-            //         })
-            //     })
+            getNote({
+                username: username,
+                noteId: file
+            })
+                .then((res) => res.json())
+                .then((res) => res && setState(res))
+                .catch(() => {
+                    // Modal.error({
+                    //     title: "載入發生錯誤",
+                    //     content: "請重新整理頁面",
+                    //     footer: <div style={{direction: "rtl"}}>
+                    //         <Button type="primary" danger
+                    //             onClick={() => window.location.reload()}>重新整理</Button>
+                    //     </div>,
+                    //     closeIcon: null
+                    // })
+                })
         }
 
-        window.addEventListener("load", handleLoad);
+        // window.addEventListener("load", handleLoad);
         return () => window.removeEventListener("load", handleLoad);
     }, [file, getNote, username]);
 
@@ -45,9 +45,9 @@ const SavePlugin: Plugin = () => {
             // saveNote({
             //     username: username,
             //     noteId: file,
-            //     content: state.toJSON(),
+            //     content: state!.toJSON(),
             // })
-            isTyping(false);
+            // isTyping(false);
         }
 
         let timer: NodeJS.Timer | undefined = undefined;
@@ -56,7 +56,7 @@ const SavePlugin: Plugin = () => {
         }
 
         return () => timer && clearTimeout(timer);
-    }, [state, typing]);
+    }, [file, saveNote, state, typing, username]);
 
     const handleChange = useCallback((editorState: EditorState) => {
         console.log(editorState);

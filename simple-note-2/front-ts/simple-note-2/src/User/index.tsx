@@ -41,7 +41,8 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
     const context = useMemo(() => <SideBar className={styles.sideBar} />, []);
 
     return <Layout style={{ minHeight: "100%", ...rootStyle }}>
-        <Sider collapsible trigger={null} collapsedWidth={0} collapsed={collapse} style={{ display: !lg ? "none" : "block" }}>
+        <Sider collapsible trigger={null} collapsedWidth={0} width={250}
+            collapsed={collapse} style={{ display: !lg ? "none" : "block" }}>
             {context}
         </Sider>
         <Drawer open={!collapse && !lg} onClick={() => setCollapse(true)} placement="left" width={300}

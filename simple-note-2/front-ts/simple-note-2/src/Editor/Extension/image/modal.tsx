@@ -32,20 +32,17 @@ const ImageModal: React.FC = () => {
         let file = e.target.files[0];
         
         let src = await addFile({
-            username: username,
+            username: "user13",
             filename: file.name,
             notename: "note13",
-            content: await file.text(),
-            mimetype: file.type,
         }).then(res => res.text());
 
         src = src.substring(1, src.length - 1);
         
-        // let src = URL.createObjectURL(file);
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: "http://" + src });
         fileRef.current!.value = "";
         ref.current?.close();
-    }, [addFile, editor, username]);
+    }, [addFile, editor]);
 
     const items: TabsProps["items"] = useMemo(() => [
         {

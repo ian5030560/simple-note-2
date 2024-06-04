@@ -3,19 +3,17 @@ import { create } from "zustand"
 
 interface FileState {
     nodes: TreeDataNode[];
-    feedback: string;
     add: (key: string, title: string, children: TreeDataNode[], root?: boolean) => void;
     delete: (key: string) => void;
-    direct: (key: string) => void;
+    // direct: (key: string) => void;
 }
 
 function findTargetByKey(key: string, origin: TreeDataNode[]) {
-    let [root, ...indice] = key.split("-");
+    let [, indexes] = key.split("/");
+    let indice = indexes ? indexes.split("-") : [];
 
-    let tmp = origin.find(org => org.key === root)?.children;
-    if(!tmp) return origin;
-
-    for (let i of indice.slice(1)) {
+    let tmp = origin;
+    for (let i of indice) {
         if (!tmp[parseInt(i)].children) break;
         tmp = tmp[parseInt(i)].children!;
     }
@@ -24,23 +22,24 @@ function findTargetByKey(key: string, origin: TreeDataNode[]) {
 }
 
 function getParentKey(key: string) {
-    let indice = key.split("-");
+    let [id, indice] = key.split("/");
+    let indexes = indice.split("-").slice(0, -1);
 
-    let result = indice[0]
-    for (let i of indice.slice(1, -1)) {
-        result = `${result}-${i}`
-    }
-
-    return result;
+    return id + "/" +
+        (indexes.length === 0 ?
+            indexes.reduce((prev, curr) => `${prev}-${curr}`, "") :
+            indexes.reduce((prev, curr) => `${prev}-${curr}`)
+        );
 }
 
 function changeSubtreeKey(t: TreeDataNode[], p: string) {
 
-    for (let index in t) {
+    for (let i = 0; i < t.length; i++) {
+        let [id, index] = t[i].key.toString().split("/");
         let key = `${p}-${index}`;
-        t[index].key = key;
-        if (t[index].children) {
-            changeSubtreeKey(t[index].children!, key);
+        t[i].key = `${id}/${key}`;
+        if (t[i].children) {
+            changeSubtreeKey(t[i].children!, key);
         }
     }
 }
@@ -48,18 +47,18 @@ function changeSubtreeKey(t: TreeDataNode[], p: string) {
 const useStore = create<FileState>()((set) => ({
     nodes: [],
     feedback: "",
-    add: (key, title, children, root) => set((state) => {
+    add: (key, title, children) => set((state) => {
         let arr = state.nodes;
-        let target = findTargetByKey(key, arr);
-        
-        let nodeKey = root ? key : `${key}-${target.length}`;
+        let pkey = getParentKey(key);
+        let target = findTargetByKey(pkey, arr);
+
         target.push({
-            key: nodeKey,
+            key: key,
             title: title,
             children: children,
         });
 
-        return {nodes: [...state.nodes], feedback: nodeKey}
+        return { nodes: [...state.nodes] }
     }),
 
     delete: (key) => set((state) => {
@@ -69,21 +68,20 @@ const useStore = create<FileState>()((set) => ({
         let i = parseInt(key.charAt(key.length - 1));
         target.splice(i, 1);
 
-        changeSubtreeKey(target, parent);
+        changeSubtreeKey(target, parent.split("/")[1]);
 
-        return {nodes: [...state.nodes], feedback: target.length === 0 ? parent : target[target.length - 1].key as string}
+        return { nodes: [...state.nodes] }
     }),
 
-    direct: (key) => set((state) => ({...state.nodes, feedback: key}))
+    // direct: (key) => set((state) => ({ ...state.nodes }))
 }))
 
 export default function useFiles(): [
     TreeDataNode[],
-    string,
-    (key: string, title: string, children: TreeDataNode[], root?: boolean) => void,
+    (key: string, title: string, children: TreeDataNode[]) => void,
     (key: string) => void,
-    (key: string) => void,
-]{
+] {
     const store = useStore();
-    return [store.nodes, store.feedback, store.add, store.delete, store.direct]
+
+    return [store.nodes, store.add, store.delete]
 }

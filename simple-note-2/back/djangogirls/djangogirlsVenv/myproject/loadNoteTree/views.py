@@ -49,8 +49,12 @@ class LoadNoteTreeView(APIView):
             notesData = UserNoteData.check_user_all_notes(
                 username
             )  # 透過username來取得資料
+            
             if notesData:  # 取得成功
-                return Response(notesData, status=status.HTTP_200_OK)
+                # notesList = []
+                # for row in notesData:
+                
+                return Response(json.dumps(list(map(list, notesData))), status=status.HTTP_200_OK)
             elif notesData == False:  # error
                 return Response(notesData, status=status.HTTP_400_BAD_REQUEST)
 

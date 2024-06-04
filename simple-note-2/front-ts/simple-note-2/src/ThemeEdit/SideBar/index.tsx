@@ -101,7 +101,7 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
                 addTheme({
                     username: username,
                     theme: {
-                        name: name,
+                        name: name!,
                         data: {
                             colorLightPrimary: lightPrimary,
                             colorLightNeutral: lightNeutral,

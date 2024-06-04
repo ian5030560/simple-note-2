@@ -103,6 +103,8 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
     }
 
     decorate(): ReactNode {
+        console.log(fetch(this.__src).then((res) => res.blob()).then(async res => console.log(await res.text())));
+
         return <Load width={this.__width} height={this.__width}>
             <LazyImageView
                 src={this.__src}

@@ -4,7 +4,6 @@ import styles from "./index.module.css";
 import useAPI, { APIs } from "../../../util/api";
 import { useInfoAction, useInfoContext } from "../info";
 import { useCookies } from "react-cookie";
-import { defaultSeed, testSeed } from "../../../theme";
 import { UploadOutlined } from "@ant-design/icons";
 import { ButtonProps } from "antd";
 
@@ -14,18 +13,9 @@ const Upload = ({ onUpload, ...prop }: UploadProps) => {
     const ref = useRef<HTMLInputElement>(null);
     const { picture } = useInfoContext();
 
-    // const src = useMemo(() => {
-    //     if (!picture) return undefined;
-        
-    //     let result = URL.createObjectURL(new Blob([decodeURI((picture as any).replace(/%/g, "%25"))]));
-    //     URL.revokeObjectURL(result);
-    //     return result;
-    // }, [picture]);
-
     return <>
-        <Image src={picture ? picture : undefined}
+        <Image src={picture ? picture : undefined} height={80} preview={false}
             onClick={() => ref.current?.click()}
-            width={80} height={80} preview={false}
             wrapperStyle={{ marginRight: 8, display: picture ? "initial" : "none", cursor: "pointer" }} />
         <Button icon={<UploadOutlined />} type={enter ? "primary" : "default"}
             onMouseEnter={() => setEnter(true)} onMouseLeave={() => setEnter(false)}
@@ -56,42 +46,21 @@ const SettingPanel = (prop: SettingPanelProp) => {
     const updateInfo = useAPI(APIs.updateInfo);
     const [{ username }] = useCookies(["username"]);
     const { themes } = useInfoContext();
-    const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
 
+    const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
     const settingRef = useRef<{ theme: number, picture: string }>({
         theme: -1,
         picture: "",
     });
 
     useEffect(() => {
-        updateThemes(
-            [
-                {
-                    name: "預設",
-                    data: {
-                        isUsing: true,
-                        ...defaultSeed,
-                    },
-                },
-                {
-                    name: "測試",
-                    data: {
-                        isUsing: false,
-                        ...testSeed,
-                    }
-                }
-            ]
-        )
-    }, [updateThemes]);
-
-    useEffect(() => {
-        getInfo({ username: username })
-            .then((res) => res.json())
-            .then((res) => {
-                updatePicture(res.profile_photo);
-                // updateThemes(res.themes);    
-            })
-            .catch(() => { });
+        // getInfo({ username: username })
+        //     .then((res) => res.json())
+        //     .then((res) => {
+        //         updatePicture(res.profile_photo);
+        //         // updateThemes(res.themes);    
+        //     })
+        //     .catch(() => { });
     }, [getInfo, updatePicture, updateThemes, username]);
 
     const handleOk = useCallback(async () => {
@@ -110,9 +79,9 @@ const SettingPanel = (prop: SettingPanelProp) => {
             }
         })
             .then(res => {
-                console.log(res);
                 if (res.status !== 200) return;
                 // updateThemeUsage(theme);
+                updatePicture(picture);
                 settingRef.current = {
                     theme: -1,
                     picture: ""
@@ -123,7 +92,7 @@ const SettingPanel = (prop: SettingPanelProp) => {
             });
 
         prop.onOk();
-    }, [prop, updateInfo, username]);
+    }, [prop, updateInfo, updatePicture, username]);
 
     const handleChangePassword = useCallback(async () => {
         const confirmed = await pwdModal.confirm({
@@ -151,11 +120,7 @@ const SettingPanel = (prop: SettingPanelProp) => {
 
         <div style={{ width: 300 }}>
             <Flex style={{ marginBottom: 8 }} align="center">
-                {
-                    // picture ? <Image width={80} height={80} src={picture} wrapperStyle={{ marginRight: 8 }} preview={false} /> :
-                    //     <UploadButton size="large" onUpload={handleUpload} />
-                    <Upload onUpload={(src) => { settingRef.current.picture = src }} />
-                }
+                <Upload onUpload={(src) => { settingRef.current.picture = src }} />
                 <Typography.Title level={3} style={{ flex: 1, textAlign: "center" }}>{username}</Typography.Title>
             </Flex>
 

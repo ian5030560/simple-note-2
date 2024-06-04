@@ -7,12 +7,13 @@ from .UserNoteData import User_Note_Data
 from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import os
+import base64
 
 Base = declarative_base()
 # engine_url = os.environ.get("env")
-# engine_url = "mysql+pymysql://root@localhost/simplenote2db"
+engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
 # engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
-engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
+# engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
@@ -80,6 +81,8 @@ def insert_file_name(
     note_name_input,
     file_name_input,
 ):
+    content_blob_input = content_blob_input.encode('utf-8')
+    
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
