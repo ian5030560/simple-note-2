@@ -35,16 +35,9 @@ class ViewMediaFileView(APIView):
         # Retrieve content and mimetype from the database
         content = UserFileData.check_content_blob_mimetype(username, notename, filename)[0]
         mimetype = UserFileData.check_content_blob_mimetype(username, notename, filename)[1]
-        # filename = UserFileData.check_file_name(username, notename, filename)
-        # Check if content and mimetype are not None
+
         if content is not None and mimetype is not None:
-            # Combine content and mimetype
-            # file_data = str(content) + mimetype
-            # print(file_data)
-            # Return response with the file data
-            # print(content.decode('utf-8'))
             response = HttpResponse(content, status=status.HTTP_200_OK, content_type=mimetype)
-            response["Content-Disposition"] = 'attachment; filename="{}"'.format(filename)
 
         elif content is None or mimetype is None:
             # If data not found, return HTTP 404 response
