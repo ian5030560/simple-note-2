@@ -12,7 +12,7 @@ Base = declarative_base()
 # engine_url = os.environ.get("env")
 # engine_url = "mysql+pymysql://root@localhost/simplenote2db"
 # engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
-engine_url = "mysql+pymysql://root:Qwer1234@localhost:3306/simplenote2db"
+engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
@@ -20,8 +20,6 @@ class User_File_Data(Base):
     __tablename__ = "User_File_Data"
     id = Column(Integer, primary_key=True, autoincrement=True)
     note_id = Column(Integer)
-    content_blob = Column(BLOB)
-    content_mimetype = Column(TEXT)
     file_name = Column(TEXT)
 
 
@@ -35,81 +33,53 @@ def create_session():
     return session
 
 
-# 給username,note_name return對應的content_blob and mimetype
-def check_content_blob_mimetype(username_input, note_name_input, file_name_input):
-
-    user_id_query = (
-        session.query(User_Personal_Info.id)
-        .filter(User_Personal_Info.usernames == username_input)
-        .first()
-    )
-    note_id_query = (
-        session.query(User_Note_Data.id)
-        .filter(
-            and_(
-                User_Note_Data.user_id == user_id_query[0],
-                User_Note_Data.note_name == note_name_input,
-            )
-        )
-        .first()
-    )
-
-    result = (
-        session.query(User_File_Data.content_blob, User_File_Data.content_mimetype)
-        .filter(
-            and_(
-                User_File_Data.note_id == note_id_query[0],
-                User_File_Data.file_name == file_name_input,
-            )
-        )
-        .first()
-    )
-    
-    return result
 
 
 # give file_name check file_name
 def check_file_name(usernames_input, note_name_input, file_name_input):
-    user_id_query = (
-        session.query(User_Personal_Info.id)
-        .filter(User_Personal_Info.usernames == usernames_input)
-        .first()
-    )
-    note_id_query = (
-        session.query(User_Note_Data.id)
-        .filter(
-            and_(
-                User_Note_Data.user_id == user_id_query[0],
-                User_Note_Data.note_name == note_name_input,
-            )
+    try:
+        user_id_query = (
+            session.query(User_Personal_Info.id)
+            .filter(User_Personal_Info.usernames == usernames_input)
+            .first()
         )
-        .first()
-    )
+        note_id_query = (
+            session.query(User_Note_Data.id)
+            .filter(
+                and_(
+                    User_Note_Data.user_id == user_id_query[0],
+                    User_Note_Data.note_name == note_name_input,
+                )
+            )
+            .first()
+        )
 
-    stmt = (
-        session.query(User_File_Data.file_name)
-        .filter(User_File_Data.note_id == note_id_query[0])
-        .first()
-    )
+        stmt = (
+            session.query(User_File_Data.file_name)
+            .filter(User_File_Data.note_id == note_id_query[0])
+            .first()
+        )
+        if not stmt:
+                return False
 
-    if not stmt:
+        if stmt[0] == file_name_input:
+            return True
+        else:
+            return False
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        print(e)
         return False
+    finally:
+        session.close()
 
-    if stmt[0] == file_name_input:
-        return True
-    else:
-        return False
-
-
-# 給username, note_name 插入 content_blob, content_mimetype, note_id, file_name
-def insert_content_blob_mimetype_by_usernames_note_name(
+# 給username, note_name 插入file_name
+def insert_file_name(
     usernames_input,
     note_name_input,
-    content_blob_input,
-    content_mimetype_input,
     file_name_input,
 ):
-    content_blob_input = content_blob_input.encode("utf-8")
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
@@ -125,10 +95,11 @@ def insert_content_blob_mimetype_by_usernames_note_name(
         )
         .first()
     )
+    if not note_id_query:
+        print(f"Note {note_name_input} for user {usernames_input} not found.")
+        return False
     stmt = insert(User_File_Data).values(
         note_id=note_id_query[0],
-        content_blob=content_blob_input,
-        content_mimetype=content_mimetype_input,
         file_name=file_name_input,
     )
     try:
@@ -140,6 +111,8 @@ def insert_content_blob_mimetype_by_usernames_note_name(
         session.rollback()
         print(e)
         return False
+    finally:
+        session.close()
 
 
 # Give username note_name file_name update file_name
@@ -172,44 +145,10 @@ def update_file_name(usernames_input, note_name_input, file_name_input):
         # 回朔防止資料庫損壞
         session.rollback()
         return False
+    finally:
+        session.close()
 
 
-# 給username, note_name update content_blob, content_mimetype
-def update_content_blob_mimetype_by_usernames_note_name(
-    usernames_input, note_name_input, content_blob_input, content_mimetype_input
-):
-    user_id_query = (
-        session.query(User_Personal_Info.id)
-        .filter(User_Personal_Info.usernames == usernames_input)
-        .first()
-    )
-    note_id_query = (
-        session.query(User_Note_Data.id)
-        .filter(
-            and_(
-                User_Note_Data.user_id == user_id_query[0],
-                User_Note_Data.note_name == note_name_input,
-            )
-        )
-        .first()
-    )
-    stmt = (
-        update(User_File_Data)
-        .where(User_File_Data.note_id == note_id_query[0])
-        .values(
-            note_id=note_id_query[0],
-            content_blob=content_blob_input,
-            content_mimetype=content_mimetype_input,
-        )
-    )
-    try:
-        session.execute(stmt)
-        session.commit()
-        return True
-    except SQLAlchemyError as e:
-        # 回朔防止資料庫損壞
-        session.rollback()
-        return False
 
 
-# print(check_file_name("user01", "note1", "file1"))
+print(check_file_name("user01", "note1", "file1"))

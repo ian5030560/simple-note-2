@@ -11,7 +11,7 @@ Base = declarative_base()
 # engine_url = os.environ.get("env")
 # engine_url = "mysql+pymysql://root@localhost/simplenote2db"
 # engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
-engine_url = "mysql+pymysql://root:Qwer1234@localhost:3306/simplenote2db"
+engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
