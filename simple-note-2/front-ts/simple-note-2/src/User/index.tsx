@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { CSSProperties, useMemo, useState } from "react";
 import { ConfigProvider, theme, Button, Grid, Drawer, Layout } from "antd";
 import SideBar from "./SideBar";
 import Editor from "../Editor";
@@ -27,6 +27,12 @@ const User: React.FC = () => {
 
 }
 
+const drawer: CSSProperties = {
+    position: "fixed",
+    inset: 0,
+    zIndex: 3000
+}
+
 const { useBreakpoint } = Grid;
 const { Sider, Content } = Layout;
 interface IndexProp {
@@ -38,24 +44,17 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
     const { lg } = useBreakpoint();
     const { token } = theme.useToken();
 
-    const context = useMemo(() => <SideBar className={styles.sideBar} />, []);
-
     return <Layout style={{ minHeight: "100%", ...rootStyle }}>
         <Sider collapsible trigger={null} collapsedWidth={0} width={250}
-            collapsed={collapse} style={{ display: !lg ? "none" : "block" }}>
-            {context}
+            collapsed={collapse} style={lg ? undefined : drawer}>
+            <div style={{height: "100%", position: "relative"}}>
+                <SideBar className={styles.sideBar} />
+                <Button type="primary" icon={!collapse ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}
+                    className={`${styles.button} ${!collapse ? styles.notCollapsed : styles.collapsed}`}
+                    onClick={() => setCollapse(prev => !prev)} size="large" />
+            </div>
         </Sider>
-        <Drawer open={!collapse && !lg} onClick={() => setCollapse(true)} placement="left" width={300}
-            styles={{
-                header: { backgroundColor: token.colorPrimary },
-                body: { backgroundColor: token.colorPrimary, padding: 0 },
-            }}>
-            {context}
-        </Drawer>
         <Content style={{ position: "relative" }}>
-            <Button type="primary" icon={!collapse ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}
-                className={`${styles.button} ${!collapse ? styles.collapsedButton : styles['collapsedButton-collapsing']}`}
-                onClick={() => setCollapse(prev => !prev)} size="large" />
             <Editor />
         </Content>
     </Layout>

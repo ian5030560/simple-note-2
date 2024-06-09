@@ -3,14 +3,12 @@ import Node, { AddModal, AddModalRef, DeleteModal, DeleteModalRef } from "./node
 import useAPI, { APIs } from "../../../util/api";
 import { useCookies } from "react-cookie";
 import { FaPlus } from "react-icons/fa6";
-import useFiles from "./store";
-import { Key, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import useFiles from "./hook";
+import { Key, useCallback, useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { uuid } from "../../../util/random";
 
 const FileTree = () => {
-    const addNote = useAPI(APIs.addNote);
-    const deleteNote = useAPI(APIs.deleteNote);
     const loadNoteTree = useAPI(APIs.loadNoteTree);
     const { token } = theme.useToken();
     const [nodes, add, remove] = useFiles();
@@ -18,80 +16,69 @@ const FileTree = () => {
     const deleteRef = useRef<DeleteModalRef>(null);
     const [api, contextHolder] = message.useMessage();
     const navigate = useNavigate();
-    const [{username, note}] = useCookies(["username", "note"]);
-    // useEffect(() => {
-    //     if (window.location.pathname === "/theme") return;
-    //     feedback && navigate(feedback.split("/")[0]);
-    // }, [feedback, navigate]);
+    const [{ username }] = useCookies(["username"]);
+    const { file } = useParams();
 
- 
     useEffect(() => {
-        function handleLoad() {
-            loadNoteTree({ username: username })
-                .then(async (res) => JSON.parse(await res.json()))
-                .then((res: [string, string][]) => {
+        async function handleLoad() {
+            try {
+                let tree: [string, string] = JSON.parse(await loadNoteTree({ username: username }).then(res => res.json()));
 
-                    for (let note of res) {
-                        try {
-                            add(note[1], note[0], []);
-                        }
-                        catch (err) {
-                            api.error({ content: `取得${note[0]}失敗` })
-                        }
+                let existing = tree.findIndex((val) => val[1].split("/")[0] === file) !== -1;
+
+                if (!existing) {
+                    navigate("/");
+                }
+                else {
+                    for (let note of tree) {
+                        add(note[1], note[0], []);
                     }
-                })
-                .catch(() => api.error({ content: "無法取得所有筆記" }));
+                }
+            }
+            catch (err) {
+                api.error({ content: "無法取得所有筆記" });
+            }
         }
         // window.addEventListener("load", handleLoad);
 
         return () => window.removeEventListener("load", handleLoad)
-    }, [add, api, loadNoteTree, username]);
+    }, [add, api, file, loadNoteTree, navigate, username]);
 
     const handleAdd = useCallback((key: string, text: string) => {
-        add(key, text, []);
-        navigate(key.split("/")[0]);
-        // addNote({
-        //     username: username,
-        //     noteId: key,
-        //     notename: text,
-        // })
-        //     .then(() => {
-        //         add(key, text, []);
-        //         api.success({
-        //             content: `創建${text}成功`
-        //         })
-        //     })
-        //     .catch(() => {
-        //         api.error({
-        //             content: `創建${text}失敗`
-        //         })
-        //     })
-    }, [add]);
+
+        add(key, text, [])
+            .then(ok => {
+                if (ok) {
+                    api.success({ content: `創建${text}成功` });
+                    navigate(key.split("/")[0]);
+                }
+                else {
+                    api.error({ content: `創建${text}失敗` });
+                }
+            })
+            .catch(() => api.error({ content: `創建${text}失敗` }))
+    }, [add, api, navigate]);
 
 
-    const handleDelete = useCallback((key: string) => {
-        remove(key);
-        //     deleteNote({
-        //         username: username,
-        //         noteId: key,
-        //     })
-        //     .then(() => {
-        //         remove(key);
-        //         api.success({
-        //             content: `刪除${text}成功`
-        //         })
-        //     })
-        //     .catch(() => {
-        //         api.error({
-        //             content: `刪除${text}失敗`
-        //         }) 
-        //     })
-    }, [remove]);
+    const handleDelete = useCallback((key: string, text: string) => {
+
+        remove(key)
+            .then(rkey => {
+                if (!rkey) {
+                    api.error({ content: `刪除${text}失敗` })
+                }
+                else {
+                    api.success({ content: `刪除${text}成功` })
+                    navigate(rkey.split("/")[0]);
+                }
+            })
+            .catch(() => api.error({ content: `刪除${text}失敗` }));
+    }, [api, navigate, remove]);
 
     const handleSelected = useCallback((keys: Key[]) => {
         if (keys.length === 0) return;
-        let key = keys[0];
-        navigate(key as string);
+        navigate(keys[0] as string);
+
     }, [navigate]);
 
     return <>
@@ -100,10 +87,10 @@ const FileTree = () => {
             titleRender={(data) => {
                 const { title, key } = data as { title: string, key: string };
                 const cIndice = key.split("/")[1].split("-");
-        
+
                 let cNodes = nodes;
-                for(let index of cIndice) {
-                    if(!cNodes[parseInt(index)]) break;
+                for (let index of cIndice) {
+                    if (!cNodes[parseInt(index)]) break;
                     cNodes = cNodes[parseInt(index)].children!;
                 }
 

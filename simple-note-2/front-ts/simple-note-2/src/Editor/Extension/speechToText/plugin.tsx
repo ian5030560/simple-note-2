@@ -75,6 +75,7 @@ const SpeechModal: React.FC<SpeechModalProp> = (prop) => {
     }, [SpeechRecognition, active, editor]);
 
     const handleClick = useCallback(() => {
+        
         if (active) {
             setHint(HINT.START);
         }

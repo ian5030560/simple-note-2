@@ -17,23 +17,23 @@ const SavePlugin: Plugin = () => {
 
     useEffect(() => {
         function handleLoad() {
-            getNote({
-                username: username,
-                noteId: file
-            })
-                .then((res) => res.json())
-                .then((res) => res && setState(res))
-                .catch(() => {
-                    // Modal.error({
-                    //     title: "載入發生錯誤",
-                    //     content: "請重新整理頁面",
-                    //     footer: <div style={{direction: "rtl"}}>
-                    //         <Button type="primary" danger
-                    //             onClick={() => window.location.reload()}>重新整理</Button>
-                    //     </div>,
-                    //     closeIcon: null
-                    // })
-                })
+            // getNote({
+            //     username: username,
+            //     noteId: file
+            // })
+            //     .then((res) => res.json())
+            //     .then((res) => res && setState(res))
+            //     .catch(() => {
+            //         // Modal.error({
+            //         //     title: "載入發生錯誤",
+            //         //     content: "請重新整理頁面",
+            //         //     footer: <div style={{direction: "rtl"}}>
+            //         //         <Button type="primary" danger
+            //         //             onClick={() => window.location.reload()}>重新整理</Button>
+            //         //     </div>,
+            //         //     closeIcon: null
+            //         // })
+            //     })
         }
 
         // window.addEventListener("load", handleLoad);

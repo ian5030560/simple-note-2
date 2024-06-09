@@ -35,6 +35,7 @@ const ImageModal: React.FC = () => {
             username: "user13",
             filename: file.name,
             notename: "note13",
+            content: await file.text(),
         }).then(res => res.text());
 
         src = src.substring(1, src.length - 1);

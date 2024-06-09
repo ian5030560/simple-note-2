@@ -15,10 +15,11 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
-    const [{ note }, setCookie] = useCookies(["username", "note"]);
+    const [, setCookie] = useCookies(["username"]);
     const values = Form.useWatch([], form);
     const signIn = useAPI(APIs.signIn);
     const loadNoteTree = useAPI(APIs.loadNoteTree);
+    const [note, setNote] = useState("");
 
     useEffect(() => {
         form.validateFields({
@@ -37,8 +38,9 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
         values = { ...values, id: "sign-in", };
 
         signIn(values)
-            .then(async res => {
-                if (!(res.status === 200 || res.status === 201)) {
+            .then((res) => res.status === 200 || res.status === 201)
+            .then(async ok => {
+                if (!ok) {
                     setState(STATE.FAILURE);
                 }
                 else {
@@ -48,7 +50,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                         .then(async (res) => JSON.parse(await res.json()))
                         .catch((err) => console.log(err))
 
-                    setCookie("note", notes[0].key.split("/")[0])
+                    setNote(notes[0].key.split("/")[0])
 
                     setState(STATE.SUCCESS);
                 }

@@ -49,7 +49,7 @@ export const AddModal = forwardRef((prop: AddModalProps, ref: Ref<AddModalRef>) 
     const [open, setOpen] = useState(false);
     const [input, setInput] = useState("");
     const [key, setKey] = useState("");
-    console.log(key);
+   
     useImperativeHandle(ref, () => ({ show(val) { setOpen(true); setKey(val) } }));
 
     return <Modal open={open} onCancel={() => setOpen(false)}
@@ -67,7 +67,7 @@ export const AddModal = forwardRef((prop: AddModalProps, ref: Ref<AddModalRef>) 
 
 export type DeleteModalRef = FuncModalRef<{ title: string, key: string }>;
 interface DeleteModalProps {
-    onOk: (key: string) => void;
+    onOk: (key: string, text: string) => void;
 }
 export const DeleteModal = forwardRef((prop: DeleteModalProps, ref: Ref<DeleteModalRef>) => {
 
@@ -78,7 +78,7 @@ export const DeleteModal = forwardRef((prop: DeleteModalProps, ref: Ref<DeleteMo
 
     return <Modal open={open} title={`刪除${state?.title}`}
         onCancel={() => setOpen(false)}
-        onOk={() => { setOpen(false); prop.onOk(state ? state.key : "") }}
+        onOk={() => { setOpen(false); prop.onOk(state!.key, state!.title) }}
         okButtonProps={{ danger: true, type: "primary" }} okText="是"
         cancelButtonProps={{ danger: true, type: "default" }} cancelText="否"
     >

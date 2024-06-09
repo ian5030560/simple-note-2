@@ -5,19 +5,15 @@
 }
 
 .button{
-    box-shadow: none;
+    top: calc(50% - 40px);
+    z-index: 3000;
 }
 
-.collapsedButton{
-    top: 50%;
-    left: 0;
-    transform: translate(-100%, -50%);
+.notCollapsed{
+    right: -40px;
     position: absolute;
 }
 
-.collapsedButton-collapsing{
-    top: 50%;
-    transform: translateY(-100%);
+.collapsed{
     position: fixed;
-    z-index: 1000;
 }

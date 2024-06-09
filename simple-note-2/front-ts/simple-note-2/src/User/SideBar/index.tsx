@@ -11,7 +11,7 @@ import { useInfoContext } from "./info";
 
 const { Title } = Typography;
 
-const UserProfile = ({ style }: { style?: React.CSSProperties }) => {
+const UserProfile = () => {
     const { token } = theme.useToken();
     const [signOutOpen, setSignOutOpen] = useState(false);
     const [settingOpen, setSettingOpen] = useState(false);
@@ -68,15 +68,13 @@ const UserProfile = ({ style }: { style?: React.CSSProperties }) => {
     }, [api, navigate, removeCookies, signOut, username]);
 
 
-    return <Flex align="center" gap="large" style={style}>
-        <Avatar
-            size={"large"}
-            shape="square"
+    return <Flex align="center" justify="center"
+        gap="large" style={{ marginBottom: 12 }}>
+        <Avatar size={"large"} shape="square"
             icon={<UserOutlined />}
-            src={picture ? picture : undefined}
-        />
+            src={picture ? picture : undefined} />
 
-        <Title is="span" level={4} ellipsis style={{fontSize: "1.5em", fontWeight: 600}}>{username}</Title>
+        <Title is="span" level={4} ellipsis style={{ fontSize: "1.5em", fontWeight: 600 }}>{username}</Title>
         <Dropdown
             menu={{ items, onClick: handleClick }}
             trigger={["click"]}
@@ -112,7 +110,7 @@ const SideBar = ({ className, style, ...prop }: SideBarProps) => {
     return <Flex vertical className={className}
         style={{ backgroundColor: token.colorPrimary, ...style }}
         {...prop}>
-        <UserProfile style={{ marginBottom: 12 }} />
+        <UserProfile />
         <FileTree />
     </Flex>
 }
