@@ -8,13 +8,16 @@ import {
 } from "lexical";
 import "./plugin.css";
 import { uuid } from "../../../util/random";
+import useAPI, { APIs } from "../../../util/api";
 
 const TEXT_TAG = "simple-note-2-text-tag"
 export const AIPlaceholderPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
     const [key, setKey] = useState("");
     const [text, setText] = useState("");
-    
+    const callAI = useAPI(APIs.callAI);
+    const [content, setContent] = useState("");
+
     const refresh = useCallback((k: string) => {
         if (!key || k === key) return;
         const element = editor.getElementByKey(key);
@@ -23,14 +26,16 @@ export const AIPlaceholderPlugin: Plugin = () => {
     }, [editor, key]);
 
     useEffect(() => {
-        if(!key) return;
+        if (!key) return;
         const element = editor.getElementByKey(key);
         element?.setAttribute("data-text", text);
     }, [editor, key, text]);
 
     useEffect(() => {
-        let id = setInterval(() => {
-            let rtext = uuid(10);
+        let id = setInterval(async () => {
+            let rtext = await callAI({ text: `${}` })
+                .then(res => res.json())
+                .then(data => data["answer"]);
             if (rtext !== text) {
                 setText(rtext);
             }
@@ -38,7 +43,7 @@ export const AIPlaceholderPlugin: Plugin = () => {
         return () => {
             clearInterval(id);
         }
-    }, [editor, key, text]);
+    }, [callAI, editor, key, text]);
 
     useEffect(() => {
         return mergeRegister(
@@ -58,7 +63,7 @@ export const AIPlaceholderPlugin: Plugin = () => {
                     const node = selection.anchor.getNode();
                     let point = selection.getStartEndPoints()![0];
                     let size = node.getTextContentSize();
-                    
+
                     if ($isTextNode(node) && point.offset === size) {
                         key = node.getKey();
                     }
@@ -91,6 +96,8 @@ export const AIPlaceholderPlugin: Plugin = () => {
                 }
                 return false;
             }, 4),
+
+            editor.registerTextContentListener(setContent)
         )
     }, [editor, key, refresh, text]);
 

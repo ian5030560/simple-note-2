@@ -15,11 +15,25 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
-    const [, setCookie] = useCookies(["username"]);
+    const [{username}, setCookie] = useCookies(["username"]);
     const values = Form.useWatch([], form);
     const signIn = useAPI(APIs.signIn);
     const loadNoteTree = useAPI(APIs.loadNoteTree);
     const [note, setNote] = useState("");
+
+    useEffect(() => {
+        async function handleContentLoad(){
+            if(!username) return;
+            
+            let notes = await loadNoteTree({ username: username })
+            .then(async (res) => JSON.parse(await res.json()))
+            .catch((err) => console.log(err));
+    
+            setNote(notes[0].key.split("/")[0])
+        }
+        window.addEventListener("DOMContentLoaded", handleContentLoad);
+        return () => window.removeEventListener("DOMContentLoaded", handleContentLoad);
+    }, [loadNoteTree, username]);
 
     useEffect(() => {
         form.validateFields({
@@ -44,14 +58,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                     setState(STATE.FAILURE);
                 }
                 else {
-
-                    let notes = await loadNoteTree({ username: values["username"] })
-                        .then(async (res) => JSON.parse(await res.json()))
-                        .catch((err) => console.log(err))
-                        
                     setCookie("username", values["username"]);
-                    setNote(notes[0].key.split("/")[0])
-
                     setState(STATE.SUCCESS);
                 }
 

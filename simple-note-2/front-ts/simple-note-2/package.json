@@ -6,6 +6,7 @@
     "@ant-design/icons": "^5.2.6",
     "@excalidraw/excalidraw": "^0.17.3",
     "@lexical/react": "^0.13.1",
+    "@lexical/yjs": "^0.16.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -21,9 +22,9 @@
     "lexical": "^0.13.1",
     "pdfjs-dist": "^4.0.379",
     "process": "^0.11.10",
-    "react": "^18.2.0",
+    "react": "^18.3.1",
     "react-cookie": "^7.0.2",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "react-icons": "^5.0.1",
     "react-pdf": "^7.7.1",
     "react-router-dom": "^6.21.3",
@@ -34,6 +35,8 @@
     "tesseract.js": "^5.0.5",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
+    "y-websocket": "^2.0.3",
+    "yjs": "^13.6.16",
     "zustand": "^4.5.2"
   },
   "scripts": {

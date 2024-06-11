@@ -6,11 +6,11 @@
 
 .button{
     top: calc(50% - 40px);
-    z-index: 3000;
+    z-index: 1000;
 }
 
 .notCollapsed{
-    right: -40px;
+    right: calc(-40px - 2px);
     position: absolute;
 }
 

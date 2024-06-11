@@ -1,5 +1,5 @@
 import { Tree, theme, Button, message } from "antd";
-import Node, { AddModal, AddModalRef, DeleteModal, DeleteModalRef } from "./node";
+import Node, { AddModal, AddModalRef, DeleteModal, DeleteModalRef, seperator } from "./node";
 import useAPI, { APIs } from "../../../util/api";
 import { useCookies } from "react-cookie";
 import { FaPlus } from "react-icons/fa6";
@@ -24,7 +24,7 @@ const FileTree = () => {
             try {
                 let tree: [string, string] = JSON.parse(await loadNoteTree({ username: username }).then(res => res.json()));
 
-                let existing = tree.findIndex((val) => val[1].split("/")[0] === file) !== -1;
+                let existing = tree.findIndex((val) => val[1].split(seperator)[0] === file) !== -1;
 
                 if (!existing) {
                     navigate("/");
@@ -50,13 +50,16 @@ const FileTree = () => {
             .then(ok => {
                 if (ok) {
                     api.success({ content: `創建${text}成功` });
-                    navigate(key.split("/")[0]);
+                    // navigate(key.split(seperator)[0]);
                 }
                 else {
                     api.error({ content: `創建${text}失敗` });
                 }
             })
-            .catch(() => api.error({ content: `創建${text}失敗` }))
+            .catch((err) => {
+                console.log(err);
+                api.error({ content: `創建${text}失敗` })
+            })
     }, [add, api, navigate]);
 
 
@@ -69,15 +72,18 @@ const FileTree = () => {
                 }
                 else {
                     api.success({ content: `刪除${text}成功` })
-                    navigate(rkey.split("/")[0]);
+                    // navigate(rkey.split(seperator)[0]);
                 }
             })
-            .catch(() => api.error({ content: `刪除${text}失敗` }));
+            .catch((err) => {
+                console.log(err);
+                api.error({ content: `刪除${text}失敗` })
+            })
     }, [api, navigate, remove]);
 
     const handleSelected = useCallback((keys: Key[]) => {
         if (keys.length === 0) return;
-        navigate(keys[0] as string);
+        // navigate(keys[0] as string);
 
     }, [navigate]);
 
@@ -86,7 +92,7 @@ const FileTree = () => {
             blockNode defaultExpandAll
             titleRender={(data) => {
                 const { title, key } = data as { title: string, key: string };
-                const cIndice = key.split("/")[1].split("-");
+                const cIndice = key.split(seperator)[1].split("-");
 
                 let cNodes = nodes;
                 for (let index of cIndice) {
@@ -101,7 +107,7 @@ const FileTree = () => {
             onSelect={handleSelected}
         />
         <Button icon={<FaPlus />} type="text" block
-            onClick={() => { addRef.current?.show(`${uuid()}/${nodes.length}`) }} />
+            onClick={() => { addRef.current?.show(`${uuid()}${seperator}${nodes.length}`) }} />
         <AddModal ref={addRef} onOk={handleAdd} />
         <DeleteModal onOk={handleDelete} ref={deleteRef} />
         {contextHolder}

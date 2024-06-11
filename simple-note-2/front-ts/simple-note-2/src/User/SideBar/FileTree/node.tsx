@@ -1,10 +1,11 @@
-import { Ref, forwardRef, useCallback, useImperativeHandle, useState } from "react";
+import { Ref, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react";
 import { Modal, Input, Flex, Typography, Button, TreeDataNode } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { uuid } from "../../../util/random";
 
 
 const { Text } = Typography;
+export const seperator = "$";
 
 interface NodeProp {
     title: string;
@@ -18,16 +19,21 @@ export default function Node(prop: NodeProp) {
     
     const createKey = useCallback(() => {
         let nindex = prop.childNodes.length;
-        let oindex = prop.nodeKey.split("/")[1];
+        let oindex = prop.nodeKey.split(seperator)[1];
 
-        return `${uuid()}/${oindex}-${nindex}`;
+        return `${uuid()}${seperator}${oindex}-${nindex}`;
     }, [prop.childNodes.length, prop.nodeKey]);
+
+    let unremovable = useMemo(() => {
+        let splited = prop.nodeKey.split(seperator)[1].split(seperator);
+        return splited.length === 1 && splited[0] === "0";
+    }, [prop.nodeKey]);
 
     return <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
         <Text>{prop.title}</Text>
         <Flex>
             {
-                (prop.nodeKey.split("/")[1].split("-")[0] !== "0") &&
+                !unremovable &&
                 <Button icon={<DeleteOutlined />} type="text" size="small"
                     onClick={(e) => { e.stopPropagation(); prop.onDelete(prop.nodeKey, prop.title) }} />
             }

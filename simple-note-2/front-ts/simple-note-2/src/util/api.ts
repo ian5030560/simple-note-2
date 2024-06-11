@@ -25,6 +25,7 @@ type APIMap = {
     }
   },
   "http://localhost:8000/loadNoteTree/": { username: string },
+  "http://localhost:8000/gemma/": {text: string}
 }
 
 export enum APIs {
@@ -42,6 +43,7 @@ export enum APIs {
   saveNote = "http://localhost:8000/saveNote/",
   addTheme = "http://localhost:8000/newTheme/",
   loadNoteTree = "http://localhost:8000/loadNoteTree/",
+  callAI = "http://localhost:8000/gemma/",
 }
 
 export default function useAPI<T extends APIs>(api: T) {

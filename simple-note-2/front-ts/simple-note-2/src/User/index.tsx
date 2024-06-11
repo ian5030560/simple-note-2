@@ -30,7 +30,7 @@ const User: React.FC = () => {
 const drawer: CSSProperties = {
     position: "fixed",
     inset: 0,
-    zIndex: 3000
+    zIndex: 1000
 }
 
 const { useBreakpoint } = Grid;
@@ -50,7 +50,7 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
                 <SideBar className={styles.sideBar} />
                 <Button type="primary" icon={!collapse ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}
                     className={`${styles.button} ${!collapse ? styles.notCollapsed : styles.collapsed}`}
-                    onClick={() => setCollapse(prev => !prev)} size="large" />
+                    onClick={() => setCollapse(prev => !prev)} size="large" shape="circle"/>
             </div>
         </Sider>
         <Content style={{ position: "relative" }}>
