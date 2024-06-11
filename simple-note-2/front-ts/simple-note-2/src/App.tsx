@@ -11,8 +11,8 @@ const Index = () => {
   
   return <BrowserRouter>
     <Routes>
-      <Route path="/" element={!username ? <WelcomePage /> : <Navigate to={"/user"}/>} />
-      <Route path="user" element={<UserPage />} />
+      <Route path="/" element={<WelcomePage/>} />
+      <Route path="test" element={<UserPage />} />
       <Route path=":file" element={username ? <UserPage/> : <Navigate to={"/"}/>}/>
       <Route path="theme" element={<ThemePage />} />
     </Routes>

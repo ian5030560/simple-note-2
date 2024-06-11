@@ -44,7 +44,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                     let res1 = await addNote({ 
                         username: values["username"], 
                         noteId: `${uuid()}/0`,
-                        notename: "",
+                        notename: "我的筆記",
                     }).then(res => res.status === 200).catch(() => false);
                     
                     let res2 = await addTheme({

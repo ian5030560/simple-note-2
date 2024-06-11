@@ -1,7 +1,7 @@
 import { Flex, Button, Dropdown, MenuProps } from "antd";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
-import { useDndState } from "./redux";
+import { useDndState } from "./store";
 import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import styles from "./component.module.css";
@@ -47,31 +47,26 @@ export interface DraggableElementProp {
     addList: AddItem[],
 }
 const DraggableElement = React.forwardRef((
-    { addList }: DraggableElementProp, ref: React.Ref<HTMLElement>
+    { addList }: DraggableElementProp, 
+    ref: React.Ref<HTMLElement>
 ) => {
 
     const { element } = useDndState();
 
-    return <Flex
-        ref={ref} className={styles.draggable} draggable={true}
-        style={{ transform: `translate(${element.x}px, ${element.y}px)` }}
-    >
+    let x = element ? element.x : -10000;
+    let y = element ? element.y : -10000;
+
+    return <Flex ref={ref} className={styles.draggable} draggable={true}
+        style={{ transform: `translate(${x}px, ${y}px)` }}>
         <AddMenu searchList={addList}>
-            <Button
-                contentEditable={false}
-                type="text"
-                size="small"
-                icon={<PlusOutlined />}
-            />
+            <Button contentEditable={false} type="text"
+                size="small" icon={<PlusOutlined />}/>
         </AddMenu>
-        <Button
-            className={styles.handleButton}
-            contentEditable={false}
-            type="text"
-            size="small"
-            icon={<HolderOutlined />}
+        <Button className={styles.handleButton}
+            contentEditable={false} type="text"
+            size="small" icon={<HolderOutlined />}
         />
-    </Flex>
+    </Flex>;
 })
 
 export default DraggableElement;
@@ -80,21 +75,14 @@ export type DragWrapperProp = Omit<React.DetailedHTMLProps<React.HTMLAttributes<
 export const DragWrapper: React.FC<DragWrapperProp> = (prop) => <div id="dnd-wrapper" className={styles.wrapper} {...prop} />;
 
 export const useWrapper = () => {
-    const [wrapper, setWrapper] = useState<HTMLElement>();
-    useEffect(() => {
-        let root = document.getElementById("dnd-wrapper");
-        if (!root) return;
-        setWrapper(() => root!);
-    }, []);
-    return wrapper;
+    return document.getElementById("dnd-wrapper");
 }
 
 export const DropLine = () => {
-    const { line, isDragging } = useDndState();
-    return <div className={styles.dropLine}
-        style={{
-            visibility: isDragging ? "visible" : "hidden",
-            width: line.width, height: line.height,
-            transform: `translate(${line.x}px, ${line.y}px)`
-        }} />
+    const { line } = useDndState();
+
+    let x = line ? line.x : -10000;
+    let y = line ? line.y : -10000;
+    return <div className={styles.dropLine} 
+    style={{ width: line?.width, height: line?.height, transform: `translate(${x}px, ${y}px)` }} />;
 }

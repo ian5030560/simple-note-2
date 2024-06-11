@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useDndAction, useDndState } from "./redux";
+import { useDndAction, useDndState } from "./store";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey } from "lexical";
 import { getBlockFromPoint } from "./util";
@@ -9,8 +9,8 @@ const HEIGHT = 3;
 export const DRAGGABLE_TAG = "draggable-item";
 const useDnd = () => {
     const [editor] = useLexicalComposerContext();
-    const action = useDndAction();
-    const { dragId: id, line } = useDndState();
+    const {setLine, reset} = useDndAction();
+    const { id, line } = useDndState();
 
     const handleDragStart = useCallback((e: DragEvent) => {
 
@@ -21,10 +21,9 @@ const useDnd = () => {
         e.dataTransfer.setDragImage(element, 0, 0);
 
         let { width } = element.getBoundingClientRect();
-        action.resizeLine(width, HEIGHT);
-        action.setDraggable(true);
+        setLine({width: width, height: HEIGHT});
 
-    }, [action, editor, id]);
+    }, [editor, id, setLine]);
 
     const handleDragOver = useCallback((e: DragEvent) => {
         e.preventDefault();
@@ -69,10 +68,9 @@ const useDnd = () => {
         x -= left;
         y -= top;
 
-        action.moveLine(x, y);
-        action.resizeLine(width, HEIGHT);
+        setLine({x: x, y: y, width: width, height: height});
         return true;
-    }, [action, editor]);
+    }, [editor, setLine]);
 
     const handleDrop = useCallback((e: DragEvent) => {
 
@@ -93,7 +91,7 @@ const useDnd = () => {
 
             if (!dragNode || !dropNode || dragKey === dropKey) return;
 
-            const mouseAt = line.y + editor.getRootElement()!.getBoundingClientRect().top;
+            const mouseAt = line!.y! + editor.getRootElement()!.getBoundingClientRect().top;
 
             const { top, height } = dropElement!.getBoundingClientRect();
             const half = top + height / 2;
@@ -105,13 +103,12 @@ const useDnd = () => {
                 dropNode.insertAfter(dragNode);
             }
 
-            action.setId(id);
-            action.resetLine();
+            reset("id");
+            reset("line");
         })
 
-        action.setDraggable(false);
         return true;
-    }, [action, editor, id, line.y]);
+    }, [editor, id, line, reset]);
 
     return { handleDragStart, handleDragOver, handleDrop }
 }

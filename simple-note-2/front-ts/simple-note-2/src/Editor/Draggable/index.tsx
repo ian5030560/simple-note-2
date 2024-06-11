@@ -4,7 +4,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getRoot, DRAGOVER_COMMAND, DROP_COMMAND } from "lexical";
 import { createPortal } from "react-dom";
 import DraggableElement, { AddItem, DropLine, useWrapper } from "./component";
-import { useDndAction, DndProvider } from "./redux";
+import { useDndAction } from "./store";
 import { getBlockFromPoint } from "./util";
 import { mergeRegister } from "@lexical/utils";
 import useDnd, { DRAGGABLE_TAG } from "./dnd";
@@ -13,40 +13,38 @@ export interface DraggableProp {
     addList: AddItem[],
 }
 const Draggable: React.FC<DraggableProp> = ({ addList }) => {
-    const action = useDndAction();
+    const {setElement, reset, setId} = useDndAction();
     const [editor] = useLexicalComposerContext();
     const wrapper = useWrapper();
     const ref = useRef<HTMLElement>(null);
-    const {handleDragOver, handleDragStart, handleDrop} = useDnd();
+    const { handleDragOver, handleDragStart, handleDrop } = useDnd();
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         let { clientX, clientY } = e;
         let target = document.elementFromPoint(clientX, clientY);
         let root = editor.getRootElement()!;
-
+      
         if (root?.isEqualNode(target)) return;
 
         let elem = getBlockFromPoint(editor, clientX, clientY);
+        
         if (!elem || !elem.hasAttribute(DRAGGABLE_TAG) || !wrapper || !ref.current) return;
 
-        let { x, y } = elem.getBoundingClientRect();
+        let { x, y, height: eh } = elem.getBoundingClientRect();
         let { top, left } = wrapper.getBoundingClientRect();
-        let { width } = ref.current.getBoundingClientRect();
-        action.setId(elem.getAttribute(DRAGGABLE_TAG)!);
-        action.moveElement(x - left - width, y - top);
+        let { width, height: wh } = ref.current.getBoundingClientRect();
+        setId(elem.getAttribute(DRAGGABLE_TAG)!);
+        setElement(x - left - width, y + (eh - wh) / 2 - top);
+    }, [editor, setElement, setId, wrapper]);
 
-    }, [action, editor, wrapper]);
-
-    const handleMouseLeave = useCallback(() => {
-        action.resetElement();
-    }, [action]);
+    const handleMouseLeave = useCallback(() => reset("element"), [reset]);
 
     useEffect(() => {
         wrapper?.addEventListener("mousemove", handleMouseMove);
         wrapper?.addEventListener("mouseleave", handleMouseLeave);
 
-        function handleDragEnd(){
-            action.resetLine();
+        function handleDragEnd() {
+            reset('line');
         }
         let element = ref.current;
         element?.addEventListener("dragstart", handleDragStart);
@@ -70,19 +68,16 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
             element?.removeEventListener("dragend", handleDragEnd);
             removeListener();
         }
-    }, [action, editor, handleDragOver, handleDragStart, handleDrop, handleMouseLeave, handleMouseMove, wrapper]);
+    }, [editor, handleDragOver, handleDragStart, handleDrop, handleMouseLeave, handleMouseMove, reset, wrapper]);
 
     return wrapper ? createPortal(
         <>
-            <DraggableElement
-                addList={addList}
-                ref={ref}
-            />
+            <DraggableElement addList={addList} ref={ref} />
             <DropLine />
         </>,
         wrapper
     ) : null;
 }
 
-export const DraggablePlugin: Plugin<DraggableProp> = (prop) => <DndProvider><Draggable {...prop} /></DndProvider>;
+export const DraggablePlugin: Plugin<DraggableProp> = (prop) => <Draggable {...prop} />;
 export default DraggablePlugin;

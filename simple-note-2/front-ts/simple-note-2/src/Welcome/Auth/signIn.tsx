@@ -44,12 +44,12 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                     setState(STATE.FAILURE);
                 }
                 else {
-                    setCookie("username", values["username"]);
 
                     let notes = await loadNoteTree({ username: values["username"] })
                         .then(async (res) => JSON.parse(await res.json()))
                         .catch((err) => console.log(err))
-
+                        
+                    setCookie("username", values["username"]);
                     setNote(notes[0].key.split("/")[0])
 
                     setState(STATE.SUCCESS);
