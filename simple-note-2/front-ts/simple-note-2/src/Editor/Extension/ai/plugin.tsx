@@ -32,18 +32,19 @@ export const AIPlaceholderPlugin: Plugin = () => {
     }, [editor, key, text]);
 
     useEffect(() => {
-        let id = setInterval(async () => {
-            let rtext = await callAI({ text: `${}` })
+        let id = setTimeout(async () => {
+            let rtext = await callAI({ text: `please predict next text from this content below: \n${content}` })
                 .then(res => res.json())
                 .then(data => data["answer"]);
+    
             if (rtext !== text) {
                 setText(rtext);
             }
         }, 1000);
         return () => {
-            clearInterval(id);
+            clearTimeout(id);
         }
-    }, [callAI, editor, key, text]);
+    }, [callAI, content, editor, key, text]);
 
     useEffect(() => {
         return mergeRegister(

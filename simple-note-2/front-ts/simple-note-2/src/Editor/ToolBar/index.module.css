@@ -1,9 +1,9 @@
 .toolBar{
     padding: 5px 0px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
     align-items: center;
     overflow: auto hidden;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
 }
 
@@ -20,7 +20,7 @@
 
 .collapsedButton{
     position: absolute;
-    top: 100%;
+    bottom: calc(-40px - 3px);
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;

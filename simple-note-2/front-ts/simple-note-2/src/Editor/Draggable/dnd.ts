@@ -68,7 +68,7 @@ const useDnd = () => {
         x -= left;
         y -= top;
 
-        setLine({x: x, y: y, width: width, height: height});
+        setLine({x: x, y: y, width: width, height: HEIGHT});
         return true;
     }, [editor, setLine]);
 

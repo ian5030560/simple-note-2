@@ -56,7 +56,7 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
         </ToolBarContainer>
         <Button type="primary" icon={collapse ? <IoIosArrowDropdown /> : <IoIosArrowDropup />}
             className={`${styles.collapsedButton} ${(hide && collapse) ? styles.collapsedButtonHide : ""}`}
-            ref={ref} onClick={() => setCollapse(prev => !prev)} size="small" shape="circle" />
+            ref={ref} onClick={() => setCollapse(prev => !prev)} size="large" shape="circle" />
     </div>
 }
 
