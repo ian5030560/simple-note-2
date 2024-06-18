@@ -43,15 +43,15 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                 if (res.status === 200 || res.status === 201) {
                     let res1 = await addNote({ 
                         username: values["username"], 
-                        noteId: `${uuid()}/0`,
+                        noteId: uuid(),
                         notename: "我的筆記",
+                        parentId: null
                     }).then(res => res.status === 200).catch(() => false);
                     
                     let res2 = await addTheme({
                         username: values["username"],
                         theme: {name: "預設", data: defaultSeed}
                     }).then(res => res.status === 200).catch(() => false);
-                    
                     
                     setState(res1 && res2 ? STATE.SUCCESS : STATE.FAILURE);
                     setCause("發生重大錯誤，請重新提交");
@@ -64,7 +64,6 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                     }
                     setCause(map[res.status] ? map[res.status] : "發生重大錯誤，請重新提交");
                 }
-                setState(res.status === 200 || res.status === 201 ? STATE.SUCCESS : STATE.FAILURE);
             })
             .catch(() => {
                 setCause(() => "發生重大錯誤，請重新提交");

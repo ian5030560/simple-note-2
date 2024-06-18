@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Form, Input, Typography, Flex, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal, ForgetPwdModal } from "./modal";
@@ -19,26 +19,24 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const values = Form.useWatch([], form);
     const signIn = useAPI(APIs.signIn);
     const loadNoteTree = useAPI(APIs.loadNoteTree);
-    const [note, setNote] = useState("");
 
-    useEffect(() => {
-        async function handleContentLoad(){
-            if(!username) return;
+    const gotoNotePage = useCallback(async () => {
+        if(!username) return;
             
-            let notes = await loadNoteTree({ username: username })
-            .then(async (res) => JSON.parse(await res.json()))
-            .catch((err) => console.log(err));
-    
-            setNote(notes[0].key.split("/")[0])
-        }
-        window.addEventListener("DOMContentLoaded", handleContentLoad);
-        return () => window.removeEventListener("DOMContentLoaded", handleContentLoad);
-    }, [loadNoteTree, username]);
+        let notes = await loadNoteTree({ username: username })
+        .then(async (res) => JSON.parse(await res.json()))
+        .catch((err) => console.log(err));
+
+        navigate(notes[0]);
+    }, [loadNoteTree, navigate, username]);
 
     useEffect(() => {
-        form.validateFields({
-            validateOnly: true,
-        })
+        window.addEventListener("DOMContentLoaded", gotoNotePage);
+        return () => window.removeEventListener("DOMContentLoaded", gotoNotePage);
+    }, [gotoNotePage]);
+
+    useEffect(() => {
+        form.validateFields({validateOnly: true})
             .then(
                 () => setSubmittable(true),
                 () => setSubmittable(false)
@@ -49,7 +47,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
 
         setState(STATE.LOADING);
 
-        values = { ...values, id: "sign-in", };
+        values = { ...values, id: "sign-in"};
 
         signIn(values)
             .then((res) => res.status === 200 || res.status === 201)
@@ -93,17 +91,10 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                         >
                             提交
                         </Button>
-                        <Button type="primary" htmlType="reset">
-                            清除
-                        </Button>
+                        <Button type="primary" htmlType="reset">清除</Button>
                     </Space>
                     <Space>
-                        <Button
-                            type="link"
-                            onClick={() => onChange?.()}
-                        >
-                            註冊
-                        </Button>
+                        <Button type="link" onClick={() => onChange?.()}>註冊</Button>
                         <Button type="link" onClick={() => setState(STATE.FORGET)}>忘記密碼</Button>
                     </Space>
                 </Flex>
@@ -114,9 +105,9 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 title: "登入成功",
                 subtitle: "點擊確認跳轉至使用頁面",
                 open: state === STATE.SUCCESS,
-                onSuccessClose: () => {
+                onSuccessClose: async () => {
                     setState(() => null);
-                    navigate(note);
+                    await gotoNotePage();
                 }
             }}
 
