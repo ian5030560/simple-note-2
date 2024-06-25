@@ -11,11 +11,18 @@ from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.http import FileResponse
+from django.conf import settings
+import mimetypes
 from django.http import HttpResponse, JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
+
 import base64
+import os
 """@csrf_exempt"""
 """@csrf_protect"""
 
@@ -31,19 +38,29 @@ class ViewMediaFileView(APIView):
     serializer_class = ViewMediaFileSerializer
 
     def get(self, request, username, notename, filename, format=None):
-
-        # Retrieve content and mimetype from the database
-        # content = UserFileData.check_content_blob_mimetype(username, notename, filename)[0]
-        # mimetype = UserFileData.check_content_blob_mimetype(username, notename, filename)[1]
-
-        # if content is not None and mimetype is not None:
-        #     response = HttpResponse(content, status=status.HTTP_200_OK, content_type=mimetype)
-
-        # elif content is None or mimetype is None:
-        #     # If data not found, return HTTP 404 response
-        #     return Response("File not found", status=status.HTTP_404_NOT_FOUND)
-
-        return response
+        # 构建文件路径
+        file_path = os.path.join(settings.BASE_DIR, 'db_modules', 'fileTemp', filename)
+        
+        # 检查文件是否存在
+        if not os.path.exists(file_path):
+            return Response({"error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        # 检测文件类型
+        mime_type, _ = mimetypes.guess_type(file_path)
+        if not mime_type:
+            mime_type = 'application/octet-stream'
+        
+        checkExistValue = UserFileData.check_file_name(username, notename, filename)
+        # if exist, change name
+        if checkExistValue == True:
+            # 打开并读取文件
+            try:
+                return FileResponse(open(file_path, 'rb'), content_type=mime_type)
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({"error": 'File not found'}, status=status.HTTP_400_BAD_REQUEST)
+    
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
