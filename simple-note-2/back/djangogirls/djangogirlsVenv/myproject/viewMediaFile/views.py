@@ -33,15 +33,15 @@ class ViewMediaFileView(APIView):
     def get(self, request, username, notename, filename, format=None):
 
         # Retrieve content and mimetype from the database
-        content = UserFileData.check_content_blob_mimetype(username, notename, filename)[0]
-        mimetype = UserFileData.check_content_blob_mimetype(username, notename, filename)[1]
+        # content = UserFileData.check_content_blob_mimetype(username, notename, filename)[0]
+        # mimetype = UserFileData.check_content_blob_mimetype(username, notename, filename)[1]
 
-        if content is not None and mimetype is not None:
-            response = HttpResponse(content, status=status.HTTP_200_OK, content_type=mimetype)
+        # if content is not None and mimetype is not None:
+        #     response = HttpResponse(content, status=status.HTTP_200_OK, content_type=mimetype)
 
-        elif content is None or mimetype is None:
-            # If data not found, return HTTP 404 response
-            return Response("File not found", status=status.HTTP_404_NOT_FOUND)
+        # elif content is None or mimetype is None:
+        #     # If data not found, return HTTP 404 response
+        #     return Response("File not found", status=status.HTTP_404_NOT_FOUND)
 
         return response
     def post(self, request, format=None):
