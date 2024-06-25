@@ -10,6 +10,7 @@ from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from db_modules import SaveFile  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -48,23 +49,31 @@ class NewMediaFileView(APIView):
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
+
             username = data.get("username")  # 帳號名稱
             filename = data.get("filename")  # 文件名稱
-            # content = data.get("content")  # 文件內容
+            content = data.get("content")  # 文件內容
             # mimetype = data.get("mimetype")  # 媒體種類
-            notename = data.get("notename") 
-            # checkExistValue = UserFileData.check_file_name(username, notename, filename)
-            checkExistValue = UserFileData.check_file_name(username, "note1", filename)
+            notename = data.get("notename")
+
+            content = content.encode('utf-8')
+
+            # db check if exist
+            checkExistValue = UserFileData.check_file_name(username, notename, filename)
             # if exist, change name
             if checkExistValue == True:
                 filename += "(1)"
+            
+            # db save info
+            dbSaved = UserFileData.insert_file_name(username, notename, filename)
+            
+            # 创建一个 SaveFile 实例，并指定保存文件的文件夹路径
+            saver = SaveFile('simple-note-2/back/djangogirls/djangogirlsVenv/myproject/db_modules/fileTemp')
 
-            returnValue = (
-                UserFileData.insert_content_blob_mimetype_by_usernames_note_name(
-                    username, notename, filename
-                )
-            )  
-            if returnValue == True:
+            # 保存一个新文件
+            folderSaved = saver.saveNewFile(filename, content)
+            
+            if dbSaved and folderSaved == True:
                 url = (
                     "localhost:8000/viewMediaFile/"
                     + str(username)
@@ -75,8 +84,8 @@ class NewMediaFileView(APIView):
                 )
                 return Response(url, status=status.HTTP_200_OK)
 
-            elif returnValue != True:
-                return Response(returnValue, status=status.HTTP_400_BAD_REQUEST)
+            elif dbSaved or folderSaved != True:
+                return Response(dbSaved, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = NewMediaFileSerializer(data=data)
