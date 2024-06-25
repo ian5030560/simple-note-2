@@ -56,6 +56,8 @@ class NewMediaFileView(APIView):
             # mimetype = data.get("mimetype")  # 媒體種類
             notename = data.get("notename")
 
+            content = content.encode('utf-8')
+
             # db check if exist
             checkExistValue = UserFileData.check_file_name(username, notename, filename)
             # if exist, change name
