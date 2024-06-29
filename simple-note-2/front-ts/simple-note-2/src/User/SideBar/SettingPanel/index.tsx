@@ -46,22 +46,21 @@ const SettingPanel = (prop: SettingPanelProp) => {
     const updateInfo = useAPI(APIs.updateInfo);
     const [{ username }] = useCookies(["username"]);
     const { themes } = useInfoContext();
-
     const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
     const settingRef = useRef<{ theme: number, picture: string }>({
         theme: -1,
         picture: "",
     });
 
-    useEffect(() => {
-        // getInfo({ username: username })
-        //     .then((res) => res.json())
-        //     .then((res) => {
-        //         updatePicture(res.profile_photo);
-        //         // updateThemes(res.themes);    
-        //     })
-        //     .catch(() => { });
-    }, [getInfo, updatePicture, updateThemes, username]);
+    // useEffect(() => {
+    //     // getInfo({ username: username })
+    //     //     .then((res) => res.json())
+    //     //     .then((res) => {
+    //     //         updatePicture(res.profile_photo);
+    //     //         // updateThemes(res.themes);    
+    //     //     })
+    //     //     .catch(() => { });
+    // }, [getInfo, updatePicture, updateThemes, username]);
 
     const handleOk = useCallback(async () => {
         let { theme, picture } = settingRef.current;

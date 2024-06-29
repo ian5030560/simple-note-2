@@ -7,7 +7,7 @@ import CommentPool from "./component";
 import { mergeRegister, registerNestedElementResolver } from "@lexical/utils";
 import useStore from "./store";
 import { useCookies } from "react-cookie";
-import { uuid } from "../../../util/random";
+import uuid from "../../../util/uuid";
 
 export const INSERT_COMMENT: LexicalCommand<void> = createCommand();
 const CommentPlugin: Plugin = () => {

@@ -5,7 +5,7 @@ import Editor from "../Editor";
 import { BulbButton } from "../Welcome";
 import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
 import styles from "./index.module.css";
-import { switchTheme } from "../theme";
+import { switchTheme } from "../util/theme";
 import { useInfoContext } from "./SideBar/info";
 
 const User: React.FC = () => {

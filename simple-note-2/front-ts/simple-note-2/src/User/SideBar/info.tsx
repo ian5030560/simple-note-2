@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import {ThemeSeed} from "../../theme";
+import {ThemeSeed} from "../../util/theme";
 
 type Theme = {
     name: string;

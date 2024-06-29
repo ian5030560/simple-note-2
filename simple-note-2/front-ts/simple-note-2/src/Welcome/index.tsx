@@ -5,7 +5,7 @@ import { Flex, ConfigProvider, FloatButton, theme } from "antd";
 import Auth from "./Auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import Intro from "./Intro";
-import { switchTheme, defaultSeed } from "../theme";
+import { switchTheme, defaultSeed } from "../util/theme";
 
 interface HeaderProp extends TopBarProp {
     backgroundColor: string,
@@ -38,25 +38,19 @@ export const BulbButton: React.FC<BulbButtonProp> = (prop: BulbButtonProp) => {
 const WelcomePage: React.FC = () => {
     const [darken, setDarken] = useState<boolean>(false);
 
-    const handleClick = () => {
-        setDarken(!darken);
-    }
-
     return <ConfigProvider
         theme={{
             ...switchTheme(darken, defaultSeed),
             algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
         }}
     >
-        <Index darken={darken} onDarken={handleClick} />
+        <Index />
+        <BulbButton lighten={!darken} onClick={() => setDarken(!darken)} />
     </ConfigProvider>
 }
 
-interface WelcomePageIndexProp {
-    darken: boolean,
-    onDarken: () => void
-}
-const Index: React.FC<WelcomePageIndexProp> = ({ darken, onDarken }) => {
+
+const Index: React.FC = () => {
 
     const [content, setContent] = useState<React.JSX.Element>(<Intro />);
     const { token } = theme.useToken();
@@ -68,7 +62,6 @@ const Index: React.FC<WelcomePageIndexProp> = ({ darken, onDarken }) => {
             onIntroClick={() => setContent(<Intro />)}
         />
         {content}
-        <BulbButton lighten={!darken} onClick={onDarken} />
     </>
 }
 

@@ -1,7 +1,7 @@
 import { Ref, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from "react";
 import { Modal, Input, Flex, Typography, Button, TreeDataNode } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
-import { uuid } from "../../../util/random";
+import uuid from "../../../util/uuid";
 
 
 const { Text } = Typography;

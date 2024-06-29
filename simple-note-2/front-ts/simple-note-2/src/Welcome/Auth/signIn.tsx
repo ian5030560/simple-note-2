@@ -18,22 +18,22 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [{username}, setCookie] = useCookies(["username"]);
     const values = Form.useWatch([], form);
     const signIn = useAPI(APIs.signIn);
-    const loadNoteTree = useAPI(APIs.loadNoteTree);
+    // const loadNoteTree = useAPI(APIs.loadNoteTree);
 
-    const gotoNotePage = useCallback(async () => {
-        if(!username) return;
+    // const gotoNotePage = useCallback(async () => {
+    //     if(!username) return;
             
-        let notes = await loadNoteTree({ username: username })
-        .then(async (res) => JSON.parse(await res.json()))
-        .catch((err) => console.log(err));
+    //     let notes = await loadNoteTree({ username: username })
+    //     .then(async (res) => JSON.parse(await res.json()))
+    //     .catch((err) => console.log(err));
 
-        navigate(notes[0]);
-    }, [loadNoteTree, navigate, username]);
+    //     navigate(notes[0]);
+    // }, [loadNoteTree, navigate, username]);
 
-    useEffect(() => {
-        window.addEventListener("DOMContentLoaded", gotoNotePage);
-        return () => window.removeEventListener("DOMContentLoaded", gotoNotePage);
-    }, [gotoNotePage]);
+    // useEffect(() => {
+    //     window.addEventListener("DOMContentLoaded", gotoNotePage);
+    //     return () => window.removeEventListener("DOMContentLoaded", gotoNotePage);
+    // }, [gotoNotePage]);
 
     useEffect(() => {
         form.validateFields({validateOnly: true})
@@ -107,7 +107,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 open: state === STATE.SUCCESS,
                 onSuccessClose: async () => {
                     setState(() => null);
-                    await gotoNotePage();
+                    navigate(0);
                 }
             }}
 

@@ -5,8 +5,8 @@ import { AuthModal } from "./modal";
 import { useCookies } from "react-cookie";
 import { AuthProp, STATE, validateMessages } from "./constant";
 import useAPI, { APIs } from "../../util/api";
-import { uuid } from "../../util/random";
-import { defaultSeed } from "../../theme";
+import uuid from "../../util/uuid";
+import { defaultSeed } from "../../util/theme";
 
 const { Title } = Typography;
 
@@ -78,13 +78,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
             autoComplete="on" onFinish={handleFinished}
         >
             <Title>註冊</Title>
-            <Form.Item label="帳號" name="username"
-                rules={[
-                    {
-                        required: true,
-                    },
-                ]}
-            >
+            <Form.Item label="帳號" name="username" rules={[{required: true},]}>
                 <Input />
             </Form.Item>
             <Form.Item label="信箱" name="email"

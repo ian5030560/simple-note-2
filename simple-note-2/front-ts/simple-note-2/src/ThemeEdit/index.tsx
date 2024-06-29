@@ -3,7 +3,7 @@ import SideBar from "./SideBar";
 import { Row, Col, ConfigProvider, theme } from "antd";
 import Preview from "./Preview";
 import { BulbButton } from "../Welcome";
-import { defaultSeed } from "../theme";
+import { defaultSeed } from "../util/theme";
 
 const ThemePage = () => {
 

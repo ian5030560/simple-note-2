@@ -7,7 +7,7 @@ import {
     SELECTION_CHANGE_COMMAND, TextNode
 } from "lexical";
 import "./plugin.css";
-import { uuid } from "../../../util/random";
+import uuid from "../../../util/uuid";
 import useAPI, { APIs } from "../../../util/api";
 
 const TEXT_TAG = "simple-note-2-text-tag"

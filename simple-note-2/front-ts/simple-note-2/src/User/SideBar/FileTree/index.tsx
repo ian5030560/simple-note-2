@@ -1,48 +1,18 @@
 import { Tree, theme, Button, message } from "antd";
 import Node, { AddModal, AddModalRef, DeleteModal, DeleteModalRef, seperator } from "./node";
-import useAPI, { APIs } from "../../../util/api";
-import { useCookies } from "react-cookie";
 import { FaPlus } from "react-icons/fa6";
 import useFiles from "./hook";
-import { Key, useCallback, useEffect, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { uuid } from "../../../util/random";
+import { Key, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import uuid from "../../../util/uuid";
 
 const FileTree = () => {
-    const loadNoteTree = useAPI(APIs.loadNoteTree);
     const { token } = theme.useToken();
     const [nodes, add, remove] = useFiles();
     const addRef = useRef<AddModalRef>(null);
     const deleteRef = useRef<DeleteModalRef>(null);
     const [api, contextHolder] = message.useMessage();
     const navigate = useNavigate();
-    const [{ username }] = useCookies(["username"]);
-    const { file } = useParams();
-
-    useEffect(() => {
-        async function handleLoad() {
-            try {
-                let tree: [string, string] = JSON.parse(await loadNoteTree({ username: username }).then(res => res.json()));
-
-                let existing = tree.findIndex((val) => val[1].split(seperator)[0] === file) !== -1;
-
-                if (!existing) {
-                    navigate("/");
-                }
-                else {
-                    for (let note of tree) {
-                        add(note[1], note[0], []);
-                    }
-                }
-            }
-            catch (err) {
-                api.error({ content: "無法取得所有筆記" });
-            }
-        }
-        // window.addEventListener("load", handleLoad);
-
-        return () => window.removeEventListener("load", handleLoad)
-    }, [add, api, file, loadNoteTree, navigate, username]);
 
     const handleAdd = useCallback((key: string, text: string) => {
 

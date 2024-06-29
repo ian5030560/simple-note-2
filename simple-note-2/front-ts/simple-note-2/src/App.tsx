@@ -1,19 +1,24 @@
 import React from "react";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import WelcomePage from "./Welcome";
 import UserPage from "./User";
 import ThemePage from "./ThemeEdit";
-import { CookiesProvider, useCookies } from "react-cookie";
+import { CookiesProvider } from "react-cookie";
 import "./App.css";
+import { AuthMiddleware } from "./util/middleware";
+import ContextProvider from "./util/context";
 
 const Index = () => {
-  const [{ username }] = useCookies(["username"]);
-  
+
   return <BrowserRouter>
     <Routes>
-      <Route path="/" element={<WelcomePage/>} />
       <Route path="test" element={<UserPage />} />
-      <Route path=":file" element={username ? <UserPage/> : <Navigate to={"/"}/>}/>
+      <Route element={<AuthMiddleware />}>
+        <Route path="/" element={<WelcomePage />} />
+        <Route element={<ContextProvider />}>
+          <Route path=":file" element={<UserPage />} />
+        </Route>
+      </Route>
       <Route path="theme" element={<ThemePage />} />
     </Routes>
   </BrowserRouter>
@@ -21,6 +26,6 @@ const Index = () => {
 
 export default function App(): React.JSX.Element {
   return <CookiesProvider defaultSetOptions={{ path: "/" }}>
-    <Index/>
+    <Index />
   </CookiesProvider>
 }

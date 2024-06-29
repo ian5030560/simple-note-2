@@ -17,7 +17,6 @@ const ImageModal: React.FC = () => {
     const fileRef = useRef<HTMLInputElement>(null);
     const ref = useRef<ModalRef>(null);
     const [{ username }] = useCookies(["username"]);
-    const addFile = useAPI(APIs.addFile);
 
     const handleURL = useCallback(() => {
         let url = urlRef.current!.input!.value;
@@ -30,20 +29,29 @@ const ImageModal: React.FC = () => {
     const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
         let file = e.target.files[0];
-        
-        let src = await addFile({
-            username: "user13",
-            filename: file.name,
-            notename: "note13",
-            content: await file.text(),
-        }).then(res => res.text());
+
+        let data = new FormData();
+        data.append("username", "user01");
+        data.append("filename", file.name);
+        data.append("notename", "note1");
+        data.append("content", file);
+
+        let src = await fetch("http://localhost:8000/newMediaFile/",
+            {
+                body: data, method: "POST", 
+                headers: {
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                    "content-type": "multipart/form-data",
+                },
+            }
+        ).then(res => res.text());
 
         src = src.substring(1, src.length - 1);
-        
+
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: "http://" + src });
         fileRef.current!.value = "";
         ref.current?.close();
-    }, [addFile, editor]);
+    }, [editor]);
 
     const items: TabsProps["items"] = useMemo(() => [
         {
