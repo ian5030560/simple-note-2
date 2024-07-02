@@ -11,12 +11,12 @@ import base64
 
 Base = declarative_base()
 # engine_url = os.environ.get("env")
-engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+# engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
-class User_Subnote_Data(Base):
+class User_SubNote_Data(Base):
     __tablename__ = "User_SubNote_Data"
     id = Column(String(128), primary_key=True, nullable=False)
     parent_id = Column(String(128))

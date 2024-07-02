@@ -11,8 +11,8 @@ import base64
 
 Base = declarative_base()
 # engine_url = os.environ.get("env")
-engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+# engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
@@ -57,7 +57,10 @@ def check_file_name(usernames_input, note_name_input, file_name_input):
 
         stmt = (
             session.query(User_File_Data.file_name)
-            .filter(User_File_Data.note_id == note_id_query[0])
+            .filter(and_(
+                    User_File_Data.note_id == note_id_query[0],
+                    User_File_Data.file_name == file_name_input,
+                ))
             .first()
         )
         if not stmt:
@@ -81,13 +84,12 @@ def insert_file_name(
     note_name_input,
     file_name_input,
 ):
-    content_blob_input = content_blob_input.encode('utf-8')
-    
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
         .first()
     )
+    
     note_id_query = (
         session.query(User_Note_Data.id)
         .filter(
@@ -154,4 +156,4 @@ def update_file_name(usernames_input, note_name_input, file_name_input):
 
 
 
-print(check_file_name("user01", "note1", "file1"))
+# print(check_file_name("user01", "note1", "file2"))
