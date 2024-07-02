@@ -6,18 +6,18 @@ import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
 import { AuthMiddleware } from "./util/middleware";
-import ContextProvider from "./util/context";
+import { NoteProvider, SettingProvider } from "./util/provider";
 
 const Index = () => {
 
   return <BrowserRouter>
     <Routes>
       <Route path="test" element={<UserPage />} />
-      <Route element={<AuthMiddleware />}>
+      <Route element={<SettingProvider/>}>
         <Route path="/" element={<WelcomePage />} />
-        <Route element={<ContextProvider />}>
-          <Route path=":file" element={<UserPage />} />
-        </Route>
+      </Route>
+      <Route element={<AuthMiddleware />}>
+        <Route path=":file" element={<NoteProvider><UserPage /></NoteProvider>} />
       </Route>
       <Route path="theme" element={<ThemePage />} />
     </Routes>

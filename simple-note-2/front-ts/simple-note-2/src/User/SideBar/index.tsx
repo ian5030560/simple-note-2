@@ -50,7 +50,7 @@ const UserProfile = () => {
     const handleSignOutOk = useCallback(() => {
         setSignOutOpen(false);
 
-        signOut(username)
+        signOut(username)[0]
             .then((value) => {
                 if (!value) {
                     api.error(

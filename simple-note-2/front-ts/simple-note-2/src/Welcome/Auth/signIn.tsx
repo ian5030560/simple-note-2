@@ -9,6 +9,10 @@ import useAPI from "../../util/api";
 
 const { Title } = Typography;
 
+type SignInDataType = {
+    username: string;
+    password: string;
+}
 type SignInProp = AuthProp
 const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [form] = Form.useForm();
@@ -18,22 +22,6 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [{username}, setCookie] = useCookies(["username"]);
     const values = Form.useWatch([], form);
     const signIn = useAPI(APIs.signIn);
-    // const loadNoteTree = useAPI(APIs.loadNoteTree);
-
-    // const gotoNotePage = useCallback(async () => {
-    //     if(!username) return;
-            
-    //     let notes = await loadNoteTree({ username: username })
-    //     .then(async (res) => JSON.parse(await res.json()))
-    //     .catch((err) => console.log(err));
-
-    //     navigate(notes[0]);
-    // }, [loadNoteTree, navigate, username]);
-
-    // useEffect(() => {
-    //     window.addEventListener("DOMContentLoaded", gotoNotePage);
-    //     return () => window.removeEventListener("DOMContentLoaded", gotoNotePage);
-    // }, [gotoNotePage]);
 
     useEffect(() => {
         form.validateFields({validateOnly: true})
@@ -43,13 +31,13 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             );
     }, [form, values]);
 
-    const handleFinished = (values: any) => {
+    const handleFinished = (values: SignInDataType) => {
 
         setState(STATE.LOADING);
 
-        values = { ...values, id: "sign-in"};
+        let data = { ...values, id: "sign-in" as "sign-in"};
 
-        signIn(values)
+        signIn(data)[0]
             .then((res) => res.status === 200 || res.status === 201)
             .then(async ok => {
                 if (!ok) {
@@ -83,12 +71,8 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             >
                 <Flex justify="space-between">
                     <Space>
-                        <Button
-                            type="primary"
-                            htmlType="submit"
-                            disabled={!submittable}
-                            loading={state === STATE.SUCCESS}
-                        >
+                        <Button type="primary" htmlType="submit"
+                            disabled={!submittable} loading={state === STATE.SUCCESS}>
                             提交
                         </Button>
                         <Button type="primary" htmlType="reset">清除</Button>

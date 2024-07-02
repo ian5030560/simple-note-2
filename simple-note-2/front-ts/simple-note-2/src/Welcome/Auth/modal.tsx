@@ -15,7 +15,7 @@ export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
   const handleFinished = (values: any) => {
     setLoading(true);
 
-    forgetPassword(values)
+    forgetPassword(values)[0]
       .then((res) => {
         setLoading(false);
         if (res.status === 200) {

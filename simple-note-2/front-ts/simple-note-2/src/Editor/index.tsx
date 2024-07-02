@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import ToolBarPlugin from "./ToolBar/index";
 import DraggablePlugin from "./Draggable";
 import Loader from "./loader";
 import ADDLIST from "./addList";
 import { LIST } from "./toolbar";
+import { Note } from "../util/provider";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { styleSheet } = Loader;
@@ -14,13 +15,15 @@ function onError(error: Error) {
 }
 
 const Editor: React.FC = () => {
+    const initEditorState = useContext(Note);
 
     return <LexicalComposer
         initialConfig={{
             namespace: 'Editor',
             theme: Loader.theme,
             onError,
-            nodes: Loader.nodes
+            nodes: Loader.nodes,
+            editorState: initEditorState,
         }}>
         <ToolBarPlugin toolbars={LIST}/>
         <DraggablePlugin addList={ADDLIST} />

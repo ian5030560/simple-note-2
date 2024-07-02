@@ -42,6 +42,8 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
     useEffect(() => {
         wrapper?.addEventListener("mousemove", handleMouseMove);
         wrapper?.addEventListener("mouseleave", handleMouseLeave);
+        wrapper?.addEventListener("dragover", handleDragOver);
+        wrapper?.addEventListener("drop", handleDrop);
 
         function handleDragEnd() {
             reset('line');
@@ -58,12 +60,15 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
                     element?.setAttribute(DRAGGABLE_TAG, key);
                 }
             }),
-            editor.registerCommand(DRAGOVER_COMMAND, handleDragOver, 1),
-            editor.registerCommand(DROP_COMMAND, handleDrop, 4),
+            // editor.registerCommand(DRAGOVER_COMMAND, handleDragOver, 1),
+            // editor.registerCommand(DROP_COMMAND, handleDrop, 4),
         )
+
         return () => {
             wrapper?.removeEventListener("mousemove", handleMouseMove);
             wrapper?.removeEventListener("mouseleave", handleMouseLeave);
+            wrapper?.removeEventListener("dragover", handleDragOver);
+            wrapper?.removeEventListener("drop", handleDrop);
             element?.removeEventListener("dragstart", handleDragStart);
             element?.removeEventListener("dragend", handleDragEnd);
             removeListener();

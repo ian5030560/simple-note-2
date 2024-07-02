@@ -1,5 +1,5 @@
 import { Modal, Flex, Image, Input, Button, Select, Typography, InputRef, SelectProps } from "antd"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import styles from "./index.module.css";
 import useAPI, { APIs } from "../../../util/api";
 import { useInfoAction, useInfoContext } from "../info";
@@ -52,16 +52,6 @@ const SettingPanel = (prop: SettingPanelProp) => {
         picture: "",
     });
 
-    // useEffect(() => {
-    //     // getInfo({ username: username })
-    //     //     .then((res) => res.json())
-    //     //     .then((res) => {
-    //     //         updatePicture(res.profile_photo);
-    //     //         // updateThemes(res.themes);    
-    //     //     })
-    //     //     .catch(() => { });
-    // }, [getInfo, updatePicture, updateThemes, username]);
-
     const handleOk = useCallback(async () => {
         let { theme, picture } = settingRef.current;
 
@@ -76,7 +66,7 @@ const SettingPanel = (prop: SettingPanelProp) => {
                 //     }
                 // }
             }
-        })
+        })[0]
             .then(res => {
                 if (res.status !== 200) return;
                 // updateThemeUsage(theme);

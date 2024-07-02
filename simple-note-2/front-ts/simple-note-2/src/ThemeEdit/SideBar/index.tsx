@@ -109,7 +109,7 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
                             colorDarkNeutral: darkNeutral
                         },
                     }
-                })
+                })[0]
                     .then(() => {
                         api.success({ content: "新增成功!" });
                     })

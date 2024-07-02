@@ -41,11 +41,9 @@ function changeSubtreeKey(t: TreeDataNode[], p: string) {
     }
 }
 
-export default function useFiles(): [
-    TreeDataNode[],
-    (key: string, title: string, children: TreeDataNode[]) => Promise<boolean>,
-    (key: string) => Promise<string | undefined>
-] {
+type AddFunction = (key: string, title: string, children: TreeDataNode[]) => Promise<boolean>
+type RemoveFunction = (key: string) => Promise<string | undefined>
+export default function useFiles(): [TreeDataNode[], AddFunction, RemoveFunction] {
     const [nodes, setNodes] = useState<TreeDataNode[]>([]);
     const addNote = useAPI(APIs.addNote);
     const deleteNote = useAPI(APIs.deleteNote);

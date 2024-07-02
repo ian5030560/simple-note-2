@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 
 type APIMap = {
-  "http://localhost:8000/registerAndLogin/": { id: "sign-in", username: string, password: string } | { id: "register", username: string, password: string, email: string },
+  "http://localhost:8000/registerAndLogin/": { id: "sign-in" | "register", username: string, password: string, email?: string },
   "http://localhost:8000/forgetPassword/": { username: string, email: string },
   "http://localhost:8000/logout/": { username: string },
   // "http://localhost:8000/newMediaFile/": FormData,
@@ -25,7 +25,7 @@ type APIMap = {
     }
   },
   "http://localhost:8000/loadNoteTree/": { username: string },
-  "http://140.127.74.226:8000/gemma/": {text: string}
+  "http://140.127.74.226:8000/gemma/": { text: string }
 }
 
 export enum APIs {
@@ -46,15 +46,16 @@ export enum APIs {
   callAI = "http://140.127.74.226:8000/gemma/",
 }
 
-export default function useAPI<T extends APIs>(api: T) {
+export default function useAPI<T extends APIs>(api: T): (data: APIMap[T]) => [Promise<Response>, AbortController] {
   return useCallback((data: APIMap[T]) => {
-    return fetch(api, {
-      body: JSON.stringify(data),
-      method: "POST",
-      headers: {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        "content-type": "application/json",
-      },
-    })
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    return [
+      fetch(api, {body: JSON.stringify(data), method: "POST",
+        headers: {
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+          "content-type": "application/json",
+        }, signal}), controller]
   }, [api]);
 }

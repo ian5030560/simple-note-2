@@ -7,7 +7,6 @@ import { CiEdit } from "react-icons/ci";
 import { INSERT_IMAGE } from "./plugin";
 import Modal, { ModalRef } from "../UI/modal";
 import { useCookies } from "react-cookie";
-import useAPI, { APIs } from "../../../util/api";
 
 export const OPEN_IMAGE_MODAL: LexicalCommand<boolean> = createCommand();
 const ImageModal: React.FC = () => {

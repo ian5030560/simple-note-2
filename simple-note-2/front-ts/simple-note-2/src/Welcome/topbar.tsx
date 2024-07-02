@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Menu, Typography, theme } from "antd";
 import { GithubOutlined, StarFilled } from "@ant-design/icons";
 import { MenuClickEventHandler } from "rc-menu/lib/interface";
-import { ItemType, MenuItemType } from "antd/es/menu/hooks/useItems";
+import { ItemType, MenuItemType } from "antd/es/menu/interface";
 
 const { Text } = Typography;
 

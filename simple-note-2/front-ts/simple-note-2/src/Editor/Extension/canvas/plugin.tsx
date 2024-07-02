@@ -4,7 +4,7 @@ import CanvasModal from "./modal";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import Corner, { CornerRef } from "../UI/corner";
+import Action, { ActionRef } from "../UI/action";
 import ImageNode, { $isImageNode } from "../image/node";
 import { Button } from "antd";
 import { RiImageEditFill } from "react-icons/ri";
@@ -14,7 +14,7 @@ import { ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
 export const INSERT_CANVAS: LexicalCommand<ExcalidrawInitialDataState | undefined | null> = createCommand();
 const CanvasPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
-    const ref = useRef<CornerRef>(null);
+    const ref = useRef<ActionRef>(null);
     const [key, setKey] = useState<string>();
 
     // const handleSelection = useCallback((selection: BaseSelection | null) => {
@@ -69,10 +69,10 @@ const CanvasPlugin: Plugin = () => {
 
     return <>
         <CanvasModal />
-        {/* <Corner nodeType={ImageNode} placement={["top", "right"]} trigger="selected"
+        {/* <Action nodeType={ImageNode} placement={["top", "right"]} trigger="selected"
             ref={ref} onSeletionChange={handleSelection}>
             <Button type="primary" icon={<RiImageEditFill size={20} />} onClick={handleClick}/>
-        </Corner> */}
+        </Action> */}
     </>
 }
 

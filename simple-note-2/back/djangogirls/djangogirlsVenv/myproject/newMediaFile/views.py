@@ -10,7 +10,7 @@ from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
-from db_modules import SaveFile  # 資料庫來的檔案
+from db_modules.SaveFile import SaveFile  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -48,13 +48,13 @@ class NewMediaFileView(APIView):
 
     def post(self, request, format=None):
         try:
-            data = json.loads(request.body)
+            # data = json.loads(request.body)
 
-            username = data.get("username")  # 帳號名稱
-            filename = data.get("filename")  # 文件名稱
-            content = data.get("content")  # 文件內容
-            # mimetype = data.get("mimetype")  # 媒體種類
-            notename = data.get("notename")
+            username = request.POST.get("username")  # 帳號名稱
+            filename = request.POST.get("filename")  # 文件名稱
+            content = request.POST.get("content")  # 文件內容
+            # mimetype = request.POST.get("mimetype")  # 媒體種類
+            notename = request.POST.get("notename")
 
             content = content.encode('utf-8')
 
@@ -88,7 +88,7 @@ class NewMediaFileView(APIView):
                 return Response(dbSaved, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
-            serializer = NewMediaFileSerializer(data=data)
+            serializer = NewMediaFileSerializer(data=request.POST)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
