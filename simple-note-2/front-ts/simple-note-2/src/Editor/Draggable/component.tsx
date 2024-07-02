@@ -6,6 +6,7 @@ import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import styles from "./component.module.css";
 
+
 export interface AddItem {
     value: string,
     label: React.ReactNode,

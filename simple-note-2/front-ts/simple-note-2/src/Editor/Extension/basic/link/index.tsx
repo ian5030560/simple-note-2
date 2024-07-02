@@ -65,10 +65,11 @@ export const FloatingLinkPlugin: Plugin = () => {
 
                 let url = "";
                 let position = DEFAULT;
+                console.log(parent);
                 if (parent) {
                     url = parent.getURL();
                     let element = editor.getElementByKey(parent.getKey());
-
+                    console.log(element, wrapper, fRef.current);
                     if (!element || !wrapper || !fRef.current) return;
 
                     let { x, y } = element.getBoundingClientRect();

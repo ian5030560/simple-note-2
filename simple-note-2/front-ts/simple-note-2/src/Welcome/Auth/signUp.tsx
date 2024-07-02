@@ -10,6 +10,11 @@ import { defaultSeed } from "../../util/theme";
 
 const { Title } = Typography;
 
+type SignUpDataType = {
+    username: string;
+    email: string;
+    password: string;
+}
 type SignUpProp = AuthProp
 const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
     const [form] = Form.useForm();
@@ -23,22 +28,19 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
     const addTheme = useAPI(APIs.addTheme);
 
     useEffect(() => {
-        form.validateFields({
-            validateOnly: true,
-        })
+        form.validateFields({validateOnly: true})
             .then(
                 () => setSubmittable(true),
                 () => setSubmittable(false)
             );
     }, [form, values]);
 
-    const handleFinished = (values: any) => {
-
+    const handleFinished = (values: SignUpDataType) => {
         setState(STATE.LOADING);
 
-        values = { ...values, id: "register" };
+        let data = { ...values, id: "register" as "register" };
 
-        signUp(values)
+        signUp(data)[0]
             .then(async res => {
                 if (res.status === 200 || res.status === 201) {
                     let res1 = await addNote({ 
@@ -46,14 +48,14 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                         noteId: uuid(),
                         notename: "我的筆記",
                         parentId: null
-                    }).then(res => res.status === 200).catch(() => false);
+                    })[0].then(res => res.status === 200).catch(() => false);
                     
                     let res2 = await addTheme({
                         username: values["username"],
                         theme: {name: "預設", data: defaultSeed}
-                    }).then(res => res.status === 200).catch(() => false);
+                    })[0].then(res => res.status === 200).catch(() => false);
                     
-                    setState(res1 && res2 ? STATE.SUCCESS : STATE.FAILURE);
+                    setState(res1 || res2 ? STATE.SUCCESS : STATE.FAILURE);
                     setCause("發生重大錯誤，請重新提交");
                 }
                 else {

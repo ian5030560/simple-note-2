@@ -11,12 +11,12 @@ import {
 } from "@lexical/table";
 import { $getSelection, $isRangeSelection, BaseSelection } from "lexical";
 import styles from "./action.module.css";
-import Corner, { CornerRef } from "../../UI/corner";
+import Action, { ActionRef } from "../../UI/action";
 import { $findMatchingParent } from "@lexical/utils";
 
 const TableActionPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
-    const ref = useRef<CornerRef>(null);
+    const ref = useRef<ActionRef>(null);
 
     const handleSelectionChange = useCallback((selection: BaseSelection | null) => {
         if ($isRangeSelection(selection) || $isTableSelection(selection)) {
@@ -84,14 +84,14 @@ const TableActionPlugin: Plugin = () => {
         ]
     }, [editor]);
 
-    return <Corner nodeType={TableCellNode} placement={["top", "right"]} trigger="selected"
+    return <Action nodeType={TableCellNode} placement={["top", "right"]} trigger="selected"
         onSeletionChange={handleSelectionChange} className="simple-note-2-table-cell-action-button-container" ref={ref}>
         <Dropdown menu={{ items }} trigger={["click"]} placement="bottom" autoAdjustOverflow
             dropdownRender={(node) => cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
             <Button type="text" className="simple-note-2-table-cell-action-button"
                 icon={<CiCircleChevDown size={20} />} />
         </Dropdown>
-    </Corner>
+    </Action>
 }
 
 export default TableActionPlugin;

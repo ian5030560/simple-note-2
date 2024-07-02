@@ -1,7 +1,7 @@
 import { Button } from "antd";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { $findMatchingParent } from "@lexical/utils";
-import Corner, { CornerRef } from "../UI/corner";
+import Action, { ActionRef } from "../UI/action";
 import { $isColumnItemNode, ColumnItemNode } from "./item";
 import { useCallback, useRef, useState } from "react";
 import { $getNodeByKey, $isRangeSelection, BaseSelection } from "lexical";
@@ -12,10 +12,10 @@ import { APPEND_COLUMNS } from "./plugin";
 import styles from "./action.module.css";
 
 const ColumnAction = () => {
-    const deleteRef = useRef<CornerRef>(null);
+    const deleteRef = useRef<ActionRef>(null);
     const [editor] = useLexicalComposerContext();
     const [key, setKey] = useState<string | null>(null);
-    const addRef = useRef<CornerRef>(null);
+    const addRef = useRef<ActionRef>(null);
 
     const handleSelection = useCallback((selection: BaseSelection | null) => {
         if ($isRangeSelection(selection)) {
@@ -34,7 +34,7 @@ const ColumnAction = () => {
     }, []);
 
     return <>
-        <Corner nodeType={ColumnItemNode} ref={deleteRef} placement={["top", "right"]}
+        <Action nodeType={ColumnItemNode} ref={deleteRef} placement={["top", "right"]}
             trigger="selected" onSeletionChange={handleSelection}>
             <Button type="text" icon={<FaRegTrashAlt />} onClick={() => {
                 if (!key) return;
@@ -57,13 +57,13 @@ const ColumnAction = () => {
                 })
 
             }} />
-        </Corner>
+        </Action>
 
-        <Corner nodeType={ColumnItemNode} ref={addRef} placement={["right"]} outside
+        <Action nodeType={ColumnItemNode} ref={addRef} placement={["right"]} outside
             trigger="selected" onSeletionChange={handleSelection} autoHeight className={styles.columnAddContainer}>
             <Button type="text" icon={<FaPlus />} style={{ height: "inherit", width: 20 }}
                 onClick={() => editor.dispatchCommand(APPEND_COLUMNS, 1)} />
-        </Corner>
+        </Action>
     </>
 }
 

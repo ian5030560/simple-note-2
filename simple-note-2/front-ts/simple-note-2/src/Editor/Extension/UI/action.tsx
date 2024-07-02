@@ -1,16 +1,16 @@
 import { createPortal } from "react-dom"
 import { useWrapper } from "../../Draggable/component"
-import styles from "./corner.module.css";
+import styles from "./action.module.css";
 import { $getSelection, BaseSelection, Klass, LexicalNode, SELECTION_CHANGE_COMMAND } from "lexical";
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 export type Placement = "top" | "bottom" | "left" | "right";
-export type CornerRef = {
+export type ActionRef = {
     place: (key: string) => void;
     leave: () => void;
 }
-export interface CornerProp {
+export interface ActionProp {
     children: React.ReactNode;
     placement: Placement[];
     nodeType: Klass<LexicalNode>;
@@ -25,7 +25,7 @@ export interface CornerProp {
     autoHeight?: boolean;
 }
 const DEFAULT = { top: -10000, left: -10000 }
-const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>) => {
+const Action = forwardRef((prop: ActionProp, ref: React.ForwardedRef<ActionRef>) => {
     const wrapper = useWrapper();
     const [editor] = useLexicalComposerContext();
     const [pos, setPos] = useState(DEFAULT);
@@ -149,9 +149,9 @@ const Corner = forwardRef((prop: CornerProp, ref: React.ForwardedRef<CornerRef>)
         }
     }, [editor, place, prop, prop.nodeType]);
 
-    return wrapper ? createPortal(<div className={[styles.cornerContainer, prop.className].join(" ")}
+    return wrapper ? createPortal(<div className={[styles.actionContainer, prop.className].join(" ")}
         style={{ transform: `translate(${pos.left}px, ${pos.top}px)`, ...prop.style }} ref={containerRef}>
         {prop.children}</div>, wrapper) : null;
 })
 
-export default Corner;
+export default Action;

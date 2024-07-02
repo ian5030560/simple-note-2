@@ -7,7 +7,7 @@ import { Button, Select } from "antd";
 import { GiConfirmed } from "react-icons/gi";
 import { MdOutlineContentCopy } from "react-icons/md";
 import { CODE_LANGUAGE_FRIENDLY_NAME_MAP } from "@lexical/code";
-import Corner from "../UI/corner";
+import Action from "../UI/action";
 import styles from "./action.module.css";
 
 function getAllLanguages() {
@@ -61,7 +61,7 @@ const CodeActionPlugin: Plugin = () => {
         })
     }, [editor, key]);
 
-    return <Corner nodeType={CodeNode} placement={["top", "right"]} trigger="hover"
+    return <Action nodeType={CodeNode} placement={["top", "right"]} trigger="hover"
         onEnterNode={handleEnter} onLeaveNode={handleLeave} className={styles[show ? "show" : "notShow"]}>
         <Select onSelect={handleSelect} style={{ minWidth: 100 }}
             size="small" value={lang}
@@ -71,7 +71,7 @@ const CodeActionPlugin: Plugin = () => {
             }))} />
         <Button type="primary" ghost style={{ marginLeft: 5 }} size="small"
             onClick={handleCopy} icon={!copied ? <MdOutlineContentCopy /> : <GiConfirmed />} />
-    </Corner>
+    </Action>
 
 }
 

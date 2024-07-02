@@ -14,7 +14,7 @@ const ToolBarContainer = forwardRef(({ $backgroundColor, $shadowColor, className
 const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) => {
     const { token } = theme.useToken();
     const [collapse, setCollapse] = useState(false);
-    const ref = useRef<HTMLElement>(null);
+    const ref = useRef<HTMLButtonElement>(null);
     const [hide, setHide] = useState(false);
 
     useEffect(() => {

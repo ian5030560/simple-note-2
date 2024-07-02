@@ -33,7 +33,7 @@ export const AIPlaceholderPlugin: Plugin = () => {
 
     useEffect(() => {
         let id = setTimeout(async () => {
-            let rtext = await callAI({ text: `please predict next text from this content below: \n${content}` })
+            let rtext = await callAI({ text: `please predict next text from this content below: \n${content}` })[0]
                 .then(res => res.json())
                 .then(data => data["answer"]);
     

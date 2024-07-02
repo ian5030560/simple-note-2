@@ -1,6 +1,6 @@
 .handleButton {
     cursor: grab;
-    font-size: 2em;
+    /* font-size: 2em; */
 }
 
 .handleButton:active{

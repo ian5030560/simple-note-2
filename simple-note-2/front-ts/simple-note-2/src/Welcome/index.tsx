@@ -35,7 +35,7 @@ export const BulbButton: React.FC<BulbButtonProp> = (prop: BulbButtonProp) => {
     return <FloatButton icon={prop.lighten ? <AlertFilled /> : <AlertOutlined />} onClick={prop.onClick} />
 }
 
-const WelcomePage: React.FC = () => {
+const WelcomePage = () => {
     const [darken, setDarken] = useState<boolean>(false);
 
     return <ConfigProvider
