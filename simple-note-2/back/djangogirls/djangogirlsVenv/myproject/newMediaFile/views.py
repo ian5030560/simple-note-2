@@ -88,7 +88,7 @@ class NewMediaFileView(APIView):
                 return Response(dbSaved, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
-            serializer = NewMediaFileSerializer(data=data)
+            serializer = NewMediaFileSerializer(data=request.POST)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
