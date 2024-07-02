@@ -40,10 +40,17 @@ const ImageModal: React.FC = () => {
                 body: data, method: "POST", 
                 headers: {
                     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-                    "content-type": "multipart/form-data",
+                    // "content-type": "multipart/form-data",
                 },
             }
-        ).then(res => res.text());
+        ).then(res => {
+            console.log(res);
+            return res.text();
+        })
+        .catch((err) => {
+            console.log(err);
+            return "";
+        });
 
         src = src.substring(1, src.length - 1);
 
