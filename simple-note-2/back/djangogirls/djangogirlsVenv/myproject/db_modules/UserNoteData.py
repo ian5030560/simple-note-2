@@ -12,9 +12,9 @@ import os
 # load_dotenv()
 
 Base = declarative_base()
-# engine_url = os.environ.get("env")
+engine_url = os.environ.get("env")
 # engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
@@ -79,6 +79,8 @@ def update_content(usernames, note_title_id, content):
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)
+    finally:
+        session.close()
 
 
 # 給usernames,note_title_id insert content
@@ -112,6 +114,8 @@ def insert_content(usernames, note_title_id, content):
     except SQLAlchemyError as e:
         session.rollback()
         return str(e)
+    finally:
+        session.close()
 
 
 # check_content by usernames and note_title_id
@@ -136,6 +140,8 @@ def check_content(usernames, note_title_id):
     except SQLAlchemyError as e:
         session.rollback()
         return False
+    finally:
+        session.close()
 
 
 # check all user's notes
@@ -157,6 +163,8 @@ def check_user_all_notes(usernames_input):
     except SQLAlchemyError as e:
         session.rollback()
         return False
+    finally:
+        session.close()
 
 
 # insert user_id,note_name,note_title_id 到User_Note_Data裡
@@ -192,6 +200,8 @@ def insert_user_id_note_name(usernames, note_name, note_title_id):
     except SQLAlchemyError as e:
         session.rollback()
         return str(e)
+    finally:
+        session.close()
 
 
 # 給username和note_title_id來刪除整行
@@ -214,6 +224,8 @@ def delete_note_by_usernames_note_title_id(usernames, note_title_id):
     except SQLAlchemyError as e:
         session.rollback()
         return str(e)
+    finally:
+        session.close()
 
 
 # 給username和note_name來刪除整行
@@ -236,6 +248,8 @@ def delete_note_by_usernames_note_name(usernames, note_name):
     except SQLAlchemyError as e:
         session.rollback()
         return str(e)
+    finally:
+        session.close()
 
 
-# print(check_user_all_notes("user01"))
+print(check_user_all_notes("user01"))

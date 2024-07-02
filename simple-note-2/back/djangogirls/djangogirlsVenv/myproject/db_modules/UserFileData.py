@@ -12,7 +12,7 @@ import base64
 Base = declarative_base()
 # engine_url = os.environ.get("env")
 # engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
@@ -77,6 +77,7 @@ def check_file_name(usernames_input, note_name_input, file_name_input):
         return False
     finally:
         session.close()
+
 
 # 給username, note_name 插入file_name
 def insert_file_name(
@@ -156,4 +157,4 @@ def update_file_name(usernames_input, note_name_input, file_name_input):
 
 
 
-# print(check_file_name("user01", "note1", "file2"))
+print(check_file_name("user01", "note1", "file2"))
