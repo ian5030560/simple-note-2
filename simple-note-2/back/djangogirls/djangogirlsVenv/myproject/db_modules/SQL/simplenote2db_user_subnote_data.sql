@@ -26,7 +26,8 @@ CREATE TABLE `user_subnote_data` (
   `id` varchar(128) NOT NULL,
   `parent_id` varchar(128) DEFAULT NULL,
   `sibling_id` varchar(128) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_note_id` FOREIGN KEY (`id`) REFERENCES `user_note_data` (`note_title_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -48,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-02 14:13:14
+-- Dump completed on 2024-07-02 14:34:27
