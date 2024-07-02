@@ -49,14 +49,17 @@ class NewMediaFileView(APIView):
     def post(self, request, format=None):
         try:
             # data = json.loads(request.body)
+            data = request.POST
 
-            username = request.POST.get("username")  # 帳號名稱
-            filename = request.POST.get("filename")  # 文件名稱
-            content = request.POST.get("content")  # 文件內容
+            username = data.get("username")  # 帳號名稱
+            filename = data.get("filename")  # 文件名稱
+            content = request.FILES.get("content")  # 文件內容
             # mimetype = request.POST.get("mimetype")  # 媒體種類
-            notename = request.POST.get("notename")
+            notename = data.get("notename")
 
-            content = content.encode('utf-8')
+            print(username, filename, content, notename)
+            # content = content.encode('utf-8')
+            content = content.read()
 
             # db check if exist
             checkExistValue = UserFileData.check_file_name(username, notename, filename)
@@ -68,11 +71,11 @@ class NewMediaFileView(APIView):
             dbSaved = UserFileData.insert_file_name(username, notename, filename)
             
             # 创建一个 SaveFile 实例，并指定保存文件的文件夹路径
-            saver = SaveFile('simple-note-2/back/djangogirls/djangogirlsVenv/myproject/db_modules/fileTemp')
+            saver = SaveFile('db_modules/fileTemp')
 
             # 保存一个新文件
             folderSaved = saver.saveNewFile(filename, content)
-            
+            print(folderSaved)
             if dbSaved and folderSaved == True:
                 url = (
                     "localhost:8000/viewMediaFile/"
