@@ -48,13 +48,13 @@ class NewMediaFileView(APIView):
 
     def post(self, request, format=None):
         try:
-            data = json.loads(request.body)
+            # data = json.loads(request.body)
 
-            username = data.get("username")  # 帳號名稱
-            filename = data.get("filename")  # 文件名稱
-            content = data.get("content")  # 文件內容
-            # mimetype = data.get("mimetype")  # 媒體種類
-            notename = data.get("notename")
+            username = request.POST.get("username")  # 帳號名稱
+            filename = request.POST.get("filename")  # 文件名稱
+            content = request.POST.get("content")  # 文件內容
+            # mimetype = request.POST.get("mimetype")  # 媒體種類
+            notename = request.POST.get("notename")
 
             content = content.encode('utf-8')
 
