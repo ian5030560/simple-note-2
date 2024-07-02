@@ -23,7 +23,9 @@ DROP TABLE IF EXISTS `user_subnote_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_subnote_data` (
-  `id` int NOT NULL,
+  `id` varchar(128) NOT NULL,
+  `parent_id` varchar(128) DEFAULT NULL,
+  `sibling_id` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -46,4 +48,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-25 15:55:18
+-- Dump completed on 2024-07-02 14:13:14

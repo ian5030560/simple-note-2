@@ -26,7 +26,7 @@ class User_Note_Data(Base):
     content = Column(TEXT)
     updated_time = Column(TEXT)
     user_id = Column(Integer)
-    note_title_id = Column(Integer)
+    note_title_id = Column(String(128))
 
     def __init__(
         self,
