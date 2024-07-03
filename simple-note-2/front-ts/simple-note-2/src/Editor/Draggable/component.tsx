@@ -1,10 +1,11 @@
-import { Flex, Button, Dropdown, MenuProps } from "antd";
-import React from "react";
+import { Flex, Button, Dropdown, MenuProps, Popover, List, theme } from "antd";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
 import { useDndState } from "./store";
 import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import styles from "./component.module.css";
+import { createPortal } from "react-dom";
 
 
 export interface AddItem {
@@ -21,6 +22,11 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
     // const [keyword, setKeyword] = useState(/.*/);
     // const { token } = theme.useToken();
     const [editor] = useLexicalComposerContext();
+    const [open, setOpen] = useState(false);
+    // const [pos, setPos] = useState({ x: 0, y: 0 });
+    const ref = useRef<HTMLDivElement>(null);
+    const { token } = theme.useToken();
+    const cRef = useRef<HTMLElement>(null);
     // const filterData = useCallback((s: string) => keyword.test(s), [keyword]);
 
     // const handleChange = useCallback(() => {
@@ -29,39 +35,59 @@ const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
     //     setKeyword(() => new RegExp(`${text}`));
     // }, []);
 
-    const items: MenuProps["items"] = searchList.map(item => {
-        return {
-            key: item.value,
-            label: item.label,
-            icon: item.icon,
-            onClick: () => item.onSelect(editor, item),
+    useEffect(() => {
+        function handleLeave(e: MouseEvent) {
+            setOpen(prev => (ref.current?.contains(e.target as Node | null) || cRef.current?.contains(e.target as Node | null) ? prev : false))
         }
-    });
 
-    return <Dropdown trigger={["click"]} arrow={false} menu={{ items }} placement="bottom"
-        dropdownRender={(node) => React.cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
-        {children}
-    </Dropdown>
+        document.addEventListener("click", handleLeave);
+        return () => document.removeEventListener("click", handleLeave);
+    }, []);
+
+    const handleSelect = useCallback((item: AddItem) => {
+        item.onSelect(editor, item);
+        setOpen(false);
+    }, [editor]);
+
+    const content = useMemo(() => <div className={styles.dropDown} ref={ref}
+        style={{ maxHeight: !open ? 0 : 250, backgroundColor: token.colorBgBase }}>
+        <List renderItem={(item) => <List.Item key={item.value} style={{ width: "100%", padding: 0 }}>
+            <Button icon={item.icon} block type="text" style={{ justifyContent: "flex-start" }}
+                onClick={() => handleSelect(item)}>{item.label}</Button>
+        </List.Item>} dataSource={searchList} />
+    </div>, [handleSelect, open, searchList, token.colorBgBase]);
+
+    const handleClick = useCallback((e: React.MouseEvent) => {
+        if (!ref.current) return;
+        let element = ref.current;
+        let target = e.target as HTMLElement;
+        let { height, x, y } = target.getBoundingClientRect();
+        let { width } = element.getBoundingClientRect();
+        element.style.transform = `translate(${x - width / 2}px, ${y + height + 8}px)`
+        setOpen(prev => !prev);
+    }, []);
+
+    return <>
+        {React.cloneElement(children as React.JSX.Element, { onClick: handleClick, ref: cRef })}
+        {createPortal(content, document.body)}
+    </>
 }
 
 export interface DraggableElementProp {
-    addList: AddItem[],
+    addList: AddItem[];
 }
-const DraggableElement = React.forwardRef((
-    { addList }: DraggableElementProp, 
-    ref: React.Ref<HTMLElement>
-) => {
+const DraggableElement = React.forwardRef((props: DraggableElementProp, ref: React.Ref<HTMLElement>) => {
 
     const { element } = useDndState();
 
     let x = element ? element.x : -10000;
     let y = element ? element.y : -10000;
 
-    return <Flex ref={ref} className={styles.draggable} draggable={true}
-        style={{ transform: `translate(${x}px, ${y}px)` }}>
-        <AddMenu searchList={addList}>
+    return <Flex className={styles.draggable} draggable={true}
+        ref={ref} style={{ transform: `translate(${x}px, ${y}px)` }}>
+        <AddMenu searchList={props.addList}>
             <Button contentEditable={false} type="text"
-                size="small" icon={<PlusOutlined />}/>
+                size="small" icon={<PlusOutlined />} />
         </AddMenu>
         <Button className={styles.handleButton}
             contentEditable={false} type="text"
@@ -84,6 +110,6 @@ export const DropLine = () => {
 
     let x = line ? line.x : -10000;
     let y = line ? line.y : -10000;
-    return <div className={styles.dropLine} 
-    style={{ width: line?.width, height: line?.height, transform: `translate(${x}px, ${y}px)` }} />;
+    return <div className={styles.dropLine}
+        style={{ width: line?.width, height: line?.height, transform: `translate(${x}px, ${y}px)` }} />;
 }

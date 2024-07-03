@@ -9,7 +9,7 @@ type APIMap = {
   "http://localhost:8000/getInfo/": { username: string },
   "http://localhost:8000/updateInfo/": { username: string, image: string, data: any },
   "http://localhost:8000/getNote/": { username: string, noteId: string },
-  "http://localhost:8000/newNote/": { username: string, noteId: string, notename: string, parentId: string | null },
+  "http://localhost:8000/newNote/": { username: string, noteId: string, notename: string, parentId: string | null,  },
   "http://localhost:8000/deleteNote/": { username: string, noteId: string },
   "http://localhost:8000/saveNote/": { username: string, noteId: string, content: any },
   "http://localhost:8000/newTheme/": {

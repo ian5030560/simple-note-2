@@ -44,6 +44,7 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
             $backgroundColor={token.colorBgBase}
             $shadowColor={token.colorText}
             justify="space-evenly"
+            gap={3}
             className={collapse ? styles.collapsed : styles.notCollapsed}
         >
             {toolbars[0]}

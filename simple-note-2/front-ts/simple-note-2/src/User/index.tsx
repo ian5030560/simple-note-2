@@ -45,7 +45,7 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
 
     return <Layout style={{ minHeight: "100%", ...rootStyle }}>
         <Sider collapsible trigger={null} collapsedWidth={0} width={250}
-            collapsed={collapse} style={lg ? undefined : drawer}>
+            collapsed={collapse}>
             <div style={{height: "100%", position: "relative"}}>
                 <SideBar className={styles.sideBar} />
                 <Button type="primary" icon={!collapse ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { Plugin } from "../Extension/index";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot, DRAGOVER_COMMAND, DROP_COMMAND } from "lexical";
+import { $getRoot } from "lexical";
 import { createPortal } from "react-dom";
 import DraggableElement, { AddItem, DropLine, useWrapper } from "./component";
 import { useDndAction } from "./store";
@@ -13,7 +13,7 @@ export interface DraggableProp {
     addList: AddItem[],
 }
 const Draggable: React.FC<DraggableProp> = ({ addList }) => {
-    const {setElement, reset, setId} = useDndAction();
+    const { setElement, reset, setId } = useDndAction();
     const [editor] = useLexicalComposerContext();
     const wrapper = useWrapper();
     const ref = useRef<HTMLElement>(null);
@@ -23,11 +23,11 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
         let { clientX, clientY } = e;
         let target = document.elementFromPoint(clientX, clientY);
         let root = editor.getRootElement()!;
-      
+
         if (root?.isEqualNode(target)) return;
 
         let elem = getBlockFromPoint(editor, clientX, clientY);
-        
+
         if (!elem || !elem.hasAttribute(DRAGGABLE_TAG) || !wrapper || !ref.current) return;
 
         let { x, y, height: eh } = elem.getBoundingClientRect();
@@ -52,17 +52,14 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
         element?.addEventListener("dragstart", handleDragStart);
         element?.addEventListener("dragend", handleDragEnd);
 
-        let removeListener = mergeRegister(
-            editor.registerUpdateListener(() => {
-                const keys = editor.getEditorState().read(() => $getRoot().getChildrenKeys());
-                for (let key of keys) {
-                    let element = editor.getElementByKey(key);
-                    element?.setAttribute(DRAGGABLE_TAG, key);
-                }
-            }),
-            // editor.registerCommand(DRAGOVER_COMMAND, handleDragOver, 1),
-            // editor.registerCommand(DROP_COMMAND, handleDrop, 4),
-        )
+        let removeListener = editor.registerUpdateListener(() => {
+            const keys = editor.getEditorState().read(() => $getRoot().getChildrenKeys());
+            for (let key of keys) {
+                let element = editor.getElementByKey(key);
+                element?.setAttribute(DRAGGABLE_TAG, key);
+            }
+        })
+
 
         return () => {
             wrapper?.removeEventListener("mousemove", handleMouseMove);
