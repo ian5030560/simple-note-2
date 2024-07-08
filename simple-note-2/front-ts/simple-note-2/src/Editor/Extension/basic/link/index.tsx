@@ -65,7 +65,6 @@ export const FloatingLinkPlugin: Plugin = () => {
 
                 let url = "";
                 let position = DEFAULT;
-                // console.log(parent);
                 if (parent) {
                     url = parent.getURL();
                     let element = editor.getElementByKey(parent.getKey());

@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Plugin } from "../../index";
+import { Plugin } from "../index";
 import { useCallback, useEffect } from "react";
 import { $getNodeByKey, $getSelection, $isRangeSelection, COMMAND_PRIORITY_CRITICAL, INDENT_CONTENT_COMMAND, LexicalNode } from "lexical";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";

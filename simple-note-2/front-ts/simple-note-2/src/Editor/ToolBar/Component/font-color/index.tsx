@@ -40,7 +40,7 @@ const FontColor: React.FC = () => {
                 })
             }
         }}
-        icon={<FontColorsOutlined />}
+        icon={<FontColorsOutlined size={24}/>}
         style={{color: current ? current : undefined}}
     />
 }

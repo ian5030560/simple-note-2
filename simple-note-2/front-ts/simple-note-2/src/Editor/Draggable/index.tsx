@@ -6,7 +6,6 @@ import { createPortal } from "react-dom";
 import DraggableElement, { AddItem, DropLine, useWrapper } from "./component";
 import { useDndAction } from "./store";
 import { getBlockFromPoint } from "./util";
-import { mergeRegister } from "@lexical/utils";
 import useDnd, { DRAGGABLE_TAG } from "./dnd";
 
 export interface DraggableProp {
@@ -59,7 +58,6 @@ const Draggable: React.FC<DraggableProp> = ({ addList }) => {
                 element?.setAttribute(DRAGGABLE_TAG, key);
             }
         })
-
 
         return () => {
             wrapper?.removeEventListener("mousemove", handleMouseMove);

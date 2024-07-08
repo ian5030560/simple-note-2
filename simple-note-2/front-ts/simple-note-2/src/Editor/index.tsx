@@ -6,6 +6,7 @@ import Loader from "./loader";
 import ADDLIST from "./addList";
 import { LIST } from "./toolbar";
 import { Note } from "../util/provider";
+import RealTimePlugin from "./RealTime";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { styleSheet } = Loader;
@@ -27,6 +28,7 @@ const Editor: React.FC = () => {
         }}>
         <ToolBarPlugin toolbars={LIST}/>
         <DraggablePlugin addList={ADDLIST} />
+        {false && <RealTimePlugin/>}
         {Loader.plugins.map((plugin, index) => <React.Fragment key={index}>{plugin}</React.Fragment>)}
     </LexicalComposer >
 }

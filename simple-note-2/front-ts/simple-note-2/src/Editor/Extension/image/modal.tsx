@@ -35,26 +35,26 @@ const ImageModal: React.FC = () => {
         data.append("notename", "note1");
         data.append("content", file);
 
-        let src = await fetch("http://localhost:8000/newMediaFile/",
-            {
-                body: data, method: "POST", 
-                headers: {
-                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-                    // "content-type": "multipart/form-data",
-                },
-            }
-        ).then(res => {
-            console.log(res);
-            return res.text();
-        })
-        .catch((err) => {
-            console.log(err);
-            return "";
-        });
+        // let src = await fetch("http://localhost:8000/newMediaFile/",
+        //     {
+        //         body: data, method: "POST", 
+        //         headers: {
+        //             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        //             // "content-type": "multipart/form-data",
+        //         },
+        //     }
+        // ).then(res => {
+        //     console.log(res);
+        //     return res.text();
+        // })
+        // .catch((err) => {
+        //     console.log(err);
+        //     return "";
+        // });
 
-        src = src.substring(1, src.length - 1);
-
-        editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: "http://" + src });
+        // src = "http://" + src.substring(1, src.length - 1);
+        let src = URL.createObjectURL(file);
+        editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         fileRef.current!.value = "";
         ref.current?.close();
     }, [editor]);

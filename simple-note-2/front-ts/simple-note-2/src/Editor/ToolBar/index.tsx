@@ -1,4 +1,4 @@
-import { Button, Flex, FlexProps, theme, Typography } from "antd";
+import { Button, Flex, FlexProps, theme } from "antd";
 import React, { forwardRef, useEffect, useRef, useState } from "react"
 import Divider from "./Component/UI/divider";
 import { Plugin } from "../Extension/index";

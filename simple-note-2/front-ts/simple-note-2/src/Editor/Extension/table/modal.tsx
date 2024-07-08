@@ -1,4 +1,4 @@
-import { Button, Flex, InputNumber } from "antd";
+import { Button, Flex, InputNumber, InputRef } from "antd";
 import { useCallback, useMemo, useRef } from "react";
 import styles from "./modal.module.css";
 import { LexicalCommand, createCommand } from "lexical";
@@ -17,11 +17,11 @@ const TableModal = () => {
     const handleClick = useCallback(() => {
         let row = rowRef.current!.value;
         let col = colRef.current!.value;
-
+      
         if (!isNaN(+row) && !isNaN(+col)) {
             editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: col, rows: row, includeHeaders: false });
-            rowRef.current!.value = "";
-            colRef.current!.value = "";
+            colRef.current?.setAttribute("value", "")
+            rowRef.current?.setAttribute("value", "")
             ref.current?.close();
         }
     }, [editor]);

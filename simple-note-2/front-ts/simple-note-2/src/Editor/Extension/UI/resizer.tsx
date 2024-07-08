@@ -18,6 +18,16 @@ interface HandlePinProp extends React.DetailedHTMLProps<React.HTMLAttributes<HTM
 }
 const HandlePin = ({ className, $direction, ...prop }: HandlePinProp) => <div className={`${className} ${$direction}`} {...prop} />
 
+type ResizeData = {
+    element: {
+        w: number;
+        h: number;
+    };
+    mouse: {
+        x: number;
+        y: number;
+    }
+}
 interface ResizerProp {
     children: React.ReactNode;
     showHandle?: boolean
@@ -27,18 +37,18 @@ interface ResizerProp {
 }
 const Resizer: React.FC<ResizerProp> = (prop) => {
 
-    const ref = useRef<HTMLDivElement>(null);
     const directionRef = useRef<Direction>();
-    const startRef = useRef<{ x: number, y: number }>({ x: 0, y: 0 });
+    const resizeData = useRef<ResizeData>({ element: { w: 0, h: 0 }, mouse: { x: 0, y: 0 } });
+    const ref = useRef<HTMLDivElement>(null);
 
     const handlePointerMove = useCallback((e: PointerEvent) => {
         e.preventDefault();
         const { clientX, clientY } = e;
 
-        const { x: startX, y: startY } = startRef.current;
+        const { element, mouse } = resizeData.current;
 
-        let offsetX = clientX - startX;
-        let offsetY = clientY - startY;
+        let offsetX = clientX - mouse.x;
+        let offsetY = clientY - mouse.y;
 
         let isHorizontal = directionRef.current === Direction.LEFT || directionRef.current === Direction.RIGHT;
         let isVertical = directionRef.current === Direction.TOP || directionRef.current === Direction.BOTTOM;
@@ -52,7 +62,13 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
         offsetX = isVertical ? 0 : isInvertX ? -offsetX : offsetX;
         offsetY = isHorizontal ? 0 : isInvertY ? -offsetY : offsetY;
 
-        prop.onResize?.(offsetX, offsetY);
+        // let two = [Direction.TOPLEFT, Direction.TOPRIGHT, Direction.BOTTOMLEFT, Direction.BOTTOMRIGHT];
+        // let isTwo = directionRef.current ? two.includes(directionRef.current) : false;
+        // let absX = Math.abs(offsetX);
+        // let absY = Math.abs(offsetY);
+        // isTwo && absX < absY ? offsetX = offsetY : offsetY = offsetX;
+
+        prop.onResize?.(element.w + offsetX, element.h + offsetY);
 
     }, [prop]);
 
@@ -65,9 +81,15 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
 
     const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>, direction: Direction) => {
         e.preventDefault();
+        if (!ref.current) return;
+
         prop.onResizeStart?.();
         directionRef.current = direction;
-        startRef.current = { x: e.clientX, y: e.clientY };
+        let { width, height } = ref.current.getBoundingClientRect();
+        resizeData.current = {
+            element: { w: width, h: height },
+            mouse: { x: e.clientX, y: e.clientY }
+        }
         document.addEventListener("pointermove", handlePointerMove);
         document.addEventListener("pointerup", handlePointerUp);
         document.body.style.userSelect = "none";

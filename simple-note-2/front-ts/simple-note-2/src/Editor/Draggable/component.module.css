@@ -6,22 +6,17 @@
     cursor: grabbing;
 }
 
-/* .dropDown{
-    max-height: 250px;
-    overflow: auto;
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    border-radius: 8px;
-} */
-
 .dropDown{
     position: fixed;
     top: 0;
     left: 0;
-    transition: max-height 250ms;
+    transition: max-height 250ms ease;
     overflow-y: auto;
     z-index: 1000;
     border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
+
 .wrapper{
     position: relative;
 }

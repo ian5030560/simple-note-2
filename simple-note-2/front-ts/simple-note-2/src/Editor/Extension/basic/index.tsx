@@ -10,12 +10,12 @@ import { MarkNode } from "@lexical/mark";
 import LinkPlugin, { FloatingLinkPlugin } from "./link";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
-import ListMaxLevelPlugin from "./list/listMaxLevel";
+import ListMaxLevelPlugin from "./listMaxLevel";
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import styles from "./index.module.css";
 import SavePlugin from "./save";
-import EditorInstancePlugin from "./instance";
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
+import PlaceholderPlugin from "./placeholder";
 
 const BasicExtension: Extension = {
     plugins: [
@@ -29,8 +29,8 @@ const BasicExtension: Extension = {
         <ListPlugin />,
         <FloatingLinkPlugin />,
         <SavePlugin />,
-        <EditorInstancePlugin />,
         <CheckListPlugin />,
+        // <PlaceholderPlugin />
     ],
 
     nodes: [

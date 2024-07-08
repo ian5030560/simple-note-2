@@ -1,5 +1,4 @@
 import { AddItem } from "../Draggable/component";
-import { $findMatchingParent } from "@lexical/utils";
 import { LexicalEditor } from "lexical";
 import { $createHeadingNode, HeadingTagType } from "@lexical/rich-text";
 import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6 } from "react-icons/bs";

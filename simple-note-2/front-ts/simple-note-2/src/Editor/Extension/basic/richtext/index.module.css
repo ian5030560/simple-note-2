@@ -3,8 +3,14 @@
     cursor: text;
 }
 
-.editor-scroller{
+.editorScroller{
     overflow: hidden auto;
     padding: 0 10%;
     padding-top: 5%;
+}
+
+.editorPlaceholder{
+    position: absolute;
+    top: 0;
+    left: 0;
 }

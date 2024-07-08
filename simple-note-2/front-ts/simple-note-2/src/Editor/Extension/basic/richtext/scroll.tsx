@@ -24,7 +24,7 @@ export default function Scroller({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    return <div className={styles["editor-scroller"]} style={{ maxHeight: height }}>
+    return <div className={styles.editorScroller} style={{ height: height }}>
         {children}
     </div>
 }

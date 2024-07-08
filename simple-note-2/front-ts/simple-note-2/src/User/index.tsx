@@ -1,5 +1,5 @@
-import React, { CSSProperties, useMemo, useState } from "react";
-import { ConfigProvider, theme, Button, Grid, Drawer, Layout } from "antd";
+import React, { useMemo, useState } from "react";
+import { ConfigProvider, theme, Button, Grid, Layout } from "antd";
 import SideBar from "./SideBar";
 import Editor from "../Editor";
 import { BulbButton } from "../Welcome";
@@ -27,11 +27,11 @@ const User: React.FC = () => {
 
 }
 
-const drawer: CSSProperties = {
-    position: "fixed",
-    inset: 0,
-    zIndex: 1000
-}
+// const drawer: CSSProperties = {
+//     position: "fixed",
+//     inset: 0,
+//     zIndex: 1000
+// }
 
 const { useBreakpoint } = Grid;
 const { Sider, Content } = Layout;
@@ -41,11 +41,10 @@ interface IndexProp {
 export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
 
     const [collapse, setCollapse] = useState(false);
-    const { lg } = useBreakpoint();
+    // const { lg } = useBreakpoint();
 
     return <Layout style={{ minHeight: "100%", ...rootStyle }}>
-        <Sider collapsible trigger={null} collapsedWidth={0} width={250}
-            collapsed={collapse}>
+        <Sider collapsible trigger={null} collapsedWidth={0} width={250} collapsed={collapse}>
             <div style={{height: "100%", position: "relative"}}>
                 <SideBar className={styles.sideBar} />
                 <Button type="primary" icon={!collapse ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}

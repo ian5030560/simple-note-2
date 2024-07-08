@@ -1,42 +1,26 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { createCommand, LexicalCommand } from "lexical";
-import Modal, { ModalRef } from "./../../UI/modal";
+import React, { useState } from "react";
 import { Excalidraw } from "@excalidraw/excalidraw";
-import { AppState, BinaryFiles, ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
-import { INSERT_CANVAS } from "../plugin";
+import { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
+import { Button, Flex, Modal } from "antd";
+import { FaSave, FaRegTrashAlt } from "react-icons/fa";
 
-export const OPEN_CANVAS: LexicalCommand<ExcalidrawInitialDataState | null> = createCommand();
-const CanvasModal = () => {
-    const ref = useRef<ModalRef>(null);
-    const [api, apiCallback] = useState<ExcalidrawImperativeAPI>();
-    const [state, setState] = useState<ExcalidrawInitialDataState | null>();
-    const [editor] = useLexicalComposerContext();
+interface CanvasModalProps {
+    initData: ExcalidrawInitialDataState;
+    open: boolean;
+    onSave: (data: ExcalidrawInitialDataState) => void;
+    onDiscard: () => void;
+}
+const CanvasModal = (prop: CanvasModalProps) => {
+    const [api, callback] = useState<ExcalidrawImperativeAPI>();
 
-    useEffect(() => {
-        editor.registerCommand(OPEN_CANVAS, payload => {
-            setState(payload);
-            return false;
-        }, 4);
-    })
-
-    const handleChange = useCallback((elements: ExcalidrawInitialDataState["elements"],
-        appState: AppState, files: BinaryFiles) => {
-        setState(prev => ({
-            appState: appState,
-            elements: elements,
-            files: files,
-            ...prev,
-        }))
-    }, []);
-
-    const handleOk = useCallback(() => {
-        editor.dispatchCommand(INSERT_CANVAS, state as ExcalidrawInitialDataState | undefined);
-    }, [editor, state]);
-
-    return <Modal command={OPEN_CANVAS} ref={ref} title="繪畫" styles={{ body: { height: 400 } }}
-        width={800} okText="儲存" cancelText="取消" onOk={handleOk}>
-        <Excalidraw excalidrawAPI={apiCallback} initialData={state} onChange={handleChange} />
+    return <Modal open={prop.open} title={null} width={800} centered footer={null} closeIcon={null}
+        styles={{ body: { height: 400 }, content: {height: 500} }}>
+        <Flex justify="end">
+            <Button type="text" icon={<FaRegTrashAlt />} size="large" onClick={prop.onDiscard} />
+            <Button type="text" icon={<FaSave />} size="large"
+                onClick={() => prop.onSave({ appState: api?.getAppState(), files: api?.getFiles(), elements: api?.getSceneElements() })} />
+        </Flex>
+        <Excalidraw excalidrawAPI={callback} initialData={prop.initData} />
     </Modal>
 }
 

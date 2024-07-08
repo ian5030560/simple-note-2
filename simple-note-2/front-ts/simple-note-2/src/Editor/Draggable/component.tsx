@@ -20,10 +20,8 @@ interface AddMenuProp {
 }
 const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
     // const [keyword, setKeyword] = useState(/.*/);
-    // const { token } = theme.useToken();
     const [editor] = useLexicalComposerContext();
     const [open, setOpen] = useState(false);
-    // const [pos, setPos] = useState({ x: 0, y: 0 });
     const ref = useRef<HTMLDivElement>(null);
     const { token } = theme.useToken();
     const cRef = useRef<HTMLElement>(null);
@@ -82,7 +80,7 @@ const DraggableElement = React.forwardRef((props: DraggableElementProp, ref: Rea
 
     let x = element ? element.x : -10000;
     let y = element ? element.y : -10000;
-
+   
     return <Flex className={styles.draggable} draggable={true}
         ref={ref} style={{ transform: `translate(${x}px, ${y}px)` }}>
         <AddMenu searchList={props.addList}>
@@ -102,7 +100,14 @@ export type DragWrapperProp = Omit<React.DetailedHTMLProps<React.HTMLAttributes<
 export const DragWrapper: React.FC<DragWrapperProp> = (prop) => <div id="dnd-wrapper" className={styles.wrapper} {...prop} />;
 
 export const useWrapper = () => {
-    return document.getElementById("dnd-wrapper");
+    const [wrapper, setWrapper] = useState<HTMLElement | null>(null);
+    useEffect(() => {
+        setWrapper(document.getElementById("dnd-wrapper"));
+
+        return () => setWrapper(null);
+    }, [])
+
+    return wrapper;
 }
 
 export const DropLine = () => {
