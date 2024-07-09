@@ -54,12 +54,19 @@ class RegisterAndLoginView(APIView):
             password = data.get("password")
             username = data.get("username")
             id = data.get("id")
-
+            
             serializer = RegisterAndLoginSerializer(data=data)
+            
+            # hash password
+            import hashlib
+            addr = hashlib.sha256()
+            b_password = bytes(password, encoding='utf-8')
+            addr.update(b_password)
+            hash_hexdigest = addr.hexdigest()
 
             if id == "sign-in":
                 if UserPersonalInfo.check_username_password(
-                    username, password
+                    username, hash_hexdigest
                 ):  # 登入成功
                     if UserPersonalInfo.update_user_login_status_by_usernames(
                         username, 1
@@ -88,7 +95,7 @@ class RegisterAndLoginView(APIView):
                         print(
                             "register:",
                             UserPersonalInfo.insert_username_password_email(
-                                username, password, email
+                                username, hash_hexdigest, email
                             ),
                         )
                         return Response(status=status.HTTP_201_CREATED)
