@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import styles from "./resizer.module.css";
 
 enum Direction {
@@ -114,3 +114,9 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
 };
 
 export default Resizer;
+
+// const useResizer = () => {
+//     const context = useMemo(() => {
+
+//     })
+// }
