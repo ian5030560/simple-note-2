@@ -4,6 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker
 from .UserPersonalInfo import User_Personal_Info
+from .UserSubNoteData import User_SubNote_Data
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 import os
@@ -16,7 +17,7 @@ engine_url = os.environ.get("env")
 # engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
 # engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
-engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
+# engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
 
 
@@ -213,18 +214,24 @@ def delete_note_by_usernames_note_title_id(usernames, note_title_id):
         .first()
     )
     try:
-        stmt = delete(User_Note_Data).where(
+        # Delete subNote that has same parent_id
+        stmt1 = delete(User_SubNote_Data).where(User_SubNote_Data.parent_id == note_title_id)
+        session.execute(stmt1)
+        session.commit()
+        
+        stmt2 = delete(User_Note_Data).where(
             and_(
                 User_Note_Data.user_id == user_id_query[0],
                 User_Note_Data.note_title_id == note_title_id,
             )
         )
-        session.execute(stmt)
+        session.execute(stmt2)
         session.commit()
         return True
     except SQLAlchemyError as e:
         session.rollback()
-        return str(e)
+        print(e)
+        return False
     finally:
         session.close()
 
@@ -253,4 +260,4 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         session.close()
 
 
-print(check_user_all_notes("user01"))
+# print(delete_note_by_usernames_note_title_id("user01",1))

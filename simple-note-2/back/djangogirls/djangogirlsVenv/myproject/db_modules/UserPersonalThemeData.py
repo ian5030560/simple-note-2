@@ -4,6 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
 from .UserPersonalInfo import User_Personal_Info
+from .UserSubNoteData import User_SubNote_Data
 from sqlalchemy.exc import SQLAlchemyError
 import os
 
