@@ -4,7 +4,6 @@ from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker
 from .UserPersonalInfo import User_Personal_Info
-from .UserSubNoteData import User_SubNote_Data
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 import os
@@ -214,10 +213,10 @@ def delete_note_by_usernames_note_title_id(usernames, note_title_id):
         .first()
     )
     try:
-        # Delete subNote that has same parent_id
-        stmt1 = delete(User_SubNote_Data).where(User_SubNote_Data.parent_id == note_title_id)
-        session.execute(stmt1)
-        session.commit()
+        # # Delete subNote that has same parent_id
+        # stmt1 = delete(User_SubNote_Data).where(User_SubNote_Data.parent_id == note_title_id)
+        # session.execute(stmt1)
+        # session.commit()
         
         stmt2 = delete(User_Note_Data).where(
             and_(
