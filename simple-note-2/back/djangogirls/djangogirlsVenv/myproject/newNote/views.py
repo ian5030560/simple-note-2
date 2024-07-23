@@ -49,15 +49,15 @@ class NewNoteView(APIView):
             parentId = data.get("parentId")  # 父筆記名稱
             silblingId = data.get("silbling_id")  # 兄弟筆記名稱
             
-            # if parentId:
-            #     pass
-            # else:
-            #     parentId = None
+            if parentId:
+                pass
+            else:
+                parentId = None
                 
-            # if silblingId:
-            #     pass
-            # else:
-            #     silblingId = None
+            if silblingId:
+                pass
+            else:
+                silblingId = None
                 
             returnStatus = UserNoteData.insert_user_id_note_name(
                 username, notename, noteId
