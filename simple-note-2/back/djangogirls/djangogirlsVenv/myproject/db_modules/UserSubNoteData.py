@@ -4,7 +4,7 @@ from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker
 
-from UserNoteData import User_Note_Data
+from .UserNoteData import User_Note_Data
 
 # from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
