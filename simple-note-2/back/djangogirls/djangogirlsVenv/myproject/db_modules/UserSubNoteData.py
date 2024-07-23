@@ -8,8 +8,9 @@ from .UserNoteData import User_Note_Data
 
 # from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
-from .Common import Base, engine
+from .Common import engine
 
+Base = declarative_base()
 
 class User_SubNote_Data(Base):
     __tablename__ = "User_SubNote_Data"
@@ -142,7 +143,7 @@ def check_parent_id(id_input):
         if existing_data:
             return existing_data[0]
         else:
-            return False
+            return None
 
     except SQLAlchemyError as e:
         session.rollback()
@@ -162,7 +163,7 @@ def check_id_by_sibling_id(sibling_id_input):
         if existing_data:
             return existing_data[0]
         else:
-            return False
+            return None
 
     except SQLAlchemyError as e:
         session.rollback()

@@ -6,17 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from .UserNoteData import User_Note_Data
 from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
-import os
-import base64
+from .Common import engine
 
 Base = declarative_base()
-# engine_url = os.environ.get("env")
-# engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
-engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
-# engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
-engine = create_engine(engine_url, echo=True)
-
 
 class User_File_Data(Base):
     __tablename__ = "User_File_Data"
@@ -158,4 +150,4 @@ def update_file_name(usernames_input, note_name_input, file_name_input):
 
 
 
-print(check_file_name("user01", "note1", "file2"))
+# print(check_file_name("user01", "note1", "file2"))

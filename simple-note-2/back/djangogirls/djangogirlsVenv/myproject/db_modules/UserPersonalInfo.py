@@ -5,8 +5,9 @@ from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
 from sqlalchemy.orm import sessionmaker
 from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
-from .Common import Base, engine
+from .Common import engine
 
+Base = declarative_base()
 
 class User_Personal_Info(Base):
     __tablename__ = "User_Personal_Info"

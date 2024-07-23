@@ -6,43 +6,47 @@ import { Button, Modal } from "antd";
 import useFiles from "../User/SideBar/FileTree/hook";
 import { useInfoAction } from "../User/SideBar/info";
 
-type NoteTreeData = { nodeId: string, noteName: string, parentId: string, siblingId: string };
+type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, silblingId: string | null };
+
 function sortNodes(data: NoteTreeData[]) {
+
     // 分組節點根據 parentId
-    const groupedNodes = data.reduce((acc, node) => {
-        const parentId = node.parentId || 'root';
-        if (!acc[parentId]) {
-            acc[parentId] = [];
+    let groups = {"root": []} as { [key: string]: NoteTreeData[] }
+    for(let node of data){
+        const parent = node.parentId;
+        if(!parent){
+            groups["root"].push(node);
+            continue;
         }
-        acc[parentId].push(node);
-        return acc;
-    }, {} as { [key: string]: NoteTreeData[] });
+        if(!groups[parent]) groups[parent] = []
+        groups[parent].push(node);
+    }
 
-    // 排序分組內的節點根據 siblingId
-    Object.keys(groupedNodes).forEach(parentId => {
-        const nodes = groupedNodes[parentId];
-        const sortedNodes = [];
-        const nodeMap: { [key: string]: NoteTreeData } = {};
+    // // 排序分組內的節點根據 siblingId
+    for(let key in groups){
+        let nodes = groups[key];
+        const sorted: NoteTreeData[] = [];
 
-        nodes.forEach(node => {
-            nodeMap[node.nodeId] = node;
-        });
-
-        let currentNode = nodes.find(node => !node.siblingId);
-        while (currentNode) {
-            sortedNodes.push(currentNode);
-            currentNode = nodes.find(node => node.siblingId === currentNode?.nodeId);
+        let target: string | null = null;
+        let i = 0;
+        while(i < nodes.length){
+            let node = nodes[i];
+            if(node.silblingId === target){
+                sorted.push(node);
+                target = node.noteId;
+                i = -1;
+            }
+            i ++;
         }
+        groups[key] = sorted;
+    }
 
-        groupedNodes[parentId] = sortedNodes;
-    });
-
-    // 合併排序後的結果
+    // // 合併排序後的結果
     let sortedData: NoteTreeData[] = [];
-    Object.keys(groupedNodes).forEach(parentId => {
-        sortedData = sortedData.concat(groupedNodes[parentId]);
-    });
-
+    for(let key in groups){
+        sortedData = sortedData.concat(groups[key]);
+    }
+  
     return sortedData;
 }
 
@@ -68,14 +72,12 @@ export function SettingProvider() {
 
         let tree = loadNoteTree({ username })
         tree[0].then((res) => res.json())
-            .then((raw: string) => {
-                let res = (JSON.parse(raw) as [string, string, string, string][])
-                    .map((item) => ({nodeId: item[0], noteName: item[1], parentId: item[2], siblingId: item[3]} as NoteTreeData))
-                let nodes = sortNodes(res)
-                console.log(nodes)
+            .then((res: string) => {
+                let nodes = sortNodes(JSON.parse(res))
                 for (let node of nodes) {
-                    add(node.nodeId, node.noteName, [], node.parentId, node.siblingId)
+                    add(node.noteId, node.noteName, [], node.parentId, node.silblingId)
                 }
+                setId(() => nodes[0].noteId);
             })
 
         return () => {

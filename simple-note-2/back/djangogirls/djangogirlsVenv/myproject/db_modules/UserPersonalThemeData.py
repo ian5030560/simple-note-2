@@ -6,8 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from .UserPersonalInfo import User_Personal_Info
 from .UserSubNoteData import User_SubNote_Data
 from sqlalchemy.exc import SQLAlchemyError
-from .Common import Base, engine
+from .Common import engine
 
+Base = declarative_base()
 
 class User_Personal_Theme_Data(Base):
     __tablename__ = "User_Personal_Theme_Data"
@@ -128,17 +129,19 @@ def insert_theme_name_by_username(usernames_input, theme_name_input):
             .first()
         )
         if existing_data:
+            print(1)
             return False
         stmt = insert(User_Personal_Theme_Data).values(
             user_id=user_id_query[0], theme_name=theme_name_input
         )
+        print(2)
         session.execute(stmt)
         session.commit()
         return True
 
     except SQLAlchemyError as e:
         session.rollback()
-        print(e)
+        print(3)
         return False
     finally:
         session.close()

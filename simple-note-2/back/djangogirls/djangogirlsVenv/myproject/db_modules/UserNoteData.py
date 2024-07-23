@@ -6,8 +6,9 @@ from sqlalchemy.orm import sessionmaker
 from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
-from .Common import Base, engine
+from .Common import engine
 
+Base = declarative_base()
 
 class User_Note_Data(Base):
     __tablename__ = "User_Note_Data"

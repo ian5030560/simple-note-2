@@ -47,15 +47,16 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                         username: values["username"], 
                         noteId: uuid(),
                         notename: "我的筆記",
-                        parentId: null
+                        parentId: null,
+                        siblingId: null,
                     })[0].then(res => res.status === 200).catch(() => false);
                     
-                    let res2 = await addTheme({
-                        username: values["username"],
-                        theme: {name: "預設", data: defaultSeed}
-                    })[0].then(res => res.status === 200).catch(() => false);
+                    // let res2 = await addTheme({
+                    //     username: values["username"],
+                    //     theme: {name: "預設", data: defaultSeed}
+                    // })[0].then(res => res.status === 200).catch(() => false);
                     
-                    setState(() => res1 || res2 ? STATE.SUCCESS : STATE.FAILURE);
+                    setState(() => res1 ? STATE.SUCCESS : STATE.FAILURE);
                     setCause(() => "發生重大錯誤，請重新提交");
                     console.log(2)
                 }
