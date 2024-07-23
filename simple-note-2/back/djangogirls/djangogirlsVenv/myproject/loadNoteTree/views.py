@@ -62,7 +62,7 @@ class LoadNoteTreeView(APIView):
                     respArray.append(singleNoteData)
                 
                 
-                return Response(json.dumps(list(map(list, respArray))),status=status.HTTP_200_OK)
+                return Response(json.dumps(respArray),status=status.HTTP_200_OK)
             
             elif notesData == False:  # error
                 return Response("SQL error.", status=status.HTTP_400_BAD_REQUEST)
