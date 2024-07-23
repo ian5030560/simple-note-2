@@ -5,19 +5,19 @@ import { Flex, ConfigProvider, FloatButton, theme } from "antd";
 import Auth from "./Auth";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import Intro from "./Intro";
-import { switchTheme, defaultSeed } from "../util/theme";
+import {defaultTheme} from "../util/theme";
 
 interface HeaderProp extends TopBarProp {
-    backgroundColor: string,
+    backgroundColor?: string,
 }
 
 const Header: React.FC<HeaderProp> = (prop: HeaderProp) => {
     return <Flex
-        justify="space-around"
-        align="center"
+        justify="space-around" align="center"
         style={{
             backgroundColor: prop.backgroundColor,
-            height: "15%"
+            height: "calc(15% - 1px)",
+            borderBottom: "1px solid rgba(253, 253, 253, 0.12)"
         }}>
         <Brand />
         <TopBar
@@ -38,12 +38,7 @@ export const BulbButton: React.FC<BulbButtonProp> = (prop: BulbButtonProp) => {
 const WelcomePage = () => {
     const [darken, setDarken] = useState<boolean>(false);
 
-    return <ConfigProvider
-        theme={{
-            ...switchTheme(darken, defaultSeed),
-            algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
-        }}
-    >
+    return <ConfigProvider theme={defaultTheme(darken)}>
         <Index />
         <BulbButton lighten={!darken} onClick={() => setDarken(!darken)} />
     </ConfigProvider>
@@ -57,11 +52,13 @@ const Index: React.FC = () => {
 
     return <>
         <Header
-            backgroundColor={token.colorPrimary}
+            backgroundColor={token.colorBgBase}
             onAuthClick={() => setContent(<Auth />)}
             onIntroClick={() => setContent(<Intro />)}
         />
-        {content}
+        <div style={{ backgroundColor: token.colorBgBase, minHeight: "85%"}}>
+            {content}
+        </div>
     </>
 }
 

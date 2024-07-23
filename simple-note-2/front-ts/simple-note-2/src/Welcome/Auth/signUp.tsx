@@ -55,8 +55,9 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                         theme: {name: "預設", data: defaultSeed}
                     })[0].then(res => res.status === 200).catch(() => false);
                     
-                    setState(res1 || res2 ? STATE.SUCCESS : STATE.FAILURE);
-                    setCause("發生重大錯誤，請重新提交");
+                    setState(() => res1 || res2 ? STATE.SUCCESS : STATE.FAILURE);
+                    setCause(() => "發生重大錯誤，請重新提交");
+                    console.log(2)
                 }
                 else {
                     let map: { [key: number]: string } = {
@@ -64,12 +65,13 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                         402: "email 重複",
                         400: "註冊錯誤，請重新輸入",
                     }
-                    setCause(map[res.status] ? map[res.status] : "發生重大錯誤，請重新提交");
+                    setState(() => STATE.FAILURE);
+                    setCause(() => map[res.status] ? map[res.status] : "發生重大錯誤，請重新提交");
                 }
             })
             .catch(() => {
                 setCause(() => "發生重大錯誤，請重新提交");
-                setState(STATE.FAILURE);
+                setState(() => STATE.FAILURE);
             });
     };
 

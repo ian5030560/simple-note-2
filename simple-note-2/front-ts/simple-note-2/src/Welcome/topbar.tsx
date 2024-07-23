@@ -34,7 +34,7 @@ const TopBar: React.FC<TopBarProp> = (prop: TopBarProp) => {
         {
             label: "介紹",
             key: "intro",
-            style: {color: "white"}
+            // style: {color: "white"}
         },
         {
             label: "團隊",
@@ -54,30 +54,27 @@ const TopBar: React.FC<TopBarProp> = (prop: TopBarProp) => {
                     key: "mate2",
                 }
             ],
-            style: {color: "white"}
+            // style: {color: "white"}
         },
         {
             label: <a href="https://github.com/ian5030560/simple-note-2">github</a>,
             key: "github",
             icon: <GithubOutlined />,
-            style: {color: "white"}
+            // style: {color: "white"}
         },
         {
             label: "登入/註冊",
             key: "sign-in/sign-up",
-            style: {color: "white"}
+            // style: {color: "white"}
         }
     ]
 
-    return <Menu
-        items={items}
-        mode="horizontal"
-        onClick={handleClick}
-        triggerSubMenuAction="click"
+    return <Menu items={items} mode="horizontal"
+        onClick={handleClick} triggerSubMenuAction="click"
         selectedKeys={current}
         style={{
             justifyContent: "flex-end",
-            backgroundColor: token.colorPrimary
+            // backgroundColor: token.colorPrimary
         }} />
 }
 

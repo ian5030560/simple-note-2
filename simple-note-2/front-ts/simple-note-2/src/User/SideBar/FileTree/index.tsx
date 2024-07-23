@@ -27,8 +27,7 @@ const FileTree = () => {
     }, [remove]);
     
     return <>
-        <Tree treeData={nodes} rootStyle={{ backgroundColor: token.colorPrimary }}
-            blockNode defaultExpandAll selectable={false}
+        <Tree treeData={nodes} blockNode defaultExpandAll selectable={false}
             titleRender={(data) => {
                 const { title, key } = data as { title: string, key: string };
                 return <Node key={key} title={title}
@@ -43,11 +42,11 @@ const FileTree = () => {
                     }} />
             }} />
 
-        <Button icon={<FaPlus />} type="text" block tabIndex={-1}
+        <Button icon={<FaPlus />} type="text" block tabIndex={-1} style={{marginTop: 8, color: token.colorText}}
             onClick={() => {
                 setAddOpen(true);
                 setPKey(null);
-            }} />
+            }}/>
         <AddModal open={addOpen} onCancel={() => setAddOpen(false)}
             onOk={handleAdd} pKey={pKey} />
         <DeleteModal open={delOpen} onCancel={() => setDelOpen(false)}
