@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `user_personal_info`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_personal_info` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `profile_photo` blob,
+  `profile_photo` longtext,
   `theme_id` int DEFAULT NULL,
   `usernames` varchar(256) DEFAULT NULL,
   `user_email` varchar(256) DEFAULT NULL,
@@ -53,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-02 14:34:27
+-- Dump completed on 2024-07-23 15:51:53
