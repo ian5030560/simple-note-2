@@ -123,7 +123,7 @@ def check_sibling_id(id_input):
         if existing_data:
             return existing_data[0]
         else:
-            return False
+            return None
 
     except SQLAlchemyError as e:
         session.rollback()
