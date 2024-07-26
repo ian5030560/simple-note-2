@@ -10,6 +10,7 @@ from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from db_modules import UserSubNoteData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -63,10 +64,12 @@ class NewNoteView(APIView):
                 username, notename, noteId
             )  # 透過username, notename, noteId來新增資料
 
-            if returnStatus:  # 新增成功
+            subReturnStatus = UserSubNoteData.insert_data(noteId, parentId, silblingId) # 透過noteId, parentId, silblingId來新增subnote資料
+            
+            if returnStatus and subReturnStatus:  # 新增成功
                 return Response(status=status.HTTP_200_OK)
-            elif returnStatus != True:  # error
-                return Response(returnStatus, status=status.HTTP_400_BAD_REQUEST)
+            elif returnStatus!=1 or subReturnStatus!=1:  # error
+                return Response([returnStatus, subReturnStatus], status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = NewNoteSerializer(data=data)
