@@ -3,11 +3,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker
-from UserPersonalInfo import User_Personal_Info
+from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 import os
-from Common import engine
+from .Common import engine
 # from dotenv import load_dotenv
 # # 加載 .env 文件中的環境變數
 # load_dotenv()
