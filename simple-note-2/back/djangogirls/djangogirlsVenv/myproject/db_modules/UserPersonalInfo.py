@@ -224,7 +224,7 @@ def update_user_login_status_by_usernames(usernames_input, login_status_input):
 def change_login_status(username):
     user = session.query(User_Personal_Info).filter_by(usernames=username).first()
     if user:
-        # 更新login_status True改Fasle,Fasle改True
+        # 更新login_status True改False,False改True
         if user.login_status == True:
             user.login_status = False
         else:
