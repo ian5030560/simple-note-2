@@ -14,7 +14,7 @@ import base64
 Base = declarative_base()
 engine_url = os.environ.get("env")
 # engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
@@ -131,7 +131,7 @@ def check_sibling_id(id_input):
         if existing_data:
             return existing_data[0]
         else:
-            return False
+            return None
 
     except SQLAlchemyError as e:
         session.rollback()
@@ -151,7 +151,7 @@ def check_parent_id(id_input):
         if existing_data:
             return existing_data[0]
         else:
-            return False
+            return None
 
     except SQLAlchemyError as e:
         session.rollback()

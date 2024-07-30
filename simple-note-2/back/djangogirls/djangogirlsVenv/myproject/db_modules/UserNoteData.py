@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker
-from .UserPersonalInfo import User_Personal_Info
+from UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 import os
@@ -14,7 +14,7 @@ import os
 Base = declarative_base()
 engine_url = os.environ.get("env")
 # engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
 engine = create_engine(engine_url, echo=True)
@@ -79,7 +79,8 @@ def update_content(usernames, note_title_id, content):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        return str(e)
+        print (str(e))
+        return False
     finally:
         session.close()
 
@@ -146,6 +147,7 @@ def check_content(usernames, note_title_id):
 
 
 # check all user's notes
+# return like [('note1', '1'), ('note2', '2'), ('note4', '4')]
 def check_user_all_notes(usernames_input):
     user_id_query = (
         session.query(User_Personal_Info.id)
@@ -259,4 +261,4 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         session.close()
 
 
-# print(delete_note_by_usernames_note_title_id("user01",1))
+print(check_user_all_notes("user01"))
