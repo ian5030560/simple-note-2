@@ -129,7 +129,7 @@ def check_content(usernames, note_title_id):
         .first()
     )
     try:
-        contenet_query = (
+        content_query = (
             session.query(User_Note_Data.content)
             .filter(
                 and_(
@@ -139,7 +139,7 @@ def check_content(usernames, note_title_id):
             )
             .first()
         )
-        return contenet_query
+        return content_query
     except SQLAlchemyError as e:
         session.rollback()
         return False
