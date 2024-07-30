@@ -1,3 +1,5 @@
+import { ThemeConfig, theme as _theme } from "antd";
+
 export type ThemeSeed = {
     colorLightPrimary: string;
     colorLightNeutral: string;
@@ -19,11 +21,14 @@ export const testSeed: ThemeSeed = {
     colorDarkNeutral: "black",
 }
 
-export function switchTheme(dark: boolean, seed?: ThemeSeed) {
-    return {
+export default function theme(seed: ThemeSeed): (dark: boolean) => ThemeConfig{
+    return (dark) => ({
         token: {
-            colorPrimary: seed ? dark ? seed.colorDarkPrimary : seed.colorLightPrimary : dark ? defaultSeed.colorDarkPrimary : defaultSeed.colorLightPrimary,
+            colorPrimary: seed ? dark ? seed.colorDarkPrimary : seed.colorLightPrimary : undefined,
             colorBgBase: seed ? dark ? seed.colorDarkNeutral : seed.colorLightNeutral : dark ? defaultSeed.colorDarkNeutral : defaultSeed.colorLightNeutral,
-        }
-    }
+        },
+        algorithm: dark ? _theme.darkAlgorithm : _theme.defaultAlgorithm
+    })
 }
+
+export const defaultTheme = theme(defaultSeed);

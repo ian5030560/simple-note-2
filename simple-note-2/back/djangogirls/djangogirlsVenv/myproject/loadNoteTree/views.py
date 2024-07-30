@@ -10,6 +10,7 @@ from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from db_modules import UserSubNoteData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -49,14 +50,22 @@ class LoadNoteTreeView(APIView):
             notesData = UserNoteData.check_user_all_notes(
                 username
             )  # 透過username來取得資料
-            
-            if notesData:  # 取得成功
-                # notesList = []
-                # for row in notesData:
                 
-                return Response(json.dumps(list(map(list, notesData))), status=status.HTTP_200_OK)
+            if notesData:  # 取得成功
+                respArray = []
+                for i in range(len(notesData)):
+                    notesDataID = notesData[i][1]
+                    notesDataName = notesData[i][0]
+                    parentId = UserSubNoteData.check_parent_id(notesDataID)
+                    silblingId = UserSubNoteData.check_sibling_id(notesDataID)
+                    singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
+                    respArray.append(singleNoteData)
+                
+                
+                return Response(json.dumps(respArray),status=status.HTTP_200_OK)
+            
             elif notesData == False:  # error
-                return Response(notesData, status=status.HTTP_400_BAD_REQUEST)
+                return Response("SQL error.", status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = LoadNoteTreeSerializer(data=data)

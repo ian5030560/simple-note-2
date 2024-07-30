@@ -108,8 +108,7 @@ const SideBar = ({ className, style, ...prop }: SideBarProps) => {
     const { token } = theme.useToken();
 
     return <Flex vertical className={className}
-        style={{ backgroundColor: token.colorPrimary, ...style }}
-        {...prop}>
+        style={{ ...style }} {...prop}>
         <UserProfile />
         <FileTree />
     </Flex>

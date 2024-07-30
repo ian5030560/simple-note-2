@@ -10,6 +10,7 @@ from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from db_modules import UserSubNoteData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -49,9 +50,7 @@ class DeleteNoteView(APIView):
             username = data.get("username")  # 帳號名稱
             noteId = data.get("noteId")  # 筆記ID
 
-            returnStatus = UserNoteData.delete_note_by_usernames_note_title_id(
-                username, noteId
-            )  # 透過username, noteId來刪除資料
+            returnStatus = UserSubNoteData.delete_data(noteId)  # 透過noteId來刪除資料
 
             if returnStatus:  # 刪除成功
                 return Response(status=status.HTTP_200_OK)

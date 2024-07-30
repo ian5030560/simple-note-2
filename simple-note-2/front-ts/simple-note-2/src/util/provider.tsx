@@ -6,6 +6,51 @@ import { Button, Modal } from "antd";
 import useFiles from "../User/SideBar/FileTree/hook";
 import { useInfoAction } from "../User/SideBar/info";
 
+type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, silblingId: string | null };
+
+function sortNodes(data: NoteTreeData[]) {
+
+    // 分組節點根據 parentId
+    let groups = {"root": []} as { [key: string]: NoteTreeData[] }
+    for(let node of data){
+        const parent = node.parentId;
+        if(!parent){
+            groups["root"].push(node);
+            continue;
+        }
+        if(!groups[parent]) groups[parent] = []
+        groups[parent].push(node);
+    }
+
+    // // 排序分組內的節點根據 siblingId
+    for(let key in groups){
+        let nodes = groups[key];
+        const sorted: NoteTreeData[] = [];
+
+        let target: string | null = null;
+        let i = 0;
+        while(i < nodes.length){
+            let node = nodes[i];
+            if(node.silblingId === target){
+                sorted.push(node);
+                target = node.noteId;
+                i = -1;
+            }
+            i ++;
+        }
+        groups[key] = sorted;
+    }
+
+    // // 合併排序後的結果
+    let sortedData: NoteTreeData[] = [];
+    for(let key in groups){
+        sortedData = sortedData.concat(groups[key]);
+    }
+  
+    return sortedData;
+}
+
+
 export function SettingProvider() {
     const loadNoteTree = useAPI(APIs.loadNoteTree);
     const getInfo = useAPI(APIs.getInfo);
@@ -27,17 +72,21 @@ export function SettingProvider() {
 
         let tree = loadNoteTree({ username })
         tree[0].then((res) => res.json())
-            .then(() => {
-
+            .then((res: string) => {
+                let nodes = sortNodes(JSON.parse(res))
+                for (let node of nodes) {
+                    add(node.noteId, node.noteName, [], node.parentId, node.silblingId)
+                }
+                setId(() => nodes[0].noteId);
             })
 
         return () => {
             info[1].abort();
             tree[1].abort();
         }
-    }, [getInfo, loadNoteTree, updatePicture, updateThemes, username]);
-    
-    return id ? <Navigate to={id} /> : <Outlet/>;
+    }, [add, getInfo, loadNoteTree, updatePicture, updateThemes, username]);
+
+    return id ? <Navigate to={id} /> : <Outlet />;
 }
 
 export const Note = createContext<string | undefined>(undefined);
