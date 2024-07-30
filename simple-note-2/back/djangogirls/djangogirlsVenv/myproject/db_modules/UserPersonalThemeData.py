@@ -6,14 +6,15 @@ from sqlalchemy.orm import sessionmaker
 from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import os
+from .Common import engine
 
 Base = declarative_base()
-engine_url = os.environ.get("env")
-# engine_url = "mysql+pymysql://root@localhost/simplenote2db"
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
-# engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-# engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
-engine = create_engine(engine_url, echo=True)
+# engine_url = os.environ.get("env")
+# # engine_url = "mysql+pymysql://root@localhost/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+# # engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
+# # engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
+# engine = create_engine(engine_url, echo=True)
 
 
 class User_Personal_Theme_Data(Base):

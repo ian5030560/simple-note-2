@@ -7,17 +7,18 @@ from UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
 import os
+from Common import engine
 # from dotenv import load_dotenv
 # # 加載 .env 文件中的環境變數
 # load_dotenv()
 
 Base = declarative_base()
-engine_url = os.environ.get("env")
-# engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
-engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
-# engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
-# engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
-engine = create_engine(engine_url, echo=True)
+# engine_url = os.environ.get("env")
+# # engine_url = "mysql+pymysql://root:root@0.tcp.jp.ngrok.io:11051/simplenote2db"
+# engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2db"
+# # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
+# # engine_url = "mysql+pymysql://root:niko1024@localhost:3306/simplenote2db"
+# engine = create_engine(engine_url, echo=True)
 
 
 class User_Note_Data(Base):
@@ -261,4 +262,4 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         session.close()
 
 
-print(check_user_all_notes("user01"))
+print(check_content("user01",1))
