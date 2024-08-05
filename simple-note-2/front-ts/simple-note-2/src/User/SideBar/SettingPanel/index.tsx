@@ -42,7 +42,6 @@ const SettingPanel = (prop: SettingPanelProp) => {
 
     const [pwdModal, contextHolder] = Modal.useModal();
     const pwdRef = useRef<InputRef>(null);
-    const getInfo = useAPI(APIs.getInfo);
     const updateInfo = useAPI(APIs.updateInfo);
     const [{ username }] = useCookies(["username"]);
     const { themes } = useInfoContext();

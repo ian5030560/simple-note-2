@@ -10,6 +10,7 @@ import Markdown from "./ToolBar/Component/markdown";
 import List from "./ToolBar/Component/list";
 import Table from "./ToolBar/Component/table";
 import Comment from "./ToolBar/Component/comment";
+import { Flex } from "antd";
 
 export const LIST: React.ReactNode[] = [
     <History/>,
@@ -17,18 +18,18 @@ export const LIST: React.ReactNode[] = [
     <Markdown />,
     <Align />,
     <List />,
-    <>
+    <Flex>
         <FontColor />
         <BackgroundColor />
-    </>,
-    <>
+    </Flex>,
+    <Flex>
         <FontSize />
         <FontFamily />
-    </>,
-    <>
+    </Flex>,
+    <Flex>
         <Link />
         <Comment/>
         <Table/>
-    </>,
+    </Flex>,
 
 ]

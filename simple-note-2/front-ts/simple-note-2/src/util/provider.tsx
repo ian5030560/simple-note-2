@@ -9,7 +9,7 @@ import { useInfoAction } from "../User/SideBar/info";
 type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, silblingId: string | null };
 
 function sortNodes(data: NoteTreeData[]) {
-
+    
     // 分組節點根據 parentId
     let groups = {"root": []} as { [key: string]: NoteTreeData[] }
     for(let node of data){
@@ -22,7 +22,7 @@ function sortNodes(data: NoteTreeData[]) {
         groups[parent].push(node);
     }
 
-    // // 排序分組內的節點根據 siblingId
+    // 排序分組內的節點根據 siblingId
     for(let key in groups){
         let nodes = groups[key];
         const sorted: NoteTreeData[] = [];
@@ -40,13 +40,11 @@ function sortNodes(data: NoteTreeData[]) {
         }
         groups[key] = sorted;
     }
-
-    // // 合併排序後的結果
+    // 合併排序後的結果
     let sortedData: NoteTreeData[] = [];
     for(let key in groups){
         sortedData = sortedData.concat(groups[key]);
     }
-  
     return sortedData;
 }
 
@@ -74,6 +72,7 @@ export function SettingProvider() {
         tree[0].then((res) => res.json())
             .then((res: string) => {
                 let nodes = sortNodes(JSON.parse(res))
+
                 for (let node of nodes) {
                     add(node.noteId, node.noteName, [], node.parentId, node.silblingId)
                 }
@@ -90,17 +89,16 @@ export function SettingProvider() {
 }
 
 export const Note = createContext<string | undefined>(undefined);
-export function NoteProvider({ children }: { children: React.ReactNode }) {
+export function NoteProvider() {
     const getNote = useAPI(APIs.getNote);
     const [{ username }] = useCookies(["username"]);
     const { file } = useParams();
-    const cRef = useRef<string>();
-
+    const [content, setContent] = useState<string>();
     useEffect(() => {
         let note = getNote({ username: username, noteId: file! })
         note[0]
-            .then((res) => JSON.stringify(res.json()))
-            .then(res => cRef.current = res)
+            .then((res) => res.text())
+            .then(res => setContent(res))
             .catch(() => {
                 Modal.error({
                     title: "載入發生錯誤",
@@ -117,7 +115,7 @@ export function NoteProvider({ children }: { children: React.ReactNode }) {
 
     }, [file, getNote, username]);
 
-    return <Note.Provider value={cRef.current}>
-        {children}
+    return <Note.Provider value={content}>
+        {content && <Outlet/>}
     </Note.Provider>
 }

@@ -48,7 +48,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                         noteId: uuid(),
                         notename: "我的筆記",
                         parentId: null,
-                        siblingId: null,
+                        silbling_id: null,
                     })[0].then(res => res.status === 200).catch(() => false);
                     
                     // let res2 = await addTheme({
@@ -58,7 +58,6 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                     
                     setState(() => res1 ? STATE.SUCCESS : STATE.FAILURE);
                     setCause(() => "發生重大錯誤，請重新提交");
-                    console.log(2)
                 }
                 else {
                     let map: { [key: number]: string } = {
