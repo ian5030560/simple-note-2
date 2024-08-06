@@ -147,8 +147,8 @@ def update_file_name(usernames_input, note_name_input, file_name_input):
     finally:
         session.close()
 
-# Give username note_name file_name delete file_name
-def delete_file_name(usernames_input, note_name_input, file_name_input):
+# Give username note_title_id file_name delete file_name
+def delete_file_name(usernames_input, note_title_id_input, file_name_input):
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
@@ -159,16 +159,20 @@ def delete_file_name(usernames_input, note_name_input, file_name_input):
         .filter(
             and_(
                 User_Note_Data.user_id == user_id_query[0],
-                User_Note_Data.note_name == note_name_input,
+                User_Note_Data.note_title_id == note_title_id_input,
             )
         )
         .first()
     )
     stmt = (
-        delete(User_File_Data)
-        .where(User_File_Data.note_id == note_id_query[0])
-        .where(User_File_Data.file_name == file_name_input)
-    )
+            delete(User_File_Data)
+            .where(
+                and_(
+                    User_File_Data.note_id == note_id_query[0],
+                    User_File_Data.file_name == file_name_input
+                )
+            )
+        )
     try:
         session.execute(stmt)
         session.commit()
@@ -183,4 +187,4 @@ def delete_file_name(usernames_input, note_name_input, file_name_input):
 
 
 
-# print(delete_file_name("user01", "note1", "file2"))
+# print(delete_file_name("user01", 1, "file2"))
