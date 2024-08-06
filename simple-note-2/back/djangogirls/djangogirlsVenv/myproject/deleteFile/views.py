@@ -26,6 +26,7 @@ class DeleteFileView(APIView):
     前端傳:\n
         帳號名(name: username, type: str),\n
         文件網址(name: url(新增文件所提供的網址), type: str).\n
+        帳號名稱(noteTitleId, type: str).\n
     後端回傳:\n
         Response HTTP_200_OK if success.\n
         Response HTTP_400_BAD_REQUEST if failure.\n
@@ -51,7 +52,7 @@ class DeleteFileView(APIView):
 
             # 刪除帳號名稱所屬文件
             # 將網址前贅詞刪除，留下filename
-            url.replace("localhost:8000/view_file/", "")
+            url.replace("http://localhost:8000/viewMediaFile/", "")
 
             # 2024/5/7 還沒寫
             # 2024/5/14 還沒寫
