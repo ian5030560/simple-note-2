@@ -236,4 +236,4 @@ def change_login_status(username):
         return None
 
 
-# pprint(update_user_login_status_by_usernames("user01",0))
+print(check_profile_photo_by_username("user01"))
