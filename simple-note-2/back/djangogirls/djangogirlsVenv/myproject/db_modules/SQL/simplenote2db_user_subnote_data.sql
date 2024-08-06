@@ -37,7 +37,6 @@ CREATE TABLE `user_subnote_data` (
 
 LOCK TABLES `user_subnote_data` WRITE;
 /*!40000 ALTER TABLE `user_subnote_data` DISABLE KEYS */;
-INSERT INTO `user_subnote_data` VALUES ('1','0','0'),('2','1','0'),('4','2','0');
 /*!40000 ALTER TABLE `user_subnote_data` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

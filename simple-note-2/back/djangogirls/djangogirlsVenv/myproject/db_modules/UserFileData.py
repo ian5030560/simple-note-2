@@ -1,4 +1,4 @@
-from sqlalchemy import and_, create_engine, insert, update
+from sqlalchemy import and_, create_engine, delete, insert, update
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
@@ -147,7 +147,40 @@ def update_file_name(usernames_input, note_name_input, file_name_input):
     finally:
         session.close()
 
+# Give username note_name file_name delete file_name
+def delete_file_name(usernames_input, note_name_input, file_name_input):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter(User_Personal_Info.usernames == usernames_input)
+        .first()
+    )
+    note_id_query = (
+        session.query(User_Note_Data.id)
+        .filter(
+            and_(
+                User_Note_Data.user_id == user_id_query[0],
+                User_Note_Data.note_name == note_name_input,
+            )
+        )
+        .first()
+    )
+    stmt = (
+        delete(User_File_Data)
+        .where(User_File_Data.note_id == note_id_query[0])
+        .where(User_File_Data.file_name == file_name_input)
+    )
+    try:
+        session.execute(stmt)
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        return False
+    finally:
+        session.close()
 
 
 
-# print(check_file_name("user01", "note1", "file2"))
+
+print(delete_file_name("user01", "note1", "file2"))
