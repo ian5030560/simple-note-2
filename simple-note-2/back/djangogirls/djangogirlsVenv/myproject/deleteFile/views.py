@@ -57,7 +57,7 @@ class DeleteFileView(APIView):
             # 2024/5/14 還沒寫
             # 2024/8/6 fin.
             deleteFileValue = UserFileData.delete_file_name(
-                self, username, noteTitleId, url
+                username, noteTitleId, url
             )  # 呼叫資料庫的刪除方法
 
             if deleteFileValue:  # 若刪除成功
