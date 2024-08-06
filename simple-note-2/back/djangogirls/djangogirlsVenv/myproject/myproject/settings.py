@@ -59,6 +59,9 @@ INSTALLED_APPS = [
     "updateInfo",
     "updateMediaFile",
     "viewMediaFile",
+    "newCollaborate",
+    "deleteCollaborate",
+    "joinCollaborate",
 ]
 
 MIDDLEWARE = [

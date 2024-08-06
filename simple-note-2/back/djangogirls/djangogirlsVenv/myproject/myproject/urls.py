@@ -35,6 +35,9 @@ sys.path.append("..updateInfo")
 sys.path.append("..updateMediaFile")
 sys.path.append("..viewMediaFile")
 sys.path.append("..loadNoteTree")
+sys.path.append("..newCollaborate")
+sys.path.append("..deleteCollaborate")
+sys.path.append("..joinCollaborate")
 
 # new url import here
 from django.urls import path
@@ -56,6 +59,9 @@ from deleteNote.views import DeleteNoteView
 from saveNote.views import SaveNoteView
 from getNote.views import GetNoteView
 from loadNoteTree.views import LoadNoteTreeView
+from newCollaborate.views import NewCollaborateView
+from deleteCollaborate.views import DeleteCollaborateView
+from joinCollaborate.views import JoinCollaborateView
 
 # urls
 urlpatterns = [
@@ -97,4 +103,7 @@ urlpatterns = [
     path("deleteNote/", DeleteNoteView.as_view(), name="deleteNote"),  # deleteNote
     path("saveNote/", SaveNoteView.as_view(), name="saveNote"),  # saveNote
     path("loadNoteTree/", LoadNoteTreeView.as_view(), name="loadNoteTree"),  # loadNoteTree
+    path("newCollaborate/", NewCollaborateView.as_view(), name="newCollaborate"),  # newCollaborate
+    path("deleteCollaborate/", DeleteCollaborateView.as_view(), name="deleteCollaborate"),  # deleteCollaborate
+    path("joinCollaborate/", JoinCollaborateView.as_view(), name="joinCollaborate"),  # joinCollaborate
 ]
