@@ -46,6 +46,7 @@ class DeleteFileView(APIView):
         try:
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
+            notename = data.get("notename")  # 帳號名稱
             url = data.get("url")  # 要刪除的文件網址
 
             # 刪除帳號名稱所屬文件
@@ -54,8 +55,9 @@ class DeleteFileView(APIView):
 
             # 2024/5/7 還沒寫
             # 2024/5/14 還沒寫
-            deleteFileValue = db.delete_User_Note_Data_username_to_file_name(
-                self, username, url
+            # 2024/8/6 fin.
+            deleteFileValue = UserFileData.delete_file_name(
+                self, username, notename, url
             )  # 呼叫資料庫的刪除方法
 
             if deleteFileValue:  # 若刪除成功
