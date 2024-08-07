@@ -54,8 +54,9 @@ const SavePlugin: Plugin = () => {
 
     const handleChange = useCallback((editorState: EditorState) => {
         console.log(editorState);
-        // setContent(JSON.stringify(editorState.toJSON()));
-        isTyping(true);
+        if(window.location.pathname !== "/test"){
+            isTyping(true);
+        }
     }, []);
 
     return <OnChangePlugin onChange={handleChange} />;

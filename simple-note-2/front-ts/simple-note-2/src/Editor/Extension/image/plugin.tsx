@@ -1,17 +1,21 @@
-import { $getRoot, $getSelection, $isRangeSelection, $isRootNode, COMMAND_PRIORITY_EDITOR, LexicalCommand, LexicalEditor, createCommand } from "lexical";
+import { $getNodeByKey, $getRoot, $getSelection, $isRangeSelection, $isRootNode, COMMAND_PRIORITY_EDITOR, LexicalCommand, LexicalEditor, createCommand } from "lexical";
 import { Plugin } from "../index";
 import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import ImageNode, { $createImageNode } from "./node";
+import ImageNode, { $createImageNode, $isImageNode } from "./node";
 import ImageModal from "./modal";
 import {mergeRegister} from "@lexical/utils";
 import useAPI, { APIs } from "../../../util/api";
+import { useParams } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 export const INSERT_IMAGE: LexicalCommand<{alt: string, src: string}> = createCommand();
 
 const ImagePlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
     const deleteFile = useAPI(APIs.deleteFile);
+    const {file} = useParams();
+    const [{username}] = useCookies(["username"]);
 
     useEffect(() => {
         return mergeRegister(
@@ -34,15 +38,18 @@ const ImagePlugin: Plugin = () => {
                     return true;
             }, COMMAND_PRIORITY_EDITOR),
 
-            editor.registerMutationListener(ImageNode, (mutations) => {
-                editor.getEditorState().read(() => {
+            editor.registerMutationListener(ImageNode, (mutations, payload) => {
+                payload.prevEditorState.read(() => {
                     Array.from(mutations.entries()).forEach(([key, type]) => {
                         if(type === "destroyed"){
-                            let element = editor.getElementByKey(key) as HTMLImageElement;
-                            // deleteFile({
-                            //     username: "user",
-                            //     url: element.src,
-                            // })
+                            let image = $getNodeByKey(key)
+                            if($isImageNode(image)){
+                                deleteFile({
+                                    username: username,
+                                    url: image.getSrc(),
+                                    note_title_id: file as string,
+                                })
+                            }
                         }
                     })
                 })

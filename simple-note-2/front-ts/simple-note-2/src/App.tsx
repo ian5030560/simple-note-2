@@ -5,18 +5,9 @@ import UserPage from "./User";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
-import { AuthMiddleware } from "./util/middleware";
+import { AuthProivder } from "./util/provider";
 import { NoteProvider, SettingProvider } from "./util/provider";
 import { APIs } from "./util/api";
-
-const contentLoader = async () => {
-  let content: string | undefined
-  try{
-    content = await fetch(APIs.getNote).then(res => res.text())
-  }
-  catch(err){}
-  return content
-}
 
 const Index = () => {
 
@@ -26,7 +17,7 @@ const Index = () => {
       <Route element={<SettingProvider/>}>
         <Route path="/" element={<WelcomePage />} />
       </Route>
-      <Route element={<AuthMiddleware />}>
+      <Route element={<AuthProivder />}>
         <Route element={<NoteProvider/>}>
           <Route path=":file" element={<UserPage />}/>
         </Route>

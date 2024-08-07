@@ -6,6 +6,13 @@ import { Button, Modal } from "antd";
 import useFiles from "../User/SideBar/FileTree/hook";
 import { useInfoAction } from "../User/SideBar/info";
 
+export function AuthProivder() {
+    const [{ username }] = useCookies(["username"]);
+    const [nodes] = useFiles();
+
+    return !username || nodes.length === 0 ? <Navigate to={"/"} /> : <Outlet/>;
+}
+
 type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, silblingId: string | null };
 
 function sortNodes(data: NoteTreeData[]) {

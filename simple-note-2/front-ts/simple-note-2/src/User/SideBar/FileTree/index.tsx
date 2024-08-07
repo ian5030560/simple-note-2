@@ -1,12 +1,13 @@
-import { Tree, theme, Button, message, TreeDataNode } from "antd";
+import { Tree, theme, Button, message, TreeDataNode, Flex } from "antd";
 import Node, { AddModal, DeleteModal } from "./node";
 import { FaPlus } from "react-icons/fa6";
 import useFiles, { findNode } from "./hook";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAPI, { APIs } from "../../../util/api";
 import { useCookies } from "react-cookie";
-import uuid from "../../../util/uuid";
+import { uuid } from "../../../util/secret";
+import { SwapOutlined } from "@ant-design/icons";
 
 const FileTree = () => {
     const { token } = theme.useToken();
@@ -19,6 +20,7 @@ const FileTree = () => {
     const addNote = useAPI(APIs.addNote);
     const deleteNote = useAPI(APIs.deleteNote);
     const [{ username }] = useCookies(["username"]);
+    const [collaborative, setCollaborative] = useState(false);
 
     const handleAdd = useCallback((input: string) => {
         setAddOpen(false);
@@ -50,9 +52,9 @@ const FileTree = () => {
         setDelOpen(false);
 
         let node = targetRef.current;
-        if(!node) return;
+        if (!node) return;
         let nodeFind = findNode(nodes, node.key as string)
-        
+
         deleteNote({ username: username, noteId: node.key as string })[0]
             .then((res) => res.status === 200)
             .then(ok => {
@@ -69,9 +71,10 @@ const FileTree = () => {
             })
     }, [api, deleteNote, navigate, nodes, remove, username]);
 
-    return <>
-        <Tree treeData={nodes} blockNode defaultExpandAll selectable={false}
-            titleRender={(data) => <Node key={data.key} title={data.title as string}
+    return <Flex vertical justify="space-between" style={{ height: "100%", overflowY: "auto" }}>
+        <div>
+            <Tree treeData={nodes} blockNode defaultExpandAll selectable={false}
+                titleRender={(data) => <Node key={data.key} title={data.title as string}
                     onClick={() => navigate(`/${data.key}`)}
                     onAdd={() => {
                         setAddOpen(true);
@@ -81,18 +84,22 @@ const FileTree = () => {
                         setDelOpen(true);
                         targetRef.current = data;
                     }} />
-            } />
+                } />
 
-        <Button icon={<FaPlus />} type="text" block tabIndex={-1} style={{ marginTop: 8, color: token.colorText }}
-            onClick={() => {
-                setAddOpen(true);
-                targetRef.current = null;
-            }} />
+            <Button icon={<FaPlus />} type="text" block tabIndex={-1} style={{ marginTop: 8, color: token.colorText }}
+                onClick={() => {
+                    setAddOpen(true);
+                    targetRef.current = null;
+                }} />
+        </div>
+        <Button type="default" icon={<SwapOutlined />} onClick={() => setCollaborative(prev => !prev)}>
+            {collaborative ? "個人筆記" : "多人協作"}
+        </Button>
         <AddModal open={addOpen} onCancel={() => setAddOpen(false)} onOk={handleAdd} />
         <DeleteModal open={delOpen} onCancel={() => setDelOpen(false)}
             onOk={handleDelete} title={targetRef.current?.title as string | undefined} />
         {contextHolder}
-    </>
+    </Flex>
 }
 
 export default FileTree;

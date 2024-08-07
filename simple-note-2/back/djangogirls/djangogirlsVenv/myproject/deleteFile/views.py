@@ -61,6 +61,8 @@ class DeleteFileView(APIView):
                 username, noteTitleId, url
             )  # 呼叫資料庫的刪除方法
 
+            print(f"是否刪除{deleteFileValue}")
+            
             if deleteFileValue:  # 若刪除成功
                 return Response(status=status.HTTP_200_OK)
 

@@ -1,13 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal, FlexProps } from "antd";
-import { UserOutlined, EllipsisOutlined, SettingOutlined } from "@ant-design/icons";
+import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
 import FileTree from "./FileTree";
 import { useCookies } from "react-cookie";
-import SettingPanel from "./SettingPanel";
+import SettingModal from "./Setting";
 import { useNavigate } from "react-router-dom";
 import useAPI, { APIs } from "../../util/api";
 import { useInfoContext } from "./info";
+import CollaborateModal from "./Collaborate";
 
 const { Title } = Typography;
 
@@ -15,6 +16,7 @@ const UserProfile = () => {
     const { token } = theme.useToken();
     const [signOutOpen, setSignOutOpen] = useState(false);
     const [settingOpen, setSettingOpen] = useState(false);
+    const [collaborateOpen, setCollaborateOpen] = useState(false);
     const [api, contextHolder] = notification.useNotification();
     const [{ username }, , removeCookies] = useCookies(["username"]);
     const navigate = useNavigate();
@@ -31,20 +33,22 @@ const UserProfile = () => {
             key: "log out",
             label: "登出",
             icon: <BsBoxArrowRight />
+        },
+        {
+            key: "collaborate",
+            label: "發起協作",
+            icon: <TeamOutlined />
         }
     ];
 
     const handleClick = ({ key }: { key: string }) => {
-        switch (key) {
-            case "setting":
-                setSettingOpen(true)
-                break;
-            case "log out":
-                setSignOutOpen(true);
-                break;
-            default:
-                break;
+        const open: {[key: string]: (value: boolean) => void} = {
+            "setting": setSettingOpen,
+            "log out": setSignOutOpen,
+            "collaborate": setCollaborateOpen
         }
+
+        open[key]?.(true);
     }
 
     const handleSignOutOk = useCallback(() => {
@@ -53,12 +57,7 @@ const UserProfile = () => {
         signOut(username)[0]
             .then((value) => {
                 if (!value) {
-                    api.error(
-                        {
-                            message: "登出發生錯誤，請重新登出",
-                            placement: "top",
-                        }
-                    )
+                    api.error({message: "登出發生錯誤，請重新登出", placement: "top"})
                 }
                 else {
                     removeCookies("username");
@@ -92,7 +91,8 @@ const UserProfile = () => {
             <Text>是否確定登出</Text>
         </Modal>
         {contextHolder}
-        <SettingPanel open={settingOpen} onOk={() => setSettingOpen(false)} onCancel={() => setSettingOpen(false)} />
+        <SettingModal open={settingOpen} onOk={() => setSettingOpen(false)} onCancel={() => setSettingOpen(false)} />
+        <CollaborateModal open={collaborateOpen} onCancel={() => setCollaborateOpen(false)}/>
     </Flex>
 }
 
@@ -101,14 +101,11 @@ const { Text } = Typography;
 
 export interface SideBarProps extends Omit<FlexProps, "vertical" | "children"> {
     className: string | undefined,
-    style?: React.CSSProperties,
 }
-const SideBar = ({ className, style, ...prop }: SideBarProps) => {
-
-    const { token } = theme.useToken();
+const SideBar = ({ className, ...prop }: SideBarProps) => {
 
     return <Flex vertical className={className}
-        style={{ ...style }} {...prop}>
+        style={{ height: "100%" }} {...prop}>
         <UserProfile />
         <FileTree />
     </Flex>

@@ -26,7 +26,10 @@ const TableDimension = ({ maxRows, maxColumns, onSizePick }: TableDimensionProp)
                 arr.push(<td key={`${i}-${j}`}
                     style={{backgroundColor: selected ? token.colorPrimary : undefined}}
                     onPointerEnter={() => setSize({ rows: i + 1, cols: j + 1 })}
-                    onPointerDown={() => onSizePick?.(i + 1, j + 1)} />);
+                    onPointerDown={() => {
+                        onSizePick?.(i + 1, j + 1)
+                        setSize(RESET);
+                    }} />);
             }
 
             arrs.push(<tr key={`${i}`}>{arr}</tr>);

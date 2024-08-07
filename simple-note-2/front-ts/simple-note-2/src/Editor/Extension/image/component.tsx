@@ -23,7 +23,6 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
     }, [editor, nodeKey]);
 
     const handleClick = useCallback((e: MouseEvent) => {
-        console.log(imageRef.current);
         if(imageRef.current?.contains(e.target as HTMLElement)){
             setSelected(!isSelected);
         }

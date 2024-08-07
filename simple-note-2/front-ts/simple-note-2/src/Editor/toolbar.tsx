@@ -1,8 +1,6 @@
 import Link from "./ToolBar/Component/link";
-import FontSize from "./ToolBar/Component/font-size";
-import FontFamily from "./ToolBar/Component/font-family";
-import FontColor from "./ToolBar/Component/font-color";
-import BackgroundColor from "./ToolBar/Component/background-color";
+import {FontColor, FontFamily, FontSize} from "./ToolBar/Component/font";
+import BackgroundColor from "./ToolBar/Component/background";
 import Align from "./ToolBar/Component/align";
 import History from "./ToolBar/Component/history";
 import Text from "./ToolBar/Component/text";

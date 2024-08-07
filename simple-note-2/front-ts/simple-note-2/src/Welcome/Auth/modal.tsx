@@ -17,7 +17,6 @@ export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
 
     forgetPassword(values)[0]
       .then((res) => {
-        setLoading(false);
         if (res.status === 200) {
           api.success({
             message: "已傳送密碼至您的email",
@@ -31,12 +30,12 @@ export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
         }
       })
       .catch(() => {
-        setLoading(false);
         api.error({
           message: "密碼傳送失敗，請重新提交",
           placement: "top",
         });
-      });
+      })
+      .finally(() => setLoading(false));
   };
 
   return (

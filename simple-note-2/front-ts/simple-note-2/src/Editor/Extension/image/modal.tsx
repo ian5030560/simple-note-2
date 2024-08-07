@@ -7,6 +7,8 @@ import { CiEdit } from "react-icons/ci";
 import { INSERT_IMAGE } from "./plugin";
 import Modal, { ModalRef } from "../UI/modal";
 import { useCookies } from "react-cookie";
+import useFiles, { findNode } from "../../../User/SideBar/FileTree/hook";
+import { useParams } from "react-router-dom";
 
 export const OPEN_IMAGE_MODAL: LexicalCommand<boolean> = createCommand();
 const ImageModal: React.FC = () => {
@@ -16,6 +18,8 @@ const ImageModal: React.FC = () => {
     const fileRef = useRef<HTMLInputElement>(null);
     const ref = useRef<ModalRef>(null);
     const [{ username }] = useCookies(["username"]);
+    const {file} = useParams();
+    const [nodes] = useFiles();
 
     const handleURL = useCallback(() => {
         let url = urlRef.current!.input!.value;
@@ -27,33 +31,35 @@ const ImageModal: React.FC = () => {
 
     const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
-        let file = e.target.files[0];
+        let image = e.target.files[0];
 
         let data = new FormData();
-        data.append("username", "user01");
-        data.append("filename", file.name);
-        data.append("notename", "note1");
-        data.append("content", file);
+        let node = findNode(nodes, file!);
+        
+        data.append("username", username);
+        data.append("filename", image.name);
+        data.append("notename", node!.current.title as string);
+        data.append("content", image!);
 
-        // let src = await fetch("http://localhost:8000/newMediaFile/",
-        //     {
-        //         body: data, method: "POST", 
-        //         headers: {
-        //             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        //             // "content-type": "multipart/form-data",
-        //         },
-        //     }
-        // ).then(res => {
-        //     console.log(res);
-        //     return res.text();
-        // })
-        // .catch((err) => {
-        //     console.log(err);
-        //     return "";
-        // });
-
-        // src = "http://" + src.substring(1, src.length - 1);
-        let src = URL.createObjectURL(file);
+        let src = await fetch("http://localhost:8000/newMediaFile/",
+            {
+                body: data, method: "POST", 
+                headers: {
+                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                    // "content-type": "multipart/form-data",
+                },
+            }
+        ).then(res => {
+            console.log(res);
+            return res.text();
+        })
+        .catch((err) => {
+            console.log(err);
+            return "";
+        });
+        
+        src = "http://" + src.substring(1, src.length - 1);
+        // let src = URL.createObjectURL(file);
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         fileRef.current!.value = "";
         ref.current?.close();

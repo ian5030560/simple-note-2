@@ -5,7 +5,7 @@ import { AuthModal } from "./modal";
 import { useCookies } from "react-cookie";
 import { AuthProp, STATE, validateMessages } from "./constant";
 import useAPI, { APIs } from "../../util/api";
-import uuid from "../../util/uuid";
+import {uuid} from "../../util/secret";
 import { defaultSeed } from "../../util/theme";
 
 const { Title } = Typography;

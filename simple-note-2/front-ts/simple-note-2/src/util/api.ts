@@ -5,7 +5,7 @@ type APIMap = {
   "http://localhost:8000/forgetPassword/": { username: string, email: string },
   "http://localhost:8000/logout/": { username: string },
   // "http://localhost:8000/newMediaFile/": FormData,
-  "http://localhost:8000/deleteMediaFile/": { username: string, url: string },
+  "http://localhost:8000/deleteFile/": { username: string, url: string, note_title_id: string },
   "http://localhost:8000/getInfo/": { username: string },
   "http://localhost:8000/updateInfo/": { username: string, image: string, data: any },
   "http://localhost:8000/getNote/": { username: string, noteId: string },
@@ -25,7 +25,10 @@ type APIMap = {
     }
   },
   "http://localhost:8000/loadNoteTree/": { username: string },
-  "http://140.127.74.226:8000/gemma/": { text: string }
+  "http://140.127.74.226:8000/gemma/": { text: string },
+  "http://localhost:8000/newCollaborate/": {username: string, noteId: string, url: string},
+  "http://localhost:8000/deleteCollaborate/": {username: string, noteId: string},
+  "http://localhost:8000/joinCollaborate/": {username: string, url: string}
 }
 
 export enum APIs {
@@ -34,7 +37,7 @@ export enum APIs {
   forgetPassword = "http://localhost:8000/forgetPassword/",
   signOut = "http://localhost:8000/logout/",
   // addFile = "http://localhost:8000/newMediaFile/",
-  deleteFile = "http://localhost:8000/deleteMediaFile/",
+  deleteFile = "http://localhost:8000/deleteFile/",
   getInfo = "http://localhost:8000/getInfo/",
   updateInfo = "http://localhost:8000/updateInfo/",
   getNote = "http://localhost:8000/getNote/",
@@ -44,6 +47,9 @@ export enum APIs {
   addTheme = "http://localhost:8000/newTheme/",
   loadNoteTree = "http://localhost:8000/loadNoteTree/",
   callAI = "http://140.127.74.226:8000/gemma/",
+  addCollaborate = "http://localhost:8000/newCollaborate/",
+  deleteCollaborate = "http://localhost:8000/deleteCollaborate/",
+  joinCollaborate = "http://localhost:8000/joinCollaborate/"
 }
 
 export default function useAPI<T extends APIs>(api: T): (data: APIMap[T]) => [Promise<Response>, AbortController] {

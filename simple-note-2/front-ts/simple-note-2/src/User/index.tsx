@@ -36,7 +36,6 @@ interface IndexProp {
 export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
 
     const [collapse, setCollapse] = useState(false);
-    // const { lg } = useBreakpoint();
 
     return <Layout style={{ minHeight: "100%", ...rootStyle }}>
         <Sider collapsible trigger={null} collapsedWidth={0} width={250} collapsed={collapse} theme="light">
