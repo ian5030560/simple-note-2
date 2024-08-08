@@ -20,6 +20,7 @@ const Index = () => {
       <Route element={<AuthProivder />}>
         <Route element={<NoteProvider/>}>
           <Route path=":file" element={<UserPage />}/>
+          <Route path=":userbase64/:file" element={<div>test</div>}/>
         </Route>
       </Route>
       <Route path="theme" element={<ThemePage />} />

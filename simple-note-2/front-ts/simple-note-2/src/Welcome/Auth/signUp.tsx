@@ -55,7 +55,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                     //     username: values["username"],
                     //     theme: {name: "預設", data: defaultSeed}
                     // })[0].then(res => res.status === 200).catch(() => false);
-                    
+                    // console.log(res);
                     setState(() => res1 ? STATE.SUCCESS : STATE.FAILURE);
                     setCause(() => "發生重大錯誤，請重新提交");
                 }

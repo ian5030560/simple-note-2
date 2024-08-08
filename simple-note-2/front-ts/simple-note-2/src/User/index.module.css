@@ -17,3 +17,12 @@
 .collapsed{
     position: fixed;
 }
+
+.resizer{
+    border: 1px solid;
+    cursor: ew-resize;
+}
+
+.resizer:hover{
+    border-width: 3px;
+}

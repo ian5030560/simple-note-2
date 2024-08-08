@@ -38,7 +38,7 @@ export default function CollaborateModal(prop: CollaborateProps) {
 
     const handleClick = useCallback(() => {
         if (!url) {
-            requestCollaborate()
+            requestCollaborate();
         }
         else {
             navigator.clipboard.writeText(url);

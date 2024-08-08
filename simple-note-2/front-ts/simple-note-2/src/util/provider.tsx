@@ -61,7 +61,7 @@ export function SettingProvider() {
     const getInfo = useAPI(APIs.getInfo);
     const [{ username }] = useCookies(["username"]);
     const [id, setId] = useState<string>();
-    const [, add,] = useFiles();
+    const [nodes, add, remove] = useFiles();
     const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
 
     useEffect(() => {
@@ -78,19 +78,25 @@ export function SettingProvider() {
         let tree = loadNoteTree({ username })
         tree[0].then((res) => res.json())
             .then((res: string) => {
-                let nodes = sortNodes(JSON.parse(res))
+                if(nodes.length > 0){
+                    let copies = [...nodes];
+                    for(let copy of copies){
+                        remove(copy.key as string);
+                    }
+                }
 
-                for (let node of nodes) {
+                let sorted = sortNodes(JSON.parse(res))
+                for (let node of sorted) {
                     add(node.noteId, node.noteName, [], node.parentId, node.silblingId)
                 }
-                setId(() => nodes[0].noteId);
+                setId(() => sorted[0].noteId);
             })
 
         return () => {
-            info[1].abort();
-            tree[1].abort();
+            // info[1].abort("取消資訊取得");
+            // tree[1].abort("取消載入筆記樹");
         }
-    }, [add, getInfo, loadNoteTree, updatePicture, updateThemes, username]);
+    }, [add, getInfo, loadNoteTree, nodes, remove, updatePicture, updateThemes, username]);
 
     return id ? <Navigate to={id} /> : <Outlet />;
 }

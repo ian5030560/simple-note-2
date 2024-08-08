@@ -1,10 +1,10 @@
-import { Modal, Flex, Image, Button, Select, Typography, SelectProps } from "antd"
+import { Modal, Flex, Image, Button, Select, Typography, SelectProps, theme } from "antd"
 import { useCallback, useRef, useState } from "react";
 import styles from "./index.module.css";
 import useAPI, { APIs } from "../../../util/api";
 import { useInfoAction, useInfoContext } from "../info";
 import { useCookies } from "react-cookie";
-import { UploadOutlined } from "@ant-design/icons";
+import { SyncOutlined, UploadOutlined } from "@ant-design/icons";
 import { ButtonProps } from "antd";
 
 type UploadProps = Omit<ButtonProps, "type"> & { onUpload: (src: string) => void };
@@ -14,14 +14,21 @@ const Upload = ({ onUpload, ...prop }: UploadProps) => {
     const { picture } = useInfoContext();
 
     return <>
-        <Image src={picture ? picture : undefined} height={80} preview={false}
-            onClick={() => ref.current?.click()}
-            wrapperStyle={{ marginRight: 8, display: picture ? "initial" : "none", cursor: "pointer" }} />
-        <Button icon={<UploadOutlined />} type={enter ? "primary" : "default"}
-            onMouseEnter={() => setEnter(true)} onMouseLeave={() => setEnter(false)}
-            onClick={() => ref.current?.click()} {...prop}
-            style={{ display: picture ? "none" : "initial", cursor: "pointer" }}
-        />
+        <Flex vertical gap={5} flex={1} justify="center">
+            {
+                picture ?
+                    <>
+                        <Image src={picture} />
+                        <Button type="dashed" icon={<SyncOutlined />} onClick={() => ref.current?.click()}>更換</Button>
+                    </> :
+                    <Button icon={<UploadOutlined />} type={enter ? "primary" : "default"}
+                        style={{ alignSelf: "center", height: 64, width: 64 }}
+                        onMouseEnter={() => setEnter(true)} onMouseLeave={() => setEnter(false)}
+                        onClick={() => ref.current?.click()} {...prop}
+                    />
+            }
+        </Flex>
+
         <input type="file" style={{ display: "none" }} ref={ref}
             onChange={() => {
                 let files = ref.current?.files;
@@ -42,6 +49,7 @@ const SettingModal = (prop: SettingModalProp) => {
     const updateInfo = useAPI(APIs.updateInfo);
     const [{ username }] = useCookies(["username"]);
     const { themes } = useInfoContext();
+    const { token } = theme.useToken();
     const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
     const update = useRef<{ theme: number, picture: string }>({
         theme: -1,
@@ -50,7 +58,7 @@ const SettingModal = (prop: SettingModalProp) => {
 
     const handleOk = useCallback(async () => {
         let { theme, picture } = update.current;
-        console.log(picture);
+
         updateInfo({
             username: username, image: picture,
             data: {
@@ -88,48 +96,42 @@ const SettingModal = (prop: SettingModalProp) => {
         footer={<>
             <Button onClick={prop.onCancel}>取消</Button>
             <Button type="primary" onClick={handleOk}>儲存</Button>
-        </>} styles={{ body: { display: "flex", justifyContent: "center" } }}>
+        </>}>
 
-        <div style={{ width: 300 }}>
-            <Flex style={{ marginBottom: 8 }} align="center">
-                <Upload onUpload={(src) => { update.current.picture = src }} />
-                <Typography.Title level={3} style={{ flex: 1, textAlign: "center" }}>{username}</Typography.Title>
+        <Flex gap={10} style={{ width: "100%" }}>
+            <Upload onUpload={(src) => { update.current.picture = src }} />
+            <Flex vertical flex={2}>
+                <Typography.Title level={3} color={token.colorText}
+                    style={{ textAlign: "center", marginBottom: 10, flex: 1 }}>
+                    {username}
+                </Typography.Title>
+                <Flex flex={3}>
+                    <Flex style={{width: "100%", height: "fit-content"}} align="center" gap={5} flex={0}>
+                        <Typography.Text>主題</Typography.Text>
+                        <Select style={{ flex: 1 }} options={options} variant="filled"
+                            defaultValue={options?.find(opt => opt.item.isUsing)?.value}
+                            optionRender={(prop) => {
+                                return <Flex justify="space-between" key={prop.key}>
+                                    <Typography.Text>{prop.label}</Typography.Text>
+                                    <Flex justify="space-evenly">
+                                        {
+                                            Object.keys(prop.data.item).map((key, index) => {
+                                                return <div key={index} className={styles.color}
+                                                    style={{ backgroundColor: prop.data.item[key] }}
+                                                ></div>
+                                            })
+                                        }
+                                    </Flex>
+                                </Flex>
+                            }}
+                            onChange={(val) => {
+                                if (!options) return;
+                                update.current.theme = val as number;
+                            }} />
+                    </Flex>
+                </Flex>
             </Flex>
-
-            <Flex align="center" style={{ marginBottom: 8 }}>
-                <Typography.Text style={{ marginRight: 8 }}>主題</Typography.Text>
-                <Select className={styles.select}
-                    options={options}
-                    defaultValue={options?.find(opt => opt.item.isUsing)?.value}
-                    optionRender={(prop) => {
-                        return <Flex justify="space-between" key={prop.key}>
-                            <Typography.Text>{prop.label}</Typography.Text>
-                            <Flex justify="space-evenly">
-                                {
-                                    Object.keys(prop.data.item).map((key, index) => {
-                                        return <div key={index} className={styles.color}
-                                            style={{ backgroundColor: prop.data.item[key] }}
-                                        ></div>
-                                    })
-                                }
-                            </Flex>
-                        </Flex>
-                    }}
-                    onChange={(val) => {
-                        if (!options) return;
-                        update.current.theme = val as number;
-                    }} />
-            </Flex>
-
-            {/* <Flex>
-                <Typography.Text style={{ marginRight: 8 }}>語言</Typography.Text>
-                <Select className={styles.select}
-                    options={[
-                        { value: "luck", label: "luck", }
-                    ]} />
-            </Flex> */}
-        </div>
-
+        </Flex>
     </Modal>
 }
 export default SettingModal;
