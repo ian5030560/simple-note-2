@@ -61,74 +61,129 @@ def check_username_password(username, password):
         .filter_by(usernames=username, user_password=password)
         .first()
     )
-    if user:
-        return True
-    else:
+    try:
+        if user:
+            return True
+        else:
+            return False
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        print (str(e))
         return False
+    finally:
+        session.close()    
 
 
 # 檢查是否有相同的使用者名稱
 def check_username(username):
     result = session.query(User_Personal_Info).filter_by(usernames=username).first()
-    if result:
-        return True
-    else:
+    try:
+        if result:
+            return True
+        else:
+            return False
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        print (str(e))
         return False
+    finally:
+        session.close()    
 
 
 # 檢查是否有相同的email
 def check_email(user_email):
     result = session.query(User_Personal_Info).filter_by(user_email=user_email).first()
-    if result:
-        return True
-    else:
+    try:
+        if result:
+            return True
+        else:
+            return False
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        print (str(e))
         return False
+    finally:
+        session.close()    
 
 
 # 給username檢查login_status
 def check_status(username):
     result = session.query(User_Personal_Info).filter_by(usernames=username).first()
-    if result:
-        return result.login_status
-    else:
-        return None
+    try:
+        if result:
+            return result.login_status
+        else:
+            return None
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        print (str(e))
+        return False
+    finally:
+        session.close()    
 
 
 # check User_Personal_Info by usernames
 def check_user_personal_info(usernames):
     user = session.query(User_Personal_Info).filter_by(usernames=usernames).first()
-    if user:
-        return {
-            "id": user.id,
-            "profile_photo": user.profile_photo,
-            "theme_id": user.theme_id,
-            "usernames": user.usernames,
-            "user_email": user.user_email,
-            "user_password": user.user_password,
-            "login_status": user.login_status
-        }
-    else:
+    try:
+        if user:
+            return {
+                "id": user.id,
+                "profile_photo": user.profile_photo,
+                "theme_id": user.theme_id,
+                "usernames": user.usernames,
+                "user_email": user.user_email,
+                "user_password": user.user_password,
+                "login_status": user.login_status
+            }
+        else:
+            return False
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        print (str(e))
         return False
+    finally:
+        session.close()    
 
 
 
 # check profile photo by username
 def check_profile_photo_by_username(usernames_input):
     result = session.query(User_Personal_Info).filter_by(usernames=usernames_input).first()
-    if result:
-        return result.profile_photo
-    else:
+    try:
+        if result:
+            return result.profile_photo
+        else:
+            return False
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        print (str(e))
         return False
+    finally:
+        session.close()    
 
 
 # 給user_email查password
 def search_password(email):
     result = session.query(User_Personal_Info).filter_by(user_email=email).first()
-    if result:
-        return result.user_password
-    else:
-        return None
-
+    try:
+        if result:
+            return result.user_password
+        else:
+            return None
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        print (str(e))
+        return False
+    finally:
+        session.close()
 
 # 插入username,password,user_email到資料庫
 def insert_username_password_email(username, password, email):
@@ -152,6 +207,9 @@ def insert_profile_photo_by_username(usernames_input, profile_photo_input):
     except SQLAlchemyError as e:
         print(e)
         return False
+    finally:
+        session.close()   
+    
 
 # update_profile_photo_by_username
 def update_profile_photo_by_username(usernames_input, profile_photo_input):
@@ -169,6 +227,8 @@ def update_profile_photo_by_username(usernames_input, profile_photo_input):
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)
+    finally:
+        session.close()   
 
 
 # update_user_email_by_username
@@ -186,6 +246,8 @@ def update_user_email_by_username(usernames_input, user_email_input):
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)
+    finally:
+        session.close()   
 # 給username更新user_password
 def update_user_password_by_usernames(usernames_input, user_password_input):
     stmt = (
@@ -201,6 +263,8 @@ def update_user_password_by_usernames(usernames_input, user_password_input):
         # 回朔防止資料庫損壞
         session.rollback()
         return str(e)
+    finally:
+        session.close()   
 
 # 給username更新login_status
 def update_user_login_status_by_usernames(usernames_input, login_status_input):
@@ -216,24 +280,33 @@ def update_user_login_status_by_usernames(usernames_input, login_status_input):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        return str(e)    
+        return str(e)
+    finally:
+        session.close()       
         
 
 
 # 給username去change login_status
 def change_login_status(username):
     user = session.query(User_Personal_Info).filter_by(usernames=username).first()
-    if user:
-        # 更新login_status True改False,False改True
-        if user.login_status == True:
-            user.login_status = False
-        else:
-            user.login_status = True
+    try:
+        if user:
+            # 更新login_status True改False,False改True
+            if user.login_status == True:
+                user.login_status = False
+            else:
+                user.login_status = True
 
-        session.commit()
-        return user.login_status
-    else:
-        return None
+            session.commit()
+            return user.login_status
+        else:
+            return None
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        return str(e)
+    finally:
+        session.close()    
 
 
 # print(check_profile_photo_by_username("user01"))
