@@ -49,9 +49,9 @@ class JoinCollaborateView(APIView):
             username = data.get("username")  # 帳號名稱
             url = data.get("url")  # 協作網址
 
-            if 1:  # 取得成功
-                return Response(noteContent, status=status.HTTP_200_OK)
-            elif 0 == False:  # error
+            if 1:  # 加入成功
+                return Response(status=status.HTTP_200_OK)
+            elif 0 == False:  # 加入失敗
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
