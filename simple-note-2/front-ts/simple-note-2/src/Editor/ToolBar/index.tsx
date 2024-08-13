@@ -1,9 +1,9 @@
-import { Button, Flex, FlexProps, theme } from "antd";
+import {  Button, Flex, FlexProps, theme } from "antd";
 import React, { forwardRef, useEffect, useRef, useState } from "react"
 import Divider from "./Component/UI/divider";
 import { Plugin } from "../Extension/index";
 import styles from "./index.module.css";
-import { IoIosArrowDropup, IoIosArrowDropdown } from "react-icons/io";
+import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
 interface ToolBarContainerProp extends FlexProps {
     $backgroundColor: string;
@@ -14,7 +14,7 @@ const ToolBarContainer = forwardRef(({ $backgroundColor, $shadowColor, className
 const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) => {
     const { token } = theme.useToken();
     const [collapse, setCollapse] = useState(false);
-    const ref = useRef<HTMLButtonElement>(null);
+    const ref = useRef<HTMLElement>(null);
     const [hide, setHide] = useState(false);
 
     useEffect(() => {
@@ -41,11 +41,8 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
 
     return <div style={{ position: "relative" }} id="toolbar-container">
         <ToolBarContainer
-            $backgroundColor={token.colorBgBase}
-            $shadowColor={token.colorText}
-            justify="space-evenly"
-            gap={3}
-            className={collapse ? styles.collapsed : styles.notCollapsed}
+            $backgroundColor={token.colorBgElevated} $shadowColor={token.colorText}
+            justify="space-evenly" gap={3} className={collapse ? styles.collapsed : styles.notCollapsed}
         >
             {toolbars[0]}
             {
@@ -55,9 +52,10 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
                 </React.Fragment>)
             }
         </ToolBarContainer>
-        <Button type="primary" icon={collapse ? <IoIosArrowDropdown /> : <IoIosArrowDropup />}
-            className={`${styles.collapsedButton} ${(hide && collapse) ? styles.collapsedButtonHide : ""}`}
-            ref={ref} onClick={() => setCollapse(prev => !prev)} size="large" shape="circle" />
+        <span ref={ref} onClick={() => setCollapse(prev => !prev)} style={{backgroundColor: token.colorBgElevated}}
+            className={`${styles.collapsedButton} ${(hide && collapse) ? styles.collapsedButtonHide : ""}`}>
+            {collapse ? <DownOutlined /> : <UpOutlined />}
+        </span>
     </div>
 }
 

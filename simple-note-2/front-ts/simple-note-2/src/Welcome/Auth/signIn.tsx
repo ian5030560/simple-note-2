@@ -59,15 +59,15 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
         >
             <Title>登入</Title>
             <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
-                <Input />
+                <Input autoComplete="username"/>
             </Form.Item>
             <Form.Item label="密碼" name="password"
                 rules={[{ required: true, min: 8, max: 30, }]}
             >
-                <Input.Password />
+                <Input.Password autoComplete="password"/>
             </Form.Item>
             <Form.Item
-                wrapperCol={{ offset: 2, }}
+                wrapperCol={{ offset: 2}}
             >
                 <Flex justify="space-between">
                     <Space>

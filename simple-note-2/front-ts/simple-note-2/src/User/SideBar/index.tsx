@@ -54,7 +54,7 @@ const UserProfile = () => {
     const handleSignOutOk = useCallback(() => {
         setSignOutOpen(false);
 
-        signOut(username)[0]
+        signOut({username: username})[0]
             .then((value) => {
                 if (!value) {
                     api.error({message: "登出發生錯誤，請重新登出", placement: "top"})
@@ -67,26 +67,18 @@ const UserProfile = () => {
     }, [api, navigate, removeCookies, signOut, username]);
 
 
-    return <Flex align="center" justify="center"
-        gap="large" style={{ marginBottom: 12 }}>
-        <Avatar size={"large"} shape="square"
-            icon={<UserOutlined />}
-            src={picture ? picture : undefined} />
-
-        <Title is="span" level={4} ellipsis style={{ fontSize: "1.5em", fontWeight: 600 }}>{username}</Title>
-        <Dropdown
-            menu={{ items, onClick: handleClick }}
-            trigger={["click"]}
-            placement="bottom"
-        >
+    return <Flex justify="center" align="center" gap={"middle"} style={{ marginBottom: 12 }}>
+        <Avatar size={"large"} shape="square" icon={<UserOutlined />} src={picture}/>
+        <h1 style={{color: token.colorText, textOverflow: "ellipsis", fontWeight: "normal"}}>
+            {username}
+        </h1>
+        <Dropdown menu={{ items, onClick: handleClick }} trigger={["click"]} placement="bottom">
             <EllipsisOutlined style={{ color: token.colorText }} />
         </Dropdown>
         <Modal
             open={signOutOpen} centered title="登出" okText="是" cancelText="否"
-            okButtonProps={{ danger: true, }}
-            cancelButtonProps={{ type: "default" }}
-            onOk={handleSignOutOk}
-            onCancel={() => setSignOutOpen(false)}
+            okButtonProps={{ danger: true, }} cancelButtonProps={{ type: "default" }}
+            onOk={handleSignOutOk} onCancel={() => setSignOutOpen(false)}
         >
             <Text>是否確定登出</Text>
         </Modal>

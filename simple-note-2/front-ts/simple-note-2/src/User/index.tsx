@@ -1,12 +1,12 @@
-import React, { useMemo, useState } from "react";
-import { ConfigProvider, Button, Layout } from "antd";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ConfigProvider, Layout, theme, Grid } from "antd";
 import SideBar from "./SideBar";
 import Editor from "../Editor";
 import { BulbButton } from "../Welcome";
-import { FaAngleDoubleLeft, FaAngleDoubleRight } from "react-icons/fa";
 import styles from "./index.module.css";
 import switchTheme, { defaultTheme } from "../util/theme";
 import { useInfoContext } from "./SideBar/info";
+import { MenuOutlined } from "@ant-design/icons";
 
 const User: React.FC = () => {
 
@@ -22,30 +22,50 @@ const User: React.FC = () => {
 
 }
 
-// const drawer: CSSProperties = {
-//     position: "fixed",
-//     inset: 0,
-//     zIndex: 1000
-// }
-
-// const { useBreakpoint } = Grid;
 const { Sider, Content } = Layout;
+const { useBreakpoint } = Grid;
 interface IndexProp {
     rootStyle?: React.CSSProperties,
 }
-export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
 
-    const [collapse, setCollapse] = useState(false);
+const MIN = 250;
+const MAX = 500;
+export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
+    const [resizer, setResizer] = useState({ resize: false, width: MIN, start: { x: 0, w: MIN } });
+    const { token } = theme.useToken();
+    const { md } = useBreakpoint();
+
+    const handlePointerMove = useCallback((e: MouseEvent) => {
+        if (!resizer.resize) return;
+        let newWidth = e.clientX - resizer.start.x + resizer.start.w;
+        setResizer(prev => ({ ...prev, width: newWidth < MIN ? MIN : newWidth > MAX ? MAX : newWidth }));
+    }, [resizer.resize, resizer.start]);
+
+    useEffect(() => {
+        const handlePointerUp = () => setResizer(prev => ({ ...prev, resize: false, start: { ...prev.start, w: prev.width } }));
+        let body = document.body
+        body.addEventListener("pointermove", handlePointerMove);
+        body.addEventListener("pointerup", handlePointerUp)
+        return () => {
+            body.removeEventListener("pointermove", handlePointerMove);
+            body.removeEventListener("pointerup", handlePointerUp);
+        }
+    }, [handlePointerMove]);
 
     return <Layout style={{ minHeight: "100%", ...rootStyle }}>
-        <Sider collapsible trigger={null} collapsedWidth={0} width={250} collapsed={collapse} theme="light">
-            <div style={{ height: "100%", position: "relative" }}>
-                <SideBar className={styles.sideBar} />
-                <Button type="primary" icon={!collapse ? <FaAngleDoubleLeft /> : <FaAngleDoubleRight />}
-                    className={`${styles.button} ${!collapse ? styles.notCollapsed : styles.collapsed}`}
-                    onClick={() => setCollapse(prev => !prev)} size="large" shape="circle" />
-            </div>
+        <Sider collapsible collapsedWidth={0} theme="light" width={resizer.width}
+            trigger={<MenuOutlined />} onCollapse={(collapsed) => { collapsed && setResizer(prev => ({ ...prev, width: MIN })) }}>
+            <SideBar className={styles.sideBar} />
         </Sider>
+        {md && <div className={styles.resizer} style={{ borderColor: token.colorBorder }}
+            onPointerDown={(e) => setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))}
+            onDoubleClick={() => setResizer(prev => ({
+                ...prev,
+                width: prev.width === 0 ? MIN : 0,
+                start: { ...prev.start, w: MIN }
+            }))}
+        />
+        }
         <Content style={{ position: "relative" }}>
             <Editor />
         </Content>
