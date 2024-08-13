@@ -6,7 +6,6 @@ from sqlalchemy.orm import sessionmaker
 from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import datetime
-import os
 from .Common import engine
 # from dotenv import load_dotenv
 # # 加載 .env 文件中的環境變數
@@ -146,6 +145,32 @@ def check_content(usernames, note_title_id):
     finally:
         session.close()
 
+#Check id by usernames and note_title_id
+def check_id(usernames, note_title_id):
+    user_id_query = (
+        session.query(User_Personal_Info.id)
+        .filter((User_Personal_Info.usernames == usernames))
+        .first()
+    )
+    try:
+        content_query = (
+            session.query(User_Note_Data.id)
+            .filter(
+                and_(
+                    User_Note_Data.user_id == user_id_query[0],
+                    User_Note_Data.note_title_id == note_title_id,
+                )
+            )
+            .first()
+        )
+        return content_query[0]
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False
+    finally:
+        session.close()
+
+
 
 # check all user's notes
 # return like [('note1', '1'), ('note2', '2'), ('note4', '4')]
@@ -262,4 +287,3 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         session.close()
 
 
-# print(check_content("user01",1))
