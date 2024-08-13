@@ -10,6 +10,7 @@ from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from db_modules import UserCollaborateNote  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -46,13 +47,16 @@ class NewCollaborateView(APIView):
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            username = data.get("username")  # 帳號名稱
-            noteId = data.get("noteId")  # 筆記id
+            masterName = data.get("masterName") # master帳號名稱
+            noteId = data.get("noteId") # noteTitleId
             url = data.get("url")  # 協作網址
 
-            if 1:  # 取得成功
+            # join collaborate by master_name, note_title_id, master_name
+            isNew = UserCollaborateNote.insert_newData(masterName, noteId, masterName)
+            
+            if isNew:  # 加入成功
                 return Response(status=status.HTTP_200_OK)
-            elif 0 == False:  # error
+            elif isNew != True:  # 加入失敗
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
             # serializer

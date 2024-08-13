@@ -10,6 +10,7 @@ from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from db_modules import UserCollaborateNote  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -48,13 +49,15 @@ class DeleteCollaborateView(APIView):
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            username = data.get("username")  # 帳號名稱
-            noteId = data.get("noteId") #筆記id
+            guestName = data.get("username")  # guest帳號名稱
+            masterName = data.get("masterName") # master帳號名稱
+            noteId = data.get("noteId") # noteTitleId
 
-            if 1:  # 若刪除成功
+            isDelete = UserCollaborateNote.delete_one_data(masterName, noteId, guestName)
+            
+            if isDelete:  # 若刪除成功
                 return Response(status=status.HTTP_200_OK)
-
-            elif 0:  # 若刪除失敗
+            elif isDelete != True:  # 若刪除失敗
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
