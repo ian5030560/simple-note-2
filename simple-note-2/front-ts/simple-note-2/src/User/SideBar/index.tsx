@@ -10,7 +10,6 @@ import useAPI, { APIs } from "../../util/api";
 import { useInfoContext } from "./info";
 import CollaborateModal from "./Collaborate";
 
-const { Title } = Typography;
 
 const UserProfile = () => {
     const { token } = theme.useToken();
@@ -67,7 +66,7 @@ const UserProfile = () => {
     }, [api, navigate, removeCookies, signOut, username]);
 
 
-    return <Flex justify="center" align="center" gap={"middle"} style={{ marginBottom: 12 }}>
+    return <Flex justify="center" align="center" gap={"middle"}>
         <Avatar size={"large"} shape="square" icon={<UserOutlined />} src={picture}/>
         <h1 style={{color: token.colorText, textOverflow: "ellipsis", fontWeight: "normal"}}>
             {username}

@@ -101,45 +101,13 @@ interface AuthProp {
 
 export const AuthModal: React.FC<AuthProp> = ({ success, failure }) => {
   return <>
-    <Modal
-      title={success.title}
-      open={success.open}
-      closeIcon={null}
-      footer={[
-        <Button
-          type="primary"
-          onClick={() => success.onSuccessClose()}
-          key="s-ok"
-        >
-          ok
-        </Button>,
-      ]}
-    >
-      <Result
-        status="success"
-        title={success.title}
-        subTitle={success.subtitle}
-      />
+    <Modal title={success.title} open={success.open} closeIcon={null}
+      footer={<Button type="primary" onClick={() => success.onSuccessClose()}>確定</Button>}>
+      <Result status="success" title={success.title} subTitle={success.subtitle}/>
     </Modal>
-    <Modal
-      title={failure.title}
-      open={failure.open}
-      closeIcon={null}
-      footer={[
-        <Button
-          type="primary"
-          onClick={() => failure.onFailureClose()}
-          key="f-ok"
-        >
-          ok
-        </Button>,
-      ]}
-    >
-      <Result
-        status="error"
-        title={failure.title}
-        subTitle={failure.subtitle}
-      />
+    <Modal title={failure.title} open={failure.open} closeIcon={null}
+      footer={<Button type="primary" onClick={() => failure.onFailureClose()}>確定</Button>}>
+      <Result status="error" title={failure.title} subTitle={failure.subtitle}/>
     </Modal>
   </>
 };

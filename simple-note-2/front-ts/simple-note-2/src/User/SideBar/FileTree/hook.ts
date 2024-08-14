@@ -40,6 +40,7 @@ type TreeState = {
 type TreeAction = {
     add: (key: string, title: string, children: TreeDataNode[], parentKey: string | null, siblingKey: string | null) => void;
     remove: (key: string) => void;
+    init: (nodes: {key: string, title: string, children: TreeDataNode[], parentKey: string | null, siblingKey: string | null}[]) => void;
 }
 const useStore = create<TreeState & TreeAction>()(set => ({
     nodes: [],
@@ -56,11 +57,22 @@ const useStore = create<TreeState & TreeAction>()(set => ({
         let nodes = parent ? parent.children! : prev.nodes;
         nodes?.splice(nodes.findIndex(it => it.key === key), 1);
         return { nodes: [...prev.nodes] };
+    }),
+
+    init: (nodes) => set(() => {
+        let newNodes: TreeDataNode[] = [];
+        for(let node of nodes){
+            let children = newNodes;
+            if(node.parentKey) children = findNode(newNodes, node.parentKey)!.current.children!;
+            let index = node.siblingKey ? nodes.findIndex(it => it.key === node.siblingKey) + 1 : nodes.length;
+            children.splice(index, 0, { key: node.key, title: node.title, children: [] });
+        }
+        return {nodes: newNodes}
     })
 }))
 
-export default function useFiles(): [TreeState["nodes"], TreeAction["add"], TreeAction["remove"]] {
+export default function useFiles(): [TreeState["nodes"], TreeAction["add"], TreeAction["remove"], TreeAction["init"]] {
     const store = useStore();
 
-    return [store.nodes, store.add, store.remove];
+    return [store.nodes, store.add, store.remove, store.init];
 }

@@ -42,7 +42,7 @@ const FileTree = () => {
                 else {
                     api.success(`${input} 創建成功`)
                     add(key, input, [], current, previous)
-                    navigate(`/${key}`)
+                    navigate(`../${key}`)
                 }
             })
 
@@ -54,7 +54,7 @@ const FileTree = () => {
         let node = targetRef.current;
         if (!node) return;
         let nodeFind = findNode(nodes, node.key as string)
-
+     
         deleteNote({ username: username, noteId: node.key as string })[0]
             .then((res) => res.status === 200)
             .then(ok => {
@@ -65,17 +65,17 @@ const FileTree = () => {
                     api.success(`${title} 刪除成功`);
                     remove(node!.key as string);
                     let prev = nodeFind?.previous?.key as string | undefined
-                    let parent = nodeFind!.parent!.key as string
-                    prev ? navigate(`/${prev}`) : navigate(`/${parent}`)
+                    let parent = nodeFind?.parent?.key as string
+                    prev ? navigate(`../${prev}`) : navigate(`../${parent}`)
                 }
             })
     }, [api, deleteNote, navigate, nodes, remove, username]);
 
-    return <Flex vertical justify="space-between" style={{ height: "100%", overflowY: "auto" }}>
+    return <Flex vertical justify="space-between" style={{ height: "80%", overflowY: "auto" }}>
         <div>
             <Tree treeData={nodes} blockNode defaultExpandAll selectable={false}
                 titleRender={(data) => <Node key={data.key} title={data.title as string}
-                    onClick={() => navigate(`/${data.key}`)}
+                    onClick={() => navigate(`/note/${data.key}`)}
                     onAdd={() => {
                         setAddOpen(true);
                         targetRef.current = data;

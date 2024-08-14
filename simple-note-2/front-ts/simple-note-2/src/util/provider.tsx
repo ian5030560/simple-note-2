@@ -1,134 +1,128 @@
 import { useCookies } from "react-cookie";
-import useAPI, { APIs } from "./api"
-import React, { createContext, useEffect, useRef, useState } from "react";
-import { Navigate, useParams, Outlet } from "react-router-dom";
-import { Button, Modal } from "antd";
+import { APIs } from "./api"
+import React, { createContext, useEffect } from "react";
+import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, Route, redirect, useNavigation } from "react-router-dom";
 import useFiles from "../User/SideBar/FileTree/hook";
-import { useInfoAction } from "../User/SideBar/info";
 
-export function AuthProivder() {
+export function PublicProvider(){
+    const [{username}] = useCookies(["username"]);
+    return username ? <Navigate to={"note"} replace/> : <Outlet/>
+}
+
+export function PrivateProvider(){
     const [{ username }] = useCookies(["username"]);
-    const [nodes] = useFiles();
-
-    return !username || nodes.length === 0 ? <Navigate to={"/"} /> : <Outlet/>;
+    return !username ? <Navigate to={"/"} replace/> : <Outlet/>
 }
 
 type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, silblingId: string | null };
 
 function sortNodes(data: NoteTreeData[]) {
-    
+
     // 分組節點根據 parentId
-    let groups = {"root": []} as { [key: string]: NoteTreeData[] }
-    for(let node of data){
+    let groups = { "root": [] } as { [key: string]: NoteTreeData[] }
+    for (let node of data) {
         const parent = node.parentId;
-        if(!parent){
+        if (!parent) {
             groups["root"].push(node);
             continue;
         }
-        if(!groups[parent]) groups[parent] = []
+        if (!groups[parent]) groups[parent] = []
         groups[parent].push(node);
     }
 
     // 排序分組內的節點根據 siblingId
-    for(let key in groups){
+    for (let key in groups) {
         let nodes = groups[key];
         const sorted: NoteTreeData[] = [];
 
         let target: string | null = null;
         let i = 0;
-        while(i < nodes.length){
+        while (i < nodes.length) {
             let node = nodes[i];
-            if(node.silblingId === target){
+            if (node.silblingId === target) {
                 sorted.push(node);
                 target = node.noteId;
                 i = -1;
             }
-            i ++;
+            i++;
         }
         groups[key] = sorted;
     }
     // 合併排序後的結果
     let sortedData: NoteTreeData[] = [];
-    for(let key in groups){
+    for (let key in groups) {
         sortedData = sortedData.concat(groups[key]);
     }
+
     return sortedData;
 }
 
+const getCookie = () => new Map(document.cookie.split(":").map((item) => item.split("=")) as [[string, string]]);
+const requestInit = {
+    method: "POST",
+    headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "content-type": "application/json",
+    }
+}
+export async function settingLoader({ request, params }: LoaderFunctionArgs<any>): Promise<NoteTreeData[] | null> {
+    if(params.file) redirect("/note");
 
-export function SettingProvider() {
-    const loadNoteTree = useAPI(APIs.loadNoteTree);
-    const getInfo = useAPI(APIs.getInfo);
-    const [{ username }] = useCookies(["username"]);
-    const [id, setId] = useState<string>();
-    const [nodes, add, remove] = useFiles();
-    const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
-
-    useEffect(() => {
-        if (!username) return;
-
-        let info = getInfo({ username: username })
-        info[0].then((res) => res.json())
-            .then((res) => {
-                updatePicture(res.profile_photo);
-                updateThemes(res.themes);
-            })
-            .catch(() => { });
-
-        let tree = loadNoteTree({ username })
-        tree[0].then((res) => res.json())
-            .then((res: string) => {
-                if(nodes.length > 0){
-                    let copies = [...nodes];
-                    for(let copy of copies){
-                        remove(copy.key as string);
-                    }
-                }
-
-                let sorted = sortNodes(JSON.parse(res))
-                for (let node of sorted) {
-                    add(node.noteId, node.noteName, [], node.parentId, node.silblingId)
-                }
-                setId(() => sorted[0].noteId);
-            })
-
-        return () => {
-            // info[1].abort("取消資訊取得");
-            // tree[1].abort("取消載入筆記樹");
-        }
-    }, [add, getInfo, loadNoteTree, nodes, remove, updatePicture, updateThemes, username]);
-
-    return id ? <Navigate to={id} /> : <Outlet />;
+    let url = APIs.loadNoteTree;
+    let cookie = getCookie();
+    let username = cookie.get("username")!;
+    
+    return await fetch(url, {
+        ...requestInit,
+        signal: request.signal,
+        body: JSON.stringify({ "username": username })
+    }).then(res => res.json()).then(res => JSON.parse(res)).catch(() => null);
 }
 
-export const Note = createContext<string | undefined>(undefined);
-export function NoteProvider() {
-    const getNote = useAPI(APIs.getNote);
-    const [{ username }] = useCookies(["username"]);
-    const { file } = useParams();
-    const [content, setContent] = useState<string>();
+export function SettingProvider() {
+    const data = useLoaderData() as NoteTreeData[] | null;
+    const navigate = useNavigate();
+    const [,,,init] = useFiles();
+    const navigation = useNavigation();
+
     useEffect(() => {
-        let note = getNote({ username: username, noteId: file! })
-        note[0]
-            .then((res) => res.text())
-            .then(res => setContent(res))
-            .catch(() => {
-                Modal.error({
-                    title: "載入發生錯誤",
-                    content: "請重新整理頁面",
-                    footer: <div style={{ direction: "rtl" }}>
-                        <Button type="primary" danger
-                            onClick={() => window.location.reload()}>重新整理</Button>
-                    </div>,
-                    closeIcon: null
-                })
-            })
+        if (!data) return;
+        let sorted = sortNodes(data);
+        init(sorted.map((it) => ({key: it.noteId, title: it.noteName, children: [], parentKey: it.parentId, siblingKey: it.silblingId})));
+        let id = sorted[0].noteId;
+        id && navigate(id, { replace: true });
+    }, [data, init, navigate]);
 
-        return () => note[1].abort();
+    return <Outlet/>
+}
 
-    }, [file, getNote, username]);
+export async function contentLoader({ request, params }: LoaderFunctionArgs<any>): Promise<string | null>{
+    let url = APIs.getNote;
+    let cookie = getCookie();   
+    let username = cookie.get("username")!;
+    let id = params.file!;
+    return await fetch(url, {
+        ...requestInit,
+        signal: request.signal,
+        body: JSON.stringify({ "username": username, noteId: id }),
+    }).then(res => res.text()).catch(() => null)
+}
+export const Note = createContext<string | undefined>(undefined);
 
-    return <Note.Provider value={content}>
-        {content && <Outlet/>}
+function validate(content: string | null | undefined){
+    if(!content) return false;
+    try{
+        JSON.parse(content);
+        return true;
+    }
+    catch(e){
+        return false;
+    }
+}
+export function NoteProvider({children}: {children: React.ReactNode}) {
+    const data = useLoaderData() as string | null;
+
+    return <Note.Provider value={validate(data) ? data! : undefined}>
+        {children}
     </Note.Provider>
 }

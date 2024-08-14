@@ -10,7 +10,7 @@ import { defaultSeed } from "../../util/theme";
 
 const { Title } = Typography;
 
-type SignUpDataType = {
+type SignUpSubmisson = {
     username: string;
     email: string;
     password: string;
@@ -35,7 +35,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
             );
     }, [form, values]);
 
-    const handleFinished = (values: SignUpDataType) => {
+    const handleFinished = (values: SignUpSubmisson) => {
         setState(STATE.LOADING);
 
         let data = { ...values, id: "register" as "register" };
@@ -76,13 +76,10 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
     };
 
     return <>
-        <Form
-            form={form} size="large" validateMessages={validateMessages}
-            labelWrap style={{ width: "40%" }}
-            autoComplete="on" onFinish={handleFinished}
-        >
+        <Form form={form} size="large" validateMessages={validateMessages}
+            labelWrap style={{ width: "40%" }} autoComplete="on" onFinish={handleFinished}>
             <Title>註冊</Title>
-            <Form.Item label="帳號" name="username" rules={[{required: true},]}>
+            <Form.Item label="帳號" name="username" rules={[{required: true}]}>
                 <Input />
             </Form.Item>
             <Form.Item label="信箱" name="email"
@@ -106,7 +103,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
             >
                 <Input.Password />
             </Form.Item>
-            <Form.Item wrapperCol={{ offset: 2, }}>
+            <Form.Item wrapperCol={{ offset: 2 }}>
                 <Flex justify="space-between">
                     <Space>
                         <Button type="primary" htmlType="submit" disabled={!submittable}

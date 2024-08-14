@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { Form, Input, Typography, Flex, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal, ForgetPwdModal } from "./modal";
@@ -9,7 +9,7 @@ import useAPI from "../../util/api";
 
 const { Title } = Typography;
 
-type SignInDataType = {
+type SignInSubmisson = {
     username: string;
     password: string;
 }
@@ -19,23 +19,23 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
-    const [{username}, setCookie] = useCookies(["username"]);
+    const [{ username }, setCookie] = useCookies(["username"]);
     const values = Form.useWatch([], form);
     const signIn = useAPI(APIs.signIn);
 
     useEffect(() => {
-        form.validateFields({validateOnly: true})
+        form.validateFields({ validateOnly: true })
             .then(
                 () => setSubmittable(true),
                 () => setSubmittable(false)
             );
     }, [form, values]);
 
-    const handleFinished = (values: SignInDataType) => {
+    const handleFinished = (values: SignInSubmisson) => {
 
         setState(STATE.LOADING);
 
-        let data = { ...values, id: "sign-in" as "sign-in"};
+        let data = { ...values, id: "sign-in" as "sign-in" };
 
         signIn(data)[0]
             .then((res) => res.status === 200 || res.status === 201)
@@ -53,21 +53,19 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     };
 
     return <>
-        <Form
-            form={form} size="large" validateMessages={validateMessages}
-            labelWrap style={{ width: "40%" }} autoComplete="on" onFinish={handleFinished}
-        >
+        <Form form={form} size="large" validateMessages={validateMessages}
+            labelWrap style={{ width: "40%" }} autoComplete="on" onFinish={handleFinished}>
             <Title>登入</Title>
             <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
-                <Input autoComplete="username"/>
+                <Input autoComplete="username" />
             </Form.Item>
             <Form.Item label="密碼" name="password"
                 rules={[{ required: true, min: 8, max: 30, }]}
             >
-                <Input.Password autoComplete="password"/>
+                <Input.Password autoComplete="password" />
             </Form.Item>
             <Form.Item
-                wrapperCol={{ offset: 2}}
+                wrapperCol={{ offset: 2 }}
             >
                 <Flex justify="space-between">
                     <Space>
@@ -91,7 +89,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 open: state === STATE.SUCCESS,
                 onSuccessClose: async () => {
                     setState(() => null);
-                    navigate(0);
+                    navigate("note");
                 }
             }}
 

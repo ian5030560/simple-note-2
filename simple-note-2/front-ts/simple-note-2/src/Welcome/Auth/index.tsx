@@ -12,23 +12,9 @@ const Auth: React.FC = () => {
   const [current, setCurrent] = useState(CURRENT.SIGNIN);
 
   return <Flex justify="center">
-    {current === CURRENT.SIGNIN && (
-      <SignIn
-        onChange={() => {
-          setCurrent(CURRENT.SIGNUP);
-        }}
-      />
-    )}
-    {current === CURRENT.SIGNUP && (
-      <SignUp
-        onChange={() => {
-          setCurrent(CURRENT.SIGNIN);
-        }}
-      />
-    )}
+    {current === CURRENT.SIGNIN && <SignIn onChange={() => setCurrent(CURRENT.SIGNUP)}/>}
+    {current === CURRENT.SIGNUP && <SignUp onChange={() => setCurrent(CURRENT.SIGNIN)}/>}
   </Flex>
-
-
 };
 
 export default Auth;

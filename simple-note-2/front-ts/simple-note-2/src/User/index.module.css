@@ -19,10 +19,10 @@
 }
 
 .resizer{
-    border: 1px solid;
+    width: 3px;
     cursor: ew-resize;
 }
 
 .resizer:hover{
-    border-width: 3px;
+    transform: scaleX(2);
 }

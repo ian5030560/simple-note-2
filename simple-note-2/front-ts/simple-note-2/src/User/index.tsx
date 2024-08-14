@@ -12,7 +12,7 @@ const User: React.FC = () => {
 
     const [darken, setDarken] = useState(false);
     const { themes } = useInfoContext();
-
+ 
     const seed = useMemo(() => themes?.find(theme => theme.data.isUsing), [themes]);
 
     return <ConfigProvider theme={seed ? switchTheme(seed.data)(darken) : defaultTheme(darken)}>
@@ -42,8 +42,11 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
     }, [resizer.resize, resizer.start]);
 
     useEffect(() => {
-        const handlePointerUp = () => setResizer(prev => ({ ...prev, resize: false, start: { ...prev.start, w: prev.width } }));
         let body = document.body
+        const handlePointerUp = () => {
+            body.style.removeProperty("user-select");
+            setResizer(prev => ({ ...prev, resize: false, start: { ...prev.start, w: prev.width } }))
+        };
         body.addEventListener("pointermove", handlePointerMove);
         body.addEventListener("pointerup", handlePointerUp)
         return () => {
@@ -57,15 +60,13 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
             trigger={<MenuOutlined />} onCollapse={(collapsed) => { collapsed && setResizer(prev => ({ ...prev, width: MIN })) }}>
             <SideBar className={styles.sideBar} />
         </Sider>
-        {md && <div className={styles.resizer} style={{ borderColor: token.colorBorder }}
-            onPointerDown={(e) => setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))}
-            onDoubleClick={() => setResizer(prev => ({
-                ...prev,
-                width: prev.width === 0 ? MIN : 0,
-                start: { ...prev.start, w: MIN }
-            }))}
-        />
-        }
+        {md && <div className={styles.resizer} style={{ backgroundColor: token.colorBorder }}
+            onPointerDown={(e) => {
+                document.body.style.userSelect = "none"
+                setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))}
+            }
+            onDoubleClick={() => setResizer(prev => ({ ...prev, width: prev.width === 0 ? MIN : 0, start: { ...prev.start, w: MIN } }))}
+        />}
         <Content style={{ position: "relative" }}>
             <Editor />
         </Content>

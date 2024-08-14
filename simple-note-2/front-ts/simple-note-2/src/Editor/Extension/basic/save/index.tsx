@@ -20,14 +20,13 @@ const SavePlugin: Plugin = () => {
 
     useEffect(() => {
         if(initialNote){
-            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined)
-            
+            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
             if(initialNote === '"0"'){
-                editor.setEditorState(editor.parseEditorState(empty))
+                editor.setEditorState(editor.parseEditorState(empty));
             }
             else{
-                let editorState = editor.parseEditorState(JSON.parse(initialNote))
-                editor.setEditorState(editorState)
+                let editorState = editor.parseEditorState(JSON.parse(initialNote));
+                editor.setEditorState(editorState);
             }
         }
     }, [editor, file, initialNote]);
@@ -40,6 +39,10 @@ const SavePlugin: Plugin = () => {
                 username: username,
                 noteId: file!,
                 content: JSON.stringify(content.toJSON()),
+            })[0].then((res) => {
+                if(res.status === 200){
+                    console.log("saved!!");
+                }
             })
             isTyping(false);
         }
