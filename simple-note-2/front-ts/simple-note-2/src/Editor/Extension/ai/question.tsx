@@ -41,7 +41,6 @@ export const AIQuestionPlugin: Plugin = () => {
     }, [model]);
     
     // useEffect(() => {
-    //     const API_KEY = "AIzaSyDXlilZA6flQCDThnj7qRd4gunxZIWl1Po";
     //     session.current = new GoogleGenerativeAI(API_KEY)
     //         .getGenerativeModel({ model: "gemini-1.5-flash", tools: [{ codeExecution: {} }] })
     //         .startChat();
