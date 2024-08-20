@@ -59,8 +59,7 @@ class LoadNoteTreeView(APIView):
                     for i in range(len(notesData)):
                         notesDataID = notesData[i][1]
                         notesDataName = notesData[i][0]
-                        # wait for url method
-                        collaborateUrl = 1 
+                        collaborateUrl = UserCollaborateNote.check_url(notesDataName, notesDataID)  # get collaborateb url
                         singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
                         respArray.append(singleNoteData)
                 else:  # not Collaborative(single note)
