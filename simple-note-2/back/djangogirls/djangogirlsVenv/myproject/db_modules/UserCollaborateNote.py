@@ -16,6 +16,7 @@ class User_Collaborate_Note(Base):
     note_id = Column(Integer)
     note_master = Column(String(255))
     note_guest = Column(String(255))
+    url = Column(String(1024))
 
     def __init__(
         self,
@@ -23,11 +24,13 @@ class User_Collaborate_Note(Base):
         note_id=None,
         note_master=None,
         note_guest=None,
+        url=None,
     ):
         self.id = id
         self.note_id = note_id
         self.note_master = note_master
         self.note_guest = note_guest
+        self.url = url
 
 
 def create_session():
@@ -39,8 +42,8 @@ def create_session():
 session = create_session()
 
 
-# Insert new data by master_name, note_title_id, guest_name
-def insert_newData(note_master_input, note_title_id_input, note_guest_input):
+# Insert new data by master_name, note_title_id, guest_name, url
+def insert_newData(note_master_input, note_title_id_input, note_guest_input, url_input):
     new_note_id = check_id(note_master_input, note_title_id_input)
     try:
         if new_note_id:
@@ -48,6 +51,7 @@ def insert_newData(note_master_input, note_title_id_input, note_guest_input):
                 note_id=new_note_id,
                 note_master=note_master_input,
                 note_guest=note_guest_input,
+                url = url_input
             )
             session.execute(stmt)
             session.commit()
@@ -86,6 +90,33 @@ def check_all_guest(note_master_input, note_title_id_input):
         return str(e)
     finally:
         session.close()
+
+#check url by master_name, note_title_id
+def check_url(note_master_input, note_title_id_input):
+    note_id_query = check_id(note_master_input, note_title_id_input)
+    try:
+        if note_id_query:
+            stmt = (
+                session.query(User_Collaborate_Note.url)
+                .filter(
+                    and_(
+                        User_Collaborate_Note.note_id == note_id_query,
+                        User_Collaborate_Note.note_master == note_master_input,
+                    )
+                )
+                .first()
+            )
+            return stmt[0]
+        else:
+            return "note id not exist"
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(e)
+        return str(e)
+    finally:
+        session.close()
+    
+            
 
 
 # Check if it is a collaborative note by note_master_input, note_title_id_input
@@ -157,5 +188,4 @@ def delete_all_data(note_master_input, note_title_id_input):
     finally:
         session.close()
 
-
-# print(delete_one_data("user01", 1 , "user03"))
+#print(check_url("user01", 1))
