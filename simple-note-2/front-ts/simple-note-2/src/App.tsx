@@ -29,7 +29,7 @@ const router = createBrowserRouter(
       <Route element={<PrivateProvider/>}>
         <Route path="note" element={<SettingProvider />} loader={settingLoader}>
           <Route path=":file" element={<NoteProvider><UserPage /></NoteProvider>} loader={contentLoader} />
-          <Route path=":user/:file" element={<div>test</div>} />
+          <Route path=":host/:file" element={<UserPage/>} />
         </Route>
       </Route>
 

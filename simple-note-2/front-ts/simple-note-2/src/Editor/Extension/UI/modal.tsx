@@ -1,46 +1,30 @@
 import { LexicalCommand } from "lexical";
-import { Modal as AntModal, ModalProps } from "antd";
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { Modal as AntModal } from "antd";
+import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
-export type ModalRef = {
-    isOpen: boolean;
-    open: () => void;
-    close: () => void;
-}
-export interface ModalProp extends Omit<ModalProps, "open" | "onCancel" | "onOk"> {
+export interface ModalProps {
+    open: boolean;
+    onOpen: () => void;
+    onClose: () => void;
     command: LexicalCommand<any>;
-    onClose?: () => void;
-    onOk?: () => void;
-    onOpen?: () => void;
+    footer?: React.ReactNode;
+    children: React.ReactNode;
+    title?: React.ReactNode;
+    width?: string | number;
+    destroyOnClose?: boolean;
 }
-const Modal = forwardRef(({ command, onClose, onOk, onOpen, ...prop }: ModalProp, ref: React.ForwardedRef<ModalRef>) => {
+export default function Modal(props: ModalProps) {
     const [editor] = useLexicalComposerContext();
-    const [open, setOpen] = useState(false);
-    
-    useImperativeHandle(ref, () => ({
-        isOpen: open,
-        open: () => setOpen(true),
-        close: () => setOpen(false),
-    }),[open]);
 
     useEffect(() => {
-        return editor.registerCommand(command, () => {
-            setOpen(true);
-            onOpen?.();
+        return editor.registerCommand(props.command, () => {
+            props.onOpen();
             return true;
-        }, 4)
+        }, 4);
     })
-
-    return <AntModal open={open} centered
-        onCancel={() => {
-            onClose?.();
-            setOpen(false);
-        }}
-        onOk={() => {
-            onOk?.();
-            setOpen(false);
-        }} {...prop}/>
-})
-
-export default Modal;
+    return <AntModal open={props.open} onCancel={props.onClose} centered width={props.width}
+        footer={props.footer ? props.footer : null} title={props.title} destroyOnClose={props.destroyOnClose}>
+        {props.children}
+    </AntModal>
+}

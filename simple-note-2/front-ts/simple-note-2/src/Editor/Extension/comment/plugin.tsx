@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { Plugin } from "..";
-import { $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, LexicalCommand, SELECTION_CHANGE_COMMAND, createCommand } from "lexical";
+import { $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, LexicalCommand, NodeKey, SELECTION_CHANGE_COMMAND, createCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $wrapSelectionInMarkNode, MarkNode, $createMarkNode, $isMarkNode } from "@lexical/mark";
-import CommentPool from "./component";
 import { mergeRegister, registerNestedElementResolver } from "@lexical/utils";
 import useStore from "./store";
 import { useCookies } from "react-cookie";
 import { uuid } from "../../../util/secret";
+import { CommentCardMap, CommentSider } from "./component";
 
 export const INSERT_COMMENT: LexicalCommand<void> = createCommand();
 const CommentPlugin: Plugin = () => {
@@ -15,13 +15,14 @@ const CommentPlugin: Plugin = () => {
     const store = useStore([]);
     const [title, setTitle] = useState("");
     const [{ username }] = useCookies(["username"]);
+    const [cards, setCards] = useState<CommentCardMap>({});
 
     useEffect(() => {
         return mergeRegister(
             editor.registerCommand(INSERT_COMMENT, () => {
                 let selection = $getSelection();
                 if ($isRangeSelection(selection) && !selection.isCollapsed()) {
-                    $wrapSelectionInMarkNode(selection, selection.isBackward(), uuid(10));
+                    $wrapSelectionInMarkNode(selection, selection.isBackward(), uuid());
                 }
                 return false;
             }, 1),
@@ -48,24 +49,20 @@ const CommentPlugin: Plugin = () => {
             ),
 
             editor.registerMutationListener(MarkNode, (mutations) => {
-                Array.from(mutations).forEach(([key, tag]) => {
-                    if (tag === "created") {
-                        editor.update(() => {
+                editor.getEditorState().read(() => {
+                    Array.from(mutations).forEach(([key, tag]) => {
+                        if(tag === "created"){
                             const node = $getNodeByKey(key);
-                            if ($isMarkNode(node)) {
+                            if($isMarkNode(node)){
                                 let ids = node.getIDs();
-                                for (let id of ids) {
-                                    if (!store.getItem(id)) {
-                                        console.log(title);
-                                        store.createItem(id, title);
-                                    }
+                                for(let id of ids){
+                                    // setCards(prev => {
+
+                                    // })
                                 }
                             }
-                        })
-                    }
-                    if (tag === "destroyed") {
-
-                    }
+                        }
+                    })
                 })
             })
         )
@@ -75,25 +72,18 @@ const CommentPlugin: Plugin = () => {
         let item = store.getItem(id);
         if (!item) return;
         item.comments.push({
-            id: uuid(5),
+            id: uuid(),
             author: username,
             content: text,
             timestamp: Date.now(),
         })
     }, [store, username]);
 
-
-    return <CommentPool items={Array.from(store.collection).map(([key, item]) => {
-        return {
-            title: item.title,
-            id: key,
-            items: item.comments.map(i => ({
-                author: i.author,
-                timestamp: i.timestamp,
-                text: i.content,
-            })),
-        }
-    })} onAdd={handleAdd} />;
+    return <CommentSider cards={cards}
+        onDeleteCard={() => { }} 
+        onDeleteCardItem={() => { }}
+        onSubmmit={() => {}}
+    />;
 }
 
 export default CommentPlugin;

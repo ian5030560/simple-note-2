@@ -1,41 +1,30 @@
 .toolBar{
     padding: 5px 0px;
-    align-items: center;
     overflow: auto hidden;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-}
-
-.notCollapsed{
-    max-height: 50px;
     transition: max-height 0.1s linear;
-}
-
-.collapsed{
-    max-height: 0;
-    padding: 0;
-    transition: max-height 0.1s linear;
+    width: 100%;
+    justify-content: space-evenly;
 }
 
 .collapsedButton{
     width: 40px;
     height: 40px;
-    cursor: pointer;
     position: absolute;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    bottom: -40px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, 100%);
     z-index: 1000;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
-    transition: all 250ms;
+    transition: transform 250ms;
     border-radius: 0px 0px 8px 8px;
 }
 
 .collapsedButtonHide{
     composes: collapsedButton;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -50%);
+}
+
+.collapsedButtonHover{
+    composes: collapsedButton;
+    transform: translate(-50%, 0%);
 }

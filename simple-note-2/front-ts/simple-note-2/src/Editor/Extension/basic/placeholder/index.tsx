@@ -1,10 +1,11 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Plugin } from "../../index";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { mergeRegister } from "@lexical/utils";
 import { ParagraphNode } from "lexical";
 import { HeadingNode } from "@lexical/rich-text";
 import styles from "./index.module.css";
+import { Typography } from "antd";
 
 const PLACE_TEXT = "輸入文字...";
 const PlaceholderPlugin: Plugin = () => {
@@ -41,26 +42,8 @@ const PlaceholderPlugin: Plugin = () => {
 
 export default PlaceholderPlugin;
 
-export const Placeholder = ({anchor}: {anchor: HTMLElement | null}) => {
-    const [pos, setPos] = useState({x: 0, y: 0});
-
-    useEffect(() => {
-        if(!anchor) return;
-
-        let resizer = new ResizeObserver(() => {
-            let rect = anchor.getBoundingClientRect();
-            setPos({x: rect.x, y: rect.y});
-        });
-
-        resizer.observe(document.body);
-
-        return () => {
-            resizer.unobserve(document.body);
-            resizer.disconnect();
-        }
-    })
-
-    return <div style={{top: pos.y, left: pos.x}} className={styles.placeholder}>
-        <span>開始你的筆記</span>
+export const Placeholder = () => {
+    return <div className={styles.placeholder}>
+        <Typography.Text style={{color: "rgba(136, 136, 136, 0.6)"}}>開始你的筆記</Typography.Text>
     </div>
 }

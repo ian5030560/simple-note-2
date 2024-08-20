@@ -1,11 +1,11 @@
 import { Tabs, TabsProps, Input, Button, Space, InputRef } from "antd";
-import React, { ChangeEvent, useCallback, useMemo, useRef } from "react";
+import React, { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
 import { LexicalCommand, createCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { AiOutlineFileImage, AiOutlineUpload } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
 import { INSERT_IMAGE } from "./plugin";
-import Modal, { ModalRef } from "../UI/modal";
+import Modal from "../UI/modal";
 import { useCookies } from "react-cookie";
 import useFiles, { findNode } from "../../../User/SideBar/FileTree/hook";
 import { useParams } from "react-router-dom";
@@ -16,9 +16,9 @@ const ImageModal: React.FC = () => {
     const [editor] = useLexicalComposerContext();
     const urlRef = useRef<InputRef>(null);
     const fileRef = useRef<HTMLInputElement>(null);
-    const ref = useRef<ModalRef>(null);
+    const [open, setOpen] = useState(false);
     const [{ username }] = useCookies(["username"]);
-    const {file} = useParams();
+    const { file } = useParams();
     const [nodes] = useFiles();
 
     const handleURL = useCallback(() => {
@@ -26,7 +26,7 @@ const ImageModal: React.FC = () => {
 
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: url });
         urlRef.current!.input!.value = "";
-        ref.current?.close();
+        setOpen(false);
     }, [editor]);
 
     const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +35,7 @@ const ImageModal: React.FC = () => {
 
         let data = new FormData();
         let node = findNode(nodes, file!);
-        
+
         data.append("username", username);
         data.append("filename", image.name);
         data.append("notename", node!.current.title as string);
@@ -43,7 +43,7 @@ const ImageModal: React.FC = () => {
 
         let src = await fetch("http://localhost:8000/newMediaFile/",
             {
-                body: data, method: "POST", 
+                body: data, method: "POST",
                 headers: {
                     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
                     // "content-type": "multipart/form-data",
@@ -53,17 +53,17 @@ const ImageModal: React.FC = () => {
             console.log(res);
             return res.text();
         })
-        .catch((err) => {
-            console.log(err);
-            return "";
-        });
-        
+            .catch((err) => {
+                console.log(err);
+                return "";
+            });
+
         src = "http://" + src.substring(1, src.length - 1);
         // let src = URL.createObjectURL(file);
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         fileRef.current!.value = "";
-        ref.current?.close();
-    }, [editor]);
+        setOpen(false);
+    }, [editor, file, nodes, username]);
 
     const items: TabsProps["items"] = useMemo(() => [
         {
@@ -92,7 +92,8 @@ const ImageModal: React.FC = () => {
         }
     ], [handleFile, handleURL]);
 
-    return <Modal command={OPEN_IMAGE_MODAL} footer={null} ref={ref}>
+    return <Modal command={OPEN_IMAGE_MODAL} open={open} title="上傳圖片"
+        onOpen={() => setOpen(true)} onClose={() => setOpen(false)}>
         <Tabs defaultActiveKey="file" items={items} />
     </Modal>
 }

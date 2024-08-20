@@ -49,7 +49,7 @@ const useWebcam = (prop: WebcamProp) => {
     }, [getStream]);
 
     const getPicture = useCallback(() => {
-
+        
     }, []);
 
     const camera = useMemo(() => <video autoPlay playsInline controls={false} width={prop.width} height={prop.height} ref={ref}/>, [prop.height, prop.width]);

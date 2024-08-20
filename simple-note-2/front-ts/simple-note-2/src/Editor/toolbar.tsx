@@ -7,7 +7,6 @@ import Text from "./ToolBar/Component/text";
 import Markdown from "./ToolBar/Component/markdown";
 import List from "./ToolBar/Component/list";
 import Table from "./ToolBar/Component/table";
-import Comment from "./ToolBar/Component/comment";
 import { Flex } from "antd";
 
 export const LIST: React.ReactNode[] = [
@@ -26,8 +25,6 @@ export const LIST: React.ReactNode[] = [
     </Flex>,
     <Flex>
         <Link />
-        <Comment/>
         <Table/>
     </Flex>,
-
 ]

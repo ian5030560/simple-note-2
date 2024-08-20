@@ -21,9 +21,7 @@ const BackgroundColor: React.FC = () => {
             presets: [
                 {
                     label: 'Recommend',
-                    colors: [
-                        "red", "yellow", "green", "blue"
-                    ],
+                    colors: ["red", "yellow", "green", "blue"],
                     defaultOpen: true
                 }
             ],

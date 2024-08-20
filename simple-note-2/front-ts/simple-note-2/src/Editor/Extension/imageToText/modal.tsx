@@ -6,7 +6,7 @@ import Webcam from "react-webcam";
 import styles from "./modal.module.css";
 import { FaRegDotCircle } from "react-icons/fa";
 import Tesseract from "tesseract.js";
-import Modal, { ModalRef } from "../UI/modal";
+import Modal from "../UI/modal";
 
 const contraints: MediaTrackConstraints = {
   width: 500,
@@ -16,9 +16,8 @@ const contraints: MediaTrackConstraints = {
 export const OPEN_IMAGE_TO_TEXT_MODAL: LexicalCommand<void> = createCommand();
 const ImageToTextModal = () => {
   const [editor] = useLexicalComposerContext();
-  const ref = useRef<ModalRef>(null);
+  const [open, setOpen] = useState(false);
   const camRef = useRef<Webcam>(null);
-  const [id, setId] = useState<string>("camera");
   const fileRef = useRef<HTMLInputElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
 
@@ -63,15 +62,18 @@ const ImageToTextModal = () => {
 
     const { data: { text } } = await Tesseract.recognize(src);
     insertText(text);
+    setOpen(false);
+
   }, [insertText]);
 
 
   const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
+    let file = e.target.files[0];
 
-    let file = e.target.files[0]
     let { data: { text } } = await Tesseract.recognize(file);
     insertText(text);
+    setOpen(false);
 
   }, [insertText]);
 
@@ -81,8 +83,8 @@ const ImageToTextModal = () => {
         key: "camera",
         label: "照相",
         children: <Flex justify="center" align="center" style={{ position: "relative" }}>
-          {id === "camera" &&
-            <Webcam audio={false} width={500} height={400} ref={camRef}
+          {
+            open && <Webcam audio={false} width={500} height={400} ref={camRef}
               videoConstraints={contraints} screenshotFormat="image/png" />
           }
           <div className={styles.cameraMask} ref={maskRef} />
@@ -100,10 +102,11 @@ const ImageToTextModal = () => {
         </>
       }
     ]
-  }, [handleClick, handleUpload, id]);
+  }, [handleClick, handleUpload, open]);
 
-  return <Modal command={OPEN_IMAGE_TO_TEXT_MODAL} ref={ref} title="圖文辨識" width={600} footer={null}>
-    <Tabs items={items} onChange={(key) => setId(key)} />
+  return <Modal command={OPEN_IMAGE_TO_TEXT_MODAL} title="圖文辨識" open={open}
+    onOpen={() => setOpen(true)} onClose={() => setOpen(false)} destroyOnClose>
+    <Tabs items={items} defaultActiveKey="camera" />
   </Modal>
 }
 

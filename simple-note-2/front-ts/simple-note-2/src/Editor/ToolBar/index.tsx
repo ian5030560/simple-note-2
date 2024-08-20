@@ -1,20 +1,13 @@
-import {  Button, Flex, FlexProps, theme } from "antd";
-import React, { forwardRef, useEffect, useRef, useState } from "react"
-import Divider from "./Component/UI/divider";
+import { Button, Divider, Space, theme } from "antd";
+import React, { useEffect, useRef, useState } from "react"
 import { Plugin } from "../Extension/index";
 import styles from "./index.module.css";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 
-interface ToolBarContainerProp extends FlexProps {
-    $backgroundColor: string;
-    $shadowColor: string;
-    className: string | undefined;
-}
-const ToolBarContainer = forwardRef(({ $backgroundColor, $shadowColor, className, ...prop }: ToolBarContainerProp, ref: React.Ref<HTMLElement>) => <Flex ref={ref} className={[styles.toolBar, className].join(" ")} style={{ backgroundColor: $backgroundColor }} {...prop} />)
 const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) => {
     const { token } = theme.useToken();
     const [collapse, setCollapse] = useState(false);
-    const ref = useRef<HTMLElement>(null);
+    const ref = useRef<HTMLButtonElement>(null);
     const [hide, setHide] = useState(false);
 
     useEffect(() => {
@@ -40,22 +33,23 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
     }, []);
 
     return <div style={{ position: "relative" }} id="toolbar-container">
-        <ToolBarContainer
-            $backgroundColor={token.colorBgElevated} $shadowColor={token.colorText}
-            justify="space-evenly" gap={3} className={collapse ? styles.collapsed : styles.notCollapsed}
-        >
-            {toolbars[0]}
+        <Space className={styles.toolBar} size={3}
+            split={<Divider type="vertical" style={{ backgroundColor: token.colorText }} />}
+            style={{
+                backgroundColor: token.colorBgElevated,
+                maxHeight: collapse ? 0 : 50,
+                padding: collapse ? 0 : undefined,
+            }}>
             {
-                toolbars.slice(1).map((element, index) => <React.Fragment key={index}>
-                    <Divider key={index} />
+                toolbars.map((element, index) => <React.Fragment key={index}>
                     {element}
                 </React.Fragment>)
             }
-        </ToolBarContainer>
-        <span ref={ref} onClick={() => setCollapse(prev => !prev)} style={{backgroundColor: token.colorBgElevated}}
-            className={`${styles.collapsedButton} ${(hide && collapse) ? styles.collapsedButtonHide : ""}`}>
+        </Space>
+        <Button type="text" ref={ref} onClick={() => setCollapse(prev => !prev)}
+            className={!collapse ? styles.collapsedButton : !hide ? styles.collapsedButtonHover : styles.collapsedButtonHide}>
             {collapse ? <DownOutlined /> : <UpOutlined />}
-        </span>
+        </Button>
     </div>
 }
 

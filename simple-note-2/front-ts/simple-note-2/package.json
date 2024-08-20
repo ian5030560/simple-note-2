@@ -5,6 +5,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
     "@excalidraw/excalidraw": "^0.17.3",
+    "@google/generative-ai": "^0.17.0",
     "@lexical/react": "^0.13.1",
     "@lexical/yjs": "^0.16.0",
     "@testing-library/jest-dom": "^5.17.0",

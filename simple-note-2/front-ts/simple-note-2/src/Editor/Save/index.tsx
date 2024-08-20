@@ -1,12 +1,16 @@
-import { Plugin } from "../../index";
+import { Plugin } from "../Extension/index";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { CLEAR_EDITOR_COMMAND, EditorState } from "lexical";
-import useAPI, { APIs } from "../../../../util/api";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
-import { Note } from "../../../../util/provider";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import useAPI, { APIs } from "../../util/api";
+import { Note } from "../../util/provider";
+import { decodeBase64 } from "../../util/secret";
+import { useCollab } from "../Collaborate/store";
+import { useCollaborationContext } from "@lexical/react/LexicalCollaborationContext";
+import { CONNECTED_COMMAND } from "@lexical/yjs";
 
 const empty = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
@@ -14,25 +18,30 @@ const SavePlugin: Plugin = () => {
     const saveNote = useAPI(APIs.saveNote);
     const initialNote = useContext(Note);
     const [editor] = useLexicalComposerContext();
+    // const [] = useCollaborationContext();
     const [{ username }] = useCookies(["username"]);
-    const { file } = useParams();
+    const { activate, room } = useCollab();
+    const { file, host } = useParams();
     const [typing, isTyping] = useState(false);
-
+    const collaborative = useMemo(() => !!(activate && room), [activate, room]);
+    
     useEffect(() => {
-        if(initialNote){
+        if (collaborative && host !== username) return;
+
+        if (initialNote) {
             editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-            if(initialNote === '"0"'){
+            if (initialNote === '"0"') {
                 editor.setEditorState(editor.parseEditorState(empty));
             }
-            else{
+            else {
                 let editorState = editor.parseEditorState(JSON.parse(initialNote));
                 editor.setEditorState(editorState);
             }
         }
-    }, [editor, file, initialNote]);
+    }, [activate, collaborative, editor, host, initialNote, room, username]);
 
     useEffect(() => {
-    
+
         function handleTyping() {
             const content = editor.getEditorState()
             saveNote({
@@ -40,7 +49,7 @@ const SavePlugin: Plugin = () => {
                 noteId: file!,
                 content: JSON.stringify(content.toJSON()),
             })[0].then((res) => {
-                if(res.status === 200){
+                if (res.status === 200) {
                     console.log("saved!!");
                 }
             })
@@ -48,7 +57,7 @@ const SavePlugin: Plugin = () => {
         }
 
         let timer: NodeJS.Timer | undefined = undefined;
-        if(typing){
+        if (typing) {
             timer = setTimeout(handleTyping, 500);
         }
 
@@ -57,10 +66,11 @@ const SavePlugin: Plugin = () => {
 
     const handleChange = useCallback((editorState: EditorState) => {
         console.log(editorState);
-        if(window.location.pathname !== "/test"){
-            isTyping(true);
+
+        if (window.location.pathname !== "/test") {
+            isTyping(() => !collaborative ? true : decodeBase64(host!) === username);
         }
-    }, []);
+    }, [collaborative, host, username]);
 
     return <OnChangePlugin onChange={handleChange} />;
 }

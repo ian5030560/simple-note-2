@@ -6,7 +6,7 @@ import {
     $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode, KEY_DOWN_COMMAND, KEY_TAB_COMMAND,
     SELECTION_CHANGE_COMMAND, TextNode
 } from "lexical";
-import "./plugin.css";
+import "./placeholder.css";
 import useAPI, { APIs } from "../../../util/api";
 
 const TEXT_TAG = "simple-note-2-text-tag"

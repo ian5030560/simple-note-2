@@ -1,106 +1,105 @@
-import { Button, Card, Flex, Input, Space, theme, Typography } from "antd";
-import styles from "./component.module.css";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import { IoMdSend } from "react-icons/io";
-import { FiDelete } from "react-icons/fi";
-import { RiChatDeleteLine } from "react-icons/ri";
-import makeTimeString from "./time";
-import { TextAreaRef } from "antd/es/input/TextArea";
+import { Button, Card, Drawer, Flex, Input, Space, Timeline, Typography } from "antd";
+import { useEffect, useState } from "react";
+import { MinusOutlined, SendOutlined } from "@ant-design/icons";
+import { createCommand, LexicalCommand } from "lexical";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
-interface CommentProp {
+interface CommentItemProps {
     author: string;
     timestamp: number;
-    text: string;
-    // onDelete: () => void;
+    content: string;
+    onDelete: () => void;
 }
-const Comment = (prop: CommentProp) => {
-    let time = Date.now() - prop.timestamp;
+function CommentItem(props: CommentItemProps) {
+    const [timestamp, setTimestamp] = useState(props.timestamp);
 
-    return <div>
-        <Flex align="baseline" justify="space-between">
-            <Title level={4} ellipsis style={{ marginTop: 0 }}>{prop.author}</Title>
-            <Text>{makeTimeString(time)}</Text>
+    return <Flex vertical>
+        <Flex justify="space-between" align="center">
+            <Space size={"small"}>
+                <h3>{props.author}</h3>
+                <Typography.Text type="secondary">{timestamp.toString()}</Typography.Text>
+            </Space>
+            <Button type="text" icon={<MinusOutlined />} onClick={props.onDelete} />
         </Flex>
-        <Flex justify="space-between" align="baseline">
-            <Paragraph>{prop.text}</Paragraph>
-            <Button type="text" icon={<FiDelete />} />
-             {/* onClick={() => prop.onDelete()}/> */}
-        </Flex>
-    </div>
+        <Typography.Text>{props.content}</Typography.Text>
+    </Flex>
 }
 
-type CommentItem = {
-    author: string;
-    timestamp: number;
-    text: string;
-}
-interface CommentLaneProp {
+export type CommentItemMap = Record<string, Omit<CommentItemProps, "onDelete">>;
+interface CommentCardProps {
     id: string;
-    title: string;
-    items: CommentItem[];
-    // onDelete: (id: string) => void;
-    onAdd: (text: string) => void;
+    selectedText: string;
+    onDelete: () => void;
+    itemMap: CommentItemMap;
+    onDeleteItem: (id: string) => void;
+    onSubmmit: (text: string, id: string) => void;
 }
-const { Title, Text, Paragraph } = Typography;
-const CommentLane = (prop: CommentLaneProp) => {
-    const ref = useRef<TextAreaRef>(null);
+function CommentCard(props: CommentCardProps) {
+    const [input, setInput] = useState("");
 
-    return <Card title={<Title level={3} style={{ marginTop: 0 }}>{prop.title}</Title>}
-        extra={<Button icon={<RiChatDeleteLine size={16} />} type="text" />}
-        bodyStyle={{ paddingTop: 0, paddingBottom: 0 }}
-        headStyle={{ minHeight: 0 }}>
-        {
-            prop.items.map((item, index) => <Comment
-                key={prop.title + index}
-                author={item.author}
-                text={item.text}
-                timestamp={item.timestamp}
-                // onDelete={() => prop.onDelete(prop.id + index)}
-            />)
-        }
-        <div className={styles.commentInputContainer}>
-            <Input.TextArea style={{resize: "none"}} autoSize ref={ref}/>
-            <Button icon={<IoMdSend />} type="text" className={styles.commentButton} 
-            onClick={() => {
-                if(!ref.current) return;
-                let text = ref.current.resizableTextArea!.textArea.value;
-                prop.onAdd(text);
-                ref.current.resizableTextArea!.textArea.value = "";
-            }}/>
+    return <Card title={props.selectedText} extra={<Button icon={<MinusOutlined />}
+        type="text" onClick={props.onDelete} />} style={{ width: "100%" }}>
+        <Timeline mode="left"
+            items={Object.keys(props.itemMap).map((key) => {
+                const item = props.itemMap[key];
+                return {
+                    children: <CommentItem author={item.author}
+                        timestamp={item.timestamp}
+                        content={item.content}
+                        onDelete={() => props.onDeleteItem(key)}
+                    />
+                }
+            })}
+        />
+        <div style={{ position: "relative" }}>
+            <Input.TextArea autoSize value={input} onChange={(e) => setInput(e.target.value)} />
+            <Button type="text" icon={<SendOutlined />}
+                style={{ position: "absolute", right: 0, bottom: 0 }}
+                onClick={() => {
+                    setInput("");
+                    props.onSubmmit(input, props.id);
+                }}
+            />
         </div>
-    </Card>;
+    </Card>
 }
 
-type CommentItemSet = Array<Omit<CommentLaneProp, "onAdd">>;
-type PoolRef = {
-    open: () => void;
-    close: () => void;
-}
-interface CommentPoolProp{
-    items: CommentItemSet;
-    onAdd: (id: string, text: string) => void;
-    // onDelete: (id: string) => void;
-}
-const CommentPool = forwardRef(({ items, onAdd }: CommentPoolProp, ref: React.Ref<PoolRef>) => {
-    const { token } = theme.useToken();
-    const [show, setShow] = useState(true);
+export type CommentCardMap = Record<string, Omit<CommentCardProps, "onDelete" | "onDeleteItem" | "onSubmmit">>;
 
-    useImperativeHandle(ref, () => ({
-        open: () => setShow(true),
-        close: () => setShow(false),
-    }), []);
+export const TOGGLE_COMMENTSIDER: LexicalCommand<void> = createCommand();
+interface CommentSiderProps {
+    cards: CommentCardMap;
+    onDeleteCard: (id: string) => void;
+    onDeleteCardItem: (cid: string, id: string) => void;
+    onSubmmit: (text: string) => void;
+}
+export function CommentSider(props: CommentSiderProps) {
+    const [editor] = useLexicalComposerContext();
+    const [open, setOpen] = useState(false);
 
-    return <div className={show ? styles.commentLane : styles.commentLaneHide}
-        style={{ backgroundColor: token.colorBgBase }}>
-        <button type="button" onClick={() => setShow(false)}
-            className={styles.commentCloseButton}>x</button>
-        <Space direction="vertical" style={{ width: "100%" }}>
+    useEffect(() => {
+        editor.registerCommand(TOGGLE_COMMENTSIDER, () => {
+            setOpen(prev => !prev);
+            return true;
+        }, 4)
+    }, [editor]);
+
+    return <Drawer title="評論" mask={false} maskClosable={false}
+        open={open} onClose={() => setOpen(false)}>
+        <Space direction="vertical">
             {
-                items.map((item) => <CommentLane key={item.id} title={item.title} id={item.id}
-                items={item.items} onAdd={(text) => onAdd(item.id, text)}/>)
+                Object.keys(props.cards).map(key => {
+                    const card = props.cards[key];
+                    return <CommentCard
+                        key={key} id={key}
+                        selectedText={card.selectedText}
+                        itemMap={card.itemMap}
+                        onDelete={() => props.onDeleteCard(key)}
+                        onDeleteItem={(id) => props.onDeleteCardItem(key, id)}
+                        onSubmmit={() => props.onSubmmit}
+                    />
+                })
             }
         </Space>
-    </div>;
-})
-
-export default CommentPool;
+    </Drawer>
+}

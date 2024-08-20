@@ -2,7 +2,7 @@ import { Tree, theme, Button, message, TreeDataNode, Flex } from "antd";
 import Node, { AddModal, DeleteModal } from "./node";
 import { FaPlus } from "react-icons/fa6";
 import useFiles, { findNode } from "./hook";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAPI, { APIs } from "../../../util/api";
 import { useCookies } from "react-cookie";
@@ -71,7 +71,7 @@ const FileTree = () => {
             })
     }, [api, deleteNote, navigate, nodes, remove, username]);
 
-    return <Flex vertical justify="space-between" style={{ height: "80%", overflowY: "auto" }}>
+    return <Flex vertical justify="space-between" style={{ height: "95%", overflowY: "auto" }}>
         <div>
             <Tree treeData={nodes} blockNode defaultExpandAll selectable={false}
                 titleRender={(data) => <Node key={data.key} title={data.title as string}

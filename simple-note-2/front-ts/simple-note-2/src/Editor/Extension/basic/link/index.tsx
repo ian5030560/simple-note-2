@@ -6,7 +6,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
 import { $isLinkNode, LinkNode } from "@lexical/link";
-import { Button, Input, InputRef } from "antd";
+import { Button, Flex, Input, InputRef, Typography } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -23,85 +23,88 @@ const LinkPlugin: Plugin = () => <LexicalLinkPlugin validateUrl={validateUrl} />
 export default LinkPlugin;
 
 interface LinkProp {
-    url?: string,
-    top: number,
-    left: number,
-    inputRef: React.Ref<InputRef>,
+    url: string;
+    top: number;
+    left: number;
+    inputRef: React.Ref<InputRef>;
     editable: boolean;
     onEditClick: (e: React.MouseEvent) => void;
     onDiscardClick: (e: React.MouseEvent) => void;
 }
 const Link = React.forwardRef((prop: LinkProp, ref: React.Ref<HTMLDivElement>) => {
 
-    return <div
-        className={styles.floatingLink}
-        style={{ transform: `translate(${prop.left}px, ${prop.top}px)` }}
-        ref={ref}
-    >
-        <a href={prop.url} style={{ display: !prop.editable ? undefined : "none" }}>{prop.url}</a>
+    return <Flex className={styles.floatingLink} ref={ref} align="center"
+        style={{ transform: `translate(${prop.left}px, ${prop.top}px)` }}>
+        <Typography.Link href={prop.url} style={{ display: !prop.editable ? undefined : "none" }}>{prop.url}</Typography.Link>
         <Input type="url" ref={prop.inputRef} placeholder="http://..." style={{ display: prop.editable ? undefined : "none" }} />
-        <Button icon={<CiEdit size={20} />} onClick={(e) => prop.onEditClick(e)} />
-        <Button icon={<FaTrash size={20} />} onClick={(e) => prop.onDiscardClick(e)} />
-    </div>
+        <Flex gap={"small"}>
+            <Button icon={<CiEdit size={20} />} onClick={(e) => prop.onEditClick(e)} />
+            <Button icon={<FaTrash size={20} />} onClick={(e) => prop.onDiscardClick(e)} />
+        </Flex>
+    </Flex>
 })
 
 const DEFAULT = { x: -10000, y: -10000 };
 export const FloatingLinkPlugin: Plugin = () => {
 
     const [editor] = useLexicalComposerContext();
-    const [url, setUrl] = useState<string>("");
-    const [pos, setPos] = useState(DEFAULT);
+    const [url, setUrl] = useState("");
+    const pos = useRef(DEFAULT);
     const [editable, setEditable] = useState(false);
     const inputRef = useRef<InputRef>(null);
     const wrapper = useWrapper();
-    const fRef = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLDivElement>(null);
 
     const showLink = useCallback(() => {
-        editor.update(() => {
-            const selection = $getSelection();
-            if ($isRangeSelection(selection)) {
-                let node = selection.anchor.getNode();
-                let parent = $findMatchingParent(node, $isLinkNode) as LinkNode | null;
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+            let node = selection.anchor.getNode();
+            let parent = $findMatchingParent(node, $isLinkNode) as LinkNode | null;
 
-                let url = "";
-                let position = DEFAULT;
-                if (parent) {
-                    url = parent.getURL();
-                    let element = editor.getElementByKey(parent.getKey());
-                    console.log(element, wrapper, fRef.current);
-                    if (!element || !wrapper || !fRef.current) return;
+            let url = "";
+            let position = DEFAULT;
 
-                    let { x, y } = element.getBoundingClientRect();
-                    let { top, left } = wrapper.getBoundingClientRect();
-                    let { height } = fRef.current.getBoundingClientRect();
-
-                    position = { x: x - left, y: y - top - height };
-                    inputRef.current!.input!.value = url;
-                }
+            if(!parent){
                 setEditable(false);
-                setUrl(url);
-                setPos(position);
             }
-        });
+            else {
+                url = parent.getURL();
+                let element = editor.getElementByKey(parent.getKey());
+                if (!element || !wrapper || !ref.current) return;
 
-        return false;
+                let { x, y, height: eHeight } = element.getBoundingClientRect();
+                let { top, left, y: wy } = wrapper.getBoundingClientRect();
+                let { height } = ref.current.getBoundingClientRect();
+                
+                let overTop = wy >= y;
+                y = !overTop ? y - height : y + eHeight;
+
+                position = { x: x - left, y: y - top };
+                inputRef.current!.input!.value = url;
+            }
+            pos.current = position;
+            setUrl(url);
+        }
     }, [editor, wrapper]);
 
     useEffect(() => {
         let resizer = new ResizeObserver(() => {
-            showLink();
+            editor.getEditorState().read(showLink);
         });
         resizer.observe(document.body);
         return () => {
             resizer.unobserve(document.body);
             resizer.disconnect();
         }
-    }, [showLink]);
+    }, [editor, showLink]);
 
     useEffect(() => {
         return mergeRegister(
-            editor.registerCommand(SELECTION_CHANGE_COMMAND, () => showLink(), 1),
-            editor.registerUpdateListener(() => showLink()),
+            editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+                editor.getEditorState().read(showLink);
+                return true;
+            }, 1),
+            editor.registerUpdateListener(({ editorState }) => editorState.read(showLink)),
         )
     }, [editor, showLink]);
 
@@ -114,16 +117,15 @@ export const FloatingLinkPlugin: Plugin = () => {
     const handleDiscardClick = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
         editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-        setEditable(() => false);
+        setEditable(false);
     }, [editor]);
 
+    const { x, y } = pos.current;
     return wrapper ? createPortal(
-        <Link top={pos.y} left={pos.x} url={url}
-            editable={editable}
+        <Link top={y} left={x} url={url} editable={editable}
+            inputRef={inputRef} ref={ref}
             onEditClick={handleEditClick}
             onDiscardClick={handleDiscardClick}
-            inputRef={inputRef}
-            ref={fRef}
         />, wrapper
     ) : null;
 }

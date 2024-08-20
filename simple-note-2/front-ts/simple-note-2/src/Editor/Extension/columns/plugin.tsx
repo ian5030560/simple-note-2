@@ -1,8 +1,8 @@
 import { $createParagraphNode, $getSelection, $isRangeSelection, ElementNode, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_LEFT_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ARROW_UP_COMMAND, LexicalCommand, LexicalNode, createCommand } from "lexical";
 import { Plugin } from "..";
-import Modal, { ModalRef } from "../UI/modal";
-import { useEffect, useRef } from "react";
-import { InputNumber, theme } from "antd";
+import Modal from "../UI/modal";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Button, Flex, InputNumber, theme } from "antd";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { $createColumnContainerNode, $isColumnContainerNode, ColumnContainerNode } from "./container";
@@ -14,18 +14,27 @@ export const INSERT_COLUMNS: LexicalCommand<number> = createCommand();
 export const OPEN_COLUMN_MODAL: LexicalCommand<void> = createCommand();
 export const APPEND_COLUMNS: LexicalCommand<number> = createCommand();
 const ColumnLayoutModal = () => {
-    const ref = useRef<ModalRef>(null);
+    const [open, setOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const [editor] = useLexicalComposerContext();
 
-    return <Modal command={OPEN_COLUMN_MODAL} ref={ref} title="插入欄位" width={300}
-        onOk={() => {
-            let value = inputRef.current?.value;
-            if (value) {
-                editor.dispatchCommand(INSERT_COLUMNS, parseInt(value));
-            }
-            ref.current?.close();
-        }}>
+    const handleOk = useCallback(() => {
+        let value = inputRef.current?.value;
+        if (value) {
+            editor.dispatchCommand(INSERT_COLUMNS, parseInt(value));
+        }
+        setOpen(false);
+    }, [editor]);
+
+    const footer = useMemo(() => {
+        return <Flex gap={"small"} dir="rtl">
+            <Button onClick={() => setOpen(false)}>取消</Button>
+            <Button type="primary" onClick={handleOk}>確認</Button>
+        </Flex>;
+    }, [handleOk]);
+
+    return <Modal command={OPEN_COLUMN_MODAL} open={open} title="插入欄位" width={300}
+        onOpen={() => setOpen(true)} onClose={() => setOpen(false)} footer={footer}>
         <InputNumber min={1} max={10} size="large" ref={inputRef} style={{ width: "100%" }} defaultValue={3} />
     </Modal>;
 }
@@ -132,7 +141,7 @@ const ColumnLayoutPlugin: Plugin = () => {
                         }
                         if ($isColumnItemNode(node)) {
                             let pnode = $findMatchingParent(node, $isColumnContainerNode);
-                            if($isColumnContainerNode(pnode)){
+                            if ($isColumnContainerNode(pnode)) {
                                 pnode.setNumber(pnode.getChildrenSize() + payload);
                                 for (let i = 0; i < payload; i++) {
                                     node.insertAfter($createColumnItemNode().append($createParagraphNode()));

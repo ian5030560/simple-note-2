@@ -95,8 +95,7 @@ export interface SideBarProps extends Omit<FlexProps, "vertical" | "children"> {
 }
 const SideBar = ({ className, ...prop }: SideBarProps) => {
 
-    return <Flex vertical className={className}
-        style={{ height: "100%" }} {...prop}>
+    return <Flex vertical className={className}style={{ height: "100%" }} {...prop}>
         <UserProfile />
         <FileTree />
     </Flex>

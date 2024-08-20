@@ -13,7 +13,6 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import ListMaxLevelPlugin from "./listMaxLevel";
 import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import styles from "./index.module.css";
-import SavePlugin from "./save";
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
 import PlaceholderPlugin from "./placeholder";
 
@@ -28,7 +27,6 @@ const BasicExtension: Extension = {
         <ListMaxLevelPlugin maxLevel={5} />,
         <ListPlugin />,
         <FloatingLinkPlugin />,
-        <SavePlugin />,
         <CheckListPlugin />,
         // <PlaceholderPlugin />
     ],
