@@ -21,10 +21,14 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
+# def create_session():
+#     Session = sessionmaker(bind=engine)
+#     session = Session()
+    # return session
+    
 def create_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    Session = scoped_session(sessionmaker(bind=engine))
+    return Session
 
 
 

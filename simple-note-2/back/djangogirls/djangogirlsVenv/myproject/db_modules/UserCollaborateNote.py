@@ -33,10 +33,14 @@ class User_Collaborate_Note(Base):
         self.url = url
 
 
+# def create_session():
+#     Session = sessionmaker(bind=engine)
+#     session = Session()
+    # return session
+    
 def create_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    Session = scoped_session(sessionmaker(bind=engine))
+    return Session
 
 
 session = create_session()
@@ -139,7 +143,7 @@ def check_collaborativeNote_exist(note_master_input, note_title_id_input):
     except SQLAlchemyError as e:
         session.rollback()
         print(e)
-        return str(e)
+        return False
     finally:
         session.close()
 
@@ -188,4 +192,4 @@ def delete_all_data(note_master_input, note_title_id_input):
     finally:
         session.close()
 
-#print(check_url("user01", 1))
+print(check_collaborativeNote_exist("user01", 1))

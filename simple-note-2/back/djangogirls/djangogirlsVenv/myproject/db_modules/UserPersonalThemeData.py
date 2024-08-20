@@ -28,10 +28,14 @@ class User_Personal_Theme_Data(Base):
     user_id = Column(Integer)
 
 
+# def create_session():
+#     Session = sessionmaker(bind=engine)
+#     session = Session()
+    # return session
+    
 def create_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    Session = scoped_session(sessionmaker(bind=engine))
+    return Session
 
 
 session = create_session()

@@ -46,10 +46,14 @@ class User_Note_Data(Base):
         self.note_title_id = note_title_id
 
 
+# def create_session():
+#     Session = sessionmaker(bind=engine)
+#     session = Session()
+    # return session
+    
 def create_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    Session = scoped_session(sessionmaker(bind=engine))
+    return Session
 
 
 session = create_session()

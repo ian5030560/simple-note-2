@@ -45,10 +45,14 @@ class User_Personal_Info(Base):
         self.login_status = login_status
 
 
+# def create_session():
+#     Session = sessionmaker(bind=engine)
+#     session = Session()
+    # return session
+    
 def create_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    Session = scoped_session(sessionmaker(bind=engine))
+    return Session
 
 
 session = create_session()
