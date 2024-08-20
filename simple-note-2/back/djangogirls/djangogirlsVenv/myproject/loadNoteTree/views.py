@@ -53,7 +53,7 @@ class LoadNoteTreeView(APIView):
             if notesData:  # 取得成功
                 notesDataID = notesData[0][1]
                 notesDataName = notesData[0][0]
-                isCollaborative = UserCollaborateNote.check_collaborativeNote_exist(notesDataName, notesDataID)  # check if is a collaborative note
+                isCollaborative = UserCollaborateNote.check_collaborativeNote_exist(username, notesDataID)  # check if is a collaborative note
                 respArray = []
                 if isCollaborative:  # is Collaborative(multiple notes)
                     for i in range(len(notesData)):
