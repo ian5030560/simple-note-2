@@ -11,6 +11,7 @@ from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from db_modules import UserSubNoteData  # 資料庫來的檔案
+from db_modules import UserCollaborateNote  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -47,22 +48,31 @@ class LoadNoteTreeView(APIView):
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
 
-            notesData = UserNoteData.check_user_all_notes(
-                username
-            )  # 透過username來取得資料
+            notesData = UserNoteData.check_user_all_notes(username)  # 透過username來取得資料
                 
             if notesData:  # 取得成功
+                notesDataID = notesData[0][1]
+                notesDataName = notesData[0][0]
+                isCollaborative = UserCollaborateNote.check_collaborativeNote_exist(notesDataName, notesDataID)  # check if is a collaborative note
                 respArray = []
-                for i in range(len(notesData)):
-                    notesDataID = notesData[i][1]
-                    notesDataName = notesData[i][0]
-                    parentId = UserSubNoteData.check_parent_id(notesDataID)
-                    silblingId = UserSubNoteData.check_sibling_id(notesDataID)
-                    singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
-                    respArray.append(singleNoteData)
+                if isCollaborative:  # is Collaborative(multiple notes)
+                    for i in range(len(notesData)):
+                        notesDataID = notesData[i][1]
+                        notesDataName = notesData[i][0]
+                        # wait for url method
+                        collaborateUrl = 1 
+                        singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                        respArray.append(singleNoteData)
+                else:  # not Collaborative(single note)
+                    for i in range(len(notesData)):
+                        notesDataID = notesData[i][1]
+                        notesDataName = notesData[i][0]
+                        parentId = UserSubNoteData.check_parent_id(notesDataID)
+                        silblingId = UserSubNoteData.check_sibling_id(notesDataID)
+                        singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
+                        respArray.append(singleNoteData)
                 
-                
-                return Response(json.dumps(respArray),status=status.HTTP_200_OK)
+                return Response(json.dumps(respArray), status=status.HTTP_200_OK)
             
             elif notesData == False:  # error
                 return Response("SQL error.", status=status.HTTP_400_BAD_REQUEST)
