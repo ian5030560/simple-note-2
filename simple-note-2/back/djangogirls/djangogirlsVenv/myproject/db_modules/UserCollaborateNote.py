@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, update, and_, insert, delete
+from sqlalchemy import create_engine, exists, update, and_, insert, delete
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
@@ -88,6 +88,31 @@ def check_all_guest(note_master_input, note_title_id_input):
         session.close()
 
 
+# Check if it is a collaborative note by note_master_input, note_title_id_input
+def check_collaborativeNote_exist(note_master_input, note_title_id_input):
+    note_id_query = check_id(note_master_input, note_title_id_input)
+    try:
+        if note_id_query:
+            # 使用 exists() 構建子查詢
+            stmt = session.query(
+                session.query(User_Collaborate_Note.note_id).filter(
+                    and_(
+                        User_Collaborate_Note.note_id == note_id_query,
+                        User_Collaborate_Note.note_master == note_master_input
+                    )
+                ).exists()
+            ).scalar()
+            return stmt  # stmt 會是 True 或 False
+        else:
+            return False 
+    except SQLAlchemyError as e:
+        session.rollback()
+        print(e)
+        return False
+    finally:
+        session.close()
+
+
 # Delete one row by note_master_input,note_title_id_input,note_guest_input
 def delete_one_data(note_master_input, note_title_id_input, note_guest_input):
     note_id_query = check_id(note_master_input, note_title_id_input)
@@ -111,6 +136,7 @@ def delete_one_data(note_master_input, note_title_id_input, note_guest_input):
     finally:
         session.close()
 
+
 # Delete all row by note_master_input,note_title_id_input
 def delete_all_data(note_master_input, note_title_id_input):
     note_id_query = check_id(note_master_input, note_title_id_input)
@@ -132,4 +158,4 @@ def delete_all_data(note_master_input, note_title_id_input):
         session.close()
 
 
-#print(delete_one_data("user01", 1 , "user03"))
+# print(delete_one_data("user01", 1 , "user03"))
