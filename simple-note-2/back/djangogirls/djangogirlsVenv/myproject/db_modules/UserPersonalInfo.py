@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, insert, update, delete
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker,scoped_session
 from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
 import os
@@ -46,9 +46,8 @@ class User_Personal_Info(Base):
 
 
 def create_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    Session = scoped_session(sessionmaker(bind=engine))
+    return Session
 
 
 session = create_session()

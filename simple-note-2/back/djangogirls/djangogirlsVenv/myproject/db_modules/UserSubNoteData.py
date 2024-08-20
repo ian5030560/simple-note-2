@@ -2,7 +2,7 @@ from sqlalchemy import and_, create_engine, delete, exists, insert, select, upda
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker ,scoped_session
 
 from .UserNoteData import User_Note_Data
 
@@ -28,14 +28,13 @@ class User_SubNote_Data(Base):
     sibling_id = Column(String(128))
 
 
-Session = sessionmaker(bind=engine)
-session = Session()
 
 
 def create_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    Session = scoped_session(sessionmaker(bind=engine))
+    return Session
+
+session = create_session()
 
 
 def insert_data(id_input, parent_id_input, sibling_id_input):

@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, exists, update, and_, insert, delete
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker ,scoped_session
 from sqlalchemy.exc import SQLAlchemyError
 from .UserNoteData import User_Note_Data, check_id
 from .Common import engine
@@ -34,9 +34,8 @@ class User_Collaborate_Note(Base):
 
 
 def create_session():
-    Session = sessionmaker(bind=engine)
-    session = Session()
-    return session
+    Session = scoped_session(sessionmaker(bind=engine))
+    return Session
 
 
 session = create_session()
