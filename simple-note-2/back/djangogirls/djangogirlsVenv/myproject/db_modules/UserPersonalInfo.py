@@ -55,11 +55,10 @@ def create_session():
     return Session
 
 
-session = create_session()
-
 
 # 檢查此組使用者名稱和密碼是否存在
 def check_username_password(username, password):
+    session = create_session()
     user = (
         session.query(User_Personal_Info)
         .filter_by(usernames=username, user_password=password)
@@ -81,6 +80,7 @@ def check_username_password(username, password):
 
 # 檢查是否有相同的使用者名稱
 def check_username(username):
+    session = create_session()
     result = session.query(User_Personal_Info).filter_by(usernames=username).first()
     try:
         if result:
@@ -98,6 +98,7 @@ def check_username(username):
 
 # 檢查是否有相同的email
 def check_email(user_email):
+    session = create_session()
     result = session.query(User_Personal_Info).filter_by(user_email=user_email).first()
     try:
         if result:
@@ -115,6 +116,7 @@ def check_email(user_email):
 
 # 給username檢查login_status
 def check_status(username):
+    session = create_session()
     result = session.query(User_Personal_Info).filter_by(usernames=username).first()
     try:
         if result:
@@ -132,6 +134,7 @@ def check_status(username):
 
 # check User_Personal_Info by usernames
 def check_user_personal_info(usernames):
+    session = create_session()
     user = session.query(User_Personal_Info).filter_by(usernames=usernames).first()
     try:
         if user:
@@ -158,6 +161,7 @@ def check_user_personal_info(usernames):
 
 # check profile photo by username
 def check_profile_photo_by_username(usernames_input):
+    session = create_session()
     result = session.query(User_Personal_Info).filter_by(usernames=usernames_input).first()
     try:
         if result:
@@ -175,6 +179,7 @@ def check_profile_photo_by_username(usernames_input):
 
 # 給user_email查password
 def search_password(email):
+    session = create_session()
     result = session.query(User_Personal_Info).filter_by(user_email=email).first()
     try:
         if result:
@@ -191,6 +196,7 @@ def search_password(email):
 
 # 插入username,password,user_email到資料庫
 def insert_username_password_email(username, password, email):
+    session = create_session()
     new_user = User_Personal_Info(
         usernames=username, user_password=password, user_email=email, login_status=True
     )
@@ -201,6 +207,7 @@ def insert_username_password_email(username, password, email):
 
 # insert_profile_photo_by_username
 def insert_profile_photo_by_username(usernames_input, profile_photo_input):
+    session = create_session()
     try:
         new_profile_photo = User_Personal_Info(
             usernames=usernames_input, profile_photo=profile_photo_input
@@ -217,6 +224,7 @@ def insert_profile_photo_by_username(usernames_input, profile_photo_input):
 
 # update_profile_photo_by_username
 def update_profile_photo_by_username(usernames_input, profile_photo_input):
+    session = create_session()
     stmt = (
         update(User_Personal_Info)
         .where(User_Personal_Info.usernames == usernames_input)
@@ -237,6 +245,7 @@ def update_profile_photo_by_username(usernames_input, profile_photo_input):
 
 # update_user_email_by_username
 def update_user_email_by_username(usernames_input, user_email_input):
+    session = create_session()
     stmt = (
         update(User_Personal_Info)
         .where(User_Personal_Info.usernames == usernames_input)
@@ -254,6 +263,7 @@ def update_user_email_by_username(usernames_input, user_email_input):
         session.close()   
 # 給username更新user_password
 def update_user_password_by_usernames(usernames_input, user_password_input):
+    session = create_session()
     stmt = (
         update(User_Personal_Info)
         .where(User_Personal_Info.usernames == usernames_input)
@@ -272,6 +282,7 @@ def update_user_password_by_usernames(usernames_input, user_password_input):
 
 # 給username更新login_status
 def update_user_login_status_by_usernames(usernames_input, login_status_input):
+    session = create_session()
     stmt = (
         update(User_Personal_Info)
         .where(User_Personal_Info.usernames == usernames_input)
@@ -292,6 +303,7 @@ def update_user_login_status_by_usernames(usernames_input, login_status_input):
 
 # 給username去change login_status
 def change_login_status(username):
+    session = create_session()
     user = session.query(User_Personal_Info).filter_by(usernames=username).first()
     try:
         if user:

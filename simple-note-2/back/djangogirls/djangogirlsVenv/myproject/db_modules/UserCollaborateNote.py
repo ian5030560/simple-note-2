@@ -43,11 +43,12 @@ def create_session():
     return Session
 
 
-session = create_session()
+
 
 
 # Insert new data by master_name, note_title_id, guest_name, url
 def insert_newData(note_master_input, note_title_id_input, note_guest_input, url_input):
+    session = create_session()
     new_note_id = check_id(note_master_input, note_title_id_input)
     try:
         if new_note_id:
@@ -72,6 +73,7 @@ def insert_newData(note_master_input, note_title_id_input, note_guest_input, url
 
 # Check all guest by master_name, note_title_id
 def check_all_guest(note_master_input, note_title_id_input):
+    session = create_session()
     note_id_query = check_id(note_master_input, note_title_id_input)
     try:
         if note_id_query:
@@ -97,6 +99,7 @@ def check_all_guest(note_master_input, note_title_id_input):
 
 #check url by master_name, note_title_id
 def check_url(note_master_input, note_title_id_input):
+    session = create_session()
     note_id_query = check_id(note_master_input, note_title_id_input)
     try:
         if note_id_query:
@@ -125,6 +128,7 @@ def check_url(note_master_input, note_title_id_input):
 
 # Check if it is a collaborative note by note_master_input, note_title_id_input
 def check_collaborativeNote_exist(note_master_input, note_title_id_input):
+    session = create_session()
     note_id_query = check_id(note_master_input, note_title_id_input)
     try:
         if note_id_query:
@@ -150,6 +154,7 @@ def check_collaborativeNote_exist(note_master_input, note_title_id_input):
 
 # Delete one row by note_master_input,note_title_id_input,note_guest_input
 def delete_one_data(note_master_input, note_title_id_input, note_guest_input):
+    session = create_session()
     note_id_query = check_id(note_master_input, note_title_id_input)
     try:
         if note_id_query:
@@ -174,6 +179,7 @@ def delete_one_data(note_master_input, note_title_id_input, note_guest_input):
 
 # Delete all row by note_master_input,note_title_id_input
 def delete_all_data(note_master_input, note_title_id_input):
+    session = create_session()
     note_id_query = check_id(note_master_input, note_title_id_input)
     try:
         if note_id_query:
@@ -192,4 +198,4 @@ def delete_all_data(note_master_input, note_title_id_input):
     finally:
         session.close()
 
-print(check_collaborativeNote_exist("user01", 1))
+#print(check_collaborativeNote_exist("user01", 1))

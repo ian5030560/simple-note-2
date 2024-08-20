@@ -56,11 +56,11 @@ def create_session():
     return Session
 
 
-session = create_session()
 
 
 # 給usernames,note_title_id update content
 def update_content(usernames, note_title_id, content):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames)
@@ -91,6 +91,7 @@ def update_content(usernames, note_title_id, content):
 
 # 給usernames,note_title_id insert content
 def insert_content(usernames, note_title_id, content):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames)
@@ -126,6 +127,7 @@ def insert_content(usernames, note_title_id, content):
 
 # check_content by usernames and note_title_id
 def check_content(usernames, note_title_id):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames))
@@ -151,6 +153,7 @@ def check_content(usernames, note_title_id):
 
 #Check id by usernames and note_title_id
 def check_id(usernames, note_title_id):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames))
@@ -179,6 +182,7 @@ def check_id(usernames, note_title_id):
 # check all user's notes
 # return like [('note1', '1'), ('note2', '2'), ('note4', '4')]
 def check_user_all_notes(usernames_input):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames_input))
@@ -202,6 +206,7 @@ def check_user_all_notes(usernames_input):
 
 # insert user_id,note_name,note_title_id 到User_Note_Data裡
 def insert_user_id_note_name(usernames, note_name, note_title_id):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames))
@@ -239,6 +244,7 @@ def insert_user_id_note_name(usernames, note_name, note_title_id):
 
 # 給username和note_title_id來刪除整行
 def delete_note_by_usernames_note_title_id(usernames, note_title_id):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames))
@@ -269,6 +275,7 @@ def delete_note_by_usernames_note_title_id(usernames, note_title_id):
 
 # 給username和note_name來刪除整行
 def delete_note_by_usernames_note_name(usernames, note_name):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames))

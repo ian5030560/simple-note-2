@@ -39,10 +39,10 @@ def create_session():
     Session = scoped_session(sessionmaker(bind=engine))
     return Session
 
-session = create_session()
 
 
 def insert_data(id_input, parent_id_input, sibling_id_input):
+    session = create_session()
     try:
         existing_data = (
             session.query(User_SubNote_Data)
@@ -73,6 +73,7 @@ def insert_data(id_input, parent_id_input, sibling_id_input):
 
 # Update parent id by own id
 def update_parent_id(id_input, parent_id_input):
+    session = create_session()
     try:
         existing_data = (
             session.query(User_SubNote_Data)
@@ -100,6 +101,7 @@ def update_parent_id(id_input, parent_id_input):
 
 # Update sibling id by own id
 def update_sibling_id(id_input, sibling_id_input):
+    session = create_session()
     try:
         existing_data = (
             session.query(User_SubNote_Data)
@@ -127,6 +129,7 @@ def update_sibling_id(id_input, sibling_id_input):
 
 # Check sibling id by own id
 def check_sibling_id(id_input):
+    session = create_session()
     try:
         existing_data = (
             session.query(User_SubNote_Data.sibling_id)
@@ -147,6 +150,7 @@ def check_sibling_id(id_input):
 
 # Check parent id by own id
 def check_parent_id(id_input):
+    session = create_session()
     try:
         existing_data = (
             session.query(User_SubNote_Data.parent_id)
@@ -167,6 +171,7 @@ def check_parent_id(id_input):
 
 # Check id by own sibling id
 def check_id_by_sibling_id(sibling_id_input):
+    session = create_session()
     try:
         existing_data = (
             session.query(User_SubNote_Data.id)
@@ -187,6 +192,7 @@ def check_id_by_sibling_id(sibling_id_input):
 
 # Delete data by parent id recursively
 def recursive_delete(id_input):
+    session = create_session()
     # Find all same parent_id notes
     child_notes = (
         session.query(User_SubNote_Data)
@@ -204,6 +210,7 @@ def recursive_delete(id_input):
     session.commit()
 
 def delete_orphaned_user_note_data(session):
+    session = create_session()
     try:
         # 查找 User_Note_Data 表中不存在於 User_SubNote_Data 表的 note_title_id
         subquery = select(User_Note_Data.note_title_id).where(
@@ -222,6 +229,7 @@ def delete_orphaned_user_note_data(session):
         
 # Delete data by own id
 def delete_data(id_input):
+    session = create_session()
     try:
         data = (
             session.query(User_SubNote_Data)

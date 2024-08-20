@@ -38,11 +38,9 @@ def create_session():
     return Session
 
 
-session = create_session()
-
-
 # check_theme_name
 def check_theme_name(usernames_input, theme_name_input):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames_input))
@@ -62,6 +60,7 @@ def check_theme_name(usernames_input, theme_name_input):
 
 # update_theme_name_by_username
 def update_theme_name(usernames_input, old_theme_name_input, new_theme_name_input):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames_input))
@@ -91,6 +90,7 @@ def update_theme_name(usernames_input, old_theme_name_input, new_theme_name_inpu
         
 #update theme data by username and theme name
 def update_themeData_by_usernames(usernames_input,theme_name_input,color_light_primary_input,color_light_base_bg_input,color_dark_primary_input,color_dark_base_bg_input):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames_input))
@@ -125,6 +125,7 @@ def update_themeData_by_usernames(usernames_input,theme_name_input,color_light_p
 
 # insert_theme_name_by_username
 def insert_theme_name_by_username(usernames_input, theme_name_input):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames_input))
@@ -164,6 +165,7 @@ def insert_themeData_by_usernames(
     color_dark_primary_input,
     color_dark_base_bg_input,
 ):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter((User_Personal_Info.usernames == usernames_input))

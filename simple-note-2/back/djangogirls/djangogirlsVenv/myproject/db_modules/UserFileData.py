@@ -10,6 +10,7 @@ from .Common import engine
 
 Base = declarative_base()
 
+
 class User_File_Data(Base):
     __tablename__ = "User_File_Data"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -17,24 +18,20 @@ class User_File_Data(Base):
     file_name = Column(TEXT)
 
 
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
 # def create_session():
 #     Session = sessionmaker(bind=engine)
 #     session = Session()
-    # return session
-    
+# return session
+
+
 def create_session():
     Session = scoped_session(sessionmaker(bind=engine))
     return Session
 
 
-
-
 # give file_name check file_name
 def check_file_name(usernames_input, note_name_input, file_name_input):
+    session = create_session()
     try:
         user_id_query = (
             session.query(User_Personal_Info.id)
@@ -54,14 +51,16 @@ def check_file_name(usernames_input, note_name_input, file_name_input):
 
         stmt = (
             session.query(User_File_Data.file_name)
-            .filter(and_(
+            .filter(
+                and_(
                     User_File_Data.note_id == note_id_query[0],
                     User_File_Data.file_name == file_name_input,
-                ))
+                )
+            )
             .first()
         )
         if not stmt:
-                return False
+            return False
 
         if stmt[0] == file_name_input:
             return True
@@ -82,12 +81,13 @@ def insert_file_name(
     note_name_input,
     file_name_input,
 ):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
         .first()
     )
-    
+
     note_id_query = (
         session.query(User_Note_Data.id)
         .filter(
@@ -120,6 +120,7 @@ def insert_file_name(
 
 # Give username note_name file_name update file_name
 def update_file_name(usernames_input, note_name_input, file_name_input):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
@@ -151,8 +152,10 @@ def update_file_name(usernames_input, note_name_input, file_name_input):
     finally:
         session.close()
 
+
 # Give username note_title_id file_name delete file_name
 def delete_file_name(usernames_input, note_title_id_input, file_name_input):
+    session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
         .filter(User_Personal_Info.usernames == usernames_input)
@@ -168,15 +171,12 @@ def delete_file_name(usernames_input, note_title_id_input, file_name_input):
         )
         .first()
     )
-    stmt = (
-            delete(User_File_Data)
-            .where(
-                and_(
-                    User_File_Data.note_id == note_id_query[0],
-                    User_File_Data.file_name == file_name_input
-                )
-            )
+    stmt = delete(User_File_Data).where(
+        and_(
+            User_File_Data.note_id == note_id_query[0],
+            User_File_Data.file_name == file_name_input,
         )
+    )
     try:
         session.execute(stmt)
         session.commit()
@@ -187,8 +187,5 @@ def delete_file_name(usernames_input, note_title_id_input, file_name_input):
         return False
     finally:
         session.close()
-
-
-
 
 # print(delete_file_name("user01", 1, "file2"))
