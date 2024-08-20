@@ -108,7 +108,7 @@ def check_collaborativeNote_exist(note_master_input, note_title_id_input):
     except SQLAlchemyError as e:
         session.rollback()
         print(e)
-        return False
+        return str(e)
     finally:
         session.close()
 
