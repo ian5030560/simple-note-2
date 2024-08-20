@@ -46,8 +46,9 @@ class User_Personal_Info(Base):
 
 
 def create_session():
-    Session = scoped_session(sessionmaker(bind=engine))
-    return Session
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session
 
 
 session = create_session()

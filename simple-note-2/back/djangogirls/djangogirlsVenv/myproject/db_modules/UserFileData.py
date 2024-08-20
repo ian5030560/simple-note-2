@@ -22,8 +22,9 @@ session = Session()
 
 
 def create_session():
-    Session = scoped_session(sessionmaker(bind=engine))
-    return Session
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session
 
 
 
