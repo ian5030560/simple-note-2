@@ -1,0 +1,15 @@
+.tableOfContentAlignLine{
+    width: 5px;
+    min-height: 0px;
+    border-radius: 20px;
+}
+
+.tableOfContentItem{
+    width: -moz-fit-content;
+    width: fit-content;
+    cursor: pointer;
+    border-radius: 3px;
+    padding: 5px;
+    -webkit-user-select: none;
+    user-select: none;
+}

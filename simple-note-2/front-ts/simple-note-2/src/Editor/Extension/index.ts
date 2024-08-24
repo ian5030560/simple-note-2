@@ -1,7 +1,6 @@
 import { EditorThemeClasses, Klass, LexicalNode } from "lexical"
 import React from "react";
 import BasicExtension from "./basic";
-import SpeechToTextExtension from "./speechToText";
 import ImageExtension from "./image";
 import CanvasExtension from "./canvas";
 import TableExtension from "./table";
@@ -13,6 +12,7 @@ import DocumentExtension from "./document";
 import ColumnLayoutExtension from "./columns";
 import { LexicalNodeReplacement } from "lexical";
 import CommentExtension from "./comment";
+import TableOfContentExtension from "./tablofContent";
 
 export type Plugin<T = {}> = React.FC<T>
 
@@ -29,7 +29,6 @@ export interface Extension {
 
 const Extensions: Extension[] = [
     BasicExtension,
-    SpeechToTextExtension,
     ImageExtension,
     CanvasExtension,
     TableExtension,
@@ -39,6 +38,7 @@ const Extensions: Extension[] = [
     DocumentExtension,
     AIExtension,
     ColumnLayoutExtension,
+    TableOfContentExtension,
     // CommentExtension,
 ]
 

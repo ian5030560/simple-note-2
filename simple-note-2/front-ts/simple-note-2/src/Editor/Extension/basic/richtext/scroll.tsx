@@ -25,11 +25,11 @@ export default function Scroller({ children }: { children: React.ReactNode }) {
             observer.unobserve(toolbar!);
             observer.unobserve(toolkit!);
             observer.disconnect();
-            document.body.style.overflowY = "initial";
+            document.body.style.removeProperty("overflow-y");
         }
     }, []);
 
-    return <div className={styles.editorScroller} style={{ maxHeight: height }}>
+    return <div className={styles.editorScroller} style={{ maxHeight: height }} id="editor-scroller">
         {children}
     </div>
 }

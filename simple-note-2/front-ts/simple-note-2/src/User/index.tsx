@@ -6,13 +6,13 @@ import { BulbButton } from "../Welcome";
 import styles from "./index.module.css";
 import switchTheme, { defaultTheme } from "../util/theme";
 import { useInfoContext } from "./SideBar/info";
-import { MenuOutlined } from "@ant-design/icons";
+import { DoubleLeftOutlined } from "@ant-design/icons";
 
 const User: React.FC = () => {
 
     const [darken, setDarken] = useState(false);
     const { themes } = useInfoContext();
- 
+
     const seed = useMemo(() => themes?.find(theme => theme.data.isUsing), [themes]);
 
     return <ConfigProvider theme={seed ? switchTheme(seed.data)(darken) : defaultTheme(darken)}>
@@ -34,6 +34,7 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
     const [resizer, setResizer] = useState({ resize: false, width: MIN, start: { x: 0, w: MIN } });
     const { token } = theme.useToken();
     const { md } = useBreakpoint();
+    const [collpase, setCollapase] = useState(false);
 
     const handlePointerMove = useCallback((e: MouseEvent) => {
         if (!resizer.resize) return;
@@ -55,16 +56,24 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
         }
     }, [handlePointerMove]);
 
+    const handleCollapse = useCallback((value: boolean) => {
+        if (value) {
+            setResizer(prev => ({ ...prev, width: MIN }))
+        }
+        setCollapase(value);
+    }, []);
+
     return <Layout style={{ minHeight: "100%", ...rootStyle }}>
         <Sider collapsible collapsedWidth={0} theme="light" width={resizer.width}
-            trigger={<MenuOutlined />} onCollapse={(collapsed) => { collapsed && setResizer(prev => ({ ...prev, width: MIN })) }}>
+            trigger={<DoubleLeftOutlined style={{ transform: collpase ? "rotate(180deg)" : undefined }} />}
+            onCollapse={handleCollapse}>
             <SideBar className={styles.sideBar} />
         </Sider>
         {md && <div className={styles.resizer} style={{ backgroundColor: token.colorBorder }}
             onPointerDown={(e) => {
                 document.body.style.userSelect = "none"
-                setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))}
-            }
+                setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))
+            }}
             onDoubleClick={() => setResizer(prev => ({ ...prev, width: prev.width === 0 ? MIN : 0, start: { ...prev.start, w: MIN } }))}
         />}
         <Content style={{ position: "relative" }}>

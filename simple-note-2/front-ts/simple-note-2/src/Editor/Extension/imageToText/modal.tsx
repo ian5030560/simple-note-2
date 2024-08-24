@@ -1,17 +1,45 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Button, Flex, Tabs, TabsProps } from "antd";
+import { Button, Flex, Spin, Tabs, TabsProps } from "antd";
 import { $getSelection, $isRangeSelection, LexicalCommand, createCommand, $getRoot, $isRootNode } from "lexical";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styles from "./modal.module.css";
 import { FaRegDotCircle } from "react-icons/fa";
-import Tesseract from "tesseract.js";
+import Tesseract, { createWorker } from "tesseract.js";
 import Modal from "../UI/modal";
+
+// const codes = require("../../../resource/tesseract.json").map((lang: { code: string, name: string }) => lang.code) as string[];
+const codes = ["eng", "chi_sim", "chi_tra", "jpn", "kor"];
 
 const contraints: MediaTrackConstraints = {
   width: 500,
   height: 400,
   facingMode: "environment",
+}
+
+function grayscale(data: ImageData) {
+  const pixels = data.data;
+  for (var i = 0; i < pixels.length; i += 4) {
+    const red = pixels[i];
+    const green = pixels[i + 1];
+    const blue = pixels[i + 2];
+    const value = (red * 6966 + green * 23436 + blue * 2366) >> 15;
+    pixels[i] = value;
+    pixels[i + 1] = value;
+    pixels[i + 2] = value;
+  }
+
+  return data;
+}
+
+function horizontalFlip(canvas: HTMLCanvasElement) {
+  let context = canvas.getContext("2d")!;
+  context.save();
+  context.setTransform(-1, 0, 0, 1, canvas.width, 0);
+  context.drawImage(canvas, 0, 0);
+  let src = canvas.toDataURL();
+  context.restore();
+  return src;
 }
 export const OPEN_IMAGE_TO_TEXT_MODAL: LexicalCommand<void> = createCommand();
 const ImageToTextModal = () => {
@@ -20,6 +48,16 @@ const ImageToTextModal = () => {
   const camRef = useRef<Webcam>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
+  const worker = useRef<Tesseract.Worker>();
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (worker.current) return;
+    async function bindWorker() {
+      worker.current = await createWorker(codes);
+    }
+    bindWorker();
+  }, []);
 
   useEffect(() => {
     if (!camRef.current) return;
@@ -56,26 +94,50 @@ const ImageToTextModal = () => {
     })
   }, [editor]);
 
-  const handleClick = useCallback(async () => {
-    let src = camRef.current!.getScreenshot();
-    if (!src) return;
+  const prcoessImage = useCallback((src: string) => {
+    if (!worker.current) return;
+    setLoading(true);
+    document.body.style.pointerEvents = "none";
+    let img = new Image();
+    img.onload = async () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const context = canvas.getContext("2d")!;
+      context.drawImage(img, 0, 0);
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      grayscale(imageData);
+      context.putImageData(imageData, 0, 0);
+      let url = canvas.toDataURL();
+      const { data: { text } } = await worker.current!.recognize(url);
+      document.body.style.removeProperty("pointer-events");
+      setLoading(false);
+      insertText(text);
+      setOpen(false);
+    }
 
-    const { data: { text } } = await Tesseract.recognize(src);
-    insertText(text);
-    setOpen(false);
+    img.src = src;
 
   }, [insertText]);
+
+  const handleClick = useCallback(async () => {
+    let canvas = camRef.current?.getCanvas();
+    if (!canvas) return;
+    let src = horizontalFlip(canvas);
+    prcoessImage(src);
+  }, [prcoessImage]);
 
 
   const handleUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     let file = e.target.files[0];
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+      reader.result && prcoessImage(reader.result as string);
+    })
+    reader.readAsDataURL(file);
 
-    let { data: { text } } = await Tesseract.recognize(file);
-    insertText(text);
-    setOpen(false);
-
-  }, [insertText]);
+  }, [prcoessImage]);
 
   const items: TabsProps["items"] = useMemo(() => {
     return [
@@ -85,7 +147,8 @@ const ImageToTextModal = () => {
         children: <Flex justify="center" align="center" style={{ position: "relative" }}>
           {
             open && <Webcam audio={false} width={500} height={400} ref={camRef}
-              videoConstraints={contraints} screenshotFormat="image/png" />
+              style={{ transform: "scaleX(-1)" }} videoConstraints={contraints}
+              screenshotFormat="image/png" mirrored />
           }
           <div className={styles.cameraMask} ref={maskRef} />
           <button className={styles.cameraButton} onClick={handleClick}>
@@ -105,8 +168,10 @@ const ImageToTextModal = () => {
   }, [handleClick, handleUpload, open]);
 
   return <Modal command={OPEN_IMAGE_TO_TEXT_MODAL} title="圖文辨識" open={open}
-    onOpen={() => setOpen(true)} onClose={() => setOpen(false)} destroyOnClose>
-    <Tabs items={items} defaultActiveKey="camera" />
+    onOpen={() => setOpen(true)} onClose={() => setOpen(false)} destroyOnClose
+    styles={{ header: { pointerEvents: loading ? "none" : undefined } }}>
+    <Tabs items={items} defaultActiveKey="camera" destroyInactiveTabPane />
+    <Spin tip="辨識中" spinning={loading} size="large" fullscreen />
   </Modal>
 }
 

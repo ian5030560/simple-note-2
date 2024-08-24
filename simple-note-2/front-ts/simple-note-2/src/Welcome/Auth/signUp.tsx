@@ -49,7 +49,13 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                         notename: "我的筆記",
                         parentId: null,
                         silbling_id: null,
-                    })[0].then(res => res.status === 200).catch(() => false);
+                    })[0].then(res => {
+                        console.log(res);
+                        return res;
+                    }).then(res => res.status === 200).catch((e) => {
+                        console.log(e);
+                        return false;
+                    });
                     
                     // let res2 = await addTheme({
                     //     username: values["username"],
@@ -69,7 +75,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
                     setCause(() => map[res.status] ? map[res.status] : "發生重大錯誤，請重新提交");
                 }
             })
-            .catch(() => {
+            .catch((e) => {
                 setCause(() => "發生重大錯誤，請重新提交");
                 setState(() => STATE.FAILURE);
             });

@@ -78,7 +78,7 @@ export async function settingLoader({ request, params }: LoaderFunctionArgs<any>
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
-        body: JSON.stringify({ "username": username })
+        body: JSON.stringify({ username: username })
     })
         .then(res => res.ok ? res.json() : null)
         .then(res => res ? JSON.parse(res) : null)

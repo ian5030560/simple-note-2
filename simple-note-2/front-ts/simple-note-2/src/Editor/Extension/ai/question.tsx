@@ -1,12 +1,12 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Plugin } from "..";
-import { ChatSession, GoogleGenerativeAI, } from "@google/generative-ai";
+import { ChatSession } from "@google/generative-ai";
 import { LexicalCommand, createCommand } from "lexical";
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Button, Drawer, Flex, Input, theme, Typography } from "antd";
+import { Button, Drawer, Flex, Input, theme } from "antd";
 import { RobotOutlined, SendOutlined, UserOutlined } from "@ant-design/icons";
 import { uuid } from "../../../util/secret";
-import useGenimi from "./useGenimi";
+import useGemini from "./useGemini";
 
 interface MessageProps {
     icon: React.ReactNode;
@@ -26,7 +26,7 @@ export const TOGGLE_QUESTION_TO_AI: LexicalCommand<void> = createCommand();
 export const AIQuestionPlugin: Plugin = () => {
 
     const [editor] = useLexicalComposerContext();
-    const model = useGenimi();
+    const model = useGemini();
     const session = useRef<ChatSession>();
     const [open, setOpen] = useState(false);
     const { token } = theme.useToken();
@@ -39,12 +39,6 @@ export const AIQuestionPlugin: Plugin = () => {
         if(!model) return;
         session.current = model.startChat();
     }, [model]);
-    
-    // useEffect(() => {
-    //     session.current = new GoogleGenerativeAI(API_KEY)
-    //         .getGenerativeModel({ model: "gemini-1.5-flash", tools: [{ codeExecution: {} }] })
-    //         .startChat();
-    // }, []);
 
     useEffect(() => {
         return editor.registerCommand(TOGGLE_QUESTION_TO_AI, () => {

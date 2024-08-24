@@ -12,6 +12,7 @@
     background-color: rgb(224, 224, 224, 0.3);
     border-radius: 50px;
     color: white;
+    cursor: pointer;
 }
 
 .cameraMask{
