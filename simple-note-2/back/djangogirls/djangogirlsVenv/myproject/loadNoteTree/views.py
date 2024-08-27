@@ -63,7 +63,7 @@ class LoadNoteTreeView(APIView):
                 respArray.append(singleNoteData)
                     
                 # if isCollaborative:  # is Collaborative(multiple notes)
-                collaborateUrl = UserCollaborateNote.check_url(notesDataName, notesDataID)  # get collaborateb url
+                collaborateUrl = UserCollaborateNote.check_url(username, notesDataID)  # get collaborateb url
                 multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
                 respArray.append(multipleNoteData)
             
