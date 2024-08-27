@@ -27,6 +27,7 @@ CREATE TABLE `user_collaborate_note` (
   `note_id` int DEFAULT NULL,
   `note_master` varchar(255) DEFAULT NULL,
   `note_guest` varchar(255) DEFAULT NULL,
+  `url` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -37,7 +38,7 @@ CREATE TABLE `user_collaborate_note` (
 
 LOCK TABLES `user_collaborate_note` WRITE;
 /*!40000 ALTER TABLE `user_collaborate_note` DISABLE KEYS */;
-INSERT INTO `user_collaborate_note` VALUES (1,1,'user01','user02');
+INSERT INTO `user_collaborate_note` VALUES (1,1,'user01','user02','urltest');
 /*!40000 ALTER TABLE `user_collaborate_note` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -50,4 +51,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-13 15:19:00
+-- Dump completed on 2024-08-20 14:50:59
