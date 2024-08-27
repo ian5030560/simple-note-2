@@ -53,24 +53,20 @@ class LoadNoteTreeView(APIView):
             if notesData:  # 取得成功
                 notesDataID = notesData[0][1]
                 notesDataName = notesData[0][0]
-                isCollaborative = UserCollaborateNote.check_collaborativeNote_exist(username, notesDataID)  # check if is a collaborative note
+                # isCollaborative = UserCollaborateNote.check_collaborativeNote_exist(username, notesDataID)  # check if is a collaborative note
                 respArray = []
-                if isCollaborative:  # is Collaborative(multiple notes)
-                    for i in range(len(notesData)):
-                        notesDataID = notesData[i][1]
-                        notesDataName = notesData[i][0]
-                        collaborateUrl = UserCollaborateNote.check_url(notesDataName, notesDataID)  # get collaborateb url
-                        singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-                        respArray.append(singleNoteData)
-                else:  # not Collaborative(single note)
-                    for i in range(len(notesData)):
-                        notesDataID = notesData[i][1]
-                        notesDataName = notesData[i][0]
-                        parentId = UserSubNoteData.check_parent_id(notesDataID)
-                        silblingId = UserSubNoteData.check_sibling_id(notesDataID)
-                        singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
-                        respArray.append(singleNoteData)
                 
+                # if not isCollaborative:  # not Collaborative(single note)
+                parentId = UserSubNoteData.check_parent_id(notesDataID)
+                silblingId = UserSubNoteData.check_sibling_id(notesDataID)
+                singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
+                respArray.append(singleNoteData)
+                    
+                # if isCollaborative:  # is Collaborative(multiple notes)
+                collaborateUrl = UserCollaborateNote.check_url(username, notesDataID)  # get collaborateb url
+                multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                respArray.append(multipleNoteData)
+            
                 return Response(json.dumps(respArray), status=status.HTTP_200_OK)
             
             elif notesData == False:  # error
