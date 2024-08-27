@@ -55,21 +55,23 @@ class LoadNoteTreeView(APIView):
                 notesDataName = notesData[0][0]
                 isCollaborative = UserCollaborateNote.check_collaborativeNote_exist(username, notesDataID)  # check if is a collaborative note
                 respArray = []
-                if isCollaborative:  # is Collaborative(multiple notes)
-                    for i in range(len(notesData)):
-                        notesDataID = notesData[i][1]
-                        notesDataName = notesData[i][0]
-                        collaborateUrl = UserCollaborateNote.check_url(notesDataName, notesDataID)  # get collaborateb url
-                        singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-                        respArray.append(singleNoteData)
-                else:  # not Collaborative(single note)
-                    for i in range(len(notesData)):
-                        notesDataID = notesData[i][1]
-                        notesDataName = notesData[i][0]
-                        parentId = UserSubNoteData.check_parent_id(notesDataID)
-                        silblingId = UserSubNoteData.check_sibling_id(notesDataID)
-                        singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
-                        respArray.append(singleNoteData)
+                
+                # if not isCollaborative:  # not Collaborative(single note)
+                for i in range(len(notesData)):
+                    notesDataID = notesData[i][1]
+                    notesDataName = notesData[i][0]
+                    parentId = UserSubNoteData.check_parent_id(notesDataID)
+                    silblingId = UserSubNoteData.check_sibling_id(notesDataID)
+                    singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
+                    respArray.append(singleNoteData)
+                    
+                # if isCollaborative:  # is Collaborative(multiple notes)
+                for i in range(len(notesData)):
+                    notesDataID = notesData[i][1]
+                    notesDataName = notesData[i][0]
+                    collaborateUrl = UserCollaborateNote.check_url(notesDataName, notesDataID)  # get collaborateb url
+                    singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                    respArray.append(singleNoteData)
                 
                 return Response(json.dumps(respArray), status=status.HTTP_200_OK)
             
