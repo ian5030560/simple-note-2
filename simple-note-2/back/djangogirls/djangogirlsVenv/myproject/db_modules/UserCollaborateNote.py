@@ -97,7 +97,7 @@ def check_all_guest(note_master_input, note_title_id_input):
     finally:
         session.close()
 
-#check url by user_master_name, note_title_id
+#check url by master_name, note_title_id
 def check_url(note_master_input, note_title_id_input):
     session = create_session()
     note_id_query = check_id(note_master_input, note_title_id_input)
@@ -118,8 +118,8 @@ def check_url(note_master_input, note_title_id_input):
             return "note id not exist"
     except SQLAlchemyError as e:
         session.rollback()
-        print(e)
-        return str(e)
+        #print(e)
+        return False
     finally:
         session.close()
     
