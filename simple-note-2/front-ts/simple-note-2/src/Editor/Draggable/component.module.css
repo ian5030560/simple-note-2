@@ -10,7 +10,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    transition: max-height 250ms ease;
+    transition: max-height 150ms ease, opacity 150ms ease;
     overflow-y: auto;
     z-index: 1000;
     border-radius: 8px;
@@ -26,11 +26,7 @@
     top: 0;
     left: 0;
     will-change: transform;
-    transition: opacity 250ms;
-}
-
-.draggable:active{
-    opacity: 0.3;
+    display: flex;
 }
 
 .dropLine{

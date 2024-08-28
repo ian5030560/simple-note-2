@@ -1,98 +1,141 @@
-import { Flex, Button, List, theme } from "antd";
+import { Button, List, theme } from "antd";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
-import { useDndState } from "./store";
+import { useDndAction, useDndState } from "./store";
 import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import styles from "./component.module.css";
 import { createPortal } from "react-dom";
+import { getBlockFromPoint } from "./util";
+import { eventFiles } from "@lexical/rich-text";
 
-
-export interface AddItem {
+export interface PlusItem {
     value: string,
     label: React.ReactNode,
     icon: React.ReactNode,
-    onSelect: (editor: LexicalEditor, item: AddItem) => void,
+    onSelect: (editor: LexicalEditor, item: PlusItem) => void,
 }
-interface AddMenuProp {
-    searchList: AddItem[],
-    children: React.ReactNode,
-}
-const AddMenu: React.FC<AddMenuProp> = ({ searchList, children }) => {
-    // const [keyword, setKeyword] = useState(/.*/);
-    const [editor] = useLexicalComposerContext();
-    const [open, setOpen] = useState(false);
-    const ref = useRef<HTMLDivElement>(null);
-    const { token } = theme.useToken();
-    const cRef = useRef<HTMLElement>(null);
-    // const filterData = useCallback((s: string) => keyword.test(s), [keyword]);
 
-    // const handleChange = useCallback(() => {
-    //     const text = ref.current!.input?.value;
-    //     ref.current?.focus();
-    //     setKeyword(() => new RegExp(`${text}`));
-    // }, []);
+function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, React.RefObject<HTMLElement>] {
+    const [editor] = useLexicalComposerContext();
+    const { token } = theme.useToken();
+    const [open, setOpen] = useState(false);
+    const [element, setElement] = useState<HTMLElement | null>(null);
+    const trigger = useRef<HTMLElement>(null);
+    const ref = useRef<HTMLDivElement>(null);
+
+    const show = useCallback(() => {
+
+        let scroller = document.getElementById("editor-scroller");
+        if (!trigger.current || !scroller) return;
+
+        let { x, y, width, height } = trigger.current.getBoundingClientRect();
+        let el = getBlockFromPoint(editor, x + width, y + height / 2, scroller);
+
+        if (!el) return;
+        setOpen(true);
+        setElement(el);
+    }, [editor]);
+
+    const hide = useCallback(() => {
+        setOpen(false);
+        setElement(null);
+    }, []);
+
+    useEffect(() => {
+        if (!element) return;
+        let resizer = new ResizeObserver(() => {
+            if (!ref.current) return;
+            let { x, y, height } = element.getBoundingClientRect();
+            ref.current.style.transform = `translate(${x}px, ${y + height + 3}px)`;
+        });
+        resizer.observe(element);
+
+        return () => {
+            resizer.unobserve(element);
+            resizer.disconnect();
+        }
+    }, [element]);
 
     useEffect(() => {
         function handleLeave(e: MouseEvent) {
-            setOpen(prev => (ref.current?.contains(e.target as Node | null) || cRef.current?.contains(e.target as Node | null) ? prev : false))
+            let target = e.target as HTMLElement;
+            if (trigger.current === target || trigger.current?.contains(target)) return;
+            hide();
         }
-
         document.addEventListener("click", handleLeave);
         return () => document.removeEventListener("click", handleLeave);
-    }, []);
+    }, [hide]);
 
-    const handleSelect = useCallback((item: AddItem) => {
+    const handleSelect = useCallback((item: PlusItem) => {
         item.onSelect(editor, item);
-        setOpen(false);
-    }, [editor]);
+        hide();
+    }, [editor, hide]);
 
-    const content = useMemo(() => <div className={styles.dropDown} ref={ref}
-        style={{ maxHeight: !open ? 0 : 250, backgroundColor: token.colorBgBase }}>
-        <List renderItem={(item) => <List.Item key={item.value} style={{ width: "100%", padding: 0 }}>
-            <Button icon={item.icon} block type="text" style={{ justifyContent: "flex-start" }}
-                onClick={() => handleSelect(item)}>{item.label}</Button>
-        </List.Item>} dataSource={searchList} />
-    </div>, [handleSelect, open, searchList, token.colorBgBase]);
+    const context = useMemo(() => {
+        let main = document.getElementById("editor-scroller")?.parentElement;
+        return <>
+            {
+                main && createPortal(<div className={styles.dropDown} ref={ref}
+                    style={{
+                        maxHeight: !open ? 0 : 250, opacity: !open ? 0 : undefined,
+                        backgroundColor: token.colorBgBase
+                    }}>
+                    <List renderItem={(item) => <List.Item key={item.value} style={{ width: "100%", padding: 0 }}>
+                        <Button icon={item.icon} block type="text" style={{ justifyContent: "flex-start" }}
+                            onClick={() => handleSelect(item)}>{item.label}</Button>
+                    </List.Item>} dataSource={itemList} />
+                </div>, main)
+            }
+        </>
+    }, [handleSelect, itemList, open, token.colorBgBase]);
 
-    const handleClick = useCallback((e: React.MouseEvent) => {
-        if (!ref.current) return;
-        let element = ref.current;
-        let target = e.target as HTMLElement;
-        let { height, x, y } = target.getBoundingClientRect();
+    const toggle = useCallback(() => open ? hide() : show(), [hide, open, show]);
+
+    return [toggle, context, trigger];
+}
+
+const HEIGHT = 3;
+const DraggableElement = (props: { plusList: PlusItem[] }) => {
+
+    const { element, id } = useDndState();
+    const { setLine, reset } = useDndAction();
+    const [toggle, context, trigger] = usePlusMenu(props.plusList);
+    const [editor] = useLexicalComposerContext();
+
+    const handleDragStart = useCallback((e: React.DragEvent) => {
+
+        if (eventFiles(e.nativeEvent)[0]) return;
+
+        if (!e.dataTransfer || !id) return;
+        const element = editor.getElementByKey(id)!;
+        e.dataTransfer.setDragImage(element, 0, 0);
+
         let { width } = element.getBoundingClientRect();
-        element.style.transform = `translate(${x - width / 2}px, ${y + height + 8}px)`
-        setOpen(prev => !prev);
-    }, []);
+        setLine({ width: width, height: HEIGHT });
+
+    }, [editor, id, setLine]);
+
+    const handleDragEnd = useCallback(() => {
+        reset("element");
+        reset("id");
+        reset("line");
+    }, [reset]);
 
     return <>
-        {React.cloneElement(children as React.JSX.Element, { onClick: handleClick, ref: cRef })}
-        {createPortal(content, document.body)}
-    </>
+        {
+            element && <div className={styles.draggable} draggable={true} 
+                onDragStart={handleDragStart} onDragEnd={handleDragEnd}
+                style={{ transform: `translate(calc(${element.x}px - 100%), calc(${element.y}px - 50%))` }}>
+                <Button contentEditable={false} type="text" size="middle"
+                    icon={<PlusOutlined />} onClick={toggle} ref={trigger as React.RefObject<HTMLButtonElement>} />
+                <Button className={styles.handleButton} contentEditable={false} type="text"
+                    size="middle" icon={<HolderOutlined />} />
+            </div>
+        }
+        {context}
+    </>;
 }
-
-export interface DraggableElementProp {
-    addList: AddItem[];
-}
-const DraggableElement = React.forwardRef((props: DraggableElementProp, ref: React.Ref<HTMLElement>) => {
-
-    const { element } = useDndState();
-
-    let x = element ? element.x : -10000;
-    let y = element ? element.y : -10000;
-   
-    return <Flex className={styles.draggable} draggable={true}
-        ref={ref} style={{ transform: `translate(${x}px, ${y}px)` }}>
-        <AddMenu searchList={props.addList}>
-            <Button contentEditable={false} type="text"
-                size="small" icon={<PlusOutlined />} />
-        </AddMenu>
-        <Button className={styles.handleButton}
-            contentEditable={false} type="text"
-            size="small" icon={<HolderOutlined />}
-        />
-    </Flex>;
-})
 
 export default DraggableElement;
 
@@ -112,9 +155,13 @@ export const useWrapper = () => {
 
 export const DropLine = () => {
     const { line } = useDndState();
-
-    let x = line ? line.x : -10000;
-    let y = line ? line.y : -10000;
-    return <div className={styles.dropLine}
-        style={{ width: line?.width, height: line?.height, transform: `translate(${x}px, ${y}px)` }} />;
+    return <>
+        {
+            line?.x !== undefined && <div className={styles.dropLine}
+                style={{
+                    width: line.width, height: line.height,
+                    transform: `translate(${line.x}px, ${line.y}px)`
+                }} />
+        }
+    </>;
 }

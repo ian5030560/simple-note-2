@@ -75,6 +75,7 @@ export async function settingLoader({ request, params }: LoaderFunctionArgs<any>
     let cookie = getCookie();
     let username = cookie.get("username")!;
 
+    console.log(username);
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
@@ -93,10 +94,11 @@ export function SettingProvider() {
 
     useEffect(() => {
         if (!data) return;
-        let sorted = sortNodes(data);
-        init(sorted.map((it) => ({ key: it.noteId, title: it.noteName, children: [], parentKey: it.parentId, siblingKey: it.silblingId })));
-        let id = sorted[0].noteId;
-        id && navigate(id, { replace: true });
+        console.log(data);
+        // let sorted = sortNodes(data);
+        // init(sorted.map((it) => ({ key: it.noteId, title: it.noteName, children: [], parentKey: it.parentId, siblingKey: it.silblingId })));
+        // let id = sorted[0].noteId;
+        // id && navigate(id, { replace: true });
         // setLoading(false);
     }, [data, init, navigate]);
 

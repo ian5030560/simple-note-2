@@ -9,30 +9,17 @@ const HEIGHT = 3;
 export const DRAGGABLE_TAG = "draggable-item";
 const useDnd = () => {
     const [editor] = useLexicalComposerContext();
-    const {setLine, reset} = useDndAction();
+    const { setLine, reset } = useDndAction();
     const { id, line } = useDndState();
-
-    const handleDragStart = useCallback((e: DragEvent) => {
-
-        if (eventFiles(e)[0]) return;
-
-        if (!e.dataTransfer || !id) return;
-        const element = editor.getElementByKey(id)!;
-        e.dataTransfer.setDragImage(element, 0, 0);
-
-        let { width } = element.getBoundingClientRect();
-        setLine({width: width, height: HEIGHT});
-
-    }, [editor, id, setLine]);
 
     const handleDragOver = useCallback((e: DragEvent) => {
         e.preventDefault();
 
         if (!e.dataTransfer || eventFiles(e)[0]) return false;
         let { clientY: mouseY } = e;
-     
+
         let overElement = getBlockFromPoint(editor, e.clientX, e.clientY);
-    
+
         if (!overElement || !overElement.hasAttribute(DRAGGABLE_TAG)) return false;
 
         let { x, y, width, height } = overElement.getBoundingClientRect();
@@ -68,12 +55,13 @@ const useDnd = () => {
         x -= left;
         y -= top;
 
-        setLine({x: x, y: y, width: width, height: HEIGHT});
+        setLine({ x: x, y: y, width: width, height: HEIGHT });
         return true;
     }, [editor, setLine]);
 
     const handleDrop = useCallback((e: DragEvent) => {
-
+        e.preventDefault();
+        
         if (!e.dataTransfer || eventFiles(e)[0]) return false;
 
         let dropElement = getBlockFromPoint(editor, e.clientX, e.clientY);
@@ -102,15 +90,12 @@ const useDnd = () => {
             else {
                 dropNode.insertAfter(dragNode);
             }
-
-            reset("id");
-            reset("line");
         })
 
         return true;
-    }, [editor, id, line, reset]);
+    }, [editor, id, line]);
 
-    return { handleDragStart, handleDragOver, handleDrop }
+    return { handleDragOver, handleDrop }
 }
 
 export default useDnd;

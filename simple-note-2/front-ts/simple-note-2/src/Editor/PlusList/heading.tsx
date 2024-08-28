@@ -1,4 +1,4 @@
-import { AddItem } from "../Draggable/component";
+import { PlusItem } from "../Draggable/component";
 import { LexicalEditor } from "lexical";
 import { $createHeadingNode, HeadingTagType } from "@lexical/rich-text";
 import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6 } from "react-icons/bs";
@@ -36,7 +36,7 @@ const heading = [
         icon: <BsTypeH6 size={24} />,
     },
 ]
-const Heading: AddItem[] = heading.map((head) => {
+const Heading: PlusItem[] = heading.map((head) => {
     return {
         ...head,
         onSelect: (editor: LexicalEditor) => {

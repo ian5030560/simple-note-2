@@ -1,10 +1,10 @@
 import { $getSelection, $isRangeSelection } from "lexical";
-import { AddItem } from "../Draggable/component";
+import { PlusItem } from "../Draggable/component";
 import { FaFileCode } from "react-icons/fa";
 import { $createCodeNode } from "@lexical/code";
 import { $setBlocksType } from "@lexical/selection";
 
-const Code: AddItem = {
+const Code: PlusItem = {
     value: "code",
     label: "Code",
     icon: <FaFileCode size={24} />,

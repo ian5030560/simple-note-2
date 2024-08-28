@@ -15,7 +15,7 @@ const RichTextPlugin: Plugin = () => {
         <DragWrapper>
             <LexicalRichTextPlugin
                 contentEditable={<ContentEditable className={styles.editable} style={{ color: token.colorText }} />}
-                placeholder={<Placeholder />}
+                placeholder={<></>}
                 ErrorBoundary={LexicalErrorBoundary} />
         </DragWrapper>
     </Scroller>

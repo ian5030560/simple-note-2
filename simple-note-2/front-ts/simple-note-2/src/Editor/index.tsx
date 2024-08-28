@@ -1,9 +1,9 @@
-import React, { useContext, useMemo } from "react";
+import React from "react";
 import { LexicalComposer } from '@lexical/react/LexicalComposer';
 import ToolBarPlugin from "./ToolBar/index";
 import DraggablePlugin from "./Draggable";
 import Loader from "./loader";
-import ADDLIST from "./addList";
+import PLUSLIST from "./plusList";
 import { LIST } from "./toolbar";
 import CollaboratePlugin from "./Collaborate";
 import SavePlugin from "./Save";
@@ -26,7 +26,7 @@ const Editor = () => {
         <SavePlugin/>
         <ToolBarPlugin toolbars={LIST} />
         <ToolKitPlugin/>
-        <DraggablePlugin addList={ADDLIST} />
+        <DraggablePlugin plusList={PLUSLIST} />
         <CollaboratePlugin />
         {Loader.plugins.map((plugin, index) => <React.Fragment key={index}>{plugin}</React.Fragment>)}
     </LexicalComposer>;

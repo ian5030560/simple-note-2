@@ -1,12 +1,12 @@
 import { $getRoot, LexicalEditor } from "lexical";
 
-function elementContains(posx: number, posy: number, element: HTMLElement) {
+function elementContains(posx: number, posy: number, element: HTMLElement, bound?: HTMLElement) {
 
     if (!element) return false;
 
     let { x, y, width, height } = element.getBoundingClientRect();
     let { marginBottom, marginTop } = window.getComputedStyle(element);
-    let pstyle = window.getComputedStyle(element.parentElement!);
+    let pstyle = window.getComputedStyle(bound ? bound : element.parentElement!);
     let offsetLeft = parseFloat(pstyle.paddingLeft);
     let offsetRight = parseFloat(pstyle.paddingRight);
 
@@ -16,7 +16,7 @@ function elementContains(posx: number, posy: number, element: HTMLElement) {
         posy <= y + height + parseFloat(marginBottom);
 }
 
-export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: number) {
+export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: number, bound?: HTMLElement) {
     let keys = editor.getEditorState().read(() => $getRoot().getChildrenKeys());
     let first = 0;
     let last = keys.length - 1;
@@ -28,9 +28,9 @@ export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: num
         let midElement = editor.getElementByKey(keys[mid])!;
         let lastElement = editor.getElementByKey(keys[last])!;
 
-        let fResult = elementContains(posx, posy, firstElement);
-        let mResult = elementContains(posx, posy, midElement);
-        let lResult = elementContains(posx, posy, lastElement);
+        let fResult = elementContains(posx, posy, firstElement, bound);
+        let mResult = elementContains(posx, posy, midElement, bound);
+        let lResult = elementContains(posx, posy, lastElement, bound);
 
         if (fResult || mResult || lResult) {
             elem = fResult ? firstElement : mResult ? midElement : lastElement;

@@ -1,8 +1,8 @@
 import { INSERT_PARAGRAPH_COMMAND, LexicalEditor } from "lexical";
-import { AddItem } from "../Draggable/component";
+import { PlusItem } from "../Draggable/component";
 import {BsParagraph} from "react-icons/bs";
 
-const Paragraph: AddItem = {
+const Paragraph: PlusItem = {
     value: "paragraph",
     label: "Paragraph",
     icon: <BsParagraph size={24}/>,

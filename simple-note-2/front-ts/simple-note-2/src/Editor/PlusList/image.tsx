@@ -1,8 +1,8 @@
-import { AddItem } from "../Draggable/component";
+import { PlusItem } from "../Draggable/component";
 import { AiOutlinePicture } from "react-icons/ai";
 import { OPEN_IMAGE_MODAL } from "../Extension/image/modal";
 
-const Image: AddItem = {
+const Image: PlusItem = {
     value: "image",
     label: "Image",
     icon: <AiOutlinePicture size={24}/>,

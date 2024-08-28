@@ -28,7 +28,7 @@ const BasicExtension: Extension = {
         <ListPlugin />,
         <FloatingLinkPlugin />,
         <CheckListPlugin />,
-        // <PlaceholderPlugin />
+        <PlaceholderPlugin />
     ],
 
     nodes: [

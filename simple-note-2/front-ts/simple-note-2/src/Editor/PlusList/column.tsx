@@ -1,8 +1,8 @@
-import { AddItem } from "../Draggable/component";
+import { PlusItem } from "../Draggable/component";
 import { FaColumns } from "react-icons/fa";
 import { OPEN_COLUMN_MODAL } from "../Extension/columns/plugin";
 
-const Column: AddItem = {
+const Column: PlusItem = {
     value: "column",
     label: "Column",
     icon: <FaColumns size={24}/>,
