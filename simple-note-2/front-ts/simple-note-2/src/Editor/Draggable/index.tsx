@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { Plugin } from "../Extension/index";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot } from "lexical";
@@ -15,13 +15,14 @@ const Draggable: React.FC<DraggableProp> = ({ plusList }) => {
     const { setElement, reset, setId } = useDndAction();
     const [editor] = useLexicalComposerContext();
     const wrapper = useWrapper();
-    const scroller = useMemo(() => document.getElementById("editor-scroller"), []);
     const { handleDragOver, handleDrop } = useDnd();
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         let { clientX, clientY } = e;
+        
         let target = document.elementFromPoint(clientX, clientY);
         let root = editor.getRootElement()!;
+        let scroller = document.getElementById("editor-scroller");
         if (root?.isEqualNode(target) || !scroller) return;
 
         let elem = getBlockFromPoint(editor, clientX, clientY, scroller);
@@ -32,11 +33,12 @@ const Draggable: React.FC<DraggableProp> = ({ plusList }) => {
         setId(elem.getAttribute(DRAGGABLE_TAG)!);
         setElement(x - left, y + eh / 2 - top);
 
-    }, [editor, scroller, setElement, setId, wrapper]);
+    }, [editor, setElement, setId, wrapper]);
 
     const handleMouseLeave = useCallback(() => reset("element"), [reset]);
 
     useEffect(() => {
+        let scroller = document.getElementById("editor-scroller");
         scroller?.addEventListener("mousemove", handleMouseMove);
         scroller?.addEventListener("mouseleave", handleMouseLeave);
         wrapper?.addEventListener("dragover", handleDragOver);
@@ -57,7 +59,7 @@ const Draggable: React.FC<DraggableProp> = ({ plusList }) => {
             wrapper?.removeEventListener("drop", handleDrop);
             removeListener();
         }
-    }, [editor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, scroller, wrapper]);
+    }, [editor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, wrapper]);
 
     return wrapper ? createPortal(
         <>

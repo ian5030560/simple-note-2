@@ -114,9 +114,3 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
 };
 
 export default Resizer;
-
-// const useResizer = () => {
-//     const context = useMemo(() => {
-
-//     })
-// }

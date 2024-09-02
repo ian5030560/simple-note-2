@@ -9,8 +9,6 @@ import useAPI, { APIs } from "../../util/api";
 import { Note } from "../../util/provider";
 import { decodeBase64 } from "../../util/secret";
 import { useCollab } from "../Collaborate/store";
-import { useCollaborationContext } from "@lexical/react/LexicalCollaborationContext";
-import { CONNECTED_COMMAND } from "@lexical/yjs";
 
 const empty = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
@@ -18,7 +16,6 @@ const SavePlugin: Plugin = () => {
     const saveNote = useAPI(APIs.saveNote);
     const initialNote = useContext(Note);
     const [editor] = useLexicalComposerContext();
-    // const [] = useCollaborationContext();
     const [{ username }] = useCookies(["username"]);
     const { activate, room } = useCollab();
     const { file, host } = useParams();

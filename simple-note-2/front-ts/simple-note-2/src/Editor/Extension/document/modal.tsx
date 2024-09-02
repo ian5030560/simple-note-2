@@ -17,22 +17,23 @@ const DocumentModal = () => {
         let file = e.target.files[0];
         let [type] = file.name.split(".").reverse();
 
-        switch (type) {
-            case "pdf":
-                editor.dispatchCommand(INSERT_FILE, {
-                    name: "pdf",
-                    payload: { width: 800, height: 400, src: URL.createObjectURL(file), }
-                })
-                break;
-            default:
-                editor.dispatchCommand(INSERT_FILE, {
-                    name: type,
-                    payload: {
-                        src: URL.createObjectURL(file),
-                        name: file.name,
-                    }
-                })
-        }
+        // switch (type) {
+        //     case "pdf":
+        //         editor.dispatchCommand(INSERT_FILE, {
+        //             name: "pdf",
+        //             payload: { width: 800, height: 400, src: URL.createObjectURL(file), }
+        //         })
+        //         break;
+        //     default:
+
+        // }
+        editor.dispatchCommand(INSERT_FILE, {
+            name: type,
+            payload: {
+                src: URL.createObjectURL(file),
+                name: file.name,
+            }
+        })
 
         setOpen(false);
     }, [editor]);

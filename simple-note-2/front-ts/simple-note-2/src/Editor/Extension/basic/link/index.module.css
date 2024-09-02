@@ -7,9 +7,4 @@
     top: 0;
     left: 0;
     will-change: transform;
-    background-color: inherit;
-}   
-
-.floatingLink > *{
-    margin-right: 5px;
 }

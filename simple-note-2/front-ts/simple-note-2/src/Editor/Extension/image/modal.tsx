@@ -7,7 +7,7 @@ import { CiEdit } from "react-icons/ci";
 import { INSERT_IMAGE } from "./plugin";
 import Modal from "../UI/modal";
 import { useCookies } from "react-cookie";
-import useFiles, { findNode } from "../../../User/SideBar/FileTree/hook";
+import useFiles, { findNode } from "../../../User/SideBar/NoteTree/store";
 import { useParams } from "react-router-dom";
 
 export const OPEN_IMAGE_MODAL: LexicalCommand<boolean> = createCommand();
@@ -19,7 +19,7 @@ const ImageModal: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [{ username }] = useCookies(["username"]);
     const { file } = useParams();
-    const [nodes] = useFiles();
+    const { nodes } = useFiles();
 
     const handleURL = useCallback(() => {
         let url = urlRef.current!.input!.value;

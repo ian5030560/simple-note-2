@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal, FlexProps } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
-import FileTree from "./FileTree";
+import NoteTree from "./NoteTree";
 import { useCookies } from "react-cookie";
 import SettingModal from "./Setting";
 import { useNavigate } from "react-router-dom";
@@ -97,7 +97,7 @@ const SideBar = ({ className, ...prop }: SideBarProps) => {
 
     return <Flex vertical className={className}style={{ height: "100%" }} {...prop}>
         <UserProfile />
-        <FileTree />
+        <NoteTree />
     </Flex>
 }
 

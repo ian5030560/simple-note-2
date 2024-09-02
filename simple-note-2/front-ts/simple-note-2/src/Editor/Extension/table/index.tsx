@@ -1,7 +1,7 @@
 import { Extension } from "..";
 import TablePlugin from "./plugin";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import styles from "./index.module.css";
+import "./index.css";
 import TableActionPlugin from "./action";
 
 const TableExtension: Extension = {
@@ -15,8 +15,6 @@ const TableExtension: Extension = {
         TableRowNode,
         TableNode,
     ],
-
-    styleSheet: styles,
 
     theme: {
         table: "simple-note-2-table",

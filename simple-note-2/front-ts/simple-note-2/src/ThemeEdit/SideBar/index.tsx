@@ -6,12 +6,13 @@ import {
     Input,
     InputRef,
 } from "antd";
-import { Color } from "antd/es/color-picker/color"
+
 import { SwitchClickEventHandler } from "antd/es/switch";
 import { TiExport } from "react-icons/ti";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import useAPI, { APIs } from "../../util/api";
 import { useCookies } from "react-cookie";
+import { Color } from "antd/es/color-picker";
 
 const { Text, Title } = Typography;
 

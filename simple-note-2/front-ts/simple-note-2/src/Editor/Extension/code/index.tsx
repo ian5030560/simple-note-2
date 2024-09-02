@@ -1,13 +1,12 @@
 import { Extension } from "..";
 import CodeHighlightPlugin from "./highlight";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
-import styles from "./index.module.css";
+import "./index.css";
 import CodeActionPlugin from "./action";
 
 const CodeExtension: Extension = {
     plugins: [<CodeActionPlugin/>, <CodeHighlightPlugin/>],
     nodes: [CodeHighlightNode, CodeNode],
-    styleSheet: styles,
     theme: {
         code: "simple-note-2-code",
         codeHighlight: {

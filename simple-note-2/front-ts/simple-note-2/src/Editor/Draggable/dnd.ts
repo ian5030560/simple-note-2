@@ -9,7 +9,7 @@ const HEIGHT = 3;
 export const DRAGGABLE_TAG = "draggable-item";
 const useDnd = () => {
     const [editor] = useLexicalComposerContext();
-    const { setLine, reset } = useDndAction();
+    const { setLine } = useDndAction();
     const { id, line } = useDndState();
 
     const handleDragOver = useCallback((e: DragEvent) => {

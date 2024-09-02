@@ -71,8 +71,8 @@ const useStore = create<TreeState & TreeAction>()(set => ({
     })
 }))
 
-export default function useFiles(): [TreeState["nodes"], TreeAction["add"], TreeAction["remove"], TreeAction["init"]] {
+export default function useNotes() {
     const store = useStore();
 
-    return [store.nodes, store.add, store.remove, store.init];
+    return store;
 }

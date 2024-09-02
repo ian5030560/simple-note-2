@@ -1,14 +1,14 @@
 import { Breadcrumb, Typography } from "antd";
 import { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import useFiles, { findNode } from "../../User/SideBar/FileTree/hook";
+import useFiles, { findNode } from "../../User/SideBar/NoteTree/store";
 
 type NoteRelationItem = {
     title: string,
     key: string;
 }
 export default function BreadCrumb() {
-    const [nodes] = useFiles();
+    const { nodes } = useFiles();
     const { file } = useParams();
     const items = useMemo(() => {
         let crumbs: NoteRelationItem[] = [];

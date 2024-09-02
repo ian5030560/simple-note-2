@@ -41,14 +41,14 @@ const TableOfContentPlugin: Plugin = () => {
                     <div className={styles.tableOfContentAlignLine} style={{backgroundColor: token.colorTextSecondary}}/>
                     <Space direction="vertical" size={"small"}>
                         {
-                            tableContent.map(([key, text, tag]) => <div key={key} className={styles.tableOfContentItem}
+                            tableContent.map(([key, text, tag]) => text.trim().length > 0 ? <div key={key} className={styles.tableOfContentItem}
                                 style={{ paddingLeft: (indent(tag) - 1) * 10}} tabIndex={-1}
                                 onClick={() => handleSelected(key)}>
                                 <Typography.Title level={5} type={selected !== key ? "secondary" : undefined}
                                     style={{ margin: 0, transition: "color 250ms ease" }}>
                                     {text}
                                 </Typography.Title>
-                            </div>)
+                            </div> : null)
                         }
                     </Space>
                 </Flex>

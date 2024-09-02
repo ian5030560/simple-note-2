@@ -6,7 +6,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
 import { $isLinkNode, LinkNode } from "@lexical/link";
-import { Button, Flex, Input, InputRef, Typography } from "antd";
+import { Button, Flex, Input, InputRef, theme, Typography } from "antd";
 import { CiEdit } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
@@ -32,11 +32,15 @@ interface LinkProp {
     onDiscardClick: (e: React.MouseEvent) => void;
 }
 const Link = React.forwardRef((prop: LinkProp, ref: React.Ref<HTMLDivElement>) => {
+    const { token } = theme.useToken();
 
-    return <Flex className={styles.floatingLink} ref={ref} align="center"
-        style={{ transform: `translate(${prop.left}px, ${prop.top}px)` }}>
+    return <Flex className={styles.floatingLink} ref={ref} align="center" gap={"small"}
+        style={{
+            transform: `translate(${prop.left}px, ${prop.top}px)`,
+            backgroundColor: token.colorBgBase
+        }}>
         <Typography.Link href={prop.url} style={{ display: !prop.editable ? undefined : "none" }}>{prop.url}</Typography.Link>
-        <Input type="url" ref={prop.inputRef} placeholder="http://..." style={{ display: prop.editable ? undefined : "none" }} />
+        <Input type="url" ref={prop.inputRef} style={{ display: prop.editable ? undefined : "none" }} />
         <Flex gap={"small"}>
             <Button icon={<CiEdit size={20} />} onClick={(e) => prop.onEditClick(e)} />
             <Button icon={<FaTrash size={20} />} onClick={(e) => prop.onDiscardClick(e)} />
@@ -64,7 +68,7 @@ export const FloatingLinkPlugin: Plugin = () => {
             let url = "";
             let position = DEFAULT;
 
-            if(!parent){
+            if (!parent) {
                 setEditable(false);
             }
             else {
@@ -75,7 +79,7 @@ export const FloatingLinkPlugin: Plugin = () => {
                 let { x, y, height: eHeight } = element.getBoundingClientRect();
                 let { top, left, y: wy } = wrapper.getBoundingClientRect();
                 let { height } = ref.current.getBoundingClientRect();
-                
+
                 let overTop = wy >= y;
                 y = !overTop ? y - height : y + eHeight;
 

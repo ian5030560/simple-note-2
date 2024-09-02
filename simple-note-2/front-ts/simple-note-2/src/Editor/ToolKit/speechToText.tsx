@@ -47,9 +47,15 @@ export default function SpeechToText() {
     const [editor] = useLexicalComposerContext();
     const recognition = useRef<SpeechRecognition | null>(null);
     const [active, setActive] = useState(false);
-    // const [api, contextholder] = message.useMessage();
     const [preview, context] = usePreview(500);
     const [alert, setAlert] = useState<keyof typeof State>();
+
+    useEffect(() => {
+        if(alert !== "END") return;
+        let timer = setTimeout(() => setAlert(undefined), 1000);
+
+        return () => clearTimeout(timer);
+    }, [alert]);
 
     useEffect(() => {
         if (active && recognition.current === null) {
@@ -84,12 +90,10 @@ export default function SpeechToText() {
         if (recognition.current) {
             if (active) {
                 recognition.current.start();
-                // api.success("開始錄音");
                 setAlert("BEGIN");
             } else {
                 recognition.current.stop();
                 recognition.current = null;
-                // api.error("錄音結束");
                 setAlert("END");
             }
         }
@@ -106,9 +110,8 @@ export default function SpeechToText() {
             style={{ color: active ? "red" : undefined }} />
         {
             active && !SUPPORT_SPEECHRECOGNITION &&
-            <Alert closable type="warning" banner message={"此瀏覽器不支持語音辨識"} />
+            <Alert closable={alert === "END"} type="warning" banner message={"此瀏覽器不支持語音辨識"} />
         }
-        {/* {contextholder} */}
         {
             alert && <Alert banner type={alert === "BEGIN" ? "success" : "error"}
                 message={State[alert]} closable onClose={() => setAlert(undefined)}

@@ -6,21 +6,24 @@
     "@ant-design/icons": "^5.2.6",
     "@excalidraw/excalidraw": "^0.17.3",
     "@google/generative-ai": "^0.17.0",
+    "@lexical/headless": "^0.13.1",
     "@lexical/react": "^0.13.1",
-    "@lexical/yjs": "^0.16.0",
+    "@lexical/yjs": "^0.13.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
+    "@types/katex": "^0.16.7",
     "@types/node": "^16.18.76",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "@types/react-speech-recognition": "^3.9.5",
-    "antd": "^5.13.2",
+    "antd": "^5.20.3",
     "colorjs.io": "^0.4.5",
     "filesize": "^10.1.1",
     "katex": "^0.16.10",
     "lexical": "^0.13.1",
+    "node-css-require": "^0.4.9",
     "pdfjs-dist": "^4.0.379",
     "process": "^0.11.10",
     "react": "^18.3.1",
@@ -29,7 +32,7 @@
     "react-icons": "^5.0.1",
     "react-pdf": "^7.7.1",
     "react-router-dom": "^6.21.3",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "react-speech-recognition": "^3.10.0",
     "react-webcam": "^7.2.0",
     "reactflow": "^11.10.3",
@@ -38,7 +41,7 @@
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4",
     "y-websocket": "^2.0.3",
-    "yjs": "^13.6.16",
+    "yjs": "^13.6.18",
     "zustand": "^4.5.2"
   },
   "scripts": {
@@ -46,7 +49,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "collab": "SET PORT=4000 && node ./node_modules/y-websocket/bin/server.cjs"
+    "collab": "SET PORT=4000 && npx ts-node src/server"
   },
   "eslintConfig": {
     "extends": [
@@ -67,6 +70,7 @@
     ]
   },
   "devDependencies": {
-    "@types/katex": "^0.16.7"
+    "@types/lodash.debounce": "^4.0.9",
+    "ts-node": "^10.9.2"
   }
 }

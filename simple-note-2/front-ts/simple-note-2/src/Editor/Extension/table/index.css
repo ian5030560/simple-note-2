@@ -1,4 +1,4 @@
-:global(.simple-note-2-table) {
+.simple-note-2-table {
     border-collapse: collapse;
     border-spacing: 0;
     max-width: 100%;
@@ -8,11 +8,11 @@
     margin: 20px 0;
 }
 
-:global(.simple-note-2-table-selected) {
+.simple-note-2-table-selected {
     outline: 2px solid rgb(60, 132, 244);
 }
 
-:global(.simple-note-2-table-cell) {
+.simple-note-2-table-cell {
     border: 1px solid #bbb;
     min-width: 75px;
     vertical-align: top;
@@ -23,7 +23,7 @@
     outline: none;
 }
 
-:global(.simple-note-2-table-cell-sorted-indicator) {
+.simple-note-2-table-cell-sorted-indicator {
     display: block;
     opacity: 0.5;
     position: absolute;
@@ -34,7 +34,7 @@
     background-color: #999;
 }
 
-:global(.simple-note-2-table-cell-resizer) {
+.simple-note-2-table-cell-resizer {
     position: absolute;
     right: -4px;
     height: 100%;
@@ -44,16 +44,16 @@
     top: 0;
 }
 
-:global(.simple-note-2-table-cell-header) {
+.simple-note-2-table-cell-header {
     background-color: #f2f3f5;
     text-align: start;
 }
 
-:global(.simple-note-2-table-cell-selected) {
+.simple-note-2-table-cell-selected {
     background-color: #c9dbf0;
 }
 
-:global(.simple-note-2-table-cell-primary-selected) {
+.simple-note-2-table-cell-primary-selected {
     border: 2px solid rgb(60, 132, 244);
     display: block;
     height: calc(100% - 2px);
@@ -64,12 +64,12 @@
     z-index: 2;
 }
 
-:global(.simple-note-2-table-cell-editing) {
+.simple-note-2-table-cell-editing {
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
     border-radius: 3px;
 }
 
-:global(.simple-note-2-table-add-columns) {
+.simple-note-2-table-add-columns {
     position: absolute;
     top: 0;
     width: 20px;
@@ -81,7 +81,7 @@
     cursor: pointer;
 }
 
-:global(.simple-note-2-table-add-columns:after) {
+.simple-note-2-table-add-columns:after {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -95,11 +95,11 @@
     opacity: 0.4;
 }
 
-:global(.simple-note-2-table-add-columns:hover) {
+.simple-note-2-table-add-columns:hover {
     background-color: #c9dbf0;
 }
 
-:global(.simple-note-2-table-add-rows) {
+.simple-note-2-table-add-rows {
     position: absolute;
     bottom: -25px;
     width: calc(100% - 25px);
@@ -111,7 +111,7 @@
     cursor: pointer;
 }
 
-:global(.simple-note-2-table-add-rows:after) {
+.simple-note-2-table-add-rows:after {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -125,7 +125,7 @@
     opacity: 0.4;
 }
 
-:global(.simple-note-2-table-add-rows:hover) {
+.simple-note-2-table-add-rows:hover {
     background-color: #c9dbf0;
 }
 
@@ -139,7 +139,7 @@
     }
 }
 
-:global(.simple-note-2-table-cell-resizer) {
+.simple-note-2-table-cell-resizer {
     display: block;
     position: absolute;
     width: 1px;
@@ -148,14 +148,14 @@
     top: 0;
 }
 
-:global(.simple-note-2-table-cell-action-button-container) {
+.simple-note-2-table-cell-action-button-container {
     z-index: 4;
 }
 
-:global(.simple-note-2-table-cell-action-button) {
+.simple-note-2-table-cell-action-button {
     cursor: pointer;
 }
 
-:global(.simple-note-2-table-cell-resizer) {
+.simple-note-2-table-cell-resizer {
     position: absolute;
 }

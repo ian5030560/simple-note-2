@@ -2,7 +2,7 @@ import { useCookies } from "react-cookie";
 import { APIs } from "./api"
 import React, { createContext, useEffect, useState } from "react";
 import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, Route, redirect, useNavigation, useParams } from "react-router-dom";
-import useFiles from "../User/SideBar/FileTree/hook";
+import useFiles from "../User/SideBar/NoteTree/store";
 import { Spin } from "antd";
 import { useCollab } from "../Editor/Collaborate/store";
 import { decodeBase64 } from "./secret";
@@ -89,7 +89,7 @@ export async function settingLoader({ request, params }: LoaderFunctionArgs<any>
 export function SettingProvider() {
     const data = useLoaderData() as NoteTreeData[] | null;
     const navigate = useNavigate();
-    const [, , , init] = useFiles();
+    const { init } = useFiles();
     // const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -150,12 +150,12 @@ export function NoteProvider({ children }: { children: React.ReactNode }) {
     </Note.Provider>
 }
 
-export function CollaborateProvider({ children }: { children: React.ReactNode }){
-    const {file, host} = useParams();
-    const {active, close} = useCollab();
+export function CollaborateProvider({ children }: { children: React.ReactNode }) {
+    const { file, host } = useParams();
+    const { active, close } = useCollab();
 
     useEffect(() => {
-        if(file && host){
+        if (file && host) {
             close();
             active(`${decodeBase64(host as string)}`);
         }

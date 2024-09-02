@@ -1,10 +1,39 @@
-import { Button, Divider, Space, theme } from "antd";
+import { Button, Divider, Flex, Space, theme } from "antd";
 import React, { useEffect, useRef, useState } from "react"
 import { Plugin } from "../Extension/index";
 import styles from "./index.module.css";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import Align from "./Component/align";
+import BackgroundColor from "./Component/background";
+import { FontColor, FontSize, FontFamily } from "./Component/font";
+import Markdown from "./Component/markdown";
+import History from "./Component/history";
+import Text from "./Component/text";
+import Link from "./Component/link";
+import List from "./Component/list";
+import Table from "./Component/table";
 
-const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) => {
+const TOOLS: React.ReactNode[] = [
+    <History />,
+    <Text />,
+    <Markdown />,
+    <Align />,
+    <List />,
+    <Flex>
+        <FontColor />
+        <BackgroundColor />
+    </Flex>,
+    <Flex>
+        <FontSize />
+        <FontFamily />
+    </Flex>,
+    <Flex>
+        <Link />
+        <Table />
+    </Flex>,
+]
+
+const ToolBarPlugin: Plugin = () => {
     const { token } = theme.useToken();
     const [collapse, setCollapse] = useState(false);
     const ref = useRef<HTMLButtonElement>(null);
@@ -41,7 +70,7 @@ const ToolBarPlugin: Plugin<{ toolbars: React.ReactNode[] }> = ({ toolbars }) =>
                 padding: collapse ? 0 : undefined,
             }}>
             {
-                toolbars.map((element, index) => <React.Fragment key={index}>
+                TOOLS.map((element, index) => <React.Fragment key={index}>
                     {element}
                 </React.Fragment>)
             }

@@ -14,17 +14,12 @@ import { LexicalNodeReplacement } from "lexical";
 import CommentExtension from "./comment";
 import TableOfContentExtension from "./tablofContent";
 
-export type Plugin<T = {}> = React.FC<T>
-
-export interface CSSModule{
-    [key: string]: string;
-}
+export type Plugin<T = {}> = React.FC<T>;
 
 export interface Extension {
     plugins: Exclude<React.ReactNode, undefined>[],
     nodes?: (Klass<LexicalNode> | LexicalNodeReplacement)[],
     theme?: EditorThemeClasses,
-    styleSheet?: CSSModule
 }
 
 const Extensions: Extension[] = [

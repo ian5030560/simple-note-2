@@ -1,13 +1,15 @@
 import { Extension } from "..";
 import DocNode from "./document/node";
-import PDFNode from "./pdf/node";
+// import PDFNode from "./pdf/node";
 import DocumentPlugin from "./plugin";
-import styles from "./index.module.css";
+import "./index.css";
 
 const DocumentExtension: Extension = {
     plugins: [<DocumentPlugin/>],
-    nodes: [PDFNode, DocNode],
-    styleSheet: styles,
+    nodes: [
+        // PDFNode,
+        DocNode
+    ],
     theme: {
         document: "simple-note-2-document",
     },
