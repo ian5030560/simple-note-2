@@ -70,7 +70,7 @@ class LoadNoteTreeView(APIView):
                     
                 return Response(respArray, status=status.HTTP_200_OK)
             
-            elif notesData == False:  # error
+            elif notesData == False:  # SQL error
                 return Response("SQL error.", status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
