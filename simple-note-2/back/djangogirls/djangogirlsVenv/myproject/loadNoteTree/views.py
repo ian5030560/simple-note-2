@@ -61,10 +61,13 @@ class LoadNoteTreeView(APIView):
                 singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
                     
                 # if isCollaborative:  # is Collaborative(multiple notes)
-                collaborateUrl = UserCollaborateNote.check_url(username, notesDataID)  # get collaborateb url
-                multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-           
-                respArray = {"one": singleNoteData, "multiple": multipleNoteData}
+                collaborateUrl = UserCollaborateNote.check_url(username)  # get collaborateb url
+                if collaborateUrl != []: # url != null
+                    multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                    respArray = {"one": singleNoteData, "multiple": multipleNoteData}
+                else: # url == null
+                    respArray = {"one": singleNoteData}
+                    
                 return Response(respArray, status=status.HTTP_200_OK)
             
             elif notesData == False:  # error
