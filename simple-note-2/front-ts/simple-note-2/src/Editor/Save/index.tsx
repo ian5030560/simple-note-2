@@ -18,7 +18,7 @@ const SavePlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
     const [{ username }] = useCookies(["username"]);
     const { activate, room } = useCollab();
-    const { file, host } = useParams();
+    const { id, host } = useParams();
     const [typing, isTyping] = useState(false);
     const collaborative = useMemo(() => !!(activate && room), [activate, room]);
     
@@ -43,7 +43,7 @@ const SavePlugin: Plugin = () => {
             const content = editor.getEditorState()
             saveNote({
                 username: username,
-                noteId: file!,
+                noteId: id!,
                 content: JSON.stringify(content.toJSON()),
             })[0].then((res) => {
                 if (res.status === 200) {
@@ -59,7 +59,7 @@ const SavePlugin: Plugin = () => {
         }
 
         return () => timer && clearTimeout(timer);
-    }, [editor, file, saveNote, typing, username]);
+    }, [editor, id, saveNote, typing, username]);
 
     const handleChange = useCallback((editorState: EditorState) => {
         console.log(editorState);

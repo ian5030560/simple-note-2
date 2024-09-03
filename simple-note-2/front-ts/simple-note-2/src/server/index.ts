@@ -29,7 +29,21 @@ wss.on('connection', (conn, req) => {
   let ydoc: Y.Doc = getYDoc(docName, true);
   ydoc.on("update", () => {
     const lexicalJSON = headlessConvertYDocStateToLexicalJSON(Loader.nodes, Y.encodeStateAsUpdate(ydoc));
-    // fetch()
+    fetch("http://localhost:8000/saveNote/", {
+      body: JSON.stringify(lexicalJSON), method: "POST",
+      headers: {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "content-type": "application/json",
+      }
+    })
+    .then(res => res.ok)
+    .then(ok => {
+      if(ok) return;
+      
+    })
+    .catch(e => {
+
+    })
   })
 });
 

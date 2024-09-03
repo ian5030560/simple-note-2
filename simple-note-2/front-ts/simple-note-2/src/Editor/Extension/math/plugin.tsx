@@ -23,10 +23,10 @@ function MathModal() {
 
     const handleFinish = useCallback((values: MathFormData) => {
         if (values.content?.trim().length > 0) {
+            console.log(values);
             editor.update(() => {
                 const selection = $getSelection();
                 const node = $createMathNode(values.content, values.inline);
-                console.log(values.inline);
                 if (!values.inline) {
                     $insertNodeToNearestRoot(node);
                 }
@@ -52,7 +52,7 @@ function MathModal() {
         <Form name="math-form" form={form} onFinish={handleFinish} clearOnDestroy
             onValuesChange={(_, values) => setPreview(values.content || "")} autoComplete="off">
             <Form.Item labelCol={{ span: 4 }} label="是否inline" name="inline" valuePropName="checked">
-                <Checkbox defaultChecked />
+                <Checkbox />
             </Form.Item>
             <Form.Item label="內容" name="content" labelCol={{ span: 4 }}>
                 <Input.TextArea variant="filled" autoSize/>

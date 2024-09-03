@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Modal, Input, Flex, Typography, Button, Dropdown } from "antd";
+import { useMemo } from "react";
+import { Flex, Typography, Button, Dropdown } from "antd";
 import { DeleteOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
 import { ItemType } from "antd/es/menu/interface";
 
@@ -15,14 +15,14 @@ interface NodeProp {
 
 export default function Node(prop: NodeProp) {
 
-    const items: ItemType[] = useMemo(() => [{
-        key: '1',
-        label: (
-            <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-                1st menu item
-            </a>
-        ),
-    }], []);
+    // const items: ItemType[] = useMemo(() => [{
+    //     key: '1',
+    //     label: (
+    //         <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+    //             1st menu item
+    //         </a>
+    //     ),
+    // }], []);
 
     return <Flex justify="space-between" onClick={() => { }}
         style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
@@ -34,9 +34,9 @@ export default function Node(prop: NodeProp) {
             }
             <Button icon={<PlusOutlined />} type="text" size="small" tabIndex={-1}
                 onClick={(e) => { e.stopPropagation(); prop.onAdd() }} />
-            <Dropdown trigger={["click"]} placement="bottomCenter" menu={{ items: items }}>
+            {/* <Dropdown trigger={["click"]} placement="bottom" menu={{ items: items }}>
                 <Button icon={<MoreOutlined />} type="text" size="small" tabIndex={-1} />
-            </Dropdown>
+            </Dropdown> */}
         </Flex>
     </Flex>
 }

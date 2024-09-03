@@ -7,7 +7,6 @@ import { $isMathNode } from "./node";
 import "katex/dist/katex.css";
 
 interface MathEditorProps {
-    // onSubmit: () => void;
     value: string;
     onValueChange: (value: string) => void;
 }
@@ -18,31 +17,31 @@ const MathEditor = (props: MathEditorProps) => {
     </div>
 }
 
-interface MathRenderProps {
+interface MathRenderProps extends React.HTMLAttributes<HTMLSpanElement>{
     content: string;
     inline: boolean;
-    style?: React.CSSProperties;
-    onClick?: () => void;
 }
 export const MathRender = (props: MathRenderProps) => {
     const ref = useRef<HTMLSpanElement>(null);
 
+    const {content, inline, ...rest} = props;
+
     useEffect(() => {
         if (!ref.current) return;
 
-        katex.render(props.content, ref.current, {
-            displayMode: props.inline,
+        katex.render(content, ref.current, {
+            displayMode: !inline,
             output: "html",
             strict: "warn",
             throwOnError: false,
             trust: false,
         })
 
-    }, [props.content, props.inline]);
+    }, [content, inline]);
 
     return <>
         <img src="#" alt="" />
-        <span style={props.style} ref={ref} tabIndex={-1} onClick={props.onClick} />
+        <span {...rest} ref={ref} tabIndex={-1} />
         <img src="#" alt="" />
     </>
 }
@@ -60,7 +59,7 @@ export default function MathView(props: MathViewProps) {
         if (!open && value.trim().length === 0) {
             editor.update(() => {
                 const node = $getNodeByKey(props.nodeKey);
-                node?.remove();
+                node?.remove(props.inline);
             });
         }
         else {

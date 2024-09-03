@@ -18,7 +18,7 @@ const ImageModal: React.FC = () => {
     const fileRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
     const [{ username }] = useCookies(["username"]);
-    const { file } = useParams();
+    const { id } = useParams();
     const { nodes } = useFiles();
 
     const handleURL = useCallback(() => {
@@ -34,7 +34,7 @@ const ImageModal: React.FC = () => {
         let image = e.target.files[0];
 
         let data = new FormData();
-        let node = findNode(nodes, file!);
+        let node = findNode(nodes, id!);
 
         data.append("username", username);
         data.append("filename", image.name);
@@ -63,7 +63,7 @@ const ImageModal: React.FC = () => {
         editor.dispatchCommand(INSERT_IMAGE, { alt: "", src: src });
         fileRef.current!.value = "";
         setOpen(false);
-    }, [editor, file, nodes, username]);
+    }, [editor, id, nodes, username]);
 
     const items: TabsProps["items"] = useMemo(() => [
         {

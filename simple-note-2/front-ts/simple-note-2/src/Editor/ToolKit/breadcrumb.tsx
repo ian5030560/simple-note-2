@@ -9,12 +9,12 @@ type NoteRelationItem = {
 }
 export default function BreadCrumb() {
     const { nodes } = useFiles();
-    const { file } = useParams();
+    const { id } = useParams();
     const items = useMemo(() => {
         let crumbs: NoteRelationItem[] = [];
         if (nodes.length === 0) return crumbs;
 
-        let current = file;
+        let current = id;
         while (current) {
             let found = findNode(nodes, current);
             if (!found) break;
@@ -23,11 +23,11 @@ export default function BreadCrumb() {
         }
 
         return crumbs.reverse();
-    }, [file, nodes]);
+    }, [id, nodes]);
 
     let last = items.length - 1;
 
-    return <Breadcrumb style={{ userSelect: "none" }}
+    return <Breadcrumb style={{ userSelect: "none", paddingRight: 8 }}
         itemRender={(route, _, routes) => routes.indexOf(route) === last ?
             <Typography.Text>{route.title}</Typography.Text> :
             <Link to={route.path!}>{route.title}</Link>}

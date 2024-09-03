@@ -110,11 +110,11 @@ export default function SpeechToText() {
             style={{ color: active ? "red" : undefined }} />
         {
             active && !SUPPORT_SPEECHRECOGNITION &&
-            <Alert closable={alert === "END"} type="warning" banner message={"此瀏覽器不支持語音辨識"} />
+            <Alert closable type="warning" banner message={"此瀏覽器不支持語音辨識"} />
         }
         {
             alert && <Alert banner type={alert === "BEGIN" ? "success" : "error"}
-                message={State[alert]} closable onClose={() => setAlert(undefined)}
+                message={State[alert]} closable={alert === "END"} onClose={() => setAlert(undefined)}
                 style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)" }} />
         }
         {context}

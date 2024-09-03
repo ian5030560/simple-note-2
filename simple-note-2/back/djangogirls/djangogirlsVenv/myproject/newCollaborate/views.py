@@ -47,11 +47,12 @@ class NewCollaborateView(APIView):
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            masterName = data.get("masterName") # master帳號名稱
+            masterName = data.get("username") # master帳號名稱
             noteId = data.get("noteId") # noteTitleId
             url = data.get("url")  # 協作網址
 
             # join collaborate by master_name, note_title_id, master_name
+            print(masterName, noteId, masterName, url)
             isNew = UserCollaborateNote.insert_newData(masterName, noteId, masterName, url)
             
             if isNew:  # 加入成功

@@ -26,7 +26,7 @@ export default class MathNode extends DecoratorNode<React.ReactNode> {
     constructor(content: string, inline?: boolean, key?: NodeKey) {
         super(key);
         this.__content = content;
-        this.__inline = inline || false;
+        this.__inline = !inline ? false : inline;
     }
 
     setContent(content: string) {

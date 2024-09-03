@@ -68,51 +68,54 @@ const requestInit = {
         "content-type": "application/json",
     }
 }
-export async function settingLoader({ request, params }: LoaderFunctionArgs<any>): Promise<NoteTreeData[] | null> {
-    if (params.file) redirect("/note");
+
+type NoteFetchResult = {
+    one: [Array<NoteTreeData>],
+    multiple: [Array<{ noteId: string, noteName: string, url: string }>]
+}
+export async function settingLoader({ request, params }: LoaderFunctionArgs<any>): Promise<NoteFetchResult | null> {
 
     let url = APIs.loadNoteTree;
     let cookie = getCookie();
     let username = cookie.get("username")!;
 
-    console.log(username);
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
         body: JSON.stringify({ username: username })
     })
-        .then(res => res.ok ? res.json() : null)
+        .then(res => res.ok ? res.text() : null)
         .then(res => res ? JSON.parse(res) : null)
         .catch(() => null);
 }
 
 export function SettingProvider() {
-    const data = useLoaderData() as NoteTreeData[] | null;
+    const data = useLoaderData() as NoteFetchResult | null;
     const navigate = useNavigate();
     const { init } = useFiles();
-    // const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!data) return;
-        console.log(data);
-        // let sorted = sortNodes(data);
-        // init(sorted.map((it) => ({ key: it.noteId, title: it.noteName, children: [], parentKey: it.parentId, siblingKey: it.silblingId })));
-        // let id = sorted[0].noteId;
-        // id && navigate(id, { replace: true });
-        // setLoading(false);
-    }, [data, init, navigate]);
+        let sorted = sortNodes(data["one"][0]);
+        init(sorted.map((it) => (
+            {
+                key: it.noteId, title: it.noteName, children: [],
+                parentKey: it.parentId, siblingKey: it.silblingId,
+                url: data["multiple"][0].find(mul => mul.noteId === it.noteId)?.url
+            }
+        )));
+        let id = sorted[0].noteId;
+        id && navigate(id, { replace: true });
+    }, []);
 
-    return <>
-        <Outlet />
-        {/* {loading && <Spin tip="筆記載入中" fullscreen/>} */}
-    </>
+    return <Outlet />
 }
 
 export async function contentLoader({ request, params }: LoaderFunctionArgs<any>): Promise<string | null> {
     let url = APIs.getNote;
     let cookie = getCookie();
     let username = cookie.get("username")!;
-    let id = params.file!;
+    let id = params.id!;
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
@@ -135,31 +138,22 @@ function validate(content: string | null | undefined) {
 }
 export function NoteProvider({ children }: { children: React.ReactNode }) {
     const data = useLoaderData() as string | null;
-    // const [loading, setLoading] = useState(true);
-    // console.log(data);
-
-    // useEffect(() => {
-    //     if (validate(data)) {
-    //         setLoading(false);
-    //     }
-    // }, [data]);
 
     return <Note.Provider value={validate(data) ? data! : undefined}>
         {children}
-        {/* <Spin tip="內容載入中"/> */}
     </Note.Provider>
 }
 
 export function CollaborateProvider({ children }: { children: React.ReactNode }) {
-    const { file, host } = useParams();
+    const { id, host } = useParams();
     const { active, close } = useCollab();
 
     useEffect(() => {
-        if (file && host) {
+        if (id && host) {
             close();
             active(`${decodeBase64(host as string)}`);
         }
-    }, [active, close, file, host]);
+    }, [active, close, host, id]);
 
     return children;
 }

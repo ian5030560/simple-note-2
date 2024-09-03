@@ -1,12 +1,13 @@
 import { TreeDataNode } from "antd";
 import { create } from "zustand";
 
+export type NoteDataNode = Omit<TreeDataNode, 'children'> & {url?: string, children: NoteDataNode[]};
 type FindResult = {
-    parent: TreeDataNode | undefined,
-    current: TreeDataNode,
-    previous: TreeDataNode | undefined,
+    parent: NoteDataNode | undefined,
+    current: NoteDataNode,
+    previous: NoteDataNode | undefined,
 }
-export function findNode(nodes: TreeDataNode[], key: string): FindResult | undefined{
+export function findNode(nodes: NoteDataNode[], key: string): FindResult | undefined{
     for(let i = 0; i < nodes.length; i ++){
         let node = nodes[i];
         if(node.key === key){
@@ -35,20 +36,20 @@ export function findNode(nodes: TreeDataNode[], key: string): FindResult | undef
 }
 
 type TreeState = {
-    nodes: TreeDataNode[];
+    nodes: NoteDataNode[];
 }
 type TreeAction = {
-    add: (key: string, title: string, children: TreeDataNode[], parentKey: string | null, siblingKey: string | null) => void;
+    add: (key: string, title: string, children: NoteDataNode[], parentKey: string | null, siblingKey: string | null, url?: string) => void;
     remove: (key: string) => void;
-    init: (nodes: {key: string, title: string, children: TreeDataNode[], parentKey: string | null, siblingKey: string | null}[]) => void;
+    init: (nodes: {key: string, title: string, children: NoteDataNode[], parentKey: string | null, siblingKey: string | null, url?: string}[]) => void;
 }
 const useStore = create<TreeState & TreeAction>()(set => ({
     nodes: [],
-    add: (key, title, children, parentKey, siblingKey) => set((prev) => {
+    add: (key, title, children, parentKey, siblingKey, url) => set((prev) => {
         let nodes = prev.nodes;
         if(parentKey) nodes = findNode(prev.nodes, parentKey)!.current.children!;
         let index = siblingKey ? nodes.findIndex(it => it.key === siblingKey) + 1 : nodes.length;
-        nodes.splice(index, 0, { key: key, title: title, children: children });
+        nodes.splice(index, 0, { key: key, title: title, children: children, url: url });
 
         return { nodes: [...prev.nodes] };
     }),
@@ -60,19 +61,17 @@ const useStore = create<TreeState & TreeAction>()(set => ({
     }),
 
     init: (nodes) => set(() => {
-        let newNodes: TreeDataNode[] = [];
+        let newNodes: NoteDataNode[] = [];
         for(let node of nodes){
             let children = newNodes;
             if(node.parentKey) children = findNode(newNodes, node.parentKey)!.current.children!;
             let index = node.siblingKey ? nodes.findIndex(it => it.key === node.siblingKey) + 1 : nodes.length;
-            children.splice(index, 0, { key: node.key, title: node.title, children: [] });
+            children.splice(index, 0, { key: node.key, title: node.title, children: [], url: node.url });
         }
         return {nodes: newNodes}
     })
 }))
 
 export default function useNotes() {
-    const store = useStore();
-
-    return store;
+    return useStore();
 }

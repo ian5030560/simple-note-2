@@ -21,8 +21,8 @@ const router = createBrowserRouter(
 
       <Route element={<PrivateProvider/>}>
         <Route path="note" element={<SettingProvider />} loader={settingLoader}>
-          <Route path=":file" element={<NoteProvider><UserPage /></NoteProvider>} loader={contentLoader} />
-          <Route path=":host/:file" element={<UserPage/>} />
+          <Route path=":id" element={<NoteProvider><UserPage /></NoteProvider>} loader={contentLoader} />
+          <Route path=":host/:id" element={<UserPage/>} />
         </Route>
       </Route>
 

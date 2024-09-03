@@ -5,36 +5,42 @@ import { useCookies } from "react-cookie"
 import { useParams } from "react-router-dom"
 import { encodeBase64 } from "../../../util/secret"
 import useAPI, { APIs } from "../../../util/api"
+import useNotes, { findNode } from "../NoteTree/store"
 
 interface CollaborateProps {
     open?: boolean
     onCancel: () => void
 }
 export default function CollaborateModal(prop: CollaborateProps) {
-    const { file } = useParams();
+    const { id } = useParams();
     const [{ username }] = useCookies(["username"]);
     const [url, setUrl] = useState<string>();
     const [api, context] = message.useMessage();
     const addCollaborate = useAPI(APIs.addCollaborate);
+    const { nodes } = useNotes();
 
     useEffect(() => {
-        if (file) setUrl(undefined);
-    }, [file]);
+        if (id) setUrl(undefined);
+    }, [id]);
 
     const requestCollaborate = useCallback(() => {
         const encodeUser = encodeBase64(username);
-        let url = `/${encodeUser}/${file}`;
-
-        addCollaborate({ username: username, noteId: file as string, url: url })[0]
-            .then(res => res.status)
+        let url = `/${encodeUser}/${id}`;
+        console.log(id);
+        addCollaborate({ username: username, noteId: id as string, url: url })[0]
+            .then(res => res.status === 200)
             .then(ok => {
                 if (!ok) return api.error("發起失敗");
                 setUrl(url);
                 api.success("發起成功");
+                const node = findNode(nodes, id as string)?.current;
+                if(node){
+                    node.url = url;
+                }
             })
             .catch(() => api.error("發起失敗"));
 
-    }, [addCollaborate, api, file, username]);
+    }, [addCollaborate, api, id, nodes, username]);
 
     const handleClick = useCallback(() => {
         if (!url) {

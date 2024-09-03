@@ -7,11 +7,13 @@ import SpeechToText from "./speechToText";
 import TableOfContent from "./tableOfContent";
 
 const ToolKitPlugin: Plugin = () => {
-    return <Flex gap={"small"} dir="rtl" style={{margin: 5}} align="center" id="toolkit-container">
-        <QuestionAI/>
-        <Comment/>
-        <SpeechToText/>
-        <TableOfContent/>
+    return <Flex vertical style={{ margin: 8 }} dir="rtl" id="toolkit-container">
+        <Flex gap={"small"}>
+            <QuestionAI />
+            <Comment />
+            <SpeechToText />
+            <TableOfContent />
+        </Flex>
         <BreadCrumb/>
     </Flex>
 }
