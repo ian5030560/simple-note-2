@@ -113,7 +113,11 @@ def check_url(note_master_input, note_title_id_input):
                 )
                 .first()
             )
-            return stmt[0]
+            if stmt is None:
+                # 處理stmt為None的情況˝
+                return False
+            else:
+                return stmt[0]
         else:
             return "note id not exist"
     except SQLAlchemyError as e:
