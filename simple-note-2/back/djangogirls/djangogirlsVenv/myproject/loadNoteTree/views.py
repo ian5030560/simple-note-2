@@ -62,9 +62,9 @@ class LoadNoteTreeView(APIView):
                 collaborateUrl = UserCollaborateNote.check_url(username)  
                 if collaborateUrl != []: # url != null
                     multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-                    respArray = {"one": singleNoteData, "multiple": multipleNoteData}
+                    respArray = {"one": [singleNoteData], "multiple": [multipleNoteData]}
                 else: # url == null
-                    respArray = {"one": singleNoteData}
+                    respArray = {"one": [singleNoteData], "multiple": []}
                     
                 return Response(respArray, status=status.HTTP_200_OK)
             
