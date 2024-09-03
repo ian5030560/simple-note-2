@@ -53,6 +53,7 @@ class LoadNoteTreeView(APIView):
             if notesData:  # 取得成功
                 singleNoteDataArray = [] # list of single note
                 multipleNoteDataArray = [] # list of multiple note
+                isCollaborativeNoteExist = 0 # check is Collaborative Note Exist? 0: no, 1: yes
                 
                 for i in range(len(notesData)):
                     notesDataID = notesData[i][1]
@@ -64,13 +65,18 @@ class LoadNoteTreeView(APIView):
                     singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
                     singleNoteDataArray.append(singleNoteData)
                     
-                    # multiple note
-                    collaborateUrl = UserCollaborateNote.check_url(username)  # try get collaborateb url
-                    if collaborateUrl != []: # url != null
-                        multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-                    else: # url == null
-                        multipleNoteData = []
-                    multipleNoteDataArray.append(multipleNoteData)
+                    # multiple note  
+                    # check Collaborative Note Exist? 0: no, 1: yes
+                    if UserCollaborateNote.check_collaborativeNote_exist(username, notesDataID):
+                        isCollaborativeNoteExist = 1 # Collaborative Note Exist
+                        
+                        # try get collaborateb url
+                        collaborateUrl = UserCollaborateNote.check_url(username)  
+                        if collaborateUrl != []: # url != null
+                            multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                        else: # url == null
+                            multipleNoteData = []
+                        multipleNoteDataArray.append(multipleNoteData)
                     
                 respDict = {"one": [singleNoteDataArray], "multiple": [multipleNoteDataArray]}    
                 return Response(respDict, status=status.HTTP_200_OK)
