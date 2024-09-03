@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, exists, update, and_, insert, delete
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
-from sqlalchemy.orm import sessionmaker ,scoped_session
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.exc import SQLAlchemyError
 from .UserNoteData import User_Note_Data, check_id
 from .Common import engine
@@ -36,14 +36,12 @@ class User_Collaborate_Note(Base):
 # def create_session():
 #     Session = sessionmaker(bind=engine)
 #     session = Session()
-    # return session
-    
+# return session
+
+
 def create_session():
     Session = scoped_session(sessionmaker(bind=engine))
     return Session
-
-
-
 
 
 # Insert new data by master_name, note_title_id, guest_name, url
@@ -56,7 +54,7 @@ def insert_newData(note_master_input, note_title_id_input, note_guest_input, url
                 note_id=new_note_id,
                 note_master=note_master_input,
                 note_guest=note_guest_input,
-                url = url_input
+                url=url_input,
             )
             session.execute(stmt)
             session.commit()
@@ -97,37 +95,26 @@ def check_all_guest(note_master_input, note_title_id_input):
     finally:
         session.close()
 
-#check url by master_name, note_title_id
-def check_url(note_master_input, note_title_id_input):
+
+# check all url by guest_name
+def check_url(note_guest_input):
     session = create_session()
-    note_id_query = check_id(note_master_input, note_title_id_input)
     try:
-        if note_id_query:
+        if note_guest_input:
             stmt = (
                 session.query(User_Collaborate_Note.url)
-                .filter(
-                    and_(
-                        User_Collaborate_Note.note_id == note_id_query,
-                        User_Collaborate_Note.note_master == note_master_input,
-                    )
-                )
-                .first()
+                .filter((User_Collaborate_Note.note_guest == note_guest_input))
+                .all()
             )
-            if stmt is None:
-                # 處理stmt為None的情況˝
-                return False
-            else:
-                return stmt[0]
+            return stmt
         else:
-            return "note id not exist"
+            return "note_guest not exist"
     except SQLAlchemyError as e:
         session.rollback()
         #print(e)
         return False
     finally:
         session.close()
-    
-            
 
 
 # Check if it is a collaborative note by note_master_input, note_title_id_input
@@ -138,16 +125,18 @@ def check_collaborativeNote_exist(note_master_input, note_title_id_input):
         if note_id_query:
             # 使用 exists() 構建子查詢
             stmt = session.query(
-                session.query(User_Collaborate_Note.note_id).filter(
+                session.query(User_Collaborate_Note.note_id)
+                .filter(
                     and_(
                         User_Collaborate_Note.note_id == note_id_query,
-                        User_Collaborate_Note.note_master == note_master_input
+                        User_Collaborate_Note.note_master == note_master_input,
                     )
-                ).exists()
+                )
+                .exists()
             ).scalar()
             return stmt  # stmt 會是 True 或 False
         else:
-            return False 
+            return False
     except SQLAlchemyError as e:
         session.rollback()
         print(e)
@@ -202,4 +191,5 @@ def delete_all_data(note_master_input, note_title_id_input):
     finally:
         session.close()
 
-#print(check_collaborativeNote_exist("user01", 1))
+
+#print(check_url("user01"))
