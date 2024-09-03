@@ -9,13 +9,6 @@ import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
 
-
-// const noteLoader = async (args: LoaderFunctionArgs<any>) => {
-//   let setting = await settingLoader(args);
-//   let content = await contentLoader(args);
-
-//   return { setting, content };
-// }
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>

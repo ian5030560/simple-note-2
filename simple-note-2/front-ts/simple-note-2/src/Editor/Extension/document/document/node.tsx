@@ -3,20 +3,20 @@ import React from "react";
 import Document from "./component";
 import Load from "../../UI/load";
 
-export type SerializedDocNode = Spread<{src: string, name:string}, SerializedLexicalNode>;
+export type SerializedDocNode = Spread<{ src: string, name: string }, SerializedLexicalNode>;
 
-function convertDocElement(dom: HTMLElement){
+function convertDocElement(dom: HTMLElement) {
     const src = dom.getAttribute("data-document-src");
     const name = dom.getAttribute("data-document-name");
 
-    if(src && name){
+    if (src && name) {
         let node = $createDocNode(src, name);
-        return {node};
+        return { node };
     }
 
     return null;
 }
-export default class DocNode extends DecoratorNode<React.JSX.Element>{
+export default class DocNode extends DecoratorNode<React.JSX.Element> {
 
     __src: string;
     __name: string;
@@ -39,7 +39,7 @@ export default class DocNode extends DecoratorNode<React.JSX.Element>{
         )
     }
 
-    setSrcAndName(src: string, name: string){
+    setSrcAndName(src: string, name: string) {
         this.getWritable().__src = src;
         this.getWritable().__name = name;
     }
@@ -54,16 +54,16 @@ export default class DocNode extends DecoratorNode<React.JSX.Element>{
 
     decorate(): JSX.Element {
         return <Load width={"inherit"} height={"inherit"}>
-                <Document src={this.__src} name={this.__name} nodeKey={this.__key}/>
-            </Load>
+            <Document src={this.__src} name={this.__name} nodeKey={this.__key} />
+        </Load>
     }
 
     createDOM(_config: EditorConfig, _editor: LexicalEditor): HTMLElement {
         let div = document.createElement("div");
         let className = _config.theme.document;
 
-        if(className) div.className = className;
-        
+        if (className) div.className = className;
+
         return div;
     }
 
@@ -74,7 +74,7 @@ export default class DocNode extends DecoratorNode<React.JSX.Element>{
     isInline(): boolean {
         return false;
     }
-    
+
     static importJSON(_serializedNode: SerializedDocNode): DocNode {
         const node = $createDocNode(_serializedNode.src, _serializedNode.name);
         return node;
@@ -95,12 +95,12 @@ export default class DocNode extends DecoratorNode<React.JSX.Element>{
         element.setAttribute("data-document-name", this.__name);
         let content = editor.getElementByKey(this.__key);
 
-        if(content) element.appendChild(content);
+        if (content) element.appendChild(content);
 
-        return {element}
+        return { element }
     }
-    
-    static importDOM (): DOMConversionMap | null{
+
+    static importDOM(): DOMConversionMap | null {
         return {
             document: () => ({
                 conversion: convertDocElement,
