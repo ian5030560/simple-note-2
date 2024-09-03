@@ -190,4 +190,4 @@ def delete_all_data(note_master_input, note_title_id_input):
         session.close()
 
 
-print(check_url("user01"))
+#print(check_url("user01"))
