@@ -53,23 +53,22 @@ class LoadNoteTreeView(APIView):
             if notesData:  # 取得成功
                 notesDataID = notesData[0][1]
                 notesDataName = notesData[0][0]
-                # isCollaborative = UserCollaborateNote.check_collaborativeNote_exist(username, notesDataID)  # check if is a collaborative note
-                respArray = []
                 
-                # if not isCollaborative:  # not Collaborative(single note)
                 parentId = UserSubNoteData.check_parent_id(notesDataID)
                 silblingId = UserSubNoteData.check_sibling_id(notesDataID)
                 singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
-                respArray.append(singleNoteData)
+                
+                # try get collaborateb url
+                collaborateUrl = UserCollaborateNote.check_url(username)  
+                if collaborateUrl != []: # url != null
+                    multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                    respArray = {"one": singleNoteData, "multiple": multipleNoteData}
+                else: # url == null
+                    respArray = {"one": singleNoteData}
                     
-                # if isCollaborative:  # is Collaborative(multiple notes)
-                collaborateUrl = UserCollaborateNote.check_url(username, notesDataID)  # get collaborateb url
-                multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-                respArray.append(multipleNoteData)
+                return Response(respArray, status=status.HTTP_200_OK)
             
-                return Response(json.dumps(respArray), status=status.HTTP_200_OK)
-            
-            elif notesData == False:  # error
+            elif notesData == False:  # SQL error
                 return Response("SQL error.", status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
