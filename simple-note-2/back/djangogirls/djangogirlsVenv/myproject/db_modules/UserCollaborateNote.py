@@ -100,18 +100,16 @@ def check_all_guest(note_master_input, note_title_id_input):
 def check_url(note_guest_input):
     session = create_session()
     try:
-        if note_guest_input:
-            stmt = (
-                session.query(User_Collaborate_Note.url)
-                .filter((User_Collaborate_Note.note_guest == note_guest_input))
-                .all()
-            )
-            return stmt
-        else:
-            return "note_guest not exist"
+        stmt = (
+            session.query(User_Collaborate_Note.url)
+            .filter((User_Collaborate_Note.note_guest == note_guest_input))
+            .all()
+        )
+        return stmt
+
     except SQLAlchemyError as e:
         session.rollback()
-        #print(e)
+        # print(e)
         return False
     finally:
         session.close()
