@@ -124,13 +124,13 @@ const DraggableElement = (props: { plusList: PlusItem[] }) => {
 
     return <>
         {
-            element && <div className={styles.draggable} draggable={true} 
+            element && <div className={styles.draggable} draggable={true}
                 onDragStart={handleDragStart} onDragEnd={handleDragEnd}
                 style={{ transform: `translate(calc(${element.x}px - 100%), calc(${element.y}px - 50%))` }}>
-                <Button contentEditable={false} type="text" size="middle"
-                    icon={<PlusOutlined />} onClick={toggle} ref={trigger as React.RefObject<HTMLButtonElement>} />
+                <Button contentEditable={false} type="text" size="small" icon={<PlusOutlined />}
+                    onClick={toggle} ref={trigger as React.RefObject<HTMLButtonElement>} />
                 <Button className={styles.handleButton} contentEditable={false} type="text"
-                    size="middle" icon={<HolderOutlined />} />
+                    size="small" icon={<HolderOutlined />} />
             </div>
         }
         {context}

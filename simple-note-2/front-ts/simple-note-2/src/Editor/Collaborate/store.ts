@@ -10,8 +10,8 @@ type Action = {
     close: () => void;
 }
 const useStore = create<Context & Action>()(set => ({
-    activate: true,
-    room: "test",
+    // activate: true,
+    // room: "test",
     active: (room: string) => set(() => ({activate: true, room: room})),
     close: () => set(() => ({activate: false, room: undefined}))
 }))

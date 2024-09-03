@@ -13,6 +13,7 @@ import ColumnLayoutExtension from "./columns";
 import { LexicalNodeReplacement } from "lexical";
 import CommentExtension from "./comment";
 import TableOfContentExtension from "./tablofContent";
+import MathExtension from "./math";
 
 export type Plugin<T = {}> = React.FC<T>;
 
@@ -34,6 +35,7 @@ const Extensions: Extension[] = [
     AIExtension,
     ColumnLayoutExtension,
     TableOfContentExtension,
+    MathExtension,
     // CommentExtension,
 ]
 

@@ -9,6 +9,7 @@ import ImageToText from "./PlusList/imageToText";
 import Video from "./PlusList/video";
 import Document from "./PlusList/document";
 import Column from "./PlusList/column";
+import Math from "./PlusList/math";
 
 const PlusList: PlusItem[] = [
     Paragraph,
@@ -21,6 +22,7 @@ const PlusList: PlusItem[] = [
     Video,
     Document,
     Column,
+    Math,
 ];
 
 export default PlusList;
