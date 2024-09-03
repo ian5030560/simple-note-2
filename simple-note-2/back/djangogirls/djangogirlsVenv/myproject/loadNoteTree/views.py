@@ -51,22 +51,29 @@ class LoadNoteTreeView(APIView):
             notesData = UserNoteData.check_user_all_notes(username)  # 透過username來取得資料
                 
             if notesData:  # 取得成功
-                notesDataID = notesData[0][1]
-                notesDataName = notesData[0][0]
+                singleNoteDataArray = [] # list of single note
+                multipleNoteDataArray = [] # list of multiple note
                 
-                parentId = UserSubNoteData.check_parent_id(notesDataID)
-                silblingId = UserSubNoteData.check_sibling_id(notesDataID)
-                singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
-                
-                # try get collaborateb url
-                collaborateUrl = UserCollaborateNote.check_url(username)  
-                if collaborateUrl != []: # url != null
-                    multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-                    respArray = {"one": [singleNoteData], "multiple": [multipleNoteData]}
-                else: # url == null
-                    respArray = {"one": [singleNoteData], "multiple": []}
+                for i in range(len(notesData)):
+                    notesDataID = notesData[i][1]
+                    notesDataName = notesData[i][0]
                     
-                return Response(respArray, status=status.HTTP_200_OK)
+                    # single note
+                    parentId = UserSubNoteData.check_parent_id(notesDataID)
+                    silblingId = UserSubNoteData.check_sibling_id(notesDataID)
+                    singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
+                    singleNoteDataArray.append(singleNoteData)
+                    
+                    # multiple note
+                    collaborateUrl = UserCollaborateNote.check_url(username)  # try get collaborateb url
+                    if collaborateUrl != []: # url != null
+                        multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                    else: # url == null
+                        multipleNoteData = []
+                    multipleNoteDataArray.append(multipleNoteData)
+                    
+                respDict = {"one": [singleNoteDataArray], "multiple": [multipleNoteDataArray]}    
+                return Response(respDict, status=status.HTTP_200_OK)
             
             elif notesData == False:  # SQL error
                 return Response("SQL error.", status=status.HTTP_400_BAD_REQUEST)
