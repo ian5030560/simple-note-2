@@ -95,7 +95,6 @@ def check_all_guest(note_master_input, note_title_id_input):
     finally:
         session.close()
 
-
 # check all url by guest_name
 def check_url(note_guest_input):
     session = create_session()
@@ -114,6 +113,29 @@ def check_url(note_guest_input):
     finally:
         session.close()
 
+def get_note_url(guest_name: str, note_title_id: str):
+    session = create_session()
+    
+    try:
+        note_id = (
+            session.query(User_Note_Data)
+            .filter_by(note_title_id = note_title_id)
+            .one().id
+        )
+        
+        url = (
+            session.query(User_Collaborate_Note)
+            .filter_by(note_guest = guest_name, note_id = note_id)
+            .one().url
+        )
+        return url
+    
+    except SQLAlchemyError as e:
+        session.rollback()
+        # print(e)
+        return False
+    finally:
+        session.close()
 
 # Check if it is a collaborative note by note_master_input, note_title_id_input
 def check_collaborativeNote_exist(note_master_input, note_title_id_input):
@@ -190,4 +212,4 @@ def delete_all_data(note_master_input, note_title_id_input):
         session.close()
 
 
-#print(check_url("user01"))
+# print(get_note_url("user18", 1))
