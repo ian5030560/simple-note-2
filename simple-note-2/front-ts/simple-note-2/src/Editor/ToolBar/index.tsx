@@ -19,15 +19,15 @@ const TOOLS: React.ReactNode[] = [
     <Markdown />,
     <Align />,
     <List />,
-    <Flex>
+    <Flex gap={"small"}>
         <FontColor />
         <BackgroundColor />
     </Flex>,
-    <Flex>
+    <Flex gap={"small"}>
         <FontSize />
         <FontFamily />
     </Flex>,
-    <Flex>
+    <Flex gap={"small"}>
         <Link />
         <Table />
     </Flex>,

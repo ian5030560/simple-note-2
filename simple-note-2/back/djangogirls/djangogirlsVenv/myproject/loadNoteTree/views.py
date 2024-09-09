@@ -78,7 +78,8 @@ class LoadNoteTreeView(APIView):
                             multipleNoteData = []
                         multipleNoteDataArray.append(multipleNoteData)
                     
-                respDict = {"one": [singleNoteDataArray], "multiple": [multipleNoteDataArray]}    
+                respDict = {"one": singleNoteDataArray, "multiple": multipleNoteDataArray}
+         
                 return Response(respDict, status=status.HTTP_200_OK)
             
             elif notesData == False:  # SQL error

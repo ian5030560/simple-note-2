@@ -12,7 +12,7 @@ import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { mergeRegister } from "@lexical/utils"
 import styles from "./index.module.css";
-import { useWrapper } from "../../../Draggable/component";
+import { useAnchor } from "../../../Draggable/component";
 
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/;
 function validateUrl(url: string): boolean {
@@ -56,7 +56,7 @@ export const FloatingLinkPlugin: Plugin = () => {
     const pos = useRef(DEFAULT);
     const [editable, setEditable] = useState(false);
     const inputRef = useRef<InputRef>(null);
-    const wrapper = useWrapper();
+    const anchor = useAnchor();
     const ref = useRef<HTMLDivElement>(null);
 
     const showLink = useCallback(() => {
@@ -74,10 +74,10 @@ export const FloatingLinkPlugin: Plugin = () => {
             else {
                 url = parent.getURL();
                 let element = editor.getElementByKey(parent.getKey());
-                if (!element || !wrapper || !ref.current) return;
+                if (!element || !anchor || !ref.current) return;
 
                 let { x, y, height: eHeight } = element.getBoundingClientRect();
-                let { top, left, y: wy } = wrapper.getBoundingClientRect();
+                let { top, left, y: wy } = anchor.getBoundingClientRect();
                 let { height } = ref.current.getBoundingClientRect();
 
                 let overTop = wy >= y;
@@ -89,7 +89,7 @@ export const FloatingLinkPlugin: Plugin = () => {
             pos.current = position;
             setUrl(url);
         }
-    }, [editor, wrapper]);
+    }, [editor, anchor]);
 
     useEffect(() => {
         let resizer = new ResizeObserver(() => {
@@ -125,11 +125,11 @@ export const FloatingLinkPlugin: Plugin = () => {
     }, [editor]);
 
     const { x, y } = pos.current;
-    return wrapper ? createPortal(
+    return anchor ? createPortal(
         <Link top={y} left={x} url={url} editable={editable}
             inputRef={inputRef} ref={ref}
             onEditClick={handleEditClick}
             onDiscardClick={handleDiscardClick}
-        />, wrapper
+        />, anchor
     ) : null;
 }

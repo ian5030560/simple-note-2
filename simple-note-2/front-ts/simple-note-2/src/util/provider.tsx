@@ -70,8 +70,8 @@ const requestInit = {
 }
 
 type NoteFetchResult = {
-    one: [Array<NoteTreeData>],
-    multiple: [Array<{ noteId: string, noteName: string, url: string }>]
+    one: Array<NoteTreeData>,
+    multiple: Array<{ noteId: string, noteName: string, url: string }>
 }
 export async function settingLoader({ request, params }: LoaderFunctionArgs<any>): Promise<NoteFetchResult | null> {
 
@@ -96,12 +96,12 @@ export function SettingProvider() {
 
     useEffect(() => {
         if (!data) return;
-        let sorted = sortNodes(data["one"][0]);
+        let sorted = sortNodes(data["one"]);
         init(sorted.map((it) => (
             {
                 key: it.noteId, title: it.noteName, children: [],
                 parentKey: it.parentId, siblingKey: it.silblingId,
-                url: data["multiple"][0].find(mul => mul.noteId === it.noteId)?.url
+                url: data["multiple"].find(mul => mul.noteId === it.noteId)?.url
             }
         )));
         let id = sorted[0].noteId;

@@ -1,32 +1,35 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { forwardRef, LegacyRef, useCallback, useEffect, useRef, useState } from "react";
 import katex from "katex";
 import { Input, Popover } from "antd";
 import { $getNodeByKey, NodeKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isMathNode } from "./node";
 import "katex/dist/katex.css";
+import { TextAreaRef } from "antd/es/input/TextArea";
 
 interface MathEditorProps {
     value: string;
     onValueChange: (value: string) => void;
+    inputRef: LegacyRef<TextAreaRef>;
 }
 const MathEditor = (props: MathEditorProps) => {
-    return <div style={{ position: "relative" }}>
-        <Input.TextArea placeholder="輸入katex語法" value={props.value} autoSize
+    return <div>
+        <Input.TextArea ref={props.inputRef} placeholder="輸入katex語法" value={props.value} autoSize
             onChange={(e) => props.onValueChange(e.target.value)} />
     </div>
 }
 
-interface MathRenderProps extends React.HTMLAttributes<HTMLSpanElement>{
+interface MathRenderProps extends React.HTMLAttributes<HTMLSpanElement> {
     content: string;
     inline: boolean;
 }
-export const MathRender = (props: MathRenderProps) => {
+export const MathRender = forwardRef((props: MathRenderProps, bindRef: React.ForwardedRef<HTMLElement>) => {
     const ref = useRef<HTMLSpanElement>(null);
 
-    const {content, inline, ...rest} = props;
+    const { content, inline, style, ...rest } = props;
 
     useEffect(() => {
+
         if (!ref.current) return;
 
         katex.render(content, ref.current, {
@@ -39,12 +42,12 @@ export const MathRender = (props: MathRenderProps) => {
 
     }, [content, inline]);
 
-    return <>
+    return <span ref={bindRef} {...rest}>
         <img src="#" alt="" />
-        <span {...rest} ref={ref} tabIndex={-1} />
+        <span ref={ref} tabIndex={-1} style={style} />
         <img src="#" alt="" />
-    </>
-}
+    </span>
+})
 
 interface MathViewProps extends MathRenderProps {
     nodeKey: NodeKey,
@@ -53,6 +56,20 @@ export default function MathView(props: MathViewProps) {
     const [editor] = useLexicalComposerContext();
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
+    const ref = useRef<TextAreaRef>(null);
+
+    useEffect(() => {
+        const body = document.body;
+
+        function handleInput() {
+            const element = ref.current;
+            if (!element || !open) return;
+            element.focus();
+        }
+        body.addEventListener("input", handleInput);
+
+        return () => body.removeEventListener("input", handleInput);
+    }, [open]);
 
     const handleOpenChange = useCallback((open: boolean) => {
         setOpen(open);
@@ -70,7 +87,7 @@ export default function MathView(props: MathViewProps) {
                 }
             })
         }
-    }, [editor, props.nodeKey, value]);
+    }, [editor, props.inline, props.nodeKey, value]);
 
     const handleValueChange = useCallback((value: string) => {
         setValue(value);
@@ -84,7 +101,7 @@ export default function MathView(props: MathViewProps) {
 
     return <Popover placement="bottom" arrow={false}
         onOpenChange={handleOpenChange} open={open} trigger="click"
-        content={<MathEditor value={value} onValueChange={handleValueChange} />}>
+        content={<MathEditor inputRef={ref} value={value} onValueChange={handleValueChange} />}>
         <MathRender content={props.content} inline={props.inline} />
     </Popover>
 }

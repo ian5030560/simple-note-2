@@ -3,7 +3,7 @@ import { Plugin } from "../Extension/index";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getRoot } from "lexical";
 import { createPortal } from "react-dom";
-import DraggableElement, { PlusItem, DropLine, useWrapper } from "./component";
+import DraggableElement, { PlusItem, DropLine, useAnchor } from "./component";
 import { useDndAction } from "./store";
 import { getBlockFromPoint } from "./util";
 import useDnd, { DRAGGABLE_TAG } from "./dnd";
@@ -14,7 +14,7 @@ export interface DraggableProp {
 const Draggable: React.FC<DraggableProp> = ({ plusList }) => {
     const { setElement, reset, setId } = useDndAction();
     const [editor] = useLexicalComposerContext();
-    const wrapper = useWrapper();
+    const anchor = useAnchor();
     const { handleDragOver, handleDrop } = useDnd();
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -26,14 +26,14 @@ const Draggable: React.FC<DraggableProp> = ({ plusList }) => {
         if (root?.isEqualNode(target) || !scroller) return;
 
         let elem = getBlockFromPoint(editor, clientX, clientY, scroller);
-        if (!elem || !elem.hasAttribute(DRAGGABLE_TAG) || !wrapper) return;
+        if (!elem || !elem.hasAttribute(DRAGGABLE_TAG) || !anchor) return;
 
         let { x, y, height: eh } = elem.getBoundingClientRect();
-        let { top, left } = wrapper.getBoundingClientRect();
+        let { top, left } = anchor.getBoundingClientRect();
         setId(elem.getAttribute(DRAGGABLE_TAG)!);
         setElement(x - left, y + eh / 2 - top);
 
-    }, [editor, setElement, setId, wrapper]);
+    }, [editor, setElement, setId, anchor]);
 
     const handleMouseLeave = useCallback(() => reset("element"), [reset]);
 
@@ -41,8 +41,8 @@ const Draggable: React.FC<DraggableProp> = ({ plusList }) => {
         let scroller = document.getElementById("editor-scroller");
         scroller?.addEventListener("mousemove", handleMouseMove);
         scroller?.addEventListener("mouseleave", handleMouseLeave);
-        wrapper?.addEventListener("dragover", handleDragOver);
-        wrapper?.addEventListener("drop", handleDrop);
+        anchor?.addEventListener("dragover", handleDragOver);
+        anchor?.addEventListener("drop", handleDrop);
         
         let removeListener = editor.registerUpdateListener(() => {
             const keys = editor.getEditorState().read(() => $getRoot().getChildrenKeys());
@@ -55,18 +55,18 @@ const Draggable: React.FC<DraggableProp> = ({ plusList }) => {
         return () => {
             scroller?.removeEventListener("mousemove", handleMouseMove);
             scroller?.removeEventListener("mouseleave", handleMouseLeave);
-            wrapper?.removeEventListener("dragover", handleDragOver);
-            wrapper?.removeEventListener("drop", handleDrop);
+            anchor?.removeEventListener("dragover", handleDragOver);
+            anchor?.removeEventListener("drop", handleDrop);
             removeListener();
         }
-    }, [editor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, wrapper]);
+    }, [editor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, anchor]);
 
-    return wrapper ? createPortal(
+    return anchor ? createPortal(
         <>
             <DraggableElement plusList={plusList} />
             <DropLine />
         </>,
-        wrapper
+        anchor
     ) : null;
 }
 

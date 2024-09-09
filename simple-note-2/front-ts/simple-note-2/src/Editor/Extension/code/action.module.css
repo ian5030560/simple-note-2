@@ -9,3 +9,9 @@
 .show{
     opacity: 1;
 }
+
+.dropdownList{
+    position: fixed;
+    top: 0;
+    left: 0;
+}

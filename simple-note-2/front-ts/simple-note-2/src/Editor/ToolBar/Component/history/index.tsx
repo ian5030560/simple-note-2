@@ -7,7 +7,7 @@ import {UNDO_COMMAND, REDO_COMMAND} from "lexical";
 const History: React.FC = () => {
     const [editor] = useLexicalComposerContext();
     
-    return <Flex>
+    return <Flex gap={"small"}>
         <Button icon={<UndoOutlined />} type="text" onClick={() => editor.dispatchCommand(UNDO_COMMAND, undefined)} />
         <Button icon={<RedoOutlined />} type="text" onClick={() => editor.dispatchCommand(REDO_COMMAND, undefined)} />
     </Flex>

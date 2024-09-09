@@ -1,157 +1,117 @@
 import { createPortal } from "react-dom"
-import { useWrapper } from "../../Draggable/component"
+import { useAnchor } from "../../Draggable/component"
 import styles from "./action.module.css";
-import { $getSelection, BaseSelection, Klass, LexicalNode, SELECTION_CHANGE_COMMAND } from "lexical";
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { NodeKey } from "lexical";
+import { useEffect, useMemo, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import React from "react";
 
-export type Placement = "top" | "bottom" | "left" | "right";
-export type ActionRef = {
-    place: (key: string) => void;
-    leave: () => void;
-}
-export interface ActionProp {
+type Key = "top" | "bottom" | "left" | "right";
+type Outside = boolean;
+export type Placement = Key[] | Partial<Record<Key, Outside>>;
+interface ActionProps {
+    nodeKey: NodeKey;
     children: React.ReactNode;
-    placement: Placement[];
-    nodeType: Klass<LexicalNode>;
-    onEnterNode?: (key: string) => void;
-    onLeaveNode?: (key: string) => void;
-    onSeletionChange?: (selection: BaseSelection | null) => void;
-    trigger: "hover" | "selected";
-    style?: Omit<React.CSSProperties, "transform">;
-    className?: string | undefined;
-    outside?: boolean;
+    placement?: Placement;
+    open: boolean;
     autoWidth?: boolean;
     autoHeight?: boolean;
 }
-const DEFAULT = { top: -10000, left: -10000 }
-const Action = forwardRef((prop: ActionProp, ref: React.ForwardedRef<ActionRef>) => {
-    const wrapper = useWrapper();
+export default function Action(props: ActionProps) {
+    const anchor = useAnchor();
+    const [pos, setPos] = useState<{ x: number, y: number }>();
     const [editor] = useLexicalComposerContext();
-    const [pos, setPos] = useState(DEFAULT);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [key, setKey] = useState<string>("");
-
-    const place = useCallback((key: string) => {
-        let element = editor.getElementByKey(key);
-        if (!element || !wrapper || !containerRef.current) return;
-        const { x, y, width, height } = element.getBoundingClientRect();
-        const { top: offsetTop, left: offsetLeft } = wrapper.getBoundingClientRect();
-        const { width: offsetWidth, height: offsetHeight } = containerRef.current.getBoundingClientRect();
-
-        let top = y - offsetTop + height / 2 - offsetHeight / 2;
-        let left = x - offsetLeft + width / 2 - offsetWidth / 2;
-        for (let p of prop.placement) {
-            switch (p) {
-                case "top":
-                    top -= height / 2 + (!prop.outside ?  - offsetHeight / 2 : offsetHeight / 2);
-                    break;
-                case "left":
-                    left -= width / 2 + (!prop.outside ? - offsetWidth / 2 : offsetWidth / 2);
-                    break;
-                case "bottom":
-                    top += height / 2 + (!prop.outside ?  - offsetHeight / 2 : offsetHeight / 2);
-                    break;
-                case "right":
-                    left += width / 2 + (!prop.outside ? - offsetWidth / 2 : offsetWidth / 2);
-            }
-        }
-        setPos({ top: top, left: left });
-        if(prop.autoWidth){
-            containerRef.current.style.width = width + "px";
-        }
-        
-        if(prop.autoHeight){
-            containerRef.current.style.height = height + "px";
-        }
-
-    }, [editor, prop.autoHeight, prop.autoWidth, prop.outside, prop.placement, wrapper]);
-
-    useImperativeHandle(ref, () => ({
-        place: (key) => { 
-            setKey(key); 
-            place(key); 
-        },
-        leave: () => setPos(DEFAULT)
-    }), [place]);
+    const element = useMemo(() => editor.getElementByKey(props.nodeKey), [editor, props.nodeKey]);
+    const placement = useMemo(() => props.placement || [], [props.placement]);
+    const [size, setSize] = useState<{ width?: number, height?: number }>();
 
     useEffect(() => {
-        let resizer = new ResizeObserver(() => {
-            place(key);
-        });
+        if (!element) return;
 
-        resizer.observe(document.body);
+        function update() {
+            if (!anchor) return;
+
+            const { x, y, width, height } = element!.getBoundingClientRect();
+            const { left, top } = anchor.getBoundingClientRect();
+            const { x: rx, y: ry } = { x: x - left, y: y - top };
+            const center = {
+                x: rx + width / 2,
+                y: ry + height / 2,
+            }
+
+            const _placement = Array.isArray(placement) ? placement : Object.keys(placement);
+            const map: any = {
+                "top": () => center.y -= height / 2,
+                "bottom": () => center.y += height / 2,
+                "left": () => center.x -= width / 2,
+                "right": () => center.x += width / 2
+            }
+            for (let place of _placement) {
+                map[place]();
+            }
+            setPos({ ...center });
+
+            const { autoHeight, autoWidth } = props;
+            const resize: { width?: number, height?: number } = {};
+            if (!element) return resize;
+
+            if (autoWidth) {
+                resize.width = width;
+            }
+            if (autoHeight) {
+                resize.height = height;
+            }
+
+            setSize({ ...resize });
+        }
+
+        update();
+        const resizer = new ResizeObserver(update);
+        resizer.observe(element);
+
         return () => {
-            resizer.unobserve(document.body);
+            resizer.unobserve(element);
             resizer.disconnect();
         }
-    }, [key, place]);
+    }, [anchor, element, placement, props]);
 
-    useEffect(() => {
-        function handleEnter(key: string) {
-            prop.onEnterNode?.(key);
-            place(key);
-            setKey(key);
+    const adjustPos = useMemo(() => {
+        const offset = { x: 0, y: 0 };
+        if (Array.isArray(placement)){
+            if(placement.includes("right")){
+                offset.x = -100;
+            }
+
+            if(placement.includes("bottom")){
+                offset.y = -100;
+            }
+
+            return offset;
         }
+    
+        Object.keys(placement).forEach(key => {
+            if((key === "left" && placement.left) || (key === "right" && !placement.right)){
+                offset.x = -100;
+            }
+            if((key === "top" && placement.top) || (key === "bottom" && !placement.bottom)){
+                offset.y = -100;
+            }
+        });
 
-        function handleLeave(e: PointerEvent, key: string) {
-            let { clientX, clientY } = e;
-            let { x, y, width, height } = editor.getElementByKey(key)!.getBoundingClientRect();
-            if (clientX >= x && clientX <= x + width && clientY >= y && clientY <= y + height) return;
-            setPos(DEFAULT);
-            prop.onLeaveNode?.(key);
-            setKey("");
+        return offset;
+    }, [placement]);
+
+    return <>
+        {
+            anchor && element && createPortal(<div className={styles.actionContainer}
+                style={{
+                    transform: pos ? `translate(calc(${pos.x}px + ${adjustPos.x}%), calc(${pos.y}px + ${adjustPos.y}%))` : undefined,
+                    display: !props.open ? "none" : undefined,
+                    opacity: !props.open ? 0 : 1,
+                    ...size
+                }}>
+                {props.children}
+            </div>, anchor)
         }
-
-        let removeHover = prop.trigger === "hover" ? editor.registerMutationListener(prop.nodeType, mutations => {
-            Array.from(mutations).forEach(([key, tag]) => {
-                if (tag === "updated") return;
-                let element = editor.getElementByKey(key);
-                const enter = () => handleEnter(key);
-                const leave = (e: PointerEvent) => handleLeave(e, key);
-
-                if (tag === "created") {
-                    element?.addEventListener("pointerenter", enter);
-                    element?.addEventListener("pointerleave", leave);
-                }
-                else {
-                    element?.removeEventListener("pointerenter", enter);
-                    element?.removeEventListener("pointerleave", leave);
-                    setPos(DEFAULT);
-                    setKey("");
-                }
-            })
-        }) : null;
-
-        let removeSelect = prop.trigger === "selected" ? editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
-            editor.update(() => prop.onSeletionChange?.($getSelection()));
-            return false;
-        }, 1) : null;
-
-        let removeDestroy = editor.registerMutationListener(prop.nodeType, mutations => {
-            Array.from(mutations).forEach(([, tag]) => {
-                if (tag === "destroyed") {
-                    setPos(DEFAULT);
-                    setKey("");
-                }
-            })
-        })
-        
-        let removeUpdate = prop.trigger === "selected" ? editor.registerUpdateListener(({editorState}) => {
-            editorState.read(() => prop.onSeletionChange?.($getSelection()));
-        }) : null;
-
-        return () => {
-            removeHover?.();
-            removeSelect?.();
-            removeDestroy();
-            removeUpdate?.(); 
-        }
-    }, [editor, place, prop, prop.nodeType]);
-
-    return wrapper ? createPortal(<div className={[styles.actionContainer, prop.className].join(" ")}
-        style={{ transform: `translate(${pos.left}px, ${pos.top}px)`, ...prop.style }} ref={containerRef}>
-        {prop.children}</div>, wrapper) : null;
-})
-
-export default Action;
+    </>
+}

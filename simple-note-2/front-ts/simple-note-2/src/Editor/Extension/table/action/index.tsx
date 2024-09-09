@@ -1,7 +1,7 @@
 import { CiCircleChevDown } from "react-icons/ci";
 import { Plugin } from "../../index";
 import { Button, Dropdown, MenuProps } from "antd";
-import { cloneElement, useCallback, useMemo, useRef } from "react";
+import { cloneElement, useEffect, useMemo, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import {
     $isTableSelection, $getTableCellNodeFromLexicalNode,
@@ -9,23 +9,31 @@ import {
     $deleteTableColumn__EXPERIMENTAL, $deleteTableRow__EXPERIMENTAL,
     TableCellNode, $isTableNode,
 } from "@lexical/table";
-import { $getSelection, $isRangeSelection, BaseSelection } from "lexical";
+import { $getSelection, $isRangeSelection, NodeKey, SELECTION_CHANGE_COMMAND } from "lexical";
 import styles from "./action.module.css";
-import Action, { ActionRef } from "../../UI/action";
-import { $findMatchingParent } from "@lexical/utils";
+import Action from "../../UI/action";
+import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 
 const TableActionPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
-    const ref = useRef<ActionRef>(null);
+    const [open, setOpen] = useState(false);
+    const [key, setKey] = useState<NodeKey>();
 
-    const handleSelectionChange = useCallback((selection: BaseSelection | null) => {
-        if ($isRangeSelection(selection) || $isTableSelection(selection)) {
-            let node = $getTableCellNodeFromLexicalNode(selection.anchor.getNode());
-            if (node) ref.current?.place(node.getKey());
-            return;
-        }
-        ref.current?.leave();
-    }, []);
+    useEffect(() => mergeRegister(
+        editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+            const selection = $getSelection();
+            if (!($isRangeSelection(selection) || $isTableSelection(selection))) {
+                setOpen(false);
+                setKey(undefined);
+            }
+            else {
+                const node = $getTableCellNodeFromLexicalNode(selection.anchor.getNode());
+                setKey(node?.getKey());
+                setOpen(true);
+            };
+            return false;
+        }, 4),
+    ), [editor]);
 
     const items: MenuProps["items"] = useMemo(() => {
         return [
@@ -84,14 +92,15 @@ const TableActionPlugin: Plugin = () => {
         ]
     }, [editor]);
 
-    return <Action nodeType={TableCellNode} placement={["top", "right"]} trigger="selected"
-        onSeletionChange={handleSelectionChange} className="simple-note-2-table-cell-action-button-container" ref={ref}>
-        <Dropdown menu={{ items }} trigger={["click"]} placement="bottom" autoAdjustOverflow
-            dropdownRender={(node) => cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
-            <Button type="text" className="simple-note-2-table-cell-action-button"
-                icon={<CiCircleChevDown size={20} />} />
-        </Dropdown>
-    </Action>
+    return key ? <Action nodeKey={key} open={open} placement={["top", "right"]}>
+        <div className="simple-note-2-table-cell-action-button-container">
+            <Dropdown menu={{ items }} trigger={["click"]} placement="bottom" autoAdjustOverflow
+                dropdownRender={(node) => cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
+                <Button type="text" className="simple-note-2-table-cell-action-button"
+                    icon={<CiCircleChevDown size={20} />} />
+            </Dropdown>
+        </div>
+    </Action> : null;
 }
 
 export default TableActionPlugin;

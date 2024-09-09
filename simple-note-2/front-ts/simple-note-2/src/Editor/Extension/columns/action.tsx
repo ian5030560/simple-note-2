@@ -1,42 +1,52 @@
 import { Button } from "antd";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { $findMatchingParent } from "@lexical/utils";
-import Action, { ActionRef } from "../UI/action";
+import Action from "../UI/action";
 import { $isColumnItemNode, ColumnItemNode } from "./item";
-import { useCallback, useRef, useState } from "react";
-import { $getNodeByKey, $isRangeSelection, BaseSelection } from "lexical";
+import { useEffect, useRef, useState } from "react";
+import { $getNodeByKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isColumnContainerNode } from "./container";
 import { FaPlus } from "react-icons/fa6";
 import { APPEND_COLUMNS } from "./plugin";
-import styles from "./action.module.css";
+import { inside } from "../UI/utils";
 
 const ColumnAction = () => {
-    const deleteRef = useRef<ActionRef>(null);
     const [editor] = useLexicalComposerContext();
     const [key, setKey] = useState<string | null>(null);
-    const addRef = useRef<ActionRef>(null);
+    const [add, setAdd] = useState(false);
+    const [remove, setRemove] = useState(false);
+    const addButtonRef = useRef<HTMLButtonElement>(null);
+    const removeButtonRef = useRef<HTMLButtonElement>(null);
 
-    const handleSelection = useCallback((selection: BaseSelection | null) => {
-        if ($isRangeSelection(selection)) {
-            const node = selection.anchor.getNode();
-            const p = $findMatchingParent(node, $isColumnItemNode);
-            if (p) {
-                deleteRef.current?.place(p.getKey());
-                addRef.current?.place(p.getKey());
-                setKey(p.getKey());
-                return;
-            }
-        }
-        deleteRef.current?.leave();
-        addRef.current?.leave();
-        setKey(null);
-    }, []);
+    useEffect(() => editor.registerMutationListener(ColumnItemNode, (mutations) => {
+        Array.from(mutations).forEach(([key, tag]) => {
+            if (tag === "updated") return;
 
-    return <>
-        <Action nodeType={ColumnItemNode} ref={deleteRef} placement={["top", "right"]}
-            trigger="selected" onSeletionChange={handleSelection}>
-            <Button type="text" icon={<FaRegTrashAlt />} onClick={() => {
+            const element = editor.getElementByKey(key);
+            if (!element) return;
+
+            element.addEventListener("mouseenter", () => {
+                setAdd(true);
+                setRemove(true);
+                setKey(key);
+            });
+
+            element.addEventListener("mouseleave", (e) => {
+                const { clientX: x, clientY: y } = e;
+                const addButton = addButtonRef.current;
+                const removeButton = removeButtonRef.current;
+                if(addButton && removeButton && (inside(x, y, addButton) || inside(x, y, removeButton))) return;
+                setAdd(false);
+                setRemove(true);
+                setKey(null);
+            });
+        });
+    }), [editor]);
+
+    return key ? <>
+        <Action placement={["top", "right"]} open={remove} nodeKey={key}>
+            <Button type="text" icon={<FaRegTrashAlt />} ref={removeButtonRef} onClick={() => {
                 if (!key) return;
 
                 editor.update(() => {
@@ -59,12 +69,11 @@ const ColumnAction = () => {
             }} />
         </Action>
 
-        <Action nodeType={ColumnItemNode} ref={addRef} placement={["right"]} outside
-            trigger="selected" onSeletionChange={handleSelection} autoHeight className={styles.columnAddContainer}>
-            <Button type="text" icon={<FaPlus />} style={{ height: "inherit", width: 20 }}
+        <Action nodeKey={key} placement={{ top: false, right: true }} open={add} autoHeight>
+            <Button ref={addButtonRef} type="text" icon={<FaPlus />} size="small" style={{ height: "100%" }}
                 onClick={() => editor.dispatchCommand(APPEND_COLUMNS, 1)} />
         </Action>
-    </>
+    </> : null;
 }
 
 export default ColumnAction;

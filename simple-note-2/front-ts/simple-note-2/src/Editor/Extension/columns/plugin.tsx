@@ -124,13 +124,6 @@ const ColumnLayoutPlugin: Plugin = () => {
                     node.remove();
                 }
             }),
-            editor.registerMutationListener(ColumnItemNode, (mutations) => {
-                Array.from(mutations).forEach(mutation => {
-                    if (mutation[1] === "updated" || mutation[1] === "created") {
-                        editor.getElementByKey(mutation[0])!.style.border = `1px solid ${token.colorText}`
-                    }
-                })
-            }),
             editor.registerCommand(APPEND_COLUMNS, (payload) => {
                 editor.update(() => {
                     const selection = $getSelection();

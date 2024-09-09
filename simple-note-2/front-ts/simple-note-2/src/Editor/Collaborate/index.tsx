@@ -2,7 +2,7 @@ import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { Provider } from "@lexical/yjs";
 import { WebsocketProvider } from "y-websocket";
 import { Doc } from "yjs";
-import { useWrapper } from "../Draggable/component";
+import { useAnchor } from "../Draggable/component";
 import { useCallback, useRef } from "react";
 import { useCollab } from "./store";
 import { useCookies } from "react-cookie";
@@ -22,8 +22,8 @@ function getDocFromMap(id: string, yjsDocMap: Map<string, Doc>): Doc {
 
 export default function CollaboratePlugin() {
 
-    const wrapper = useWrapper();
-    const ref = useRef(wrapper);
+    const anchor = useAnchor();
+    const ref = useRef(anchor);
     const { activate, room } = useCollab();
     const [{ username }] = useCookies(["username"]);
     const provider = useRef<WebsocketProvider | null>(null);

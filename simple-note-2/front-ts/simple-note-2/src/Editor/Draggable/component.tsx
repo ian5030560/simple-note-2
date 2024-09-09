@@ -47,7 +47,7 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
         let resizer = new ResizeObserver(() => {
             if (!ref.current) return;
             let { x, y, height } = element.getBoundingClientRect();
-            ref.current.style.transform = `translate(${x}px, ${y + height + 3}px)`;
+            ref.current.style.transform = `translate(${x}px, ${y + height + 5}px)`;
         });
         resizer.observe(element);
 
@@ -127,10 +127,9 @@ const DraggableElement = (props: { plusList: PlusItem[] }) => {
             element && <div className={styles.draggable} draggable={true}
                 onDragStart={handleDragStart} onDragEnd={handleDragEnd}
                 style={{ transform: `translate(calc(${element.x}px - 100%), calc(${element.y}px - 50%))` }}>
-                <Button contentEditable={false} type="text" size="small" icon={<PlusOutlined />}
+                <Button contentEditable={false} type="text" icon={<PlusOutlined />}
                     onClick={toggle} ref={trigger as React.RefObject<HTMLButtonElement>} />
-                <Button className={styles.handleButton} contentEditable={false} type="text"
-                    size="small" icon={<HolderOutlined />} />
+                <Button className={styles.handleButton} contentEditable={false} type="text" icon={<HolderOutlined />} />
             </div>
         }
         {context}
@@ -139,18 +138,17 @@ const DraggableElement = (props: { plusList: PlusItem[] }) => {
 
 export default DraggableElement;
 
-export type DragWrapperProp = Omit<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>, "id">;
-export const DragWrapper: React.FC<DragWrapperProp> = (prop) => <div id="dnd-wrapper" className={styles.wrapper} {...prop} />;
+export const DndAnchor = ({children}: {children: React.ReactNode}) => <div id="dnd-anchor" className={styles.anchor}>{children}</div>;
 
-export const useWrapper = () => {
-    const [wrapper, setWrapper] = useState<HTMLElement | null>(null);
+export const useAnchor = () => {
+    const [anchor, setWrapper] = useState<HTMLElement | null>(null);
     useEffect(() => {
-        setWrapper(document.getElementById("dnd-wrapper"));
+        setWrapper(document.getElementById("dnd-anchor"));
 
         return () => setWrapper(null);
     }, [])
 
-    return wrapper;
+    return anchor;
 }
 
 export const DropLine = () => {

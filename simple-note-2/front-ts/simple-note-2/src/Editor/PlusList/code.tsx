@@ -10,16 +10,20 @@ const Code: PlusItem = {
     icon: <FaFileCode size={24} />,
     onSelect: (editor) => {
         editor.update(() => {
-            const selection = $getSelection();
-            if ($isRangeSelection(selection)) {
-                // if (selection.isCollapsed()) {
-                $setBlocksType(selection, () => $createCodeNode());
-                // } else {
-                //     const textContent = selection.getTextContent();
-                //     const codeNode = $createCodeNode();
-                //     selection.insertNodes([codeNode]);
-                //     selection.insertRawText(textContent);
-                // }
+            let selection = $getSelection();
+
+            if (selection !== null) {
+                if (selection.isCollapsed()) {
+                    $setBlocksType(selection, () => $createCodeNode());
+                } else {
+                    const textContent = selection.getTextContent();
+                    const codeNode = $createCodeNode();
+                    selection.insertNodes([codeNode]);
+                    selection = $getSelection();
+                    if ($isRangeSelection(selection)) {
+                        selection.insertRawText(textContent);
+                    }
+                }
             }
         })
     }
