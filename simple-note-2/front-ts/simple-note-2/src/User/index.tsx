@@ -63,7 +63,7 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
         setCollapase(value);
     }, []);
 
-    return <Layout style={{ minHeight: "100%", ...rootStyle }}>
+    return <Layout style={{ height: "100%", ...rootStyle }}>
         <Sider collapsible collapsedWidth={0} theme="light" width={resizer.width}
             trigger={<DoubleLeftOutlined style={{ transform: collpase ? "rotate(180deg)" : undefined }} />}
             onCollapse={handleCollapse}>
@@ -76,7 +76,7 @@ export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
             }}
             onDoubleClick={() => setResizer(prev => ({ ...prev, width: prev.width === 0 ? MIN : 0, start: { ...prev.start, w: MIN } }))}
         />}
-        <Content style={{ position: "relative" }}>
+        <Content className={styles.editorFrame}>
             <Editor />
         </Content>
     </Layout>
