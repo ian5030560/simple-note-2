@@ -26,24 +26,32 @@ class GemmaView(APIView):
     serializer_class = GemmaSerializer
 
     def ai(self, text):
-        from openai import OpenAI
         
+        from openai import OpenAI
+        import logging
         AI_client = OpenAI(
         base_url="http://140.127.74.249:8000/v1",
         api_key="nknusumlab"
         )
-
-        output = AI_client.chat.completions.create(
-            model="Breeze-7B-32k-Instruct-v1_0",
-            messages=[
-                {"role": "user", "content": text}
-            ],
-            max_tokens=4000,
-            temperature=0.7,
-            top_p=0.3
-        )
-
-        return (output.choices[0].message.content)
+        
+        try:
+            output = AI_client.chat.completions.create(
+                model="Breeze-7B-32k-Instruct-v1_0",
+                messages=[
+                    {"role": "user", "content": text}
+                ],
+                max_tokens=4000,
+                temperature=0.7,
+                top_p=0.3,
+            )
+            logging.info(f"Received response from AI: {output}")
+            return (output.choices[0].message.content)
+        
+        except: # 超時錯誤處理
+            logging.error("Request to AI timed out")
+            return "API request timed out. Please try again later."
+        
+        
 
     def get(self, request, format=None):
         output = [{"gemma": obj.gemma} for obj in Gemma.objects.all()]
