@@ -12,4 +12,5 @@
     padding: 5px;
     -webkit-user-select: none;
     user-select: none;
+    display: flex;
 }

@@ -6,7 +6,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $isMathNode } from "./node";
 import "katex/dist/katex.css";
 import { TextAreaRef } from "antd/es/input/TextArea";
-
+  
 interface MathEditorProps {
     value: string;
     onValueChange: (value: string) => void;

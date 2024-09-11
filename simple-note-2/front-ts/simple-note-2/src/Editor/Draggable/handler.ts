@@ -1,21 +1,20 @@
 import { useCallback } from "react";
-import { useDndAction, useDndState } from "./store";
+import useDnd from "./store";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey } from "lexical";
 import { getBlockFromPoint } from "./util";
 import { eventFiles } from "@lexical/rich-text";
 
-const HEIGHT = 3;
+export const HEIGHT = 5;
 export const DRAGGABLE_TAG = "draggable-item";
-const useDnd = () => {
+const useDndHandler = () => {
     const [editor] = useLexicalComposerContext();
-    const { setLine } = useDndAction();
-    const { id, line } = useDndState();
+    const {setLine, id, line, dragging}  = useDnd();
 
     const handleDragOver = useCallback((e: DragEvent) => {
         e.preventDefault();
 
-        if (!e.dataTransfer || eventFiles(e)[0]) return false;
+        if (!e.dataTransfer || eventFiles(e)[0] || !dragging) return false;
         let { clientY: mouseY } = e;
 
         let overElement = getBlockFromPoint(editor, e.clientX, e.clientY);
@@ -23,13 +22,14 @@ const useDnd = () => {
         if (!overElement || !overElement.hasAttribute(DRAGGABLE_TAG)) return false;
 
         let { x, y, width, height } = overElement.getBoundingClientRect();
-        const { top, left } = overElement.parentElement!.getBoundingClientRect();
+        const { top, left } = document.getElementById("dnd-anchor")!.getBoundingClientRect();
+
         const { marginTop, marginBottom } = window.getComputedStyle(overElement);
-
+        
         let overHalf = mouseY > (y + height / 2);
-
         if (!overHalf) {
             let previous = overElement.previousElementSibling;
+            
             if (!previous) {
                 y -= HEIGHT;
             }
@@ -57,12 +57,12 @@ const useDnd = () => {
 
         setLine({ x: x, y: y, width: width, height: HEIGHT });
         return true;
-    }, [editor, setLine]);
+    }, [dragging, editor, setLine]);
 
     const handleDrop = useCallback((e: DragEvent) => {
         e.preventDefault();
         
-        if (!e.dataTransfer || eventFiles(e)[0]) return false;
+        if (!e.dataTransfer || eventFiles(e)[0] || !dragging) return false;
 
         let dropElement = getBlockFromPoint(editor, e.clientX, e.clientY);
 
@@ -79,7 +79,7 @@ const useDnd = () => {
 
             if (!dragNode || !dropNode || dragKey === dropKey) return;
 
-            const mouseAt = line!.y! + editor.getRootElement()!.getBoundingClientRect().top;
+            const mouseAt = line!.y! + document.getElementById("dnd-anchor")!.getBoundingClientRect().top;
 
             const { top, height } = dropElement!.getBoundingClientRect();
             const half = top + height / 2;
@@ -93,9 +93,9 @@ const useDnd = () => {
         })
 
         return true;
-    }, [editor, id, line]);
+    }, [dragging, editor, id, line]);
 
     return { handleDragOver, handleDrop }
 }
 
-export default useDnd;
+export default useDndHandler;

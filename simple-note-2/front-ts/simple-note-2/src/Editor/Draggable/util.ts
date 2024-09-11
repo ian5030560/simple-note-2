@@ -6,6 +6,7 @@ function elementContains(posx: number, posy: number, element: HTMLElement, bound
 
     let { x, y, width, height } = element.getBoundingClientRect();
     let { marginBottom, marginTop } = window.getComputedStyle(element);
+ 
     let pstyle = window.getComputedStyle(bound ? bound : element.parentElement!);
     let offsetLeft = parseFloat(pstyle.paddingLeft);
     let offsetRight = parseFloat(pstyle.paddingRight);

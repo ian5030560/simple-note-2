@@ -16,7 +16,7 @@ const TableOfContentPlugin: Plugin = () => {
     const [open, setOpen] = useState(false);
     const [editor] = useLexicalComposerContext();
     const [selected, setSelected] = useState<string>();
-    const {token} = theme.useToken();
+    const { token } = theme.useToken();
 
     useEffect(() => {
         return editor.registerCommand(TABLE_OF_CONTENT, () => {
@@ -27,22 +27,22 @@ const TableOfContentPlugin: Plugin = () => {
 
     const handleSelected = useCallback((key: string) => {
         let element = editor.getElementByKey(key);
-        if(!element) return;
+        if (!element) return;
 
         setSelected(key);
         element.scrollIntoView();
     }, [editor]);
-
+    
     return <TableOfContentsPlugin>
         {
             (tableContent) => <Drawer open={open} mask={false} maskClosable={false}
                 onClose={() => setOpen(false)} title="內容目錄">
-                <Flex style={{overflowY: "auto"}} gap={"small"}>
+                <Flex style={{ overflowY: "auto" }} gap={"small"}>
                     <div className={styles.tableOfContentAlignLine} style={{backgroundColor: token.colorTextSecondary}}/>
                     <Space direction="vertical" size={"small"}>
                         {
                             tableContent.map(([key, text, tag]) => text.trim().length > 0 ? <div key={key} className={styles.tableOfContentItem}
-                                style={{ paddingLeft: (indent(tag) - 1) * 10}} tabIndex={-1}
+                                style={{ paddingLeft: `${(indent(tag) - 1) * 2}em` }} tabIndex={-1}
                                 onClick={() => handleSelected(key)}>
                                 <Typography.Title level={5} type={selected !== key ? "secondary" : undefined}
                                     style={{ margin: 0, transition: "color 250ms ease" }}>

@@ -1,29 +1,28 @@
+import express from "express";
 import WebSocket from "ws";
-import http, { IncomingMessage, request } from 'http';
-import { parseInt } from 'lib0/number';
 import * as Y from "yjs";
 import headlessConvertYDocStateToLexicalJSON from "./createHeadlessCollaborativeEditor";
-import { register } from "node-css-require";
-register();
-// eslint-disable-next-line import/first
+import 'ignore-styles'
 import loader from "../Editor/loader";
+import { randomUUID } from "crypto";
 
+const app = express();
 
 const { setupWSConnection, getYDoc } = require("y-websocket/bin/utils");
-
-const host: string = process.env.HOST || 'localhost';
-const port: number = parseInt(process.env.PORT || '1234');
-
-const server: http.Server = http.createServer((_request: IncomingMessage, response: http.ServerResponse) => {
-  response.writeHead(200, { 'Content-Type': 'text/plain' });
-  response.end('okay');
-
+app.get("/", (_, res) => {
+  res.send('Hello World');
 });
 
-const wss = new WebSocket.Server({ noServer: true });
+app.post("/qrcode", express.json(), (req, res) => {
+  const user: string = req.body.username;
+  res.send(randomUUID());
+});
 
 const Loader = loader();
-wss.on('connection', (conn, req) => {
+const PORT = 4000;
+const wss = new WebSocket.Server({ server: app.listen(PORT, () => console.log(`listening to ${PORT}`)) });
+
+wss.on("connection", (conn, req) => {
   setupWSConnection(conn, req);
   let docName = (req.url || '').slice(1).split('?')[0];
   let ydoc: Y.Doc = getYDoc(docName, true);
@@ -36,23 +35,13 @@ wss.on('connection', (conn, req) => {
         "content-type": "application/json",
       }
     })
-    .then(res => res.ok)
-    .then(ok => {
-      if(ok) return;
-      
-    })
-    .catch(e => {
+      .then(res => res.ok)
+      .then(ok => {
+        if (ok) return;
 
-    })
+      })
+      .catch(e => {
+
+      })
   })
-});
-
-server.on('upgrade', (request: IncomingMessage, socket: any, head: Buffer) => {
-  wss.handleUpgrade(request, socket, head, (ws: WebSocket) => {
-    wss.emit('connection', ws, request);
-  });
-});
-
-server.listen(port, host, () => {
-  console.log(`running at '${host}' on port ${port}`);
 });

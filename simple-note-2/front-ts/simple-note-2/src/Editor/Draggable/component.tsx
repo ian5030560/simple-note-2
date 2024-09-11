@@ -1,13 +1,14 @@
 import { Button, List, theme } from "antd";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { PlusOutlined, HolderOutlined } from "@ant-design/icons";
-import { useDndAction, useDndState } from "./store";
+import useDnd from "./store";
 import { LexicalEditor } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import styles from "./component.module.css";
 import { createPortal } from "react-dom";
 import { getBlockFromPoint } from "./util";
 import { eventFiles } from "@lexical/rich-text";
+import { HEIGHT } from "./handler";
 
 export interface PlusItem {
     value: string,
@@ -23,6 +24,7 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
     const [element, setElement] = useState<HTMLElement | null>(null);
     const trigger = useRef<HTMLElement>(null);
     const ref = useRef<HTMLDivElement>(null);
+    const anchor = useAnchor();
 
     const show = useCallback(() => {
 
@@ -43,11 +45,12 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
     }, []);
 
     useEffect(() => {
-        if (!element) return;
+        if (!element || !anchor) return;
         let resizer = new ResizeObserver(() => {
             if (!ref.current) return;
             let { x, y, height } = element.getBoundingClientRect();
-            ref.current.style.transform = `translate(${x}px, ${y + height + 5}px)`;
+            let {top, left} = anchor.getBoundingClientRect();
+            ref.current.style.transform = `translate(${x - left}px, ${y - top + height + 5}px)`;
         });
         resizer.observe(element);
 
@@ -55,7 +58,7 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
             resizer.unobserve(element);
             resizer.disconnect();
         }
-    }, [element]);
+    }, [anchor, element]);
 
     useEffect(() => {
         function handleLeave(e: MouseEvent) {
@@ -73,10 +76,9 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
     }, [editor, hide]);
 
     const context = useMemo(() => {
-        let main = document.getElementById("editor-scroller")?.parentElement;
         return <>
             {
-                main && createPortal(<div className={styles.dropDown} ref={ref}
+                anchor && createPortal(<div className={styles.dropDown} ref={ref}
                     style={{
                         maxHeight: !open ? 0 : 250, opacity: !open ? 0 : undefined,
                         backgroundColor: token.colorBgBase
@@ -85,21 +87,19 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
                         <Button icon={item.icon} block type="text" style={{ justifyContent: "flex-start" }}
                             onClick={() => handleSelect(item)}>{item.label}</Button>
                     </List.Item>} dataSource={itemList} />
-                </div>, main)
+                </div>, anchor)
             }
         </>
-    }, [handleSelect, itemList, open, token.colorBgBase]);
+    }, [anchor, handleSelect, itemList, open, token.colorBgBase]);
 
     const toggle = useCallback(() => open ? hide() : show(), [hide, open, show]);
 
     return [toggle, context, trigger];
 }
 
-const HEIGHT = 3;
 const DraggableElement = (props: { plusList: PlusItem[] }) => {
 
-    const { element, id } = useDndState();
-    const { setLine, reset } = useDndAction();
+    const { element, id, setLine, reset, setDragging } = useDnd();
     const [toggle, context, trigger] = usePlusMenu(props.plusList);
     const [editor] = useLexicalComposerContext();
 
@@ -113,14 +113,15 @@ const DraggableElement = (props: { plusList: PlusItem[] }) => {
 
         let { width } = element.getBoundingClientRect();
         setLine({ width: width, height: HEIGHT });
-
-    }, [editor, id, setLine]);
+        setDragging(true);
+    }, [editor, id, setDragging, setLine]);
 
     const handleDragEnd = useCallback(() => {
         reset("element");
         reset("id");
         reset("line");
-    }, [reset]);
+        setDragging(false);
+    }, [reset, setDragging]);
 
     return <>
         {
@@ -152,7 +153,7 @@ export const useAnchor = () => {
 }
 
 export const DropLine = () => {
-    const { line } = useDndState();
+    const { line } = useDnd();
     return <>
         {
             line?.x !== undefined && <div className={styles.dropLine}

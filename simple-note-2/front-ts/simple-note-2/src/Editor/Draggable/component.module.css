@@ -1,5 +1,7 @@
 .handleButton {
     cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 .handleButton:active{
@@ -7,7 +9,7 @@
 }
 
 .dropDown{
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     transition: max-height 150ms ease, opacity 150ms ease;
@@ -32,7 +34,7 @@
 
 .dropLine{
     position: absolute;
-    border: 3px solid skyblue;
+    background-color: skyblue;
     top: 0;
     left: 0;
 }

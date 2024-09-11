@@ -4,18 +4,18 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getRoot } from "lexical";
 import { createPortal } from "react-dom";
 import DraggableElement, { PlusItem, DropLine, useAnchor } from "./component";
-import { useDndAction } from "./store";
+import useDnd from "./store";
 import { getBlockFromPoint } from "./util";
-import useDnd, { DRAGGABLE_TAG } from "./dnd";
+import useDndHandler, { DRAGGABLE_TAG } from "./handler";
 
 export interface DraggableProp {
     plusList: PlusItem[],
 }
 const Draggable: React.FC<DraggableProp> = ({ plusList }) => {
-    const { setElement, reset, setId } = useDndAction();
+    const { setElement, reset, setId } = useDnd();
     const [editor] = useLexicalComposerContext();
     const anchor = useAnchor();
-    const { handleDragOver, handleDrop } = useDnd();
+    const { handleDragOver, handleDrop } = useDndHandler();
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         let { clientX, clientY } = e;
