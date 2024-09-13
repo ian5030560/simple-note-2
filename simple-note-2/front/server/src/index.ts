@@ -3,8 +3,8 @@ import WebSocket from "ws";
 import * as Y from "yjs";
 import headlessConvertYDocStateToLexicalJSON from "./createHeadlessCollaborativeEditor";
 import 'ignore-styles'
-import loader from "../Editor/loader";
 import { randomUUID } from "crypto";
+import loader from "../../app/src/Editor/loader";
 
 const app = express();
 

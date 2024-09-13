@@ -8,14 +8,15 @@ import { randomUUID } from "crypto";
 
 const app = express();
 
+ 
 const { setupWSConnection, getYDoc } = require("y-websocket/bin/utils");
 app.get("/", (_, res) => {
   res.send('Hello World');
 });
 
-const rooms = new Map();
+// const rooms = new Map();
 app.post("/qrcode", express.json(), (req, res) => {
-  const user: string = req.body.username;
+  // const user = req.body.username as string;
   res.send(randomUUID());
 });
 
@@ -25,12 +26,12 @@ const wss = new WebSocket.Server({ server: app.listen(PORT, () => console.log(`l
 
 wss.on("connection", (conn, req) => {
   if (req.url?.startsWith("realtime-mobile")) {
-    
+    console.log(1);
   }
   else {
     setupWSConnection(conn, req);
-    let docName = (req.url || '').slice(1).split('?')[0];
-    let ydoc: Y.Doc = getYDoc(docName, true);
+    const docName = (req.url || '').slice(1).split('?')[0];
+    const ydoc: Y.Doc = getYDoc(docName, true);
     ydoc.on("update", () => {
       const lexicalJSON = headlessConvertYDocStateToLexicalJSON(Loader.nodes, Y.encodeStateAsUpdate(ydoc));
       fetch("http://localhost:8000/saveNote/", {
@@ -45,7 +46,7 @@ wss.on("connection", (conn, req) => {
           if (ok) return;
 
         })
-        .catch(e => {
+        .catch(() => {
 
         })
     })
