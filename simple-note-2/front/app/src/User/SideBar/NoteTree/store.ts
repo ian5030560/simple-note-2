@@ -1,4 +1,5 @@
 import { TreeDataNode } from "antd";
+import { useCallback } from "react";
 import { create } from "zustand";
 
 export type NoteDataNode = Omit<TreeDataNode, 'children'> & {url?: string, children: NoteDataNode[]};
@@ -72,6 +73,10 @@ const useStore = create<TreeState & TreeAction>()(set => ({
     })
 }))
 
-export default function useNotes() {
-    return useStore();
+export default function useNodes() {
+    const store = useStore();
+
+    const _findNode = useCallback((key: string) => findNode(store.nodes, key), []);
+
+    return {...store, findNode: _findNode};
 }

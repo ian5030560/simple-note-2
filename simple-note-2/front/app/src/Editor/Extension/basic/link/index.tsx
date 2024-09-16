@@ -59,7 +59,7 @@ export const FloatingLinkPlugin: Plugin = () => {
     const inputRef = useRef<InputRef>(null);
     const anchor = useAnchor();
     const ref = useRef<HTMLDivElement>(null);
-
+    
     const showLink = useCallback(() => {
         const selection = $getSelection();
         if ($isRangeSelection(selection)) {

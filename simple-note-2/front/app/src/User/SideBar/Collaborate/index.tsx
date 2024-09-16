@@ -5,7 +5,7 @@ import { useCookies } from "react-cookie"
 import { useParams } from "react-router-dom"
 import { encodeBase64 } from "../../../util/secret"
 import useAPI, { APIs } from "../../../util/api"
-import useNotes, { findNode } from "../NoteTree/store"
+import useNodes from "../NoteTree/store"
 
 interface CollaborateProps {
     open?: boolean
@@ -17,23 +17,23 @@ export default function CollaborateModal(prop: CollaborateProps) {
     const [url, setUrl] = useState<string>();
     const [api, context] = message.useMessage();
     const addCollaborate = useAPI(APIs.addCollaborate);
-    const { nodes } = useNotes();
+    const { nodes, findNode } = useNodes();
 
     useEffect(() => {
         if (id) setUrl(undefined);
     }, [id]);
 
     const requestCollaborate = useCallback(() => {
-        const encodeUser = encodeBase64(username);
-        const url = `/${encodeUser}/${id}`;
-        console.log(id);
+        const host = encodeBase64(username);
+        const url = `/${host}/${id}`;
+        
         addCollaborate({ username: username, noteId: id as string, url: url })[0]
             .then(res => res.status === 200)
             .then(ok => {
                 if (!ok) return api.error("發起失敗");
                 setUrl(url);
                 api.success("發起成功");
-                const node = findNode(nodes, id as string)?.current;
+                const node = findNode(id as string)?.current;
                 if(node){
                     node.url = url;
                 }

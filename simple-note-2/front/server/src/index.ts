@@ -1,53 +1,35 @@
 import express from "express";
-import WebSocket from "ws";
-import * as Y from "yjs";
-import headlessConvertYDocStateToLexicalJSON from "./createHeadlessCollaborativeEditor";
 import 'ignore-styles'
 import { randomUUID } from "crypto";
-import loader from "../../app/src/Editor/loader";
+import cors from "cors";
+import socket, { people } from "./socket";
+
 
 const app = express();
+app.use(cors());
 
-const { setupWSConnection, getYDoc } = require("y-websocket/bin/utils");
 app.get("/", (_, res) => {
   res.send('Hello World');
 });
 
-const rooms = new Map();
 app.post("/qrcode", express.json(), (req, res) => {
   const user: string = req.body.username;
   res.send(randomUUID());
 });
 
-const Loader = loader();
-const PORT = 4000;
-const wss = new WebSocket.Server({ server: app.listen(PORT, () => console.log(`listening to ${PORT}`)) });
 
-wss.on("connection", (conn, req) => {
-  if (req.url?.startsWith("realtime-mobile")) {
-    
-  }
-  else {
-    setupWSConnection(conn, req);
-    let docName = (req.url || '').slice(1).split('?')[0];
-    let ydoc: Y.Doc = getYDoc(docName, true);
-    ydoc.on("update", () => {
-      const lexicalJSON = headlessConvertYDocStateToLexicalJSON(Loader.nodes, Y.encodeStateAsUpdate(ydoc));
-      fetch("http://localhost:8000/saveNote/", {
-        body: JSON.stringify(lexicalJSON), method: "POST",
-        headers: {
-          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-          "content-type": "application/json",
-        }
-      })
-        .then(res => res.ok)
-        .then(ok => {
-          if (ok) return;
-
-        })
-        .catch(e => {
-
-        })
-    })
-  }
+app.post("/people", express.json(), (req, res) => {
+  const room = req.body.room;
+  if(typeof room !== "string") return res.sendStatus(400);
+  
+  const users = people(room);
+  if(!users) return res.sendStatus(404);
+  
+  return res.send({count: users.size});
 });
+
+const PORT = 4000;
+
+socket(app.listen(PORT, () => {
+  console.log(`listening to ${PORT}`)
+}))

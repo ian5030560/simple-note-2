@@ -7,6 +7,7 @@ import PLUSLIST from "./plusList";
 import CollaboratePlugin from "./Collaborate";
 import SavePlugin from "./Save";
 import ToolKitPlugin from "./ToolKit";
+import { useParams } from "react-router-dom";
 
 function onError(error: Error) {
     console.error(error);
@@ -14,9 +15,12 @@ function onError(error: Error) {
 
 const Loader = loader();
 const Editor = () => {
-
+    const { id, host } = useParams();
+    
     return <LexicalComposer
-        initialConfig={{ namespace: 'Editor', theme: Loader.theme, onError, nodes: Loader.nodes }}>
+        initialConfig={{
+            namespace: 'Editor', theme: Loader.theme, onError, nodes: Loader.nodes,
+        }}>
         <SavePlugin />
         <ToolBarPlugin />
         <ToolKitPlugin />

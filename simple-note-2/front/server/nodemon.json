@@ -8,7 +8,7 @@
         "ts": "ts-node"
     },
     "watch": [
-        "src/server"
+        "src"
     ],
     "ext": "ts",
     "restartable": "rs"
