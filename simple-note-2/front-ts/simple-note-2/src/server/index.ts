@@ -13,6 +13,7 @@ app.get("/", (_, res) => {
   res.send('Hello World');
 });
 
+const rooms = new Map();
 app.post("/qrcode", express.json(), (req, res) => {
   const user: string = req.body.username;
   res.send(randomUUID());
@@ -23,25 +24,30 @@ const PORT = 4000;
 const wss = new WebSocket.Server({ server: app.listen(PORT, () => console.log(`listening to ${PORT}`)) });
 
 wss.on("connection", (conn, req) => {
-  setupWSConnection(conn, req);
-  let docName = (req.url || '').slice(1).split('?')[0];
-  let ydoc: Y.Doc = getYDoc(docName, true);
-  ydoc.on("update", () => {
-    const lexicalJSON = headlessConvertYDocStateToLexicalJSON(Loader.nodes, Y.encodeStateAsUpdate(ydoc));
-    fetch("http://localhost:8000/saveNote/", {
-      body: JSON.stringify(lexicalJSON), method: "POST",
-      headers: {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        "content-type": "application/json",
-      }
+  if (req.url?.startsWith("realtime-mobile")) {
+    
+  }
+  else {
+    setupWSConnection(conn, req);
+    let docName = (req.url || '').slice(1).split('?')[0];
+    let ydoc: Y.Doc = getYDoc(docName, true);
+    ydoc.on("update", () => {
+      const lexicalJSON = headlessConvertYDocStateToLexicalJSON(Loader.nodes, Y.encodeStateAsUpdate(ydoc));
+      fetch("http://localhost:8000/saveNote/", {
+        body: JSON.stringify(lexicalJSON), method: "POST",
+        headers: {
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+          "content-type": "application/json",
+        }
+      })
+        .then(res => res.ok)
+        .then(ok => {
+          if (ok) return;
+
+        })
+        .catch(e => {
+
+        })
     })
-      .then(res => res.ok)
-      .then(ok => {
-        if (ok) return;
-
-      })
-      .catch(e => {
-
-      })
-  })
+  }
 });

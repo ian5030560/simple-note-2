@@ -1,0 +1,40 @@
+.handleButton {
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.handleButton:active{
+    cursor: grabbing;
+}
+
+.dropDown{
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: max-height 150ms ease, opacity 150ms ease;
+    overflow-y: auto;
+    z-index: 1000;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+.anchor{
+    position: relative;
+    flex-grow: 1;
+}
+
+.draggable{
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform;
+    display: flex;
+}
+
+.dropLine{
+    position: absolute;
+    background-color: skyblue;
+    top: 0;
+    left: 0;
+}
