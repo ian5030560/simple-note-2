@@ -1,6 +1,0 @@
-.actionContainer{
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: opacity 250ms ease, display 250ms ease;
-}
