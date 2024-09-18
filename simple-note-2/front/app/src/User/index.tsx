@@ -30,7 +30,7 @@ interface IndexProp {
 
 const MIN = 250;
 const MAX = 500;
-export const Index: React.FC<IndexProp> = ({ rootStyle }) => {
+export const Index = ({ rootStyle }: IndexProp) => {
     const [resizer, setResizer] = useState({ resize: false, width: MIN, start: { x: 0, w: MIN } });
     const { token } = theme.useToken();
     const { md } = useBreakpoint();

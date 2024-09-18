@@ -2,9 +2,12 @@ import { AudioOutlined } from "@ant-design/icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { ToolKitButton } from "./ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Typography } from "antd";
-import { $getSelection, $isRangeSelection } from "lexical";
+import { Alert, Dropdown, Typography } from "antd";
+import { $getRoot, $getSelection, $isRangeSelection } from "lexical";
 import { createPortal } from "react-dom";
+import { ItemType } from "antd/es/menu/interface";
+
+const langcodes = require("../../resource/bcp47.json");
 
 function usePreview(duration: number): [(content: string) => void, React.ReactNode | null] {
     const [content, setContent] = useState<string>();
@@ -36,32 +39,46 @@ function usePreview(duration: number): [(content: string) => void, React.ReactNo
 
     return [text, context];
 }
+
+// @ts-expect-error missing type
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 const SUPPORT_SPEECHRECOGNITION = 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window;
-
+// const SUPPORT_SPEECHRECOGNITION = false;
 const State = {
     BEGIN: "開始錄音",
     END: "錄音結束"
 }
+
+const alertStyle: React.CSSProperties = { position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)" };
+
 export default function SpeechToText() {
     const [editor] = useLexicalComposerContext();
+    // @ts-expect-error missing type
     const recognition = useRef<SpeechRecognition | null>(null);
     const [active, setActive] = useState(false);
     const [preview, context] = usePreview(500);
     const [alert, setAlert] = useState<keyof typeof State>();
+    const [lang, setLang] = useState<string>();
+    const [items, setItems] = useState<ItemType[]>();
 
     useEffect(() => {
-        if(alert !== "END") return;
+        if (!SUPPORT_SPEECHRECOGNITION) return;
+
+        if (alert !== "END") return;
         const timer = setTimeout(() => setAlert(undefined), 1000);
 
         return () => clearTimeout(timer);
     }, [alert]);
 
     useEffect(() => {
+        if (!SUPPORT_SPEECHRECOGNITION) return;
+ 
         if (active && recognition.current === null) {
             recognition.current = new SpeechRecognition();
             recognition.current.continuous = true;
             recognition.current.interimResults = true;
+            recognition.current.lang = lang;
+            // @ts-expect-error missing type
             recognition.current.addEventListener("result", (e: SpeechRecognitionEvent) => {
                 const resultItem = e.results.item(e.resultIndex);
                 const { transcript } = resultItem.item(0);
@@ -76,11 +93,10 @@ export default function SpeechToText() {
                     const selection = $getSelection();
 
                     if ($isRangeSelection(selection)) {
-                        if (transcript.match(/\s*\n\s*/)) {
-                            selection.insertParagraph();
-                        } else {
-                            selection.insertText(transcript);
-                        }
+                        selection.focus.getNode().selectEnd().insertText(transcript);
+                    }
+                    else {
+                        $getRoot().selectEnd().insertParagraph()?.select().insertText(transcript);
                     }
                 });
                 setActive(false);
@@ -103,19 +119,53 @@ export default function SpeechToText() {
                 recognition.current.stop();
             }
         }
-    }, [active, editor, preview]);
+    }, [active, editor, lang, preview]);
+
+    useEffect(() => {
+        if (SUPPORT_SPEECHRECOGNITION || !active) return;
+
+        const timer = setTimeout(() => {
+            setActive(false);
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [active]);
+
+    useEffect(() => {
+        if (!SUPPORT_SPEECHRECOGNITION) return;
+
+        const synth = window.speechSynthesis;
+
+        synth.addEventListener("voiceschanged", () => {
+            const names = Array.from(new Set(synth.getVoices().map(it => it.lang)));
+
+            setItems(names.map(it => ({ label: langcodes[it], key: it })));
+        })
+    }, []);
 
     return <>
-        <ToolKitButton icon={<AudioOutlined />} onClick={() => setActive(prev => !prev)}
-            style={{ color: active ? "red" : undefined }} />
+        {
+            items ? <Dropdown trigger={["hover"]} placement="bottom"
+                menu={{
+                    items: items, selectable: true, style: {maxHeight: 250, overflow: "auto"},
+                    onSelect: (select) => {
+                        setActive(true);
+                        setLang(select.key);
+                    },
+                }}>
+                <ToolKitButton icon={<AudioOutlined />} onClick={() => setActive(prev => !prev)}
+                    style={{ color: active ? "red" : undefined }} />
+            </Dropdown> : <ToolKitButton icon={<AudioOutlined />} onClick={() => setActive(prev => !prev)} />
+        }
         {
             active && !SUPPORT_SPEECHRECOGNITION &&
-            <Alert closable type="warning" banner message={"此瀏覽器不支持語音辨識"} />
+            <Alert closable type="warning" banner message={"此瀏覽器不支持語音辨識"}
+                style={alertStyle} />
         }
         {
             alert && <Alert banner type={alert === "BEGIN" ? "success" : "error"}
                 message={State[alert]} closable={alert === "END"} onClose={() => setAlert(undefined)}
-                style={{ position: "fixed", top: 20, left: "50%", transform: "translateX(-50%)" }} />
+                style={alertStyle} />
         }
         {context}
     </>

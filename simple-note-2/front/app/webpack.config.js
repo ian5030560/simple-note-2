@@ -3,6 +3,8 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 
 const TEST = /\.(ts|js)x?$/;
 
@@ -13,6 +15,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "dist"),
         filename: "bundle.js",
+        clean: true,
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js"],
@@ -25,7 +28,12 @@ module.exports = {
                 exclude: /node_modules/,
                 use: [
                     "thread-loader",
-                    'babel-loader',
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            plugins: [require.resolve("react-refresh/babel")]
+                        }
+                    },
                     {
                         loader: "ts-loader",
                         options: {
@@ -82,11 +90,12 @@ module.exports = {
         }),
         new MiniCssExtractPlugin({
             filename: "css/[file].css"
-        })
+        }),
+        new ReactRefreshPlugin()
     ],
     devServer: {
         static: path.resolve(__dirname, "dist"),
-        hot: true,
+        hot: 'only',
         open: true,
         port: 3000,
         historyApiFallback: true

@@ -7,14 +7,16 @@ import {defaultTheme} from "../util/theme";
 import { Outlet } from "react-router-dom";
 
 interface HeaderProp {
-    backgroundColor?: string,
+    backgroundColor: string;
+    flex: number;
 }
 
 const Header = (prop: HeaderProp) => {
     return <Flex justify="space-around" align="center"
         style={{
-            backgroundColor: prop.backgroundColor, height: "calc(15% - 1px)",
-            borderBottom: "1px solid rgba(253, 253, 253, 0.12)"
+            backgroundColor: prop.backgroundColor,
+            borderBottom: "1px solid rgba(253, 253, 253, 0.12)",
+            flex: prop.flex
         }}>
         <Brand />
         <TopBar/>
@@ -42,12 +44,12 @@ const WelcomeLayout = () => {
 const Index = () => {
     const { token } = theme.useToken();
 
-    return <>
-        <Header backgroundColor={token.colorBgBase}/>
-        <div style={{ backgroundColor: token.colorBgBase, minHeight: "85%"}}>
+    return <Flex vertical style={{height: "100%"}}>
+        <Header backgroundColor={token.colorBgBase} flex={1}/>
+        <div style={{ backgroundColor: token.colorBgBase, flex: 5}}>
             <Outlet/>
         </div>
-    </>
+    </Flex>
 }
 
 export default WelcomeLayout;

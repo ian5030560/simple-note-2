@@ -1,8 +1,7 @@
-import { $getSelection, $isRangeSelection } from "lexical";
+import { $createParagraphNode, $getSelection, $isRangeSelection } from "lexical";
 import { PlusItem } from "../Draggable/component";
 import { FaFileCode } from "react-icons/fa";
 import { $createCodeNode } from "@lexical/code";
-import { $setBlocksType } from "@lexical/selection";
 
 const Code: PlusItem = {
     value: "code",
@@ -13,17 +12,14 @@ const Code: PlusItem = {
             let selection = $getSelection();
 
             if (selection !== null) {
-                if (selection.isCollapsed()) {
-                    $setBlocksType(selection, () => $createCodeNode());
-                } else {
-                    const textContent = selection.getTextContent();
-                    const codeNode = $createCodeNode();
-                    selection.insertNodes([codeNode]);
-                    selection = $getSelection();
-                    if ($isRangeSelection(selection)) {
-                        selection.insertRawText(textContent);
-                    }
+                const textContent = selection.getTextContent();
+                const codeNode = $createCodeNode();
+                selection.insertNodes([codeNode]);
+                selection = $getSelection();
+                if ($isRangeSelection(selection)) {
+                    selection.insertRawText(textContent);
                 }
+                codeNode.insertAfter($createParagraphNode());
             }
         })
     }

@@ -1,5 +1,5 @@
 import { useCookies } from "react-cookie";
-import { APIs } from "./api"
+import useAPI, { APIs } from "./api"
 import React, { createContext, useEffect } from "react";
 import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, useParams } from "react-router-dom";
 import useFiles from "../User/SideBar/NoteTree/store";
@@ -145,14 +145,18 @@ export function NoteProvider({ children }: { children: React.ReactNode }) {
 
 export function CollaborateProvider({ children }: { children: React.ReactNode }) {
     const { id, host } = useParams();
-    const { active, close } = useCollab();
-
+    const { active, close, room } = useCollab();
+    const getPeople = useAPI(APIs.getPeopleInRoom);
+    
     useEffect(() => {
-        if (id && host) {
-            close();
-            active(`${decodeBase64(host as string)}`);
-        }
-    }, [active, close, host, id]);
+      
+        getPeople({room: `${host}/${id}`})[0]
+        .then(res => {
+            if(res.status === 404){
+                console.log(1);
+            }
+        })
+    }, []);
 
     return children;
 }

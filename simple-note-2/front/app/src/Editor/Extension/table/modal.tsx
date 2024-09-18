@@ -1,10 +1,11 @@
 import { Button, Flex, InputNumber } from "antd";
 import { useCallback, useMemo, useRef, useState } from "react";
 import styles from "./modal.module.css";
-import { LexicalCommand, createCommand } from "lexical";
+import { $createParagraphNode, $getSelection, $isBlockElementNode, $isRangeSelection, LexicalCommand, createCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { INSERT_TABLE_COMMAND } from "@lexical/table";
+import { $createTableNodeWithDimensions } from "@lexical/table";
 import Modal from "../UI/modal";
+import { $findMatchingParent } from "@lexical/utils";
 
 export const OPEN_TABLE_MODAL: LexicalCommand<void> = createCommand();
 const TableModal = () => {
@@ -19,7 +20,17 @@ const TableModal = () => {
         const col = colRef.current!.value;
       
         if (!isNaN(+row) && !isNaN(+col)) {
-            editor.dispatchCommand(INSERT_TABLE_COMMAND, { columns: col, rows: row, includeHeaders: false });
+            editor.update(() => {
+                const selection = $getSelection();
+                if($isRangeSelection(selection)){
+                    let anchor = selection.anchor.getNode();
+                    const block = $isBlockElementNode(anchor) ? anchor : $findMatchingParent(anchor, p => $isBlockElementNode(p));
+
+                    const table = $createTableNodeWithDimensions(Number(row), Number(col), false);
+                    block?.insertAfter(table);
+                    table.insertAfter($createParagraphNode());
+                }
+            });
             colRef.current?.setAttribute("value", "")
             rowRef.current?.setAttribute("value", "")
             setOpen(false);

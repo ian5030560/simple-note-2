@@ -58,7 +58,7 @@ export default class DocNode extends DecoratorNode<React.JSX.Element> {
         </Load>
     }
 
-    createDOM(_config: EditorConfig, _editor: LexicalEditor): HTMLElement {
+    createDOM(_config: EditorConfig): HTMLElement {
         const div = document.createElement("div");
         const className = _config.theme.document;
 

@@ -2,7 +2,7 @@ import globals from "globals";
 import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
-
+import pluginReactHooks from "eslint-plugin-react-hooks";
 
 export default [
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
@@ -11,9 +11,20 @@ export default [
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   {
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    }
+  },
+  {
+    plugins: {'react-hooks': pluginReactHooks},
+    rules: pluginReactHooks.configs.recommended.rules,
+  },
+  {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-require-imports": "off",
       "react/react-in-jsx-scope": "off",
       "react/jsx-key": "off",
@@ -21,7 +32,8 @@ export default [
       "prefer-const": "off",
       "react/no-is-mounted": "off",
       "@typescript-eslint/no-empty-object-type": "off",
-      "react/prop-types": "off"
+      "react/prop-types": "off",
+      "no-inline-styles": "off",
     }
   }
 ];

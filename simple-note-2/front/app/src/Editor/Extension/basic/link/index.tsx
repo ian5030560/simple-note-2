@@ -76,7 +76,7 @@ export const FloatingLinkPlugin: Plugin = () => {
                 url = parent.getURL();
                 const element = editor.getElementByKey(parent.getKey());
                 if (!element || !anchor || !ref.current) return;
-
+  
                 let { x, y, height: eHeight } = element.getBoundingClientRect();
                 const { top, left, y: wy } = anchor.getBoundingClientRect();
                 const { height } = ref.current.getBoundingClientRect();

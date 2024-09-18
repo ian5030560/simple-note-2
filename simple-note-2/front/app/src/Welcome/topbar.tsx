@@ -16,7 +16,7 @@ const TopBar = () => {
             key: "intro",
         },
         {
-            label: "團隊",
+            label: <Text>團隊</Text>,
             key: "team",
             children: [
                 {

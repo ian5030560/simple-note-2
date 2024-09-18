@@ -95,7 +95,8 @@ export function useDelete(): ReturnOfFunction<TreeDataNode> {
                     remove(node!.key as string);
                     const prev = nodeFind?.previous?.key as string | undefined;
                     const parent = nodeFind?.parent?.key as string;
-                    prev ? navigate(`../${prev}`) : navigate(`../${parent}`);
+
+                    navigate(prev ? `../${prev}` : `../${parent}`);
                 }
             })
     }), [api, deleteNote, navigate, nodes, remove, username]);
