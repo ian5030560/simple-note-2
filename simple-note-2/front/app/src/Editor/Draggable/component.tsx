@@ -20,7 +20,7 @@ export interface PlusItem {
 function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, React.RefObject<HTMLElement>] {
     const [editor] = useLexicalComposerContext();
     const { token } = theme.useToken();
-    const [open, setOpen] = useState(false);
+    const { isSelecting, setSelecting } = useDnd();
     const [element, setElement] = useState<HTMLElement | null>(null);
     const trigger = useRef<HTMLElement>(null);
     const ref = useRef<HTMLDivElement>(null);
@@ -35,21 +35,21 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
         const el = getBlockFromPoint(editor, x + width, y + height / 2, scroller);
 
         if (!el) return;
-        setOpen(true);
+        setSelecting(true);
         setElement(el);
-    }, [editor]);
+    }, [editor, setSelecting]);
 
     const hide = useCallback(() => {
-        setOpen(false);
+        setSelecting(false);
         setElement(null);
-    }, []);
+    }, [setSelecting]);
 
     useEffect(() => {
         if (!element || !anchor) return;
         const resizer = new ResizeObserver(() => {
             if (!ref.current) return;
             const { x, y, height } = element.getBoundingClientRect();
-            const {top, left} = anchor.getBoundingClientRect();
+            const { top, left } = anchor.getBoundingClientRect();
             ref.current.style.transform = `translate(${x - left}px, ${y - top + height + 5}px)`;
         });
         resizer.observe(element);
@@ -80,7 +80,7 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
             {
                 anchor && createPortal(<div className={styles.dropDown} ref={ref}
                     style={{
-                        maxHeight: !open ? 0 : 250, opacity: !open ? 0 : undefined,
+                        maxHeight: !isSelecting ? 0 : 250, opacity: !isSelecting ? 0 : undefined,
                         backgroundColor: token.colorBgBase
                     }}>
                     <List renderItem={(item) => <List.Item key={item.value} style={{ width: "100%", padding: 0 }}>
@@ -90,9 +90,9 @@ function usePlusMenu(itemList: PlusItem[]): [() => void, React.JSX.Element, Reac
                 </div>, anchor)
             }
         </>
-    }, [anchor, handleSelect, itemList, open, token.colorBgBase]);
+    }, [anchor, handleSelect, isSelecting, itemList, token.colorBgBase]);
 
-    const toggle = useCallback(() => open ? hide() : show(), [hide, open, show]);
+    const toggle = useCallback(() => isSelecting ? hide() : show(), [hide, isSelecting, show]);
 
     return [toggle, context, trigger];
 }
@@ -139,7 +139,7 @@ const DraggableElement = (props: { plusList: PlusItem[] }) => {
 
 export default DraggableElement;
 
-export const DndAnchor = ({children}: {children: React.ReactNode}) => <div id="dnd-anchor" className={styles.anchor}>{children}</div>;
+export const DndAnchor = ({ children }: { children: React.ReactNode }) => <div id="dnd-anchor" className={styles.anchor}>{children}</div>;
 
 export const useAnchor = () => {
     const [anchor, setWrapper] = useState<HTMLElement | null>(null);

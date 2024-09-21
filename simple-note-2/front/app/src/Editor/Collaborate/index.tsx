@@ -5,11 +5,6 @@ import { Doc } from "yjs";
 import { useAnchor } from "../Draggable/component";
 import { useCallback, useRef } from "react";
 import { useCookies } from "react-cookie";
-import { useParams } from "react-router-dom";
-import { Button, message, Modal, Typography } from "antd";
-import useLexicalEditable from "@lexical/react/useLexicalEditable";
-import useAPI, { APIs } from "../../util/api";
-import { decodeBase64 } from "../../util/secret";
 import { useCollab } from "./store";
 
 function getDocFromMap(id: string, yjsDocMap: Map<string, Doc>): Doc {

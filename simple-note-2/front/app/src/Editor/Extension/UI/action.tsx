@@ -21,11 +21,11 @@ export default function Action(props: ActionProps) {
     const anchor = useAnchor();
     const [pos, setPos] = useState<{ x: number, y: number }>();
     const [editor] = useLexicalComposerContext();
-    const element = useMemo(() => editor.getElementByKey(props.nodeKey), [editor, props.nodeKey]);
     const placement = useMemo(() => props.placement || [], [props.placement]);
     const [size, setSize] = useState<{ width?: number, height?: number }>();
 
     useEffect(() => {
+        const element = editor.getElementByKey(props.nodeKey);
         if (!element) return;
 
         function update() {
@@ -34,22 +34,23 @@ export default function Action(props: ActionProps) {
             const { x, y, width, height } = element!.getBoundingClientRect();
             const { left, top } = anchor.getBoundingClientRect();
             const { x: rx, y: ry } = { x: x - left, y: y - top };
-            const center = {
+            const pos = {
                 x: rx + width / 2,
                 y: ry + height / 2,
             }
-
+         
             const _placement = Array.isArray(placement) ? placement : Object.keys(placement);
             const map: any = {
-                "top": () => center.y -= height / 2,
-                "bottom": () => center.y += height / 2,
-                "left": () => center.x -= width / 2,
-                "right": () => center.x += width / 2
+                "top": () => pos.y -= height / 2,
+                "bottom": () => pos.y += height / 2,
+                "left": () => pos.x -= width / 2,
+                "right": () => pos.x += width / 2
             }
             for (const place of _placement) {
                 map[place]();
             }
-            setPos({ ...center });
+
+            setPos({ ...pos });
 
             const { autoHeight, autoWidth } = props;
             const resize: { width?: number, height?: number } = {};
@@ -73,7 +74,7 @@ export default function Action(props: ActionProps) {
             resizer.unobserve(element);
             resizer.disconnect();
         }
-    }, [anchor, element, placement, props]);
+    }, [anchor, editor, placement, props]);
 
     const adjustPos = useMemo(() => {
         const offset = { x: 0, y: 0 };
@@ -103,10 +104,10 @@ export default function Action(props: ActionProps) {
 
     return <>
         {
-            anchor && element && createPortal(<div className={styles.actionContainer}
+            anchor && props.open && createPortal(<div className={styles.actionContainer}
                 style={{
                     transform: pos ? `translate(calc(${pos.x}px + ${adjustPos.x}%), calc(${pos.y}px + ${adjustPos.y}%))` : undefined,
-                    display: !props.open ? "none" : undefined,
+                    // display: !props.open ? "none" : undefined,
                     opacity: !props.open ? 0 : 1,
                     ...size
                 }}>

@@ -12,12 +12,14 @@ export interface DraggableProp {
     plusList: PlusItem[],
 }
 const Draggable = ({ plusList }: DraggableProp) => {
-    const { setElement, reset, setId } = useDnd();
+    const { setElement, reset, setId, isSelecting } = useDnd();
     const [editor] = useLexicalComposerContext();
     const anchor = useAnchor();
     const { handleDragOver, handleDrop } = useDndHandler();
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
+        if(isSelecting) return;
+        
         const { clientX, clientY } = e;
         
         const target = document.elementFromPoint(clientX, clientY);
@@ -33,9 +35,12 @@ const Draggable = ({ plusList }: DraggableProp) => {
         setId(elem.getAttribute(DRAGGABLE_TAG)!);
         setElement(x - left, y + eh / 2 - top);
 
-    }, [editor, setElement, setId, anchor]);
+    }, [isSelecting, editor, anchor, setId, setElement]);
 
-    const handleMouseLeave = useCallback(() => reset("element"), [reset]);
+    const handleMouseLeave = useCallback(() => {
+        if(isSelecting) return;
+        reset("element");
+    }, [isSelecting, reset]);
 
     useEffect(() => {
         const scroller = document.getElementById("editor-scroller");
@@ -70,5 +75,5 @@ const Draggable = ({ plusList }: DraggableProp) => {
     ) : null;
 }
 
-export const DraggablePlugin: Plugin<DraggableProp> = (prop) => <Draggable {...prop} />;
+const DraggablePlugin: Plugin<DraggableProp> = (prop) => <Draggable {...prop} />;
 export default DraggablePlugin;

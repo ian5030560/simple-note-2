@@ -4,7 +4,6 @@ import React, { createContext, useEffect } from "react";
 import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, useParams } from "react-router-dom";
 import useFiles from "../User/SideBar/NoteTree/store";
 import { useCollab } from "../Editor/Collaborate/store";
-import { decodeBase64 } from "./secret";
 
 export function PublicProvider() {
     const [{ username }] = useCookies(["username"]);
@@ -73,7 +72,7 @@ type NoteFetchResult = {
     multiple: Array<{ noteId: string, noteName: string, url: string }>
 }
 export async function settingLoader({ request }: LoaderFunctionArgs<any>): Promise<NoteFetchResult | null> {
-
+    
     const url = APIs.loadNoteTree;
     const cookie = getCookie();
     const username = cookie.get("username")!;
@@ -92,7 +91,7 @@ export function SettingProvider() {
     const data = useLoaderData() as NoteFetchResult | null;
     const navigate = useNavigate();
     const { init } = useFiles();
-
+    
     useEffect(() => {
         if (!data) return;
         const sorted = sortNodes(data["one"]);
@@ -104,6 +103,7 @@ export function SettingProvider() {
             }
         )));
         const id = sorted[0].noteId;
+
         if(id) navigate(id, { replace: true });
     }, []);
 

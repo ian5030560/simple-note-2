@@ -14,9 +14,15 @@
     left: 0;
     transition: max-height 150ms ease, opacity 150ms ease;
     overflow-y: auto;
-    z-index: 1000;
+    z-index: 1;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+}
+
+.mask{
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
 }
 
 .anchor{

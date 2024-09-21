@@ -17,10 +17,10 @@ const SavePlugin: Plugin = () => {
     const initialNote = useContext(Note);
     const [editor] = useLexicalComposerContext();
     const [{ username }] = useCookies(["username"]);
-    const { activate, room } = useCollab();
+    const { active, room } = useCollab();
     const { id, host } = useParams();
     const [typing, isTyping] = useState(false);
-    const collaborative = useMemo(() => !!(activate && room), [activate, room]);
+    const collaborative = useMemo(() => !!room, [room]);
     
     useEffect(() => {
         if (collaborative && host !== username) return;
@@ -35,7 +35,7 @@ const SavePlugin: Plugin = () => {
                 editor.setEditorState(editorState);
             }
         }
-    }, [activate, collaborative, editor, host, initialNote, room, username]);
+    }, [collaborative, editor, host, initialNote, room, username]);
 
     useEffect(() => {
 
@@ -69,6 +69,6 @@ const SavePlugin: Plugin = () => {
         }
     }, [collaborative, host, username]);
 
-    return <OnChangePlugin onChange={handleChange} />;
+    return <OnChangePlugin onChange={handleChange} ignoreSelectionChange={true}/>;
 }
 export default SavePlugin;

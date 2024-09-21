@@ -7,8 +7,9 @@ import styles from "./index.module.css";
 import switchTheme, { defaultTheme } from "../util/theme";
 import { useInfoContext } from "./SideBar/info";
 import { DoubleLeftOutlined } from "@ant-design/icons";
+import { Outlet } from "react-router-dom";
 
-const User: React.FC = () => {
+export default function User() {
 
     const [darken, setDarken] = useState(false);
     const { themes } = useInfoContext();
@@ -16,21 +17,20 @@ const User: React.FC = () => {
     const seed = useMemo(() => themes?.find(theme => theme.data.isUsing), [themes]);
 
     return <ConfigProvider theme={seed ? switchTheme(seed.data)(darken) : defaultTheme(darken)}>
-        <Index />
+        <Index/>
         <BulbButton lighten={!darken} onClick={() => setDarken(prev => !prev)} />
     </ConfigProvider>
-
 }
 
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
-interface IndexProp {
-    rootStyle?: React.CSSProperties,
+interface IndexProps {
+    style?: React.CSSProperties,
 }
 
 const MIN = 250;
 const MAX = 500;
-export const Index = ({ rootStyle }: IndexProp) => {
+export const Index = (props: IndexProps) => {
     const [resizer, setResizer] = useState({ resize: false, width: MIN, start: { x: 0, w: MIN } });
     const { token } = theme.useToken();
     const { md } = useBreakpoint();
@@ -63,7 +63,7 @@ export const Index = ({ rootStyle }: IndexProp) => {
         setCollapase(value);
     }, []);
 
-    return <Layout style={{ height: "100%", ...rootStyle }}>
+    return <Layout style={{ height: "100%", ...props.style }}>
         <Sider collapsible collapsedWidth={0} theme="light" width={resizer.width}
             trigger={<DoubleLeftOutlined style={{ transform: collpase ? "rotate(180deg)" : undefined }} />}
             onCollapse={handleCollapse}>
@@ -77,9 +77,7 @@ export const Index = ({ rootStyle }: IndexProp) => {
             onDoubleClick={() => setResizer(prev => ({ ...prev, width: prev.width === 0 ? MIN : 0, start: { ...prev.start, w: MIN } }))}
         />}
         <Content className={styles.editorFrame}>
-            <Editor />
+            <Editor/>
         </Content>
     </Layout>
 }
-
-export default User;

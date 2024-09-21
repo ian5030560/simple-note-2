@@ -72,7 +72,7 @@ export default function SpeechToText() {
 
     useEffect(() => {
         if (!SUPPORT_SPEECHRECOGNITION) return;
- 
+
         if (active && recognition.current === null) {
             recognition.current = new SpeechRecognition();
             recognition.current.continuous = true;
@@ -138,8 +138,8 @@ export default function SpeechToText() {
 
         synth.addEventListener("voiceschanged", () => {
             const names = Array.from(new Set(synth.getVoices().map(it => it.lang)));
-
             setItems(names.map(it => ({ label: langcodes[it], key: it })));
+            setLang(names[0]);
         })
     }, []);
 
@@ -147,7 +147,8 @@ export default function SpeechToText() {
         {
             items ? <Dropdown trigger={["hover"]} placement="bottom"
                 menu={{
-                    items: items, selectable: true, style: {maxHeight: 250, overflow: "auto"},
+                    items: items, selectable: true, selectedKeys: [lang!],
+                    style: { maxHeight: 250, overflow: "auto" },
                     onSelect: (select) => {
                         setActive(true);
                         setLang(select.key);

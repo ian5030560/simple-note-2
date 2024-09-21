@@ -1,16 +1,13 @@
-import React, { useEffect, memo } from "react";
+import React, { useEffect } from "react";
 import '../../../node_modules/reactflow/dist/style.css';
 import ReactFlow, { Controls, Background, BackgroundVariant, useNodesState } from "reactflow";
-import { Index as User } from "../../User";
+import { Index } from "../../User";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { Node } from "@reactflow/core/dist/esm/types/nodes"
 
 const PreviewComponent = ({ data }: { data: ThemeConfig }) => {
     return <ConfigProvider theme={data}>
-        <User rootStyle={{
-            width: "1200px",
-            height: "600px",
-        }} />;
+        <Index style={{ width: 1200, height: 600 }} />;
     </ConfigProvider>
 }
 
@@ -42,12 +39,8 @@ const Preview = ({ theme }: { theme: ThemeConfig }) => {
         })
     }, [setNodes, theme]);
 
-    return <ReactFlow
-        nodes={nodes}
-        nodeTypes={nodeTypes}
-        fitView
-        nodesDraggable={false}
-        onNodesChange={onNodeChange}
+    return <ReactFlow nodes={nodes} nodeTypes={nodeTypes}
+        fitView nodesDraggable={false} onNodesChange={onNodeChange}
     >
         <Controls showInteractive={false} />
         <Background variant={BackgroundVariant.Dots} size={3} />
