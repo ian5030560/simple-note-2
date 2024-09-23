@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal, FlexProps } from "antd";
-import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import React, { useCallback, useMemo, useState } from "react";
+import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal } from "antd";
+import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
 import NoteTree from "./NoteTree";
 import { useCookies } from "react-cookie";
 import SettingModal from "./Setting";
 import { useNavigate, useParams } from "react-router-dom";
 import useAPI, { APIs } from "../../util/api";
-import { useInfoContext } from "./info";
+import useInfo from "./info";
 import CollaborateModal from "./Collaborate";
 import styles from "../index.module.css";
 import { ItemType } from "antd/es/menu/interface";
@@ -31,7 +31,7 @@ const UserProfile = () => {
     const navigate = useNavigate();
     const signOut = useAPI(APIs.signOut);
     const { id, host } = useParams();
-    const { picture } = useInfoContext();
+    const { picture } = useInfo();
 
     const items = useMemo(() => {
         const arr: ItemType[] = [];
@@ -79,12 +79,10 @@ const UserProfile = () => {
         >
             <Text>是否確定登出</Text>
         </Modal>
-        {contextHolder}
         <SettingModal open={state.setting.open} onOk={() => updateModal("setting", false)}
             onCancel={() => updateModal("setting", false)} />
         <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} />
-        {/* <DeleteCollaborateModal open={state.deleteCollab.open} onCancel={() => updateModal("deleteCollab", false)}
-            onOk={() => updateModal("deleteCollab", false)} /> */}
+        {contextHolder}
     </Flex>
 }
 
@@ -93,7 +91,7 @@ const { Text } = Typography;
 
 const SideBar = () => {
 
-    return <Flex vertical className={styles.sideBar} style={{ height: "100%" }}>
+    return <Flex vertical style={{height: "100%", padding: "24px 12px"}}>
         <UserProfile />
         <NoteTree />
     </Flex>

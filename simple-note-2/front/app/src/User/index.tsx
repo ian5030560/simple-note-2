@@ -4,13 +4,13 @@ import SideBar from "./SideBar";
 import { BulbButton } from "../Welcome";
 import styles from "./index.module.css";
 import switchTheme, { defaultTheme } from "../util/theme";
-import { useInfoContext } from "./SideBar/info";
+import useInfo from "./SideBar/info";
 import { DoubleLeftOutlined } from "@ant-design/icons";
 
 export default function User({ children }: { children?: React.ReactNode }) {
 
     const [darken, setDarken] = useState(false);
-    const { themes } = useInfoContext();
+    const { themes } = useInfo();
 
     const seed = useMemo(() => themes?.find(theme => theme.data.isUsing), [themes]);
 

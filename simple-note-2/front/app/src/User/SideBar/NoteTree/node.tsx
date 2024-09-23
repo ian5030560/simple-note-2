@@ -18,7 +18,7 @@ export default function Node(prop: NodeProp) {
         style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
         <Text>{prop.title}</Text>
         <Flex>
-            {prop.first &&
+            {!prop.first &&
                 <Button icon={<DeleteOutlined />} type="text" size="small" tabIndex={-1}
                     onClick={(e) => { e.stopPropagation(); prop.onDelete() }} />
             }

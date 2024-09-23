@@ -28,6 +28,7 @@ export default function CollaborateModal(prop: Props) {
         const url = node?.url;
         setUrl(url ? `http://localhost:3000/note/${url}` : undefined);
         if (url && !host) navigate(url, { replace: true });
+        if (!url && host) navigate(id!, {replace: true});
 
     }, [findNode, host, id, navigate]);
 
@@ -78,6 +79,8 @@ export default function CollaborateModal(prop: Props) {
         .then(res => {
             if(res.ok){
                 api.success("取消成功");
+                const node = findNode(id!)?.current;
+                if(node) update(node.key as string, {url: undefined});
             }
             else{
                 api.error("取消失敗");
@@ -85,7 +88,7 @@ export default function CollaborateModal(prop: Props) {
         });
 
         setDeleteOpen(false);
-    }, [api, deleteCollab, host, id, username]);
+    }, [api, deleteCollab, findNode, host, id, update, username]);
 
     return <>
         <Modal open={prop.open} footer={footer} title="協作" onCancel={prop.onCancel}>

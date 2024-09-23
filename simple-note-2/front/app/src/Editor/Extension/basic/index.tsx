@@ -1,4 +1,4 @@
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import AutoFocusPlugin from "./autofocus";
 import { Extension } from "..";
 import RichTextPlugin from "./richtext/index";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";

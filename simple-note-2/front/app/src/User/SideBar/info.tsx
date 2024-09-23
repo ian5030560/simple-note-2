@@ -33,18 +33,6 @@ const useStore = create<InfoState & InfoAction>()((set) => ({
     updateThemes: (themes) => set((state) => ({themes: themes}))
 }))
 
-
-export function useInfoContext(){
-    const picture = useStore(state => state.picture);
-    const themes = useStore(state => state.themes);
-
-    return {picture, themes}
-}
-
-export function useInfoAction(){
-    const updatePicture = useStore(state => state.updatePicture);
-    const updateThemes = useStore(state => state.updateThemes);
-    const updateThemeUsage = useStore(state => state.updateThemeUsage);
-
-    return {updatePicture, updateThemes, updateThemeUsage}
+export default function useInfo(){
+    return useStore();
 }

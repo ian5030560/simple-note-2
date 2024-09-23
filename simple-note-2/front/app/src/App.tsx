@@ -4,7 +4,7 @@ import UserLayout from "./User";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
-import { contentLoader, settingLoader, NoteProvider, SettingProvider, PublicProvider, PrivateProvider } from "./util/provider";
+import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateProvider } from "./util/provider";
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";

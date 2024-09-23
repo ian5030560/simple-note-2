@@ -42,7 +42,7 @@ export function useAdd(): ReturnOfFunction<TreeDataNode | null> {
                 else {
                     api.success(`${input} 創建成功`);
                     add(key, input, [], current, previous);
-                    navigate(`../${key}`);
+                    navigate(`${key}`);
                 }
             });
     }), [add, addNote, api, input, navigate, nodes, username]);
@@ -95,7 +95,7 @@ export function useDelete(): ReturnOfFunction<TreeDataNode> {
                     const prev = nodeFind?.previous?.key as string | undefined;
                     const parent = nodeFind?.parent?.key as string;
 
-                    navigate(prev ? `../${prev}` : `../${parent}`);
+                    navigate(prev ? prev : parent);
                 }
             })
     }), [api, deleteNote, navigate, nodes, remove, username]);
@@ -106,8 +106,9 @@ export function useDelete(): ReturnOfFunction<TreeDataNode> {
         return <>
             <Modal open={open} title={`刪除${title}`}
                 onCancel={() => clear()} onOk={handleOk}
-                okButtonProps={{ danger: true, type: "primary", children: "是" }}
-                cancelButtonProps={{ danger: true, type: "default", children: "否" }}>
+                okText="是" cancelText="否"
+                okButtonProps={{ danger: true, type: "primary" }}
+                cancelButtonProps={{ danger: true, type: "default" }}>
                 <Typography.Text>{`是否刪除${title}`}</Typography.Text>
             </Modal >
             {contextHolder}

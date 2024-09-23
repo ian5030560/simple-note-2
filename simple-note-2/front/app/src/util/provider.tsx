@@ -30,7 +30,6 @@ function sortNodes(data: NoteTreeData[]) {
         if (!groups[parent]) groups[parent] = []
         groups[parent].push(node);
     }
-
     // 排序分組內的節點根據 siblingId
     for (const key in groups) {
         const nodes = groups[key];
@@ -49,12 +48,12 @@ function sortNodes(data: NoteTreeData[]) {
         }
         groups[key] = sorted;
     }
+
     // 合併排序後的結果
     let sortedData: NoteTreeData[] = [];
     for (const key in groups) {
         sortedData = sortedData.concat(groups[key]);
     }
-
     return sortedData;
 }
 
@@ -96,6 +95,7 @@ export function SettingProvider() {
     useEffect(() => {
         if (!data) return;
         const sorted = sortNodes(data["one"]);
+
         init(sorted.map((it) => (
             {
                 key: it.noteId, title: it.noteName, children: [],
@@ -124,25 +124,25 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<any>
         .then(res => res.ok ? res.text() : null)
         .catch(() => null)
 }
-export const Note = createContext<string | undefined>(undefined);
+// export const Note = createContext<string | undefined>(undefined);
 
-function validate(content: string | null | undefined) {
-    if (!content) return false;
-    try {
-        JSON.parse(content);
-        return true;
-    }
-    catch {
-        return false;
-    }
-}
-export function NoteProvider({ children }: { children: React.ReactNode }) {
-    const data = useLoaderData() as string | null;
+// function validate(content: string | null | undefined) {
+//     if (!content) return false;
+//     try {
+//         JSON.parse(content);
+//         return true;
+//     }
+//     catch {
+//         return false;
+//     }
+// }
+// export function NoteProvider({ children }: { children: React.ReactNode }) {
+//     const data = useLoaderData() as string | null;
 
-    return <Note.Provider value={validate(data) ? data! : undefined}>
-        {children}
-    </Note.Provider>
-}
+//     return <Note.Provider value={validate(data) ? data! : undefined}>
+//         {children}
+//     </Note.Provider>
+// }
 
 export function CollaborateProvider({ children }: { children: React.ReactNode }) {
     const { id, host } = useParams();

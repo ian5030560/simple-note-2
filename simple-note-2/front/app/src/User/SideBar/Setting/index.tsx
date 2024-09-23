@@ -2,7 +2,7 @@ import { Modal, Flex, Image, Button, Select, Typography, SelectProps, theme } fr
 import { useCallback, useRef, useState } from "react";
 import styles from "./index.module.css";
 import useAPI, { APIs } from "../../../util/api";
-import { useInfoAction, useInfoContext } from "../info";
+import useInfo from "../info";
 import { useCookies } from "react-cookie";
 import { SyncOutlined, UploadOutlined } from "@ant-design/icons";
 import { ButtonProps } from "antd";
@@ -11,7 +11,7 @@ type UploadProps = Omit<ButtonProps, "type"> & { onUpload: (src: string) => void
 const Upload = ({ onUpload, ...prop }: UploadProps) => {
     const [enter, setEnter] = useState(false);
     const ref = useRef<HTMLInputElement>(null);
-    const { picture } = useInfoContext();
+    const { picture } = useInfo();
 
     return <>
         <Flex vertical gap={5} flex={1} justify="center">
@@ -48,9 +48,8 @@ interface SettingModalProp {
 const SettingModal = (prop: SettingModalProp) => {
     const updateInfo = useAPI(APIs.updateInfo);
     const [{ username }] = useCookies(["username"]);
-    const { themes } = useInfoContext();
+    const { themes, updatePicture, updateThemes, updateThemeUsage } = useInfo();
     const { token } = theme.useToken();
-    const { updatePicture, updateThemes, updateThemeUsage } = useInfoAction();
     const update = useRef<{ theme: number, picture: string }>({
         theme: -1,
         picture: "",
