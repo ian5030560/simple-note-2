@@ -1,24 +1,21 @@
 import { Plugin } from "../Extension/index";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CLEAR_EDITOR_COMMAND, EditorState } from "lexical";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useAPI, { APIs } from "../../util/api";
 import { decodeBase64 } from "../../util/secret";
-import { useCollab } from "../Collaborate/store";
 
 const empty = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
-const SavePlugin: Plugin<{ initialNote?: string }> = (props) => {
+const SavePlugin: Plugin<{ initialNote?: string, collab: boolean }> = (props) => {
     const saveNote = useAPI(APIs.saveNote);
     const [editor] = useLexicalComposerContext();
     const [{ username }] = useCookies(["username"]);
-    const { active, room } = useCollab();
     const { id, host } = useParams();
     const [typing, isTyping] = useState(false);
-    const collaborative = useMemo(() => !!room, [room]);
 
     useEffect(() => {
         const { initialNote } = props;
@@ -61,9 +58,9 @@ const SavePlugin: Plugin<{ initialNote?: string }> = (props) => {
 
     const handleChange = useCallback((editorState: EditorState) => {
         console.log(editorState);
-        isTyping(() => !collaborative ? true : decodeBase64(host!) === username);
+        isTyping(() => !props.collab ? true : decodeBase64(host!) === username);
         
-    }, [collaborative, host, username]);
+    }, [host, props.collab, username]);
 
     return <OnChangePlugin onChange={handleChange} ignoreSelectionChange={true} />;
 }

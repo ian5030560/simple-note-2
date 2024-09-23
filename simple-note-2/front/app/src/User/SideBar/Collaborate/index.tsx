@@ -28,7 +28,7 @@ export default function CollaborateModal(prop: Props) {
         const url = node?.url;
         setUrl(url ? `http://localhost:3000/note/${url}` : undefined);
         if (url && !host) navigate(url, { replace: true });
-        if (!url && host) navigate(id!, {replace: true});
+        if (!url && host) navigate(id!, { replace: true });
 
     }, [findNode, host, id, navigate]);
 
@@ -75,17 +75,17 @@ export default function CollaborateModal(prop: Props) {
     }, [handleCollab, host, id, url]);
 
     const handleDelete = useCallback(() => {
-        deleteCollab({username: username, noteId: id!, masterName: decodeBase64(host!)})[0]
-        .then(res => {
-            if(res.ok){
-                api.success("取消成功");
-                const node = findNode(id!)?.current;
-                if(node) update(node.key as string, {url: undefined});
-            }
-            else{
-                api.error("取消失敗");
-            }
-        });
+        deleteCollab({ username: username, noteId: id!, masterName: decodeBase64(host!) })[0]
+            .then(res => {
+                if (!res.ok) {
+                    api.error("取消失敗");
+                }
+                else {
+                    api.success("取消成功");
+                    const node = findNode(id!)?.current;
+                    if (node) update(node.key as string, { url: undefined });
+                }
+            });
 
         setDeleteOpen(false);
     }, [api, deleteCollab, findNode, host, id, update, username]);

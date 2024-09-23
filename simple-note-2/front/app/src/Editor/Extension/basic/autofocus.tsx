@@ -1,15 +1,20 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Plugin } from "..";
 import { AutoFocusPlugin as LexicalAutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { useAnchor } from "../../Draggable/component";
 import { useEffect } from "react";
+import { $getRoot, $isParagraphNode } from "lexical";
+import { $isHeadingNode } from "@lexical/rich-text";
 
 const AutoFocusPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
-    const anchor = useAnchor();
 
     useEffect(() => editor.registerUpdateListener(() => {
-        console.log(1);
+        editor.update(() => {
+            const last = $getRoot().getLastChild();
+            if (!$isParagraphNode(last) && !$isHeadingNode(last)) {
+                last?.selectEnd().insertParagraph();
+            }
+        });
     }), [editor]);
 
     return <LexicalAutoFocusPlugin />

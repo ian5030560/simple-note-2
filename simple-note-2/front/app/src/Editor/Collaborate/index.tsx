@@ -5,7 +5,6 @@ import { Doc } from "yjs";
 import { useAnchor } from "../Draggable/component";
 import { useCallback, useRef } from "react";
 import { useCookies } from "react-cookie";
-import { useCollab } from "./store";
 
 function getDocFromMap(id: string, yjsDocMap: Map<string, Doc>): Doc {
     let doc = yjsDocMap.get(id);
@@ -20,11 +19,10 @@ function getDocFromMap(id: string, yjsDocMap: Map<string, Doc>): Doc {
     return doc;
 }
 
-export default function CollaboratePlugin() {
+export default function CollaboratePlugin({ room }: { room: string }) {
 
     const anchor = useAnchor();
     const ref = useRef(anchor);
-    const { room } = useCollab();
     const [{ username }] = useCookies(["username"]);
     const provider = useRef<WebsocketProvider | null>(null);
 
@@ -35,7 +33,7 @@ export default function CollaboratePlugin() {
         }
 
         const doc = getDocFromMap(_id, yjsMap);
-        const p = new WebsocketProvider("ws://localhost:4000", _id, doc, { connect: false })
+        const p = new WebsocketProvider("ws://localhost:4000", _id, doc, { connect: true })
         provider.current = p;
 
         return p as unknown as Provider;
@@ -43,7 +41,7 @@ export default function CollaboratePlugin() {
 
     return <>
         {
-            room && <CollaborationPlugin
+            <CollaborationPlugin
                 id={room} shouldBootstrap={false}
                 providerFactory={providerFactory}
                 cursorsContainerRef={ref}

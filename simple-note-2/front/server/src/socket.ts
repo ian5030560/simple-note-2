@@ -32,6 +32,7 @@ export default function socket(server: Server) {
 
         let ydoc: Y.Doc = getYDoc(docName, true);
         ydoc.on("update", () => {
+            // @ts-ignore
             const lexicalJSON = headlessConvertYDocStateToLexicalJSON(Loader.nodes, Y.encodeStateAsUpdate(ydoc));
             console.log(JSON.stringify(lexicalJSON));
             // fetch("http://localhost:8000/saveNote/", {

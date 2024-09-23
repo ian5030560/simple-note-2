@@ -1,9 +1,8 @@
 import { useCookies } from "react-cookie";
 import useAPI, { APIs } from "./api"
-import React, { createContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, useParams } from "react-router-dom";
 import useFiles from "../User/SideBar/NoteTree/store";
-import { useCollab } from "../Editor/Collaborate/store";
 
 export function PublicProvider() {
     const [{ username }] = useCookies(["username"]);
@@ -123,41 +122,4 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<any>
     })
         .then(res => res.ok ? res.text() : null)
         .catch(() => null)
-}
-// export const Note = createContext<string | undefined>(undefined);
-
-// function validate(content: string | null | undefined) {
-//     if (!content) return false;
-//     try {
-//         JSON.parse(content);
-//         return true;
-//     }
-//     catch {
-//         return false;
-//     }
-// }
-// export function NoteProvider({ children }: { children: React.ReactNode }) {
-//     const data = useLoaderData() as string | null;
-
-//     return <Note.Provider value={validate(data) ? data! : undefined}>
-//         {children}
-//     </Note.Provider>
-// }
-
-export function CollaborateProvider({ children }: { children: React.ReactNode }) {
-    const { id, host } = useParams();
-    const { active, close, room } = useCollab();
-    const getPeople = useAPI(APIs.getPeopleInRoom);
-
-    useEffect(() => {
-
-        getPeople({ room: `${host}/${id}` })[0]
-            .then(res => {
-                if (res.status === 404) {
-                    console.log(1);
-                }
-            })
-    }, []);
-
-    return children;
 }

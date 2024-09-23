@@ -7,7 +7,7 @@ import PLUSLIST from "./plusList";
 import CollaboratePlugin from "./Collaborate";
 import SavePlugin from "./Save";
 import ToolKitPlugin from "./ToolKit";
-import { useLoaderData, useNavigate } from "react-router-dom";
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { Button, Flex, Result } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
 
@@ -19,16 +19,18 @@ const Loader = loader();
 const Editor = ({ test }: { test?: boolean }) => {
     const data = useLoaderData();
     const navigate = useNavigate();
-    
+    const { id, host } = useParams();
+
+
     return test || data ? <LexicalComposer
         initialConfig={{
             namespace: 'Editor', theme: Loader.theme, onError, nodes: Loader.nodes,
         }}>
-        {!test && <SavePlugin initialNote={data as string | undefined} />}
+        {!test && <SavePlugin initialNote={data as string | undefined} collab={!!(id && host)}/>}
         <ToolBarPlugin />
         <ToolKitPlugin />
         <DraggablePlugin plusList={PLUSLIST} />
-        <CollaboratePlugin />
+        {(!test && host) ? <CollaboratePlugin room={`${host}/${id}`} /> : test ? <CollaboratePlugin room="test" /> : null}
         {Loader.plugins.map((plugin, index) => <React.Fragment key={index}>{plugin}</React.Fragment>)}
     </LexicalComposer> :
         <Flex justify="center" align="center" style={{ height: "100%" }}>
