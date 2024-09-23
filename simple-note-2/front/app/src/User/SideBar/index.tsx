@@ -1,89 +1,90 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal, FlexProps } from "antd";
-import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined } from "@ant-design/icons";
+import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { BsBoxArrowRight } from "react-icons/bs";
 import NoteTree from "./NoteTree";
 import { useCookies } from "react-cookie";
 import SettingModal from "./Setting";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useAPI, { APIs } from "../../util/api";
 import { useInfoContext } from "./info";
 import CollaborateModal from "./Collaborate";
 import styles from "../index.module.css";
+import { ItemType } from "antd/es/menu/interface";
 
 const UserProfile = () => {
     const { token } = theme.useToken();
-    const [signOutOpen, setSignOutOpen] = useState(false);
-    const [settingOpen, setSettingOpen] = useState(false);
-    const [collaborateOpen, setCollaborateOpen] = useState(false);
+    const [state, setState] = useState({
+        setting: { open: false, label: "設定", icon: <SettingOutlined /> },
+        signOut: { open: false, label: "登出", icon: <BsBoxArrowRight /> },
+        collab: { open: false, label: "協作", icon: <TeamOutlined /> },
+        // deleteCollab: { open: false, label: "取消協作", icon: <CloseCircleOutlined />, danger: true },
+    });
+
+    const updateModal = useCallback((key: keyof typeof state, value: boolean) => setState(prev => {
+        prev[key].open = value;
+        return { ...prev };
+    }), []);
+
     const [api, contextHolder] = notification.useNotification();
     const [{ username }, , removeCookies] = useCookies(["username"]);
     const navigate = useNavigate();
     const signOut = useAPI(APIs.signOut);
+    const { id, host } = useParams();
     const { picture } = useInfoContext();
 
-    const items = [
-        {
-            key: "setting",
-            label: "設定",
-            icon: <SettingOutlined />
-        },
-        {
-            key: "log out",
-            label: "登出",
-            icon: <BsBoxArrowRight />
-        },
-        {
-            key: "collaborate",
-            label: "發起協作",
-            icon: <TeamOutlined />
+    const items = useMemo(() => {
+        const arr: ItemType[] = [];
+        for (let key in state) {
+            if (key === "deleteCollab" && !(id && host)) continue;
+            const { _, ...rest } = state[key];
+
+            arr.push({ key, ...rest });
         }
-    ];
+        return arr;
+    }, [host, id, state]);
 
     const handleClick = ({ key }: { key: string }) => {
-        const open: {[key: string]: (value: boolean) => void} = {
-            "setting": setSettingOpen,
-            "log out": setSignOutOpen,
-            "collaborate": setCollaborateOpen
-        }
-
-        open[key]?.(true);
+        updateModal(key as keyof typeof state, true);
     }
 
     const handleSignOutOk = useCallback(() => {
-        setSignOutOpen(false);
+        updateModal("signOut", false);
 
-        signOut({username: username})[0]
+        signOut({ username: username })[0]
             .then((value) => {
                 if (!value) {
-                    api.error({message: "登出發生錯誤，請重新登出", placement: "top"})
+                    api.error({ message: "登出發生錯誤，請重新登出", placement: "top" })
                 }
                 else {
                     removeCookies("username");
                     navigate("/");
                 }
             })
-    }, [api, navigate, removeCookies, signOut, username]);
+    }, [api, navigate, removeCookies, signOut, updateModal, username]);
 
 
     return <Flex justify="center" align="center" gap={"middle"}>
-        <Avatar size={"large"} shape="square" icon={<UserOutlined />} src={picture}/>
-        <h1 style={{color: token.colorText, textOverflow: "ellipsis", fontWeight: "normal"}}>
+        <Avatar size={"large"} shape="square" icon={<UserOutlined />} src={picture} />
+        <h1 style={{ color: token.colorText, textOverflow: "ellipsis", fontWeight: "normal" }}>
             {username}
         </h1>
         <Dropdown menu={{ items, onClick: handleClick }} trigger={["click"]} placement="bottom">
             <EllipsisOutlined style={{ color: token.colorText }} />
         </Dropdown>
         <Modal
-            open={signOutOpen} centered title="登出" okText="是" cancelText="否"
+            open={state.signOut.open} centered title="登出" okText="是" cancelText="否"
             okButtonProps={{ danger: true, }} cancelButtonProps={{ type: "default" }}
-            onOk={handleSignOutOk} onCancel={() => setSignOutOpen(false)}
+            onOk={handleSignOutOk} onCancel={() => updateModal("signOut", false)}
         >
             <Text>是否確定登出</Text>
         </Modal>
         {contextHolder}
-        <SettingModal open={settingOpen} onOk={() => setSettingOpen(false)} onCancel={() => setSettingOpen(false)} />
-        <CollaborateModal open={collaborateOpen} onCancel={() => setCollaborateOpen(false)}/>
+        <SettingModal open={state.setting.open} onOk={() => updateModal("setting", false)}
+            onCancel={() => updateModal("setting", false)} />
+        <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} />
+        {/* <DeleteCollaborateModal open={state.deleteCollab.open} onCancel={() => updateModal("deleteCollab", false)}
+            onOk={() => updateModal("deleteCollab", false)} /> */}
     </Flex>
 }
 

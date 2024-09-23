@@ -72,7 +72,7 @@ type NoteFetchResult = {
     multiple: Array<{ noteId: string, noteName: string, url: string }>
 }
 export async function settingLoader({ request }: LoaderFunctionArgs<any>): Promise<NoteFetchResult | null> {
-    
+
     const url = APIs.loadNoteTree;
     const cookie = getCookie();
     const username = cookie.get("username")!;
@@ -91,7 +91,8 @@ export function SettingProvider() {
     const data = useLoaderData() as NoteFetchResult | null;
     const navigate = useNavigate();
     const { init } = useFiles();
-    
+    const { id } = useParams();
+
     useEffect(() => {
         if (!data) return;
         const sorted = sortNodes(data["one"]);
@@ -102,9 +103,9 @@ export function SettingProvider() {
                 url: data["multiple"].find(mul => mul.noteId === it.noteId)?.url
             }
         )));
-        const id = sorted[0].noteId;
+        const _id = id ? id : sorted[0].noteId;
 
-        if(id) navigate(id, { replace: true });
+        navigate(_id, {replace: true});
     }, []);
 
     return <Outlet />
@@ -147,15 +148,15 @@ export function CollaborateProvider({ children }: { children: React.ReactNode })
     const { id, host } = useParams();
     const { active, close, room } = useCollab();
     const getPeople = useAPI(APIs.getPeopleInRoom);
-    
+
     useEffect(() => {
-      
-        getPeople({room: `${host}/${id}`})[0]
-        .then(res => {
-            if(res.status === 404){
-                console.log(1);
-            }
-        })
+
+        getPeople({ room: `${host}/${id}` })[0]
+            .then(res => {
+                if (res.status === 404) {
+                    console.log(1);
+                }
+            })
     }, []);
 
     return children;

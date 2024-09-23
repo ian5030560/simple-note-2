@@ -27,7 +27,7 @@ type APIMap = {
   "http://localhost:8000/loadNoteTree/": { username: string },
   "http://140.127.74.226:8000/gemma/": { text: string },
   "http://localhost:8000/newCollaborate/": { username: string, noteId: string, url: string },
-  "http://localhost:8000/deleteCollaborate/": { username: string, noteId: string },
+  "http://localhost:8000/deleteCollaborate/": { username: string, noteId: string, masterName: string },
   "http://localhost:8000/joinCollaborate/": { username: string, url: string },
   "http://localhost:4000/people": { room: string },
 }

@@ -1,15 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ConfigProvider, Layout, theme, Grid } from "antd";
 import SideBar from "./SideBar";
-import Editor from "../Editor";
 import { BulbButton } from "../Welcome";
 import styles from "./index.module.css";
 import switchTheme, { defaultTheme } from "../util/theme";
 import { useInfoContext } from "./SideBar/info";
 import { DoubleLeftOutlined } from "@ant-design/icons";
-import { Outlet } from "react-router-dom";
 
-export default function User() {
+export default function User({ children }: { children?: React.ReactNode }) {
 
     const [darken, setDarken] = useState(false);
     const { themes } = useInfoContext();
@@ -17,7 +15,7 @@ export default function User() {
     const seed = useMemo(() => themes?.find(theme => theme.data.isUsing), [themes]);
 
     return <ConfigProvider theme={seed ? switchTheme(seed.data)(darken) : defaultTheme(darken)}>
-        <Index/>
+        <Index>{children}</Index>
         <BulbButton lighten={!darken} onClick={() => setDarken(prev => !prev)} />
     </ConfigProvider>
 }
@@ -25,7 +23,8 @@ export default function User() {
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
 interface IndexProps {
-    style?: React.CSSProperties,
+    style?: React.CSSProperties;
+    children?: React.ReactNode;
 }
 
 const MIN = 250;
@@ -69,15 +68,16 @@ export const Index = (props: IndexProps) => {
             onCollapse={handleCollapse}>
             <SideBar />
         </Sider>
-        {md && <div className={styles.resizer} style={{ backgroundColor: token.colorBorder }}
-            onPointerDown={(e) => {
-                document.body.style.userSelect = "none"
-                setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))
-            }}
-            onDoubleClick={() => setResizer(prev => ({ ...prev, width: prev.width === 0 ? MIN : 0, start: { ...prev.start, w: MIN } }))}
-        />}
+        {
+            md && <div className={styles.resizer} style={{ backgroundColor: token.colorBorder }}
+                onPointerDown={(e) => {
+                    document.body.style.userSelect = "none"
+                    setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))
+                }}
+                onDoubleClick={() => setResizer(prev => ({ ...prev, width: prev.width === 0 ? MIN : 0, start: { ...prev.start, w: MIN } }))} />
+        }
         <Content className={styles.editorFrame}>
-            <Editor/>
+            {props.children}
         </Content>
     </Layout>
 }

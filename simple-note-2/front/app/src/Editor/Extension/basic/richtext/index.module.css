@@ -10,3 +10,8 @@
     display: flex;
     flex-direction: column;
 }
+
+.anchor{
+    position: relative;
+    flex-grow: 1;
+}

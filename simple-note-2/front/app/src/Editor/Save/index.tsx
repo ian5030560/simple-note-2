@@ -1,29 +1,27 @@
 import { Plugin } from "../Extension/index";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CLEAR_EDITOR_COMMAND, EditorState } from "lexical";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useAPI, { APIs } from "../../util/api";
-import { Note } from "../../util/provider";
 import { decodeBase64 } from "../../util/secret";
 import { useCollab } from "../Collaborate/store";
 
 const empty = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
-const SavePlugin: Plugin = () => {
+const SavePlugin: Plugin<{ initialNote?: string }> = (props) => {
     const saveNote = useAPI(APIs.saveNote);
-    const initialNote = useContext(Note);
     const [editor] = useLexicalComposerContext();
     const [{ username }] = useCookies(["username"]);
     const { active, room } = useCollab();
     const { id, host } = useParams();
     const [typing, isTyping] = useState(false);
     const collaborative = useMemo(() => !!room, [room]);
-    
+
     useEffect(() => {
-        if (collaborative && host !== username) return;
+        const { initialNote } = props;
 
         if (initialNote) {
             editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
@@ -35,7 +33,7 @@ const SavePlugin: Plugin = () => {
                 editor.setEditorState(editorState);
             }
         }
-    }, [collaborative, editor, host, initialNote, room, username]);
+    }, [editor, props]);
 
     useEffect(() => {
 
@@ -63,12 +61,10 @@ const SavePlugin: Plugin = () => {
 
     const handleChange = useCallback((editorState: EditorState) => {
         console.log(editorState);
-
-        if (window.location.pathname !== "/test") {
-            isTyping(() => !collaborative ? true : decodeBase64(host!) === username);
-        }
+        isTyping(() => !collaborative ? true : decodeBase64(host!) === username);
+        
     }, [collaborative, host, username]);
 
-    return <OnChangePlugin onChange={handleChange} ignoreSelectionChange={true}/>;
+    return <OnChangePlugin onChange={handleChange} ignoreSelectionChange={true} />;
 }
 export default SavePlugin;

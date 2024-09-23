@@ -25,11 +25,6 @@
     overflow: hidden;
 }
 
-.anchor{
-    position: relative;
-    flex-grow: 1;
-}
-
 .draggable{
     position: absolute;
     top: 0;

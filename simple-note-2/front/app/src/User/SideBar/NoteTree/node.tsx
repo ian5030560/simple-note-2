@@ -1,12 +1,11 @@
-import { useMemo } from "react";
-import { Flex, Typography, Button, Dropdown } from "antd";
-import { DeleteOutlined, MoreOutlined, PlusOutlined } from "@ant-design/icons";
-import { ItemType } from "antd/es/menu/interface";
+import { Flex, Typography, Button } from "antd";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 
 const { Text } = Typography;
 
 interface NodeProp {
+    first?: boolean;
     title: string;
     onAdd: () => void;
     onDelete: () => void;
@@ -15,28 +14,16 @@ interface NodeProp {
 
 export default function Node(prop: NodeProp) {
 
-    // const items: ItemType[] = useMemo(() => [{
-    //     key: '1',
-    //     label: (
-    //         <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
-    //             1st menu item
-    //         </a>
-    //     ),
-    // }], []);
-
-    return <Flex justify="space-between" onClick={() => { }}
+    return <Flex justify="space-between" onClick={prop.onClick}
         style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
         <Text>{prop.title}</Text>
         <Flex>
-            {prop.title !== "我的筆記" &&
+            {prop.first &&
                 <Button icon={<DeleteOutlined />} type="text" size="small" tabIndex={-1}
                     onClick={(e) => { e.stopPropagation(); prop.onDelete() }} />
             }
             <Button icon={<PlusOutlined />} type="text" size="small" tabIndex={-1}
                 onClick={(e) => { e.stopPropagation(); prop.onAdd() }} />
-            {/* <Dropdown trigger={["click"]} placement="bottom" menu={{ items: items }}>
-                <Button icon={<MoreOutlined />} type="text" size="small" tabIndex={-1} />
-            </Dropdown> */}
         </Flex>
     </Flex>
 }

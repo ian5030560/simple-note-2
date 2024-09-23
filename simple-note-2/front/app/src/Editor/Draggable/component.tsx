@@ -139,8 +139,6 @@ const DraggableElement = (props: { plusList: PlusItem[] }) => {
 
 export default DraggableElement;
 
-export const DndAnchor = ({ children }: { children: React.ReactNode }) => <div id="dnd-anchor" className={styles.anchor}>{children}</div>;
-
 export const useAnchor = () => {
     const [anchor, setWrapper] = useState<HTMLElement | null>(null);
     useEffect(() => {

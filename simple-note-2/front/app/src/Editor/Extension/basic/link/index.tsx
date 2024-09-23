@@ -10,6 +10,7 @@ import { CiEdit } from "react-icons/ci";
 import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
 import Action from "../../UI/action";
+import styles from "./index.module.css";
 
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/;
 function validateUrl(url: string): boolean {
@@ -62,12 +63,12 @@ export const FloatingLinkPlugin = () => {
     return <>
         {
             nodeKey && <Action open={show} nodeKey={nodeKey} placement={{ top: true, left: false }}>
-                <Flex style={{ backgroundColor: token.colorBgBase }} gap={"small"}>
+                <Flex style={{ backgroundColor: token.colorBgBase }} gap={"small"} className={styles.floatingLinkEditor} align="center">
                     <Typography.Link target="_blank" rel="noopener noreferrer" href={url}
                         style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>
                     <Input type="url" ref={inputRef} style={{ display: editable ? undefined : "none" }} />
                     <Flex gap={"small"}>
-                        <Button icon={<CiEdit size={20} />} onClick={handleEdit} />
+                        <Button type={editable ? "primary" : "default"} icon={<CiEdit size={20} />} onClick={handleEdit} />
                         <Button icon={<FaTrash size={20} />} onClick={handleDiscard} />
                     </Flex>
                 </Flex>

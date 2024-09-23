@@ -2,7 +2,7 @@ import { Tree, theme, Button, Flex } from "antd";
 import Node from "./node";
 import { FaPlus } from "react-icons/fa6";
 import useFiles, { NoteDataNode } from "./store";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { SwapOutlined } from "@ant-design/icons";
 import { useAdd, useDelete } from "./function";
 import { useNavigate } from "react-router-dom";
@@ -31,14 +31,14 @@ const NoteTree = () => {
         <div>
             <Tree treeData={!collaborative ? nodes : filter(nodes)} blockNode defaultExpandAll selectable={false}
                 titleRender={(data) => <Node key={data.key} title={data.title as string}
-                    // onClick={() => navigate(`/note/${data.key}`)}
-                    onClick={() => { }}
+                    first={nodes[0].key === data.key}
+                    onClick={() => navigate(`${data.key}`)}
                     onAdd={() => add(data)} onDelete={() => remove(data)} />
                 } />
 
             {
-                !collaborative && <Button icon={<FaPlus />} type="text" block tabIndex={-1} style={{ marginTop: 8, color: token.colorText }}
-                    onClick={() => add(null)} />
+                !collaborative && <Button icon={<FaPlus />} type="text" block tabIndex={-1}
+                    onClick={() => add(null)} style={{ marginTop: 8, color: token.colorText }}/>
             }
         </div>
         <Button type="default" icon={<SwapOutlined />} onClick={() => setCollaborative(prev => !prev)}>

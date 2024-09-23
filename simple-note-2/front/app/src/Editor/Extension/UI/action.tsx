@@ -41,10 +41,10 @@ export default function Action(props: ActionProps) {
          
             const _placement = Array.isArray(placement) ? placement : Object.keys(placement);
             const map: any = {
-                "top": () => pos.y -= height / 2,
-                "bottom": () => pos.y += height / 2,
-                "left": () => pos.x -= width / 2,
-                "right": () => pos.x += width / 2
+                top: () => pos.y -= height / 2,
+                bottom: () => pos.y += height / 2,
+                left: () => pos.x -= width / 2,
+                right: () => pos.x += width / 2
             }
             for (const place of _placement) {
                 map[place]();
@@ -70,9 +70,12 @@ export default function Action(props: ActionProps) {
         const resizer = new ResizeObserver(update);
         resizer.observe(element);
 
+        window.addEventListener("resize", update);
+
         return () => {
             resizer.unobserve(element);
             resizer.disconnect();
+            window.removeEventListener("resize", update);
         }
     }, [anchor, editor, placement, props]);
 
@@ -104,11 +107,11 @@ export default function Action(props: ActionProps) {
 
     return <>
         {
-            anchor && props.open && createPortal(<div className={styles.actionContainer}
+            anchor && createPortal(<div className={styles.actionContainer}
                 style={{
                     transform: pos ? `translate(calc(${pos.x}px + ${adjustPos.x}%), calc(${pos.y}px + ${adjustPos.y}%))` : undefined,
-                    // display: !props.open ? "none" : undefined,
                     opacity: !props.open ? 0 : 1,
+                    display: !props.open ? "none" : undefined,
                     ...size
                 }}>
                 {props.children}

@@ -1,6 +1,6 @@
 import React from "react";
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from "react-router-dom";
-import User from "./User";
+import { createBrowserRouter, createRoutesFromElements, Outlet, Route, RouterProvider } from "react-router-dom";
+import UserLayout from "./User";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
@@ -8,6 +8,7 @@ import { contentLoader, settingLoader, NoteProvider, SettingProvider, PublicProv
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
+import Editor from "./Editor";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -21,11 +22,13 @@ const router = createBrowserRouter(
 
       <Route element={<PrivateProvider />}>
         <Route path="note" element={<SettingProvider />} loader={settingLoader}>
-          <Route path=":id/:host?" element={<NoteProvider><User /></NoteProvider>} loader={contentLoader} />
+          <Route element={<UserLayout><Outlet /></UserLayout>}>
+            <Route path=":id/:host?" element={<Editor/>} loader={contentLoader} />
+          </Route>
         </Route>
       </Route>
 
-      <Route path="test" element={<User />} />
+      <Route path="test" element={<UserLayout><Editor test/></UserLayout>} />
       <Route path="theme" element={<ThemePage />} />
     </>
   )

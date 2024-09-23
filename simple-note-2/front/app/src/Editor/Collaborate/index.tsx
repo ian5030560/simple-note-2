@@ -49,11 +49,5 @@ export default function CollaboratePlugin() {
                 cursorsContainerRef={ref}
                 username={username} />
         }
-        {/* {
-            anchor && !ediitable && <Modal title={null} styles={{ body: { textAlign: "center" } }}
-                footer={<Button type="primary" onClick={handleClick}>前往協作</Button>} closable={false}>
-                <Typography.Text>此筆記已設為協作模式，點擊下方按鈕進行協作</Typography.Text>
-            </Modal>
-        } */}
     </>;
 };

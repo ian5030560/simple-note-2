@@ -30,23 +30,22 @@ export function useAdd(): ReturnOfFunction<TreeDataNode | null> {
         const current = node ? node.key as string : null;
         const previous = (node ? node.children![node.children!.length - 1]?.key : nodes[nodes.length - 1]?.key) as string | null;
         const key = uuid();
-        add(key, input, [], current, previous);
-        // addNote({
-        //     username: username, noteId: key, notename: input,
-        //     parentId: current, silbling_id: previous
-        // })[0]
-        //     .then((res) => res.status === 200)
-        //     .then(ok => {
-        //         if (!ok) {
-        //             api.error(`${input} 創建失敗`);
-        //         }
-        //         else {
-        //             api.success(`${input} 創建成功`);
-                    
-        //             navigate(`../${key}`);
-        //         }
-        //     });
-    }), [add, input, nodes]);
+        addNote({
+            username: username, noteId: key, notename: input,
+            parentId: current, silbling_id: previous
+        })[0]
+            .then((res) => res.status === 200)
+            .then(ok => {
+                if (!ok) {
+                    api.error(`${input} 創建失敗`);
+                }
+                else {
+                    api.success(`${input} 創建成功`);
+                    add(key, input, [], current, previous);
+                    navigate(`../${key}`);
+                }
+            });
+    }), [add, addNote, api, input, navigate, nodes, username]);
 
     const context = useMemo(() => (<>
         <Modal open={open} title="輸入名稱" okText="確認" cancelText="取消"
