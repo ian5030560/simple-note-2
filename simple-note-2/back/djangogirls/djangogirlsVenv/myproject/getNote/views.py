@@ -51,7 +51,7 @@ class GetNoteView(APIView):
                 username, noteId
             )  # 透過noteId來取得資料
             returnNoteContent = returnNoteContent[0]
-            if returnNoteContent:  # 取得成功
+            if returnNoteContent != False:  # 取得成功
                 return Response(returnNoteContent, status=status.HTTP_200_OK)
             elif returnNoteContent == False:  # error
                 return Response(returnNoteContent, status=status.HTTP_400_BAD_REQUEST)

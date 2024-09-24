@@ -110,7 +110,7 @@ export function SettingProvider() {
     return <Outlet />
 }
 
-export async function contentLoader({ request, params }: LoaderFunctionArgs<any>): Promise<string | null> {
+export async function contentLoader({ request, params }: LoaderFunctionArgs<any>): Promise<string | false> {
     const url = APIs.getNote;
     const cookie = getCookie();
     const username = cookie.get("username")!;
@@ -118,8 +118,8 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<any>
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
-        body: JSON.stringify({ "username": username, noteId: id }),
+        body: JSON.stringify({ username: username, noteId: id }),
     })
-        .then(res => res.ok ? res.text() : null)
-        .catch(() => null)
+        .then(async res => res.ok ? await res.text() : false)
+        .catch(() => false);
 }

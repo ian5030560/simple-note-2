@@ -73,8 +73,7 @@ export const Index = (props: IndexProps) => {
                 onPointerDown={(e) => {
                     document.body.style.userSelect = "none"
                     setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))
-                }}
-                onDoubleClick={() => setResizer(prev => ({ ...prev, width: prev.width === 0 ? MIN : 0, start: { ...prev.start, w: MIN } }))} />
+                }}/>
         }
         <Content className={styles.editorFrame}>
             {props.children}

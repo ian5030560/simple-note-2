@@ -21,8 +21,7 @@ const Editor = ({ test }: { test?: boolean }) => {
     const navigate = useNavigate();
     const { id, host } = useParams();
 
-
-    return test || data ? <LexicalComposer
+    return test || data !== false ? <LexicalComposer
         initialConfig={{
             namespace: 'Editor', theme: Loader.theme, onError, nodes: Loader.nodes,
         }}>

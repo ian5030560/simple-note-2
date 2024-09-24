@@ -29,7 +29,7 @@ const NoteTree = () => {
     return <Flex vertical justify="space-between" style={{ flex: 1 }}>
         <div>
             <Tree treeData={!collaborative ? nodes : filter(nodes)} blockNode defaultExpandAll selectable={false}
-                style={{overflowY: "auto", flexShrink: 1}}
+                rootStyle={{overflowY: "auto"}}
                 titleRender={(data) => <Flex justify="space-between" onClick={() => navigate(data.url ? data.url : data.key as string)}
                     style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
                     <Typography.Text>{data.title as string}</Typography.Text>
@@ -51,7 +51,7 @@ const NoteTree = () => {
                     onClick={() => add(null)} style={{ marginTop: 8, color: token.colorText }} />
             }
         </div>
-        <Button type="default" style={{flexShrink: 1}} icon={<SwapOutlined />} onClick={() => setCollaborative(prev => !prev)}>
+        <Button type="default" icon={<SwapOutlined />} onClick={() => setCollaborative(prev => !prev)}>
             {!collaborative ? "個人筆記" : "多人協作"}
         </Button>
         {addContext}

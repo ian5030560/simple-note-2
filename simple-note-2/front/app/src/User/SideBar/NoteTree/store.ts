@@ -8,7 +8,7 @@ type FindResult = {
     current: NoteDataNode,
     previous: NoteDataNode | undefined,
 }
-export function findNode(nodes: NoteDataNode[], key: string): FindResult | undefined {
+function findNode(nodes: NoteDataNode[], key: string): FindResult | undefined {
     for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
         if (node.key === key) {
@@ -34,6 +34,13 @@ export function findNode(nodes: NoteDataNode[], key: string): FindResult | undef
     }
 
     return undefined
+}
+
+function travesal(nodes: NoteDataNode[], fn: (node: NoteDataNode) => void){
+    for(let node of nodes){
+        fn(node);
+        travesal(node.children, fn);
+    }
 }
 
 type TreeState = {
@@ -81,11 +88,12 @@ const useStore = create<TreeState & TreeAction>()(set => ({
         return { nodes: [...nodes] };
     })
 }))
-
+ 
 export default function useNodes() {
     const store = useStore();
 
     const _findNode = useCallback((key: string) => findNode(store.nodes, key), [store.nodes]);
+    const _travesal = useCallback((fn: (node: NoteDataNode) => void) => travesal(store.nodes, fn), [store.nodes]);
 
-    return { ...store, findNode: _findNode };
+    return { ...store, findNode: _findNode, travesal: _travesal };
 }

@@ -227,7 +227,7 @@ def insert_user_id_note_name(usernames, note_name, note_title_id):
         stmt = insert(User_Note_Data).values(
             user_id=user_id_query[0],
             note_title_id=note_title_id,
-            content=0,
+            content=None,
             note_name=note_name,
             updated_time=datetime.date.today(),
         )

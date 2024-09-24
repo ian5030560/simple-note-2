@@ -1,14 +1,14 @@
 import { Breadcrumb, Typography } from "antd";
 import { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import useFiles, { findNode } from "../../User/SideBar/NoteTree/store";
+import useFiles from "../../User/SideBar/NoteTree/store";
 
 type NoteRelationItem = {
     title: string,
     key: string;
 }
 export default function BreadCrumb() {
-    const { nodes } = useFiles();
+    const { nodes, findNode } = useFiles();
     const { id } = useParams();
     const items = useMemo(() => {
         const crumbs: NoteRelationItem[] = [];
@@ -16,14 +16,14 @@ export default function BreadCrumb() {
 
         let current = id;
         while (current) {
-            const found = findNode(nodes, current);
+            const found = findNode(current);
             if (!found) break;
             crumbs.push({ title: found.current.title as string, key: found.current.key as string });
             current = found.parent?.key as string | undefined;
         }
 
         return crumbs.reverse();
-    }, [id, nodes]);
+    }, [findNode, id, nodes.length]);
 
     const last = items.length - 1;
 

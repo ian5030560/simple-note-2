@@ -20,15 +20,10 @@ const SavePlugin: Plugin<{ initialNote?: string, collab: boolean }> = (props) =>
     useEffect(() => {
         const { initialNote } = props;
 
-        if (initialNote) {
+        if (initialNote !== undefined) {
             editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-            if (initialNote === '"0"') {
-                editor.setEditorState(editor.parseEditorState(empty));
-            }
-            else {
-                const editorState = editor.parseEditorState(JSON.parse(initialNote));
-                editor.setEditorState(editorState);
-            }
+            const editorState = editor.parseEditorState(JSON.parse(initialNote ? initialNote : empty));
+            editor.setEditorState(editorState);
         }
     }, [editor, props]);
 
