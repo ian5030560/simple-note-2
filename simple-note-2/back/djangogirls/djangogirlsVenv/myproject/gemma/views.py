@@ -1,5 +1,6 @@
 import sys
 import json
+import requests
 
 sys.path.append("..db_modules")
 
@@ -26,30 +27,36 @@ class GemmaView(APIView):
     serializer_class = GemmaSerializer
 
     def ai(self, text):
-        
-        from openai import OpenAI
-        import logging
-        AI_client = OpenAI(
-        base_url="http://140.127.74.249:8000/v1",
-        api_key="nknusumlab"
-        )
-        
         try:
-            output = AI_client.chat.completions.create(
-                model="Breeze-7B-32k-Instruct-v1_0",
-                messages=[
-                    {"role": "user", "content": text}
-                ],
-                max_tokens=4000,
-                temperature=0.7,
-                top_p=0.3,
-            )
-            logging.info(f"Received response from AI: {output}")
-            return (output.choices[0].message.content)
-        
-        except: # 超時錯誤處理
-            logging.error("Request to AI timed out")
-            return "API request timed out. Please try again later."
+            
+            url = "http://localhost:8091"
+            post_text = {
+                "title": "",
+                "content": text
+            }
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer your_token"
+            }
+
+            # 發送 POST 請求
+            response = requests.post(url, json=post_text, headers=headers)
+
+            # 檢查回應
+            if response.status_code == 200:
+                # 嘗試將回應解析為 JSON 格式
+                try:
+                    result = response.json()
+                    # print(type(result))
+                    return result  # 返回解析後的 JSON 回應
+                except ValueError:
+                    # 如果回應不是 JSON 格式，直接返回原始文本內容
+                    return response.text
+            else:
+                return f"Request failed with status code {response.status_code}"
+        except Exception as e:
+            return f'ai post error: {str(e)}'
+
         
         
 
