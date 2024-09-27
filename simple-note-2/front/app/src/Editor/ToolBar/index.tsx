@@ -3,15 +3,15 @@ import React, { useEffect, useRef, useState } from "react"
 import { Plugin } from "../Extension/index";
 import styles from "./index.module.css";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
-import Align from "./Component/align";
-import BackgroundColor from "./Component/background";
-import { FontColor, FontSize, FontFamily } from "./Component/font";
-import Markdown from "./Component/markdown";
-import History from "./Component/history";
-import Text from "./Component/text";
-import Link from "./Component/link";
-import List from "./Component/list";
-import Table from "./Component/table";
+import Align from "./align";
+import BackgroundColor from "./background";
+import { FontColor, FontSize, FontFamily } from "./font";
+import Markdown from "./markdown";
+import History from "./history";
+import Text from "./text";
+import Link from "./link";
+import List from "./list";
+import Table from "./table";
 
 const TOOLS: React.ReactNode[] = [
     <History />,
@@ -68,6 +68,7 @@ const ToolBarPlugin: Plugin = () => {
                 backgroundColor: token.colorBgElevated,
                 maxHeight: collapse ? 0 : 50,
                 padding: collapse ? 0 : undefined,
+                // justifyContent: "space-evenly"
             }}>
             {
                 TOOLS.map((element, index) => <React.Fragment key={index}>

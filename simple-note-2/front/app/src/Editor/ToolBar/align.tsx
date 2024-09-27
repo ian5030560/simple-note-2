@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import OptionGroup, { Option } from "../UI/option";
+import OptionGroup, { Option } from "./UI/option";
 import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from "@ant-design/icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { FORMAT_ELEMENT_COMMAND, ElementFormatType, $isElementNode, SELECTION_CHANGE_COMMAND, $getSelection, $isRangeSelection, $isNodeSelection, LexicalNode, $isBlockElementNode, ElementNode } from "lexical";

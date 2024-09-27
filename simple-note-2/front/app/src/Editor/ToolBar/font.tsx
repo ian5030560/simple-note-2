@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { ColorButton } from "../UI/button";
+import { ColorButton } from "./UI/button";
 import { FontColorsOutlined } from "@ant-design/icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useSelectionListener } from "../Hooks";
+import useSelectionListener from "./useSelectionListener";
 import { $getSelection, $isTextNode } from "lexical";
 import { $patchStyleText, $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { InputNumber, Select } from "antd";
-import FONT_FAMILY, { DEFAULT } from "./family";
+import FONT_FAMILY, { DEFAULT } from "./fontFamily";
 
 export const FontColor: React.FC = () => {
 

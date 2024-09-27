@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import OptionGroup, { Option } from "../UI/option";
+import OptionGroup, { Option } from "./UI/option";
 import { OrderedListOutlined, UnorderedListOutlined } from "@ant-design/icons";
-import { useSelectionListener } from "../Hooks";
+import useSelectionListener from "./useSelectionListener";
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND, 
     $isListNode, INSERT_CHECK_LIST_COMMAND } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -57,7 +57,7 @@ const List: React.FC = () => {
                 editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
                 setCurrent(() => null);
             }
-            else {
+            else { 
                 editor.dispatchCommand(LISTCOMMANDS[key], undefined);
                 setCurrent(() => key);
             }

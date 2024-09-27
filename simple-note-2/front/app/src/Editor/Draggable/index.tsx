@@ -1,79 +1,191 @@
-import { useCallback, useEffect } from "react";
-import { Plugin } from "../Extension/index";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getRoot } from "lexical";
+import { Plugin } from "../Extension";
+import { PlusItem, useAnchor } from "./component";
 import { createPortal } from "react-dom";
-import DraggableElement, { PlusItem, DropLine, useAnchor } from "./component";
-import useDnd from "./store";
+import { DragHandler, DragLine } from "./component";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { inside } from "../Extension/UI/utils";
 import { getBlockFromPoint } from "./util";
-import useDndHandler, { DRAGGABLE_TAG } from "./handler";
+import { eventFiles } from "@lexical/rich-text";
+import { $getNodeByKey, $getRoot, DRAGOVER_COMMAND, DROP_COMMAND, NodeKey } from "lexical";
+import { mergeRegister } from "@lexical/utils";
 
-export interface DraggableProp {
-    plusList: PlusItem[],
+export const DRAGGABLE_TAG = "draggable-item";
+const HEIGHT = 5;
+type HandlerState = {
+    x: number;
+    y: number;
 }
-const Draggable = ({ plusList }: DraggableProp) => {
-    const { setElement, reset, setId, isSelecting } = useDnd();
+
+type LineState = {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+}
+const DraggablePlugin: Plugin<{ items: PlusItem[] }> = (props) => {
     const [editor] = useLexicalComposerContext();
     const anchor = useAnchor();
-    const { handleDragOver, handleDrop } = useDndHandler();
+    const scroller = useMemo(() => anchor?.parentElement, [anchor]);
+    const [handler, setHandler] = useState<HandlerState>();
+    const [line, setLine] = useState<LineState>();
+    const [dragging, setDragging] = useState(false);
+    const [id, setId] = useState<NodeKey>();
+
+    useEffect(() => editor.registerUpdateListener(({ editorState }) => {
+        const keys = editorState.read(() => $getRoot().getChildrenKeys());
+        keys.forEach(key => {
+            const el = editor.getElementByKey(key);
+            if (!el || el.hasAttribute(DRAGGABLE_TAG)) return;
+
+            el.setAttribute(DRAGGABLE_TAG, key);
+        });
+    }));
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
-        if(isSelecting) return;
-        
         const { clientX, clientY } = e;
-        
-        const target = document.elementFromPoint(clientX, clientY);
-        const root = editor.getRootElement()!;
-        const scroller = document.getElementById("editor-scroller");
-        if (root?.isEqualNode(target) || !scroller) return;
+        if (!anchor || !scroller || !inside(clientX, clientX, scroller)) return;
 
-        const elem = getBlockFromPoint(editor, clientX, clientY, scroller);
-        if (!elem || !elem.hasAttribute(DRAGGABLE_TAG) || !anchor) return;
+        const element = getBlockFromPoint(editor, clientX, clientY, scroller);
+        if (!element) return;
 
-        const { x, y, height: eh } = elem.getBoundingClientRect();
+        const { x, y } = element.getBoundingClientRect();
         const { top, left } = anchor.getBoundingClientRect();
-        setId(elem.getAttribute(DRAGGABLE_TAG)!);
-        setElement(x - left, y + eh / 2 - top);
+        const { marginTop } = window.getComputedStyle(element);
+        
+        setHandler({ x: x - left, y: y - top + parseFloat(marginTop) / 2 });
+        setId(element.getAttribute(DRAGGABLE_TAG)!);
 
-    }, [isSelecting, editor, anchor, setId, setElement]);
+    }, [anchor, editor, scroller]);
 
-    const handleMouseLeave = useCallback(() => {
-        if(isSelecting) return;
-        reset("element");
-    }, [isSelecting, reset]);
+    const handleMouseLeave = useCallback((e: MouseEvent) => {
+        const mask = document.getElementById("menu-mask");
+        const { relatedTarget } = e;
+        if (mask === relatedTarget) return;
+
+        setHandler(undefined);
+    }, []);
+
+    const handleDragOver = useCallback((e: DragEvent) => {
+        if (!e.dataTransfer || eventFiles(e)[0] || !dragging) return false;
+        e.preventDefault();
+
+        const { clientY: mouseY } = e;
+
+        const overElement = getBlockFromPoint(editor, e.clientX, e.clientY);
+
+        if (!overElement || !overElement.hasAttribute(DRAGGABLE_TAG)) return false;
+
+        let { x, y, width, height } = overElement.getBoundingClientRect();
+        const { top, left } = document.getElementById("dnd-anchor")!.getBoundingClientRect();
+
+        const { marginTop, marginBottom } = window.getComputedStyle(overElement);
+
+        const overHalf = mouseY > (y + height / 2);
+        if (!overHalf) {
+            const previous = overElement.previousElementSibling;
+
+            if (!previous) {
+                y -= HEIGHT;
+            }
+            else {
+                const { marginBottom: pMarginBottom } = window.getComputedStyle(previous);
+                const offset = Math.max(parseFloat(pMarginBottom), parseFloat(marginTop)) / 2;
+                y -= offset;
+            }
+        }
+        else {
+            const next = overElement.nextElementSibling;
+            y += height;
+            if (!next) {
+                y += HEIGHT;
+            }
+            else {
+                const { marginTop: nMarginTop } = window.getComputedStyle(next);
+                const offset = Math.max(parseFloat(nMarginTop), parseFloat(marginBottom)) / 2;
+                y += offset;
+            }
+        }
+
+        x -= left;
+        y -= top;
+
+        setLine({ x, y, width, height: HEIGHT });
+
+        return true;
+    }, [dragging, editor]);
+
+    const handleDrop = useCallback((e: DragEvent) => {
+        if (!e.dataTransfer || eventFiles(e)[0] || !dragging) return false;
+        e.preventDefault();
+
+        const dropElement = getBlockFromPoint(editor, e.clientX, e.clientY);
+
+        if (!dropElement || !dropElement.hasAttribute(DRAGGABLE_TAG)) return false;
+
+        editor.update(() => {
+            const dropKey = dropElement!.getAttribute(DRAGGABLE_TAG);
+            const dragKey = id;
+
+            if (!dragKey || !dropKey) return false;
+
+            const dropNode = $getNodeByKey(dropKey);
+            const dragNode = $getNodeByKey(dragKey);
+
+            if (!dragNode || !dropNode || dragKey === dropKey) return;
+
+            const mouseAt = line!.y! + document.getElementById("dnd-anchor")!.getBoundingClientRect().top;
+
+            const { top, height } = dropElement!.getBoundingClientRect();
+            const half = top + height / 2;
+
+            if (mouseAt < half) {
+                dropNode.insertBefore(dragNode);
+            }
+            else {
+                dropNode.insertAfter(dragNode);
+            }
+        });
+
+        return true;
+    }, [dragging, editor, id, line]);
 
     useEffect(() => {
-        const scroller = document.getElementById("editor-scroller");
         scroller?.addEventListener("mousemove", handleMouseMove);
         scroller?.addEventListener("mouseleave", handleMouseLeave);
-        anchor?.addEventListener("dragover", handleDragOver);
-        anchor?.addEventListener("drop", handleDrop);
-        
-        const removeListener = editor.registerUpdateListener(() => {
-            const keys = editor.getEditorState().read(() => $getRoot().getChildrenKeys());
-            for (const key of keys) {
-                const element = editor.getElementByKey(key);
-                element?.setAttribute(DRAGGABLE_TAG, key);
-            }
-        })
+        const remove = mergeRegister(
+            editor.registerCommand(DRAGOVER_COMMAND, handleDragOver, 1),
+            editor.registerCommand(DROP_COMMAND, handleDrop, 4)
+        )
 
         return () => {
             scroller?.removeEventListener("mousemove", handleMouseMove);
             scroller?.removeEventListener("mouseleave", handleMouseLeave);
-            anchor?.removeEventListener("dragover", handleDragOver);
-            anchor?.removeEventListener("drop", handleDrop);
-            removeListener();
+            remove();
         }
-    }, [editor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, anchor]);
+    }, [editor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, scroller]);
 
-    return anchor ? createPortal(
-        <>
-            <DraggableElement plusList={plusList} />
-            <DropLine />
-        </>,
-        anchor
-    ) : null;
+    const handleDragStart = useCallback((e: React.DragEvent) => {
+        if (eventFiles(e.nativeEvent)[0] || !e.dataTransfer || !id) return;
+        const element = editor.getElementByKey(id);
+        if (!element) return;
+
+        e.dataTransfer.setDragImage(element, 0, 0);
+        setDragging(true);
+    }, [editor, id]);
+
+    const handleDragEnd = useCallback(() => {
+        setDragging(false);
+        setHandler(undefined);
+        setLine(undefined);
+        setId(undefined);
+    }, []);
+
+    return anchor ? createPortal(<>
+        {handler && <DragHandler items={props.items} pos={handler}
+            onDragStart={handleDragStart} onDragEnd={handleDragEnd} />}
+        {line && <DragLine pos={{ x: line.x, y: line.y }} size={{ width: line.width, height: line.height }} />}
+    </>, anchor) : null;
 }
 
-const DraggablePlugin: Plugin<DraggableProp> = (prop) => <Draggable {...prop} />;
 export default DraggablePlugin;

@@ -12,9 +12,12 @@ const rooms = new Map<string, Set<string>>();
 const Loader = loader();
 
 export default function socket(server: Server) {
-    const wss = new WebSocket.Server({server});
+    const wss = new WebSocket.Server({ server });
 
     wss.on("connection", (conn, req) => {
+        if (req.url === "/test") {
+            return setupWSConnection(conn, req);
+        }
         const rawCookie = req.headers.cookie;
         if (!rawCookie) return conn.close(3000);
         let docName = (req.url || '').slice(1).split('?')[0];

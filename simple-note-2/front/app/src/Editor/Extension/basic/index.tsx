@@ -7,7 +7,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { MarkNode } from "@lexical/mark";
-import LinkPlugin, { FloatingLinkPlugin } from "./link";
+import LinkPlugin, { FloatingEditorLinkPlugin } from "./link";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import ListMaxLevelPlugin from "./listMaxLevel";
@@ -26,7 +26,7 @@ const BasicExtension: Extension = {
         <LinkPlugin />,
         <ListMaxLevelPlugin maxLevel={5} />,
         <ListPlugin />,
-        <FloatingLinkPlugin />,
+        <FloatingEditorLinkPlugin />,
         <CheckListPlugin />,
         <PlaceholderPlugin />
     ],

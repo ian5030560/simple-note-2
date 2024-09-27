@@ -3,7 +3,7 @@ import { RangeSelection, $getSelection, $isRangeSelection, SELECTION_CHANGE_COMM
 import { useEffect } from "react";
 import { mergeRegister } from "@lexical/utils";
 
-export function useSelectionListener(
+export default function useSelectionListener(
     handler: (selection: RangeSelection) => void,
     priority: CommandListenerPriority,
     stopPropagation: boolean = false,
@@ -22,7 +22,7 @@ export function useSelectionListener(
 
             editor.registerCommand(
                 SELECTION_CHANGE_COMMAND,
-                (_payload, _) => {
+                () => {
                     editor.update(() => {
                         const selection = $getSelection();
                         // if (selection) handler(selection as RangeSelection);

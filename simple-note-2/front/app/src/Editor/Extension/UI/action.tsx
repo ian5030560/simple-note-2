@@ -51,7 +51,7 @@ export default function Action(props: ActionProps) {
             }
 
             setPos({ ...pos });
-
+   
             const { autoHeight, autoWidth } = props;
             const resize: { width?: number, height?: number } = {};
             if (!element) return resize;
@@ -70,12 +70,17 @@ export default function Action(props: ActionProps) {
         const resizer = new ResizeObserver(update);
         resizer.observe(element);
 
+        const mutation = new MutationObserver(update);
+        const root = editor.getRootElement()!;
+        mutation.observe(root!, {subtree: true, childList: true});
+
         window.addEventListener("resize", update);
 
         return () => {
             resizer.unobserve(element);
             resizer.disconnect();
             window.removeEventListener("resize", update);
+            mutation.disconnect();
         }
     }, [anchor, editor, placement, props]);
 

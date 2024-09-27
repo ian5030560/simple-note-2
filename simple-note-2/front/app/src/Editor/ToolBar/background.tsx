@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { ColorButton } from "../UI/button";
+import { ColorButton } from "./UI/button";
 import { HighlightOutlined } from "@ant-design/icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useSelectionListener } from "../Hooks";
 import { $patchStyleText, $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { $getSelection, $isTextNode } from "lexical";
+import useSelectionListener from "./useSelectionListener";
 
 const BackgroundColor: React.FC = () => {
 

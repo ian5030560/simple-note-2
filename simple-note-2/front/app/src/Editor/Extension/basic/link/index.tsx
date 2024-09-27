@@ -2,8 +2,8 @@ import { Plugin } from "../../index";
 import { LinkPlugin as LexicalLinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, $isRangeSelection, NodeKey } from "lexical";
-import { $findMatchingParent } from "@lexical/utils";
+import { $getSelection, $isRangeSelection, ElementNode, NodeKey, RangeSelection, SELECTION_CHANGE_COMMAND, TextNode } from "lexical";
+import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { $isLinkNode } from "@lexical/link";
 import { Button, Flex, Input, InputRef, theme, Typography } from "antd";
 import { CiEdit } from "react-icons/ci";
@@ -11,6 +11,7 @@ import { FaTrash } from "react-icons/fa";
 import { TOGGLE_LINK_COMMAND } from "@lexical/link";
 import Action from "../../UI/action";
 import styles from "./index.module.css";
+import { $isAtNodeEnd } from "@lexical/selection";
 
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[\w]*))?)/;
 function validateUrl(url: string): boolean {
@@ -20,7 +21,24 @@ const LinkPlugin: Plugin = () => <LexicalLinkPlugin validateUrl={validateUrl} />
 
 export default LinkPlugin;
 
-export const FloatingLinkPlugin = () => {
+
+function getSelectedNode(selection: RangeSelection): TextNode | ElementNode {
+    const anchor = selection.anchor;
+    const focus = selection.focus;
+    const anchorNode = selection.anchor.getNode();
+    const focusNode = selection.focus.getNode();
+    if (anchorNode === focusNode) {
+        return anchorNode;
+    }
+    const isBackward = selection.isBackward();
+    if (isBackward) {
+        return $isAtNodeEnd(focus) ? anchorNode : focusNode;
+    } else {
+        return $isAtNodeEnd(anchor) ? anchorNode : focusNode;
+    }
+}
+
+export const FloatingEditorLinkPlugin: Plugin = () => {
     const [url, setUrl] = useState<string>();
     const [show, setShow] = useState(false);
     const [nodeKey, setNodeKey] = useState<NodeKey>();
@@ -38,7 +56,7 @@ export const FloatingLinkPlugin = () => {
     const $updateLinkEditor = useCallback(() => {
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) return clear();
-        const node = selection.anchor.getNode();
+        const node = getSelectedNode(selection);
         const linkNode = $isLinkNode(node) ? node : $findMatchingParent(node, p => $isLinkNode(p));
         if (!$isLinkNode(linkNode)) return clear();
         setUrl(linkNode.getURL());
@@ -46,7 +64,8 @@ export const FloatingLinkPlugin = () => {
         setNodeKey(linkNode.getKey());
     }, [clear]);
 
-    useEffect(() => editor.registerUpdateListener(({editorState}) => editorState.read($updateLinkEditor)), [$updateLinkEditor, editor]);
+
+    useEffect(() => editor.registerUpdateListener(({ editorState }) => editorState.read($updateLinkEditor)), [$updateLinkEditor, editor]);
 
     const handleEdit = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
@@ -62,7 +81,7 @@ export const FloatingLinkPlugin = () => {
 
     return <>
         {
-            nodeKey && <Action open={show} nodeKey={nodeKey} placement={{ top: true, left: false }}>
+            nodeKey && <Action open={show} nodeKey={nodeKey} placement={{ top: true, right: false }}>
                 <Flex style={{ backgroundColor: token.colorBgBase }} gap={"small"} className={styles.floatingLinkEditor} align="center">
                     <Typography.Link target="_blank" rel="noopener noreferrer" href={url}
                         style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>

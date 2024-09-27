@@ -24,28 +24,24 @@ export default function CollaboratePlugin({ room }: { room: string }) {
     const anchor = useAnchor();
     const ref = useRef(anchor);
     const [{ username }] = useCookies(["username"]);
-    const provider = useRef<WebsocketProvider | null>(null);
+    // const provider = useRef<WebsocketProvider | null>(null);
 
     const providerFactory = useCallback((_id: string, yjsMap: Map<string, Doc>) => {
-        if (provider.current) {
-            provider.current.disconnect();
-            provider.current.destroy();
-        }
+        // if (provider.current) {
+        //     provider.current.disconnect();
+        //     provider.current.destroy();
+        // }
 
         const doc = getDocFromMap(_id, yjsMap);
         const p = new WebsocketProvider("ws://localhost:4000", _id, doc, { connect: true })
-        provider.current = p;
+        // provider.current = p;
 
         return p as unknown as Provider;
     }, []);
 
-    return <>
-        {
-            <CollaborationPlugin
-                id={room} shouldBootstrap={false}
-                providerFactory={providerFactory}
-                cursorsContainerRef={ref}
-                username={username} />
-        }
-    </>;
+    return <CollaborationPlugin
+        id={room} shouldBootstrap={false}
+        providerFactory={providerFactory}
+        cursorsContainerRef={ref}
+        username={username} />;
 };
