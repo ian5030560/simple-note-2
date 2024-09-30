@@ -21,7 +21,7 @@ import sys
 sys.path.append("..deleteFile")
 sys.path.append("..deleteNote")
 sys.path.append("..forgetPassword")
-sys.path.append("..gemma")
+sys.path.append("..breeze")
 sys.path.append("..getInfo")
 sys.path.append("..getNote")
 sys.path.append("..logout")
@@ -38,6 +38,7 @@ sys.path.append("..loadNoteTree")
 sys.path.append("..newCollaborate")
 sys.path.append("..deleteCollaborate")
 sys.path.append("..joinCollaborate")
+sys.path.append("..aiSocket")
 
 # new url import here
 from django.urls import path
@@ -53,7 +54,7 @@ from viewMediaFile.views import ViewMediaFileView
 from getInfo.views import GetInfoView
 from updateInfo.views import UpdateInfoView
 from newTheme.views import NewThemeView
-from gemma.views import GemmaView
+from breeze.views import BreezeView
 from newNote.views import NewNoteView
 from deleteNote.views import DeleteNoteView
 from saveNote.views import SaveNoteView
@@ -62,6 +63,7 @@ from loadNoteTree.views import LoadNoteTreeView
 from newCollaborate.views import NewCollaborateView
 from deleteCollaborate.views import DeleteCollaborateView
 from joinCollaborate.views import JoinCollaborateView
+from aiSocket import views as AISocket
 
 # urls
 urlpatterns = [
@@ -82,7 +84,7 @@ urlpatterns = [
     path("getInfo/", GetInfoView.as_view(), name="getInfo"),  # getInfo
     path("updateInfo/", UpdateInfoView.as_view(), name="updateInfo"),  # updateInfo
     path("newTheme/", NewThemeView.as_view(), name="newTheme"),  # newTheme
-    path("gemma/", GemmaView.as_view(), name="gemma"),  # gemma
+    path("breeze/", BreezeView.as_view(), name="breeze"),  # breezeAI model
     path(
         "viewMediaFile/<username>",
         ViewMediaFileView.as_view(),
@@ -106,4 +108,5 @@ urlpatterns = [
     path("newCollaborate/", NewCollaborateView.as_view(), name="newCollaborate"),  # newCollaborate
     path("deleteCollaborate/", DeleteCollaborateView.as_view(), name="deleteCollaborate"),  # deleteCollaborate
     path("joinCollaborate/", JoinCollaborateView.as_view(), name="joinCollaborate"),  # joinCollaborate
+    path('aiSocket/', AISocket.aiReturn, name='ai_return'),  # for aiSocket Http server 
 ]

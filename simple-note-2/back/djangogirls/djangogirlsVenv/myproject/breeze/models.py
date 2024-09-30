@@ -5,5 +5,5 @@ from django.db import models
 
 
 # Create your models here.
-class Gemma(models.Model):
-    gemma = models.CharField(max_length=100)
+class Breeze(models.Model):
+    breeze = models.CharField(max_length=100)

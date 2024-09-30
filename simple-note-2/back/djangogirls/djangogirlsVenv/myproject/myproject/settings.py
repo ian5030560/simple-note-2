@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "deleteFile",
     "deleteNote",
     "forgetPassword",
-    "gemma",
+    "breeze",
     "getInfo",
     "getNote",
     "logout",
@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "newCollaborate",
     "deleteCollaborate",
     "joinCollaborate",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -182,3 +183,6 @@ EMAIL_USE_TLS = True  # 開啟TLS(傳輸層安全性)
 EMAIL_HOST_USER = "s2mplenote.nknu@gmail.com"  # 寄件者電子郵件
 from . import password
 EMAIL_HOST_PASSWORD = password.EMAIL_HOST_PASSWORD  # Gmail應用程式的密碼
+
+# socket setting
+ASGI_APPLICATION = "myproject.asgi.application"

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Gemma
+from .models import Breeze
 
 # Register your models here.
-admin.site.register(Gemma)
+admin.site.register(Breeze)

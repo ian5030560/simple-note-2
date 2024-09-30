@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import Gemma
+from .models import Breeze
 
 
-class GemmaSerializer(serializers.ModelSerializer):
+class BreezeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Gemma
+        model = Breeze
         fields = "__all__"  # 所有欄位可以這樣寫

@@ -5,14 +5,14 @@ import requests
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import Gemma  # 新建檔案改這個
+from .models import Breeze  # 新建檔案改這個
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 
-class GemmaView(APIView):
+class BreezeView(APIView):
     """
     前端傳:\n
         指令.\n
@@ -24,7 +24,7 @@ class GemmaView(APIView):
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
-    serializer_class = GemmaSerializer
+    serializer_class = BreezeSerializer
 
     def ai(self, text):
         try:
@@ -61,7 +61,7 @@ class GemmaView(APIView):
         
 
     def get(self, request, format=None):
-        output = [{"gemma": obj.gemma} for obj in Gemma.objects.all()]
+        output = [{"breeze": obj.breeze} for obj in Breeze.objects.all()]
         return Response(output)
 
     def post(self, request, format=None):
@@ -76,7 +76,7 @@ class GemmaView(APIView):
                 return Response(answer, status=status.HTTP_200_OK)
             
             # serializer
-            serializer = GemmaSerializer(data=data)
+            serializer = BreezeSerializer(data=data)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
