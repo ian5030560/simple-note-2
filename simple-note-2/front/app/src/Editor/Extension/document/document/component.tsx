@@ -32,11 +32,11 @@ export default function Document(prop: DocumentProps) {
         })
     }, [editor, prop.nodeKey]);
 
-    return <Flex onClick={() => window.open(prop.src)}>
+    return <Flex onClick={() => window.open(prop.src)} style={{padding: 5}}>
         <MdUploadFile size={24} />
         <Text strong style={{ marginRight: 8 }}>{prop.name}</Text>
         <Text>{filesize(size)}</Text>
-        <Button type="text" icon={<MdDeleteForever />} shape="circle" size="small"
+        <Button icon={<MdDeleteForever size={24}/>} type="text"
             onClick={handleDelete} style={{ top: 0, right: 0, position: "absolute" }} />
     </Flex>
 }

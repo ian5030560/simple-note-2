@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import styles from "./resizer.module.css";
 
 enum Direction {
@@ -29,7 +29,7 @@ type ResizeData = {
     }
 }
 interface ResizerProp {
-    children: React.ReactNode;
+    children: React.JSX.Element;
     showHandle?: boolean
     onResizeStart?: () => void;
     onResize?: (offsetWidth: number, offsetHeight: number) => void;
@@ -62,12 +62,6 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
         offsetX = isVertical ? 0 : isInvertX ? -offsetX : offsetX;
         offsetY = isHorizontal ? 0 : isInvertY ? -offsetY : offsetY;
 
-        // let two = [Direction.TOPLEFT, Direction.TOPRIGHT, Direction.BOTTOMLEFT, Direction.BOTTOMRIGHT];
-        // let isTwo = directionRef.current ? two.includes(directionRef.current) : false;
-        // let absX = Math.abs(offsetX);
-        // let absY = Math.abs(offsetY);
-        // isTwo && absX < absY ? offsetX = offsetY : offsetY = offsetX;
-
         prop.onResize?.(element.w + offsetX, element.h + offsetY);
 
     }, [prop]);
@@ -97,7 +91,7 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
     }, [handlePointerMove, handlePointerUp, prop]);
 
     return <div ref={ref}>
-        {prop.children}
+        {React.cloneElement(prop.children, { style: { outline: prop.showHandle ? "2px solid rgb(60,132,244)" : undefined } })}
         {prop.showHandle &&
             <>
                 <HandlePin className={styles.handlePin} $direction={Direction.BOTTOM} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOM)} />

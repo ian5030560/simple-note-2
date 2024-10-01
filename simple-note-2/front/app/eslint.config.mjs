@@ -3,6 +3,7 @@ import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
+import lexicalEslintPlugin from "@lexical/eslint-plugin";
 
 export default [
   { files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"] },
@@ -18,8 +19,12 @@ export default [
     }
   },
   {
-    plugins: {'react-hooks': pluginReactHooks},
+    plugins: { 'react-hooks': pluginReactHooks },
     rules: pluginReactHooks.configs.recommended.rules,
+  },
+  {
+    plugins: { '@lexical': lexicalEslintPlugin },
+    rules: lexicalEslintPlugin.configs.all.rules,
   },
   {
     rules: {

@@ -81,7 +81,7 @@ export const FloatingEditorLinkPlugin: Plugin = () => {
 
     return <>
         {
-            nodeKey && <Action open={show} nodeKey={nodeKey} placement={{ top: true, right: false }}>
+            nodeKey && <Action open={show} nodeKey={nodeKey} placement={{ bottom: true, left: false }}>
                 <Flex style={{ backgroundColor: token.colorBgBase }} gap={"small"} className={styles.floatingLinkEditor} align="center">
                     <Typography.Link target="_blank" rel="noopener noreferrer" href={url}
                         style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>

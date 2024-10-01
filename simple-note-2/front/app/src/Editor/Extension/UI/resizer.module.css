@@ -44,18 +44,18 @@
     top: 50%;
     left: 0;
     cursor: w-resize;
-    transform: translateX(-100%);
+    transform: translateX(-50%);
 }
 
 .resizeRight{
     top: 50%;
     right: 0;
     cursor: e-resize;
-    transform: translateX(100%);
+    transform: translateX(50%);
 }
 
 .handlePin{
-    background-color: blue;
+    background-color: rgb(60,132,244);
     width: 7px;
     height: 7px;
     position: absolute;

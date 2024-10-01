@@ -1,10 +1,10 @@
 import { createPortal } from "react-dom"
-import { useAnchor } from "../../Draggable/component"
 import styles from "./action.module.css";
 import { NodeKey } from "lexical";
 import { useEffect, useMemo, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React from "react";
+import { useAnchor } from "../basic/richtext";
 
 type Key = "top" | "bottom" | "left" | "right";
 type Outside = boolean;
@@ -38,7 +38,7 @@ export default function Action(props: ActionProps) {
                 x: rx + width / 2,
                 y: ry + height / 2,
             }
-         
+
             const _placement = Array.isArray(placement) ? placement : Object.keys(placement);
             const map: any = {
                 top: () => pos.y -= height / 2,
@@ -51,7 +51,7 @@ export default function Action(props: ActionProps) {
             }
 
             setPos({ ...pos });
-   
+
             const { autoHeight, autoWidth } = props;
             const resize: { width?: number, height?: number } = {};
             if (!element) return resize;
@@ -72,7 +72,7 @@ export default function Action(props: ActionProps) {
 
         const mutation = new MutationObserver(update);
         const root = editor.getRootElement()!;
-        mutation.observe(root!, {subtree: true, childList: true});
+        mutation.observe(root!, { subtree: true, childList: true });
 
         window.addEventListener("resize", update);
 
@@ -86,23 +86,23 @@ export default function Action(props: ActionProps) {
 
     const adjustPos = useMemo(() => {
         const offset = { x: 0, y: 0 };
-        if (Array.isArray(placement)){
-            if(placement.includes("right")){
+        if (Array.isArray(placement)) {
+            if (placement.includes("right")) {
                 offset.x = -100;
             }
 
-            if(placement.includes("bottom")){
+            if (placement.includes("bottom")) {
                 offset.y = -100;
             }
 
             return offset;
         }
-    
+
         Object.keys(placement).forEach(key => {
-            if((key === "left" && placement.left) || (key === "right" && !placement.right)){
+            if ((key === "left" && placement.left) || (key === "right" && !placement.right)) {
                 offset.x = -100;
             }
-            if((key === "top" && placement.top) || (key === "bottom" && !placement.bottom)){
+            if ((key === "top" && placement.top) || (key === "bottom" && !placement.bottom)) {
                 offset.y = -100;
             }
         });
@@ -110,17 +110,13 @@ export default function Action(props: ActionProps) {
         return offset;
     }, [placement]);
 
-    return <>
-        {
-            anchor && createPortal(<div className={styles.actionContainer}
-                style={{
-                    transform: pos ? `translate(calc(${pos.x}px + ${adjustPos.x}%), calc(${pos.y}px + ${adjustPos.y}%))` : undefined,
-                    opacity: !props.open ? 0 : 1,
-                    display: !props.open ? "none" : undefined,
-                    ...size
-                }}>
-                {props.children}
-            </div>, anchor)
-        }
-    </>
+    return createPortal(<div className={styles.actionContainer}
+        style={{
+            transform: pos ? `translate(calc(${pos.x}px + ${adjustPos.x}%), calc(${pos.y}px + ${adjustPos.y}%))` : undefined,
+            opacity: !props.open ? 0 : 1,
+            display: !props.open ? "none" : undefined,
+            ...size
+        }}>
+        {props.children}
+    </div>, anchor || document.body);
 }

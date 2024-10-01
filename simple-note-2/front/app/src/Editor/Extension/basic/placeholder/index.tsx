@@ -1,35 +1,48 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Plugin } from "../../index";
-import { useEffect } from "react";
-import { mergeRegister } from "@lexical/utils";
-import { NodeMutation, ParagraphNode } from "lexical";
-import { HeadingNode } from "@lexical/rich-text";
+import { useCallback, useEffect, useState } from "react";
+import { $getRoot, $isParagraphNode, NodeMutation, ParagraphNode } from "lexical";
 import styles from "./index.module.css";
+import { createPortal } from "react-dom";
+import { theme, Typography } from "antd";
+import { useAnchor } from "../richtext";
+import { HeadingNode } from "@lexical/rich-text";
+import { mergeRegister } from "@lexical/utils";
 
-const PLACE_TEXT = "輸入文字...";
 const PlaceholderPlugin: Plugin = () => {
     const [editor] = useLexicalComposerContext();
+    // const [open, setOpen] = useState(false);
+    // const anchor = useAnchor();
+    const { token } = theme.useToken();
 
-    useEffect(() => {
-        function handleMutated(mutations: Map<string, NodeMutation>) {
-            Array.from(mutations.entries()).forEach(mutation => {
-                const element = editor.getElementByKey(mutation[0]);
-                if (mutation[1] === "created" || (mutation[1] === "updated" &&
-                    !element?.hasAttribute("data-placeholder"))) 
-                {
-                    element?.classList.add(styles.nodePlaceholder);
-                    element?.setAttribute("data-placeholder", PLACE_TEXT);
-                }
-            })
-        }
-        const remove = mergeRegister(
-            editor.registerMutationListener(HeadingNode, (mutations) => handleMutated(mutations)),
-            editor.registerMutationListener(ParagraphNode, (mutations) => handleMutated(mutations)),
-        )
+    // useEffect(() => editor.registerUpdateListener(() => {
+    //     const root = editor.getEditorState().read(() => $getRoot());
+    //     const onlyOne = root.getChildrenSize() === 1;
+    //     if(onlyOne){
+    //         const first = root.getFirstChild();
+    //         if($isParagraphNode(first)){
+    //             const element = editor.getElementByKey(first.getKey())!;
+    //             element.style.removeProperty("--placeholder");
+    //         }
+    //     }
+    // }), [editor]);
 
-        return remove;
-    }, [editor]);
+    const handleMutation = useCallback((mutations: Map<string, NodeMutation>) => {
+        Array.from(mutations).forEach(([key, tag]) => {
+            if(tag === "destroyed") return;
+            const element = editor.getElementByKey(key);
+            element?.style.setProperty("--placeholder-color", token.colorTextPlaceholder);
+        });
+    }, [editor, token.colorTextPlaceholder]);
 
+    useEffect(() => mergeRegister(
+        editor.registerMutationListener(ParagraphNode, (mutations) => handleMutation(mutations)),
+        editor.registerMutationListener(HeadingNode, (mutations) => handleMutation(mutations))
+    ), [editor, handleMutation, token]);
+
+    // return createPortal(<div className={styles.placeholder} style={{ display: open ? undefined : "none" }}>
+    //     <Typography.Text type="secondary">由此開始編輯內容</Typography.Text>
+    // </div>, anchor || document.body);
     return null;
 }
 

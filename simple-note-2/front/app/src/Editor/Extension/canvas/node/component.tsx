@@ -42,7 +42,7 @@ export default function CanvasComponent(prop: CanvasComponentProps) {
     const handleResize = useCallback((width: number, height: number) => {
         editor.update(() => {
             const node = $getNodeByKey(prop.nodeKey);
-            if($isCanvasNode(node)){
+            if ($isCanvasNode(node)) {
                 node.setWidth(width);
                 node.setHeight(height);
             }
@@ -107,8 +107,10 @@ export default function CanvasComponent(prop: CanvasComponentProps) {
         <CanvasModal open={open} initData={prop.data} onSave={handleSave} onDiscard={handleDiscard} />
         {
             prop.data.elements && prop.data.elements.length > 0 && <Resizer onResize={handleResize} showHandle={isSelected}>
-                <div dangerouslySetInnerHTML={{ __html: content }} ref={ref} style={{ width: prop.width, height: prop.height }} />
-                <Button style={{ position: "absolute", top: 0, right: 0 }} type="text" icon={<FaEdit />} size="large" onClick={() => setOpen(true)} />
+                <div>
+                    <div dangerouslySetInnerHTML={{ __html: content }} ref={ref} style={{ width: prop.width, height: prop.height }} />
+                    <Button style={{ position: "absolute", top: 0, right: 0 }} type="text" icon={<FaEdit />} size="large" onClick={() => setOpen(true)} />
+                </div>
             </Resizer>
         }
     </>;

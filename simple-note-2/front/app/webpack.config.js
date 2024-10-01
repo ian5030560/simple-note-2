@@ -4,7 +4,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-
+const DefinePlugin = require("webpack").DefinePlugin;
 
 const TEST = /\.(ts|js)x?$/;
 
@@ -92,7 +92,10 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: "css/[file].css"
         }),
-        new ReactRefreshPlugin()
+        new ReactRefreshPlugin(),
+        new DefinePlugin({
+            'process.env': JSON.stringify(process.env)
+        })
     ],
     devServer: {
         static: path.resolve(__dirname, "dist"),

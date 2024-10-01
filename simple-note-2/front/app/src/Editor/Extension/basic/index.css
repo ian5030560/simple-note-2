@@ -1,3 +1,16 @@
+.simple-note-2-paragraph,
+[class^="simple-note-2-heading-"] {
+    --placeholder-text: "輸入文字...";
+    --placeholder-color: rgba(136, 136, 136, 0.6);
+}
+
+.simple-note-2-paragraph:has(br):not(:has(span))::before,
+[class^="simple-note-2-heading-"]:has(br):not(:has(span))::before {
+    position: absolute;
+    content: var(--placeholder-text);
+    color: var(--placeholder-color);
+}
+
 .simple-note-2-ltr {
     text-align: left;
 }
@@ -18,7 +31,8 @@
     font-style: italic;
 }
 
-.simple-note-2-unordered-list, .simple-note-2-ordered-list{
+.simple-note-2-unordered-list,
+.simple-note-2-ordered-list {
     padding-left: 12px;
     list-style-position: outside;
 }
@@ -49,8 +63,7 @@
 }
 
 .simple-note-2-checked-list-unchecked,
-.simple-note-2-checked-list-checked  
-{
+.simple-note-2-checked-list-checked {
     position: relative;
     outline: none;
     list-style-type: none;
@@ -58,8 +71,7 @@
 }
 
 .simple-note-2-checked-list-unchecked::before,
-.simple-note-2-checked-list-checked::before 
-{
+.simple-note-2-checked-list-checked::before {
     display: block;
     position: absolute;
     content: "";

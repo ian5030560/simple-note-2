@@ -18,6 +18,7 @@ const CanvasPlugin: Plugin = () => {
                 if ($isRootNode(selection.anchor.getNode())) {
                     selection.insertParagraph();
                 }
+                console.log(selection.getNodes());
                 selection.insertNodes([node]);
             }
             else {

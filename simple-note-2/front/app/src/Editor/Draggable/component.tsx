@@ -8,18 +8,20 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { getBlockFromPoint } from "./util";
 import { inside } from "../Extension/UI/utils";
 import { DRAGGABLE_TAG } from ".";
+import { useAnchor } from "../Extension/basic/richtext";
 
 export interface PlusItem {
     value: string,
-    label: React.ReactNode,
+    label: string,
     icon: React.ReactNode,
-    onSelect: (editor: LexicalEditor, item: PlusItem) => void,
+    onSelect: (editor: LexicalEditor, nodeKey: NodeKey, item: PlusItem) => void,
 }
 
 interface PlusMenuProps {
     items: PlusItem[];
     nodeKey: NodeKey;
     onSelect: () => void;
+    // open: boolean;
 }
 const PlusMenu = forwardRef(({ items, nodeKey, onSelect }: PlusMenuProps, ref: React.LegacyRef<HTMLDivElement>) => {
     const anchor = useAnchor();
@@ -56,7 +58,7 @@ const PlusMenu = forwardRef(({ items, nodeKey, onSelect }: PlusMenuProps, ref: R
                     <Button icon={item.icon} block type="text" style={{ justifyContent: "flex-start" }}
                         onClick={() => {
                             onSelect();
-                            item.onSelect(editor, item);
+                            editor.update(() => item.onSelect(editor, nodeKey, item));
                         }}>
                         {item.label}
                     </Button>
@@ -105,10 +107,10 @@ export const DragHandler = ({ pos, onDragStart, onDragEnd, items }: DragHandlerP
     }, [editor]);
 
     return <>
-        {nodeKey && <PlusMenu items={items} nodeKey={nodeKey} ref={menuRef} onSelect={() => setNodeKey(undefined)}/>}
+        {nodeKey && <PlusMenu items={items} nodeKey={nodeKey} ref={menuRef} onSelect={() => setNodeKey(undefined)} />}
         <div className={styles.draggable} draggable={true} ref={handlerRef}
-            onDragStart={onDragStart} onDragEnd={onDragEnd}
-            style={{ transform: `translate(calc(${pos.x}px - 100%), calc(${pos.y}px - 50%))` }}>
+            onDragStart={onDragStart} onDragEnd={onDragEnd} tabIndex={-1}
+            style={{ transform: `translate(calc(${pos.x - 5}px - 100%), calc(${pos.y}px - 50%))` }}>
             <Button contentEditable={false} type="text" icon={<PlusOutlined />} onClick={handleClick} />
             <Button className={styles.handleButton} contentEditable={false} type="text" icon={<HolderOutlined />} />
         </div>
@@ -123,15 +125,4 @@ export const DragLine = ({ pos, size }: DragLineProps) => {
 
     return <div className={styles.dropLine}
         style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, width: size.width, height: size.height }} />
-}
-
-export const useAnchor = () => {
-    const [anchor, setWrapper] = useState<HTMLElement | null>(null);
-    useEffect(() => {
-        setWrapper(document.getElementById("dnd-anchor"));
-
-        return () => setWrapper(null);
-    }, [])
-
-    return anchor;
 }

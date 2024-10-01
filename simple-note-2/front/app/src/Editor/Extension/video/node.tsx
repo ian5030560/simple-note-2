@@ -20,7 +20,7 @@ const LazyVideo = React.lazy(() => import("./component"));
 
 export type SerializedVideoNode = Spread<{ width: number, height: number, src: string }, SerializedDecoratorBlockNode>;
 
-function convertVideoElement(dom: HTMLElement) {
+function $convertVideoElement(dom: HTMLElement) {
     const src = dom.getAttribute("src");
     const width = dom.getAttribute("width");
     const height = dom.getAttribute("height");
@@ -86,7 +86,7 @@ export default class VideoNode extends DecoratorBlockNode {
     static importDOM(): DOMConversionMap | null {
         return {
             video: () => ({
-                conversion: convertVideoElement,
+                conversion: $convertVideoElement,
                 priority: 1,
             })
         }

@@ -1,3 +1,4 @@
+import process from "process";
 import React from "react";
 import { createBrowserRouter, createRoutesFromElements, Outlet, Route, RouterProvider } from "react-router-dom";
 import UserLayout from "./User";
@@ -8,7 +9,7 @@ import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateP
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
-import Editor from "./Editor";
+import Editor, { InnerEditor } from "./Editor";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,12 +24,15 @@ const router = createBrowserRouter(
       <Route element={<PrivateProvider />}>
         <Route path="note" element={<SettingProvider />} loader={settingLoader}>
           <Route element={<UserLayout><Outlet /></UserLayout>}>
-            <Route path=":id/:host?" element={<Editor/>} loader={contentLoader} />
+            <Route path=":id/:host?" element={<Editor />} loader={contentLoader} />
           </Route>
         </Route>
       </Route>
 
-      <Route path="test" element={<UserLayout><Editor test/></UserLayout>} />
+      <Route path="test" element={<UserLayout><Outlet /></UserLayout>}>
+        <Route index element={<InnerEditor test />} />
+        <Route path="collab" element={<InnerEditor test collab />} />
+      </Route>
       <Route path="theme" element={<ThemePage />} />
     </>
   )

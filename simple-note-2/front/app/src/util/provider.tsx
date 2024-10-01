@@ -110,11 +110,12 @@ export function SettingProvider() {
     return <Outlet />
 }
 
-export async function contentLoader({ request, params }: LoaderFunctionArgs<any>): Promise<string | false> {
+export async function contentLoader({ request, params }: LoaderFunctionArgs<string | false>) {
     const url = APIs.getNote;
     const cookie = getCookie();
     const username = cookie.get("username")!;
     const id = params.id!;
+    
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,

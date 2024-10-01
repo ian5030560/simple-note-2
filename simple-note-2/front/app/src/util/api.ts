@@ -29,7 +29,7 @@ type APIMap = {
   "http://localhost:8000/newCollaborate/": { username: string, noteId: string, url: string },
   "http://localhost:8000/deleteCollaborate/": { username: string, noteId: string, masterName: string },
   "http://localhost:8000/joinCollaborate/": { username: string, url: string },
-  "http://localhost:4000/people": { room: string },
+  "http://localhost:4000/room/number": { room: string },
 }
 
 export enum APIs {
@@ -50,7 +50,7 @@ export enum APIs {
   addCollaborate = "http://localhost:8000/newCollaborate/",
   deleteCollaborate = "http://localhost:8000/deleteCollaborate/",
   joinCollaborate = "http://localhost:8000/joinCollaborate/",
-  getPeopleInRoom = "http://localhost:4000/people",
+  getNumberInRoom = "http://localhost:4000/room/number",
 }
 
 export default function useAPI<T extends APIs>(api: T): (data: APIMap[T]) => [Promise<Response>, AbortController] {

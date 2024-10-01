@@ -1,29 +1,37 @@
 import { Plugin } from "../Extension/index";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { useCallback, useEffect, useState } from "react";
-import { CLEAR_EDITOR_COMMAND, EditorState } from "lexical";
+import { $createParagraphNode, $getRoot, CLEAR_EDITOR_COMMAND, EditorState, LexicalEditor } from "lexical";
 import { useCookies } from "react-cookie";
 import { useParams } from "react-router-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useAPI, { APIs } from "../../util/api";
-import { decodeBase64 } from "../../util/secret";
 
-const empty = '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
-
-const SavePlugin: Plugin<{ initialNote?: string, collab: boolean }> = (props) => {
+function $empty(){
+    $getRoot().append($createParagraphNode());
+}
+export type InitialNoteType = string | ((editor: LexicalEditor) => void) | null;
+const SavePlugin: Plugin<{ initialNote?: InitialNoteType }> = (props) => {
     const saveNote = useAPI(APIs.saveNote);
     const [editor] = useLexicalComposerContext();
     const [{ username }] = useCookies(["username"]);
-    const { id, host } = useParams();
+    const { id } = useParams();
     const [typing, isTyping] = useState(false);
 
     useEffect(() => {
         const { initialNote } = props;
-
         if (initialNote !== undefined) {
             editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-            const editorState = editor.parseEditorState(JSON.parse(initialNote ? initialNote : empty));
-            editor.setEditorState(editorState);
+            if(typeof initialNote === "string"){
+                const editorState = editor.parseEditorState(initialNote);
+                editor.setEditorState(editorState);
+            }
+            else if(typeof initialNote === "function"){
+                editor.update(() => initialNote(editor));
+            }
+            else{
+                editor.update($empty);
+            }
         }
     }, [editor, props]);
 
@@ -53,9 +61,9 @@ const SavePlugin: Plugin<{ initialNote?: string, collab: boolean }> = (props) =>
 
     const handleChange = useCallback((editorState: EditorState) => {
         console.log(editorState);
-        isTyping(() => !props.collab ? true : decodeBase64(host!) === username);
-        
-    }, [host, props.collab, username]);
+        isTyping(() => true);
+
+    }, []);
 
     return <OnChangePlugin onChange={handleChange} ignoreSelectionChange={true} />;
 }

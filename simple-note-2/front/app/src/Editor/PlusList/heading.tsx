@@ -1,8 +1,7 @@
 import { PlusItem } from "../Draggable/component";
-import { $getSelection, $isBlockElementNode, $isRangeSelection, LexicalEditor } from "lexical";
+import { $getNodeByKey } from "lexical";
 import { $createHeadingNode, HeadingTagType } from "@lexical/rich-text";
 import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6 } from "react-icons/bs";
-import { $insertNodeToNearestRoot, $findMatchingParent } from "@lexical/utils";
 
 const heading = [
     {
@@ -39,22 +38,7 @@ const heading = [
 const Heading: PlusItem[] = heading.map((head) => {
     return {
         ...head,
-        onSelect: (editor: LexicalEditor) => {
-            editor.update(() => {
-                const newNode = $createHeadingNode(head.value as HeadingTagType);
-                const selection = $getSelection();
-
-                if (!$isRangeSelection(selection)) {
-                    $insertNodeToNearestRoot(newNode);
-                }
-                else {
-                    const focused = selection.anchor.getNode();
-                    let block = $isBlockElementNode(focused) ? focused : $findMatchingParent(focused, node => $isBlockElementNode(node));
-    
-                    block?.insertAfter(newNode, false);
-                }
-            })
-        }
+        onSelect: (editor, nodeKey) => $getNodeByKey(nodeKey)?.insertAfter($createHeadingNode(head.value as HeadingTagType))
     }
 })
 
