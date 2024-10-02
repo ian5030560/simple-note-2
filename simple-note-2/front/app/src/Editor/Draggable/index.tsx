@@ -7,10 +7,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { inside } from "../Extension/UI/utils";
 import { getBlockFromPoint } from "./util";
 import { eventFiles } from "@lexical/rich-text";
-import { $getNodeByKey, $getRoot, NodeKey } from "lexical";
+import { $getNodeByKey, NodeKey } from "lexical";
 import { useAnchor } from "../Extension/basic/richtext";
 
-export const DRAGGABLE_TAG = "draggable-item";
 const HEIGHT = 5;
 type HandlerState = {
     x: number;
@@ -38,22 +37,15 @@ const DraggablePlugin: Plugin<{ items: PlusItem[] }> = (props) => {
     const [line, setLine] = useState<LineState>();
     const [dragging, setDragging] = useState(false);
     const [id, setId] = useState<NodeKey>();
-  
-    useEffect(() => editor.registerUpdateListener(({ editorState }) => {
-        const keys = editorState.read(() => $getRoot().getChildrenKeys());
-        keys.forEach(key => {
-            const el = editor.getElementByKey(key);
-            if (!el || el.hasAttribute(DRAGGABLE_TAG)) return;
-
-            el.setAttribute(DRAGGABLE_TAG, key);
-        });
-    }));
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         const { clientX, clientY } = e;
         if (!anchor || !scroller || !inside(clientX, clientX, scroller)) return;
 
-        const element = getBlockFromPoint(editor, clientX, clientY, scroller);
+        const key = getBlockFromPoint(editor, clientX, clientY, scroller);
+        if(!key) return;
+
+        const element = editor.getElementByKey(key);
         if (!element) return;
 
         const { x, y } = element.getBoundingClientRect();
@@ -61,7 +53,7 @@ const DraggablePlugin: Plugin<{ items: PlusItem[] }> = (props) => {
         const { marginTop } = window.getComputedStyle(element);
 
         setHandler({ x: x - left, y: y - top + parseFloat(marginTop) });
-        setId(element.getAttribute(DRAGGABLE_TAG)!);
+        setId(key);
 
     }, [anchor, editor, scroller]);
 
@@ -77,9 +69,12 @@ const DraggablePlugin: Plugin<{ items: PlusItem[] }> = (props) => {
         if (!e.dataTransfer || eventFiles(e)[0] || !dragging || !anchor || !scroller) return false;
         const { clientY: mouseY } = e;
 
-        const overElement = getBlockFromPoint(editor, e.clientX, e.clientY, scroller);
+        const overKey = getBlockFromPoint(editor, e.clientX, e.clientY, scroller);
+        if(!overKey) return;
 
+        const overElement = editor.getElementByKey(overKey);
         if (!overElement) return false;
+
         e.preventDefault();
 
         let { x, y, width, height } = overElement.getBoundingClientRect();
@@ -107,13 +102,15 @@ const DraggablePlugin: Plugin<{ items: PlusItem[] }> = (props) => {
     const handleDrop = useCallback((e: DragEvent) => {
         if (!e.dataTransfer || eventFiles(e)[0] || !dragging || !anchor || !scroller) return false;
 
-        const dropElement = getBlockFromPoint(editor, e.clientX, e.clientY, scroller);
+        const dropKey = getBlockFromPoint(editor, e.clientX, e.clientY, scroller);
+        if (!dropKey) return false;
 
-        if (!dropElement) return false;
+        const dropElement = editor.getElementByKey(dropKey);
+        if(!dropElement) return false;
+
         e.preventDefault();
 
         editor.update(() => {
-            const dropKey = dropElement!.getAttribute(DRAGGABLE_TAG);
             const dragKey = id;
 
             if (!dragKey || !dropKey) return false;
@@ -125,7 +122,7 @@ const DraggablePlugin: Plugin<{ items: PlusItem[] }> = (props) => {
 
             const mouseAt = line!.y! + anchor.getBoundingClientRect().top;
 
-            const { top, height } = dropElement!.getBoundingClientRect();
+            const { top, height } = dropElement.getBoundingClientRect();
             const half = top + height / 2;
 
             if (mouseAt < half) {

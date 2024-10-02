@@ -104,23 +104,46 @@ export function SettingProvider() {
         )));
         const _id = id ? id : sorted[0].noteId;
 
-        navigate(_id, {replace: true});
+        navigate(_id, { replace: true });
     }, []);
 
     return <Outlet />
 }
 
-export async function contentLoader({ request, params }: LoaderFunctionArgs<string | false>) {
+export enum LOADER_WORD{
+    CONTENT_ERROR = 1,
+    COLLABORATE_SUCCESS = 2,
+    COLLABORATE_FAIL = 3,
+}
+
+export type NoteContentType = string | null;
+
+export async function contentLoader({ request, params }: LoaderFunctionArgs<NoteContentType | LOADER_WORD.CONTENT_ERROR>) {
     const url = APIs.getNote;
     const cookie = getCookie();
     const username = cookie.get("username")!;
     const id = params.id!;
-    
+
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
         body: JSON.stringify({ username: username, noteId: id }),
     })
-        .then(async res => res.ok ? await res.text() : false)
-        .catch(() => false);
+        .then(async res => res.ok ? res.status === 204 ? null : await res.text() : LOADER_WORD.CONTENT_ERROR)
+        .catch(() => LOADER_WORD.CONTENT_ERROR);
+}
+
+export async function collaborateLoader({ request, params }: LoaderFunctionArgs<LOADER_WORD.COLLABORATE_SUCCESS | LOADER_WORD.COLLABORATE_FAIL>) {
+    const url = APIs.joinCollaborate;
+    const cookie = getCookie();
+    const username = cookie.get("username")!;
+    const { id, host } = params;
+
+    return await fetch(url, {
+        ...requestInit,
+        signal: request.signal,
+        body: JSON.stringify({ username: username, noteId: id, masterName: host, url: `${id}/${host}` }),
+    })
+        .then(res => res.ok ? LOADER_WORD.COLLABORATE_SUCCESS : LOADER_WORD.COLLABORATE_FAIL)
+        .catch(() => LOADER_WORD.COLLABORATE_FAIL);
 }

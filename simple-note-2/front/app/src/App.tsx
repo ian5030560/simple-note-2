@@ -1,11 +1,10 @@
-import process from "process";
 import React from "react";
-import { createBrowserRouter, createRoutesFromElements, Outlet, Route, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Outlet, Route, RouterProvider } from "react-router-dom";
 import UserLayout from "./User";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
-import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateProvider } from "./util/provider";
+import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateProvider, collaborateLoader } from "./util/provider";
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
@@ -24,7 +23,13 @@ const router = createBrowserRouter(
       <Route element={<PrivateProvider />}>
         <Route path="note" element={<SettingProvider />} loader={settingLoader}>
           <Route element={<UserLayout><Outlet /></UserLayout>}>
-            <Route path=":id/:host?" element={<Editor />} loader={contentLoader} />
+            <Route path=":id/:host?" element={<Editor />}
+              loader={(args: LoaderFunctionArgs<any>) => {
+                const { params } = args;
+                const { id, host } = params;
+                const collab = !!(id && host);
+                return collab ? collaborateLoader(args) : contentLoader(args);
+              }} />
           </Route>
         </Route>
       </Route>
@@ -40,9 +45,7 @@ const router = createBrowserRouter(
 
 
 export default function App(): React.JSX.Element {
-  return <React.StrictMode>
-    <CookiesProvider defaultSetOptions={{ path: "/" }}>
-      <RouterProvider router={router} />
-    </CookiesProvider>
-  </React.StrictMode>
+  return <CookiesProvider defaultSetOptions={{ path: "/" }}>
+    <RouterProvider router={router} />
+  </CookiesProvider>
 }

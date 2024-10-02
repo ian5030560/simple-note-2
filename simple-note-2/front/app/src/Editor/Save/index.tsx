@@ -7,8 +7,10 @@ import { useParams } from "react-router-dom";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useAPI, { APIs } from "../../util/api";
 
-function $empty(){
-    $getRoot().append($createParagraphNode());
+export function $empty(){
+    const p = $createParagraphNode();
+    $getRoot().append(p);
+    p.select(); 
 }
 export type InitialNoteType = string | ((editor: LexicalEditor) => void) | null;
 const SavePlugin: Plugin<{ initialNote?: InitialNoteType }> = (props) => {
@@ -17,20 +19,22 @@ const SavePlugin: Plugin<{ initialNote?: InitialNoteType }> = (props) => {
     const [{ username }] = useCookies(["username"]);
     const { id } = useParams();
     const [typing, isTyping] = useState(false);
-
+    
     useEffect(() => {
         const { initialNote } = props;
+
         if (initialNote !== undefined) {
-            editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
             if(typeof initialNote === "string"){
-                const editorState = editor.parseEditorState(initialNote);
-                editor.setEditorState(editorState);
+                const editorState = editor.parseEditorState(JSON.parse(initialNote));
+                editor.setEditorState(editorState, {tag: "history-merge"});
             }
             else if(typeof initialNote === "function"){
-                editor.update(() => initialNote(editor));
+                editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+                editor.update(() => initialNote(editor), {tag: "history-merge"});
             }
             else{
-                editor.update($empty);
+                editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
+                editor.update($empty, {tag: "history-merge"});
             }
         }
     }, [editor, props]);

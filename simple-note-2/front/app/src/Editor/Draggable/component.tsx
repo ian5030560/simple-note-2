@@ -7,7 +7,6 @@ import { LexicalEditor, NodeKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { getBlockFromPoint } from "./util";
 import { inside } from "../Extension/UI/utils";
-import { DRAGGABLE_TAG } from ".";
 import { useAnchor } from "../Extension/basic/richtext";
 
 export interface PlusItem {
@@ -97,13 +96,10 @@ export const DragHandler = ({ pos, onDragStart, onDragEnd, items }: DragHandlerP
     const handleClick = useCallback((e: React.MouseEvent) => {
         const scroller = document.getElementById('editor-scroller');
         if (!scroller) return;
-
         const { clientX, clientY } = e;
-        const element = getBlockFromPoint(editor, clientX, clientY, scroller);
-        if (element) {
-            const id = element.getAttribute(DRAGGABLE_TAG)!;
-            setNodeKey(id);
-        }
+        const id = getBlockFromPoint(editor, clientX, clientY, scroller);
+        if (id) setNodeKey(id);
+        
     }, [editor]);
 
     return <>

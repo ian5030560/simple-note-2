@@ -1,4 +1,4 @@
-import { $getRoot, LexicalEditor } from "lexical";
+import { $getRoot, LexicalEditor, NodeKey } from "lexical";
 
 function elementContains(posx: number, posy: number, element: HTMLElement, bound?: HTMLElement) {
 
@@ -22,7 +22,7 @@ export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: num
     let first = 0;
     let last = keys.length - 1;
     let mid: number;
-    let elem: HTMLElement | null = null;
+    let key: NodeKey | null = null;
     while (first <= last) {
         mid = Math.floor((first + last) / 2);
         const firstElement = editor.getElementByKey(keys[first])!;
@@ -34,7 +34,7 @@ export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: num
         const lResult = elementContains(posx, posy, lastElement, bound);
 
         if (fResult || mResult || lResult) {
-            elem = fResult ? firstElement : mResult ? midElement : lastElement;
+            key = fResult ? keys[first] : mResult ? keys[mid] : keys[last];
             break;
         }
         else {
@@ -44,5 +44,5 @@ export function getBlockFromPoint(editor: LexicalEditor, posx: number, posy: num
         }
     }
 
-    return elem;
+    return key;
 }

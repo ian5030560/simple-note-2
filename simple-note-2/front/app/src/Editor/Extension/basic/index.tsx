@@ -15,6 +15,7 @@ import { ListPlugin } from '@lexical/react/LexicalListPlugin';
 import "./index.css";
 import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
 import PlaceholderPlugin from "./placeholder";
+import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 
 const BasicExtension: Extension = {
     plugins: [
@@ -28,7 +29,8 @@ const BasicExtension: Extension = {
         <ListPlugin />,
         <FloatingEditorLinkPlugin />,
         <CheckListPlugin />,
-        <PlaceholderPlugin />
+        <PlaceholderPlugin />,
+        <ClearEditorPlugin />
     ],
 
     nodes: [
