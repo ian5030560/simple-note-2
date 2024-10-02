@@ -46,21 +46,21 @@ export default class Socket {
                     // @ts-ignore
                     const lexicalJSON = headlessConvertYDocStateToLexicalJSON(Loader.nodes, Y.encodeStateAsUpdate(ydoc));
                     console.log(JSON.stringify(lexicalJSON));
-                    // fetch("http://localhost:8000/saveNote/", {
-                    //   body: JSON.stringify(lexicalJSON), method: "POST",
-                    //   headers: {
-                    //     "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-                    //     "content-type": "application/json",
-                    //   }
-                    // })
-                    //   .then(res => res.ok)
-                    //   .then(ok => {
-                    //     if (ok) return;
+                    fetch("http://localhost:8000/saveNote/", {
+                      body: JSON.stringify(lexicalJSON), method: "POST",
+                      headers: {
+                        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                        "content-type": "application/json",
+                      }
+                    })
+                      .then(res => res.ok)
+                      .then(ok => {
+                        if (ok) return;
 
-                    //   })
-                    //   .catch(e => {
+                      })
+                      .catch(e => {
 
-                    //   })
+                      })
                 });
             }
 
@@ -76,9 +76,6 @@ export default class Socket {
                     this.rooms.set(docName, users);
                 }
             });
-
-            // ws.send(JSON.stringify({count: this.query(docName)!.size}));
-            ws.emit("count", {count: 1});
         })
     }
 }

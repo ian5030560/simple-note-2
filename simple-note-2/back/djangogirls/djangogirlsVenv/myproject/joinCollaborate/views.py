@@ -53,7 +53,7 @@ class JoinCollaborateView(APIView):
             url = data.get("url")  # 協作網址
 
             # join collaborate by master_name, note_title_id, guest_name
-            isJoin = UserCollaborateNote.insert_newData(masterName, noteId, guestName)
+            isJoin = UserCollaborateNote.insert_newData(masterName, noteId, guestName, url)
             
             if isJoin:  # 加入成功
                 return Response(status=status.HTTP_200_OK)

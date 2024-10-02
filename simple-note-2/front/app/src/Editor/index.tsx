@@ -83,25 +83,28 @@ export default function Editor() {
     const { id, host } = useParams();
     const getNote = useAPI(APIs.getNote);
     const [contentError, contentErrorContext] = useErrorBoard("取得失敗", "此筆記無法取得內容，請重新整理");
-    const [accessError, accessErrorContext] = useErrorBoard("連線失敗", "此筆記無法取得連線，請重新整理");
+    const [collborateError, collborateErrorContext] = useErrorBoard("連線失敗", "此筆記無法取得連線，請重新整理");
     const collab = !!(id && host);
 
     useEffect(() => {
         if(!data) return;
         
-        if(typeof data === "string" || data === null){
-            contentError(false);
-        }
-        else{  
-            if(data === LOADER_WORD.CONTENT_ERROR){
-                contentError(true);
-            }
-            else{
-                accessError(data === LOADER_WORD.COLLABORATE_FAIL);
-            }
-        }
+        let con = false;
+        let col = false;
 
-    }, [accessError, contentError, data]);
+        if(typeof data === "string" || data === null){
+            con = false;
+        }
+        else if(data === LOADER_WORD.CONTENT_ERROR){ 
+            col = true;
+        }
+        else{
+            col = data === LOADER_WORD.COLLABORATE_FAIL;
+        }
+        contentError(con);
+        collborateError(col);
+
+    }, [collborateError, contentError, data]);
 
     if(data === undefined) return null;
 
@@ -124,6 +127,6 @@ export default function Editor() {
                 }} />
         }
         {contentErrorContext}
-        {accessErrorContext}
+        {collborateErrorContext}
     </>
 };
