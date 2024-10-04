@@ -19,9 +19,9 @@ interface PlusMenuProps {
     items: PlusItem[];
     nodeKey: NodeKey;
     onSelect: () => void;
-    // open: boolean;
+    mask: React.LegacyRef<HTMLDivElement>;
 }
-const PlusMenu = forwardRef(({ items, nodeKey, onSelect }: PlusMenuProps, ref: React.LegacyRef<HTMLDivElement>) => {
+const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask }: PlusMenuProps, ref: React.LegacyRef<HTMLDivElement>) => {
     const anchor = useAnchor();
     const { token } = theme.useToken();
     const [pos, setPos] = useState<{ x: number, y: number }>();
@@ -45,7 +45,7 @@ const PlusMenu = forwardRef(({ items, nodeKey, onSelect }: PlusMenuProps, ref: R
         }
     }, [anchor, editor, nodeKey]);
 
-    return pos ? createPortal(<div className={styles.mask} id="menu-mask">
+    return pos ? createPortal(<div className={styles.mask} id="menu-mask" ref={mask}>
         <div style={{ position: "relative" }}>
             <div className={styles.dropDown} ref={ref}
                 style={{
@@ -71,8 +71,9 @@ interface DragHandlerProps {
     onDragStart: (e: React.DragEvent) => void;
     onDragEnd: (e: React.DragEvent) => void;
     items: PlusItem[];
+    mask: React.LegacyRef<HTMLDivElement>;
 }
-export const DragHandler = ({ pos, onDragStart, onDragEnd, items }: DragHandlerProps) => {
+export const DragHandler = ({ pos, onDragStart, onDragEnd, items, mask }: DragHandlerProps) => {
     const [nodeKey, setNodeKey] = useState<NodeKey>();
     const [editor] = useLexicalComposerContext();
     const menuRef = useRef<HTMLDivElement>(null);
@@ -102,7 +103,7 @@ export const DragHandler = ({ pos, onDragStart, onDragEnd, items }: DragHandlerP
     }, [editor]);
 
     return <>
-        {nodeKey && <PlusMenu items={items} nodeKey={nodeKey} ref={menuRef} onSelect={() => setNodeKey(undefined)} />}
+        {nodeKey && <PlusMenu mask={mask} items={items} nodeKey={nodeKey} ref={menuRef} onSelect={() => setNodeKey(undefined)} />}
         <div className={styles.draggable} draggable={true} ref={handlerRef}
             onDragStart={onDragStart} onDragEnd={onDragEnd} tabIndex={-1}
             style={{ transform: `translate(calc(${pos.x - 5}px - 100%), calc(${pos.y}px - 50%))` }}>

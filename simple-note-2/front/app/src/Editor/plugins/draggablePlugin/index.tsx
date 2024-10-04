@@ -2,7 +2,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { PlusItem } from "./component";
 import { createPortal } from "react-dom";
 import { DragHandler, DragLine } from "./component";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { inside, useAnchor } from "../../utils";
 import { getBlockFromPoint } from "./getBlockFromPoint";
 import { eventFiles } from "@lexical/rich-text";
@@ -35,6 +35,7 @@ export default function DraggablePlugin(props: { items: PlusItem[] }){
     const [line, setLine] = useState<LineState>();
     const [dragging, setDragging] = useState(false);
     const [id, setId] = useState<NodeKey>();
+    const mask = useRef<HTMLDivElement>(null);
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         const { clientX, clientY } = e;
@@ -48,17 +49,17 @@ export default function DraggablePlugin(props: { items: PlusItem[] }){
 
         const { x, y } = element.getBoundingClientRect();
         const { top, left } = anchor.getBoundingClientRect();
-        const { marginTop } = window.getComputedStyle(element);
+        const { lineHeight } = window.getComputedStyle(element);
 
-        setHandler({ x: x - left, y: y - top + parseFloat(marginTop) });
+        setHandler({ x: x - left, y: y - top + parseFloat(lineHeight) / 2 });
         setId(key);
 
     }, [anchor, editor, scroller]);
 
     const handleMouseLeave = useCallback((e: MouseEvent) => {
-        const mask = document.getElementById("menu-mask");
+        const {current} = mask;
         const { relatedTarget } = e;
-        if (mask === relatedTarget) return;
+        if (current === relatedTarget) return;
 
         setHandler(undefined);
     }, []);
@@ -165,7 +166,7 @@ export default function DraggablePlugin(props: { items: PlusItem[] }){
     }, []);
 
     return createPortal(<>
-        {handler && <DragHandler items={props.items} pos={handler}
+        {handler && <DragHandler items={props.items} pos={handler} mask={mask}
             onDragStart={handleDragStart} onDragEnd={handleDragEnd} />}
         {line && <DragLine pos={{ x: line.x, y: line.y }} size={{ width: line.width, height: line.height }} />}
     </>, anchor || document.body);
