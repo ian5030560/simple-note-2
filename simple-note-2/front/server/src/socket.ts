@@ -1,4 +1,4 @@
-import loader from "../../app/src/Editor/loader";
+import nodes from "../../app/src/Editor/nodes";
 import headlessConvertYDocStateToLexicalJSON from "./createHeadlessCollaborativeEditor";
 import WebSocket from "ws";
 import cookie from "cookie";
@@ -7,8 +7,6 @@ import * as Y from "yjs";
 import { randomUUID } from "crypto";
 
 const { setupWSConnection, getYDoc } = require("y-websocket/bin/utils");
-
-const Loader = loader();
 
 export default class Socket {
 
@@ -44,22 +42,22 @@ export default class Socket {
                 let ydoc: Y.Doc = getYDoc(docName, true);
                 ydoc.on("update", () => {
                     // @ts-ignore
-                    const lexicalJSON = headlessConvertYDocStateToLexicalJSON(Loader.nodes, Y.encodeStateAsUpdate(ydoc));
-                    console.log(JSON.stringify(lexicalJSON));
+                    const lexicalJSON = headlessConvertYDocStateToLexicalJSON(nodes, Y.encodeStateAsUpdate(ydoc));
+                    const content = JSON.stringify(lexicalJSON);
+                    console.log(content);
+                    const [id, username] = docName.split("/");
                     fetch("http://localhost:8000/saveNote/", {
-                      body: JSON.stringify(lexicalJSON), method: "POST",
+                      body: JSON.stringify({username: username, noteId: id, content: content}), method: "POST",
                       headers: {
                         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
                         "content-type": "application/json",
                       }
                     })
-                      .then(res => res.ok)
-                      .then(ok => {
-                        if (ok) return;
-
+                      .then(res => {
+                        console.log(res.status);
                       })
                       .catch(e => {
-
+                        console.log(e);
                       })
                 });
             }

@@ -3,7 +3,7 @@ import { Flex, Form, Input, Typography, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal } from "./modal";
 import { AuthProp, STATE, validateMessages } from "./constant";
-import useAPI, { APIs } from "../../util/api";
+import useAPI from "../../util/api";
 import {uuid} from "../../util/secret";
 
 const { Title } = Typography;

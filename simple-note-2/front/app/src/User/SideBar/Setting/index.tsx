@@ -1,7 +1,7 @@
 import { Modal, Flex, Image, Button, Select, Typography, SelectProps, theme } from "antd"
 import { useCallback, useRef, useState } from "react";
 import styles from "./index.module.css";
-import useAPI, { APIs } from "../../../util/api";
+import useAPI from "../../../util/api";
 import useInfo from "../info";
 import { useCookies } from "react-cookie";
 import { SyncOutlined, UploadOutlined } from "@ant-design/icons";

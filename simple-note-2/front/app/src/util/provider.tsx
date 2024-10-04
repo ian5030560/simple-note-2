@@ -1,8 +1,8 @@
 import { useCookies } from "react-cookie";
-import useAPI, { APIs } from "./api"
 import React, { useEffect } from "react";
 import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, useParams } from "react-router-dom";
 import useFiles from "../User/SideBar/NoteTree/store";
+import { decodeBase64 } from "./secret";
 
 export function PublicProvider() {
     const [{ username }] = useCookies(["username"]);
@@ -110,7 +110,7 @@ export function SettingProvider() {
     return <Outlet />
 }
 
-export enum LOADER_WORD{
+export enum LOADER_WORD {
     CONTENT_ERROR = 1,
     COLLABORATE_SUCCESS = 2,
     COLLABORATE_FAIL = 3,
@@ -142,7 +142,11 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
-        body: JSON.stringify({ username: username, noteId: id, masterName: host, url: `${id}/${host}` }),
+        body: JSON.stringify({
+            username: username, noteId: id,
+            masterName: decodeBase64(host!),
+            url: `${id}/${host}`
+        }),
     })
         .then(res => res.ok ? LOADER_WORD.COLLABORATE_SUCCESS : LOADER_WORD.COLLABORATE_FAIL)
         .catch(() => LOADER_WORD.COLLABORATE_FAIL);

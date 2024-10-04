@@ -57,14 +57,14 @@ export const Index = (props: IndexProps) => {
 
     const handleCollapse = useCallback((value: boolean) => {
         if (value) {
-            setResizer(prev => ({ ...prev, width: MIN }))
+            setResizer(prev => ({ ...prev, width: MIN }));
         }
         setCollapase(value);
     }, []);
 
     return <Layout style={{ height: "100%", ...props.style }}>
         <Sider collapsible collapsedWidth={0} theme="light" width={resizer.width}
-            trigger={<DoubleLeftOutlined style={{ transform: collpase ? "rotate(180deg)" : undefined }} />}
+            trigger={<DoubleLeftOutlined style={{ transform: collpase ? "rotate(180deg)" : undefined, transition: "transform 300ms ease" }} />}
             onCollapse={handleCollapse}>
             <SideBar />
         </Sider>

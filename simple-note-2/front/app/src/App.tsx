@@ -8,7 +8,8 @@ import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateP
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
-import Editor, { InnerEditor } from "./Editor";
+import Editor from "./Editor";
+import EditorComponent from "./Editor/editor";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -35,8 +36,8 @@ const router = createBrowserRouter(
       </Route>
 
       <Route path="test" element={<UserLayout><Outlet /></UserLayout>}>
-        <Route index element={<InnerEditor test />} />
-        <Route path="collab" element={<InnerEditor test collab />} />
+        <Route index element={<EditorComponent test />} />
+        <Route path="collab" element={<EditorComponent test collab />} />
       </Route>
       <Route path="theme" element={<ThemePage />} />
     </>

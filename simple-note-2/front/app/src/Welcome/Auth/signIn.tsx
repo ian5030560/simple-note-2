@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Typography, Flex, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal, ForgetPwdModal } from "./modal";
-import { APIs } from "../../util/api";
 import { STATE, validateMessages, AuthProp } from "./constant";
 import { useCookies } from "react-cookie";
 import useAPI from "../../util/api";

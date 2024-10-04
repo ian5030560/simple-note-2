@@ -10,7 +10,7 @@ import {
 import { SwitchClickEventHandler } from "antd/es/switch";
 import { TiExport } from "react-icons/ti";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import useAPI, { APIs } from "../../util/api";
+import useAPI from "../../util/api";
 import { useCookies } from "react-cookie";
 import { Color } from "antd/es/color-picker";
 

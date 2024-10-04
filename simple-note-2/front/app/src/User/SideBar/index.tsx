@@ -6,7 +6,7 @@ import NoteTree from "./NoteTree";
 import { useCookies } from "react-cookie";
 import SettingModal from "./Setting";
 import { useNavigate, useParams } from "react-router-dom";
-import useAPI, { APIs } from "../../util/api";
+import useAPI from "../../util/api";
 import useInfo from "./info";
 import CollaborateModal from "./Collaborate";
 import styles from "../index.module.css";

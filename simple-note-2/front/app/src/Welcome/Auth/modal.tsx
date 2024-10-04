@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button, Form, Result, Modal, Input, notification } from "antd";
-import useAPI, { APIs } from "../../util/api";
+import useAPI from "../../util/api";
 
 interface ForgetProp {
   open: boolean,

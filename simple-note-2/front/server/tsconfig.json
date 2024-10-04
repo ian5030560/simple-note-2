@@ -105,6 +105,7 @@
     }
   ],
   "files": [
-    "src/global.d.ts"
+    "src/global.d.ts",
+    "../app/src/global.d.ts"
   ],
 }

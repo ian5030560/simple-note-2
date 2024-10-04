@@ -1,18 +1,17 @@
 import { useCallback } from "react";
 
 type APIMap = {
-  "http://localhost:8000/registerAndLogin/": { id: "sign-in" | "register", username: string, password: string, email?: string },
-  "http://localhost:8000/forgetPassword/": { username: string, email: string },
-  "http://localhost:8000/logout/": { username: string },
-  // "http://localhost:8000/newMediaFile/": FormData,
-  "http://localhost:8000/deleteFile/": { username: string, url: string, note_title_id: string },
-  "http://localhost:8000/getInfo/": { username: string },
-  "http://localhost:8000/updateInfo/": { username: string, image: string, data: any },
-  "http://localhost:8000/getNote/": { username: string, noteId: string },
-  "http://localhost:8000/newNote/": { username: string, noteId: string, notename: string, parentId: string | null, silbling_id: string | null },
-  "http://localhost:8000/deleteNote/": { username: string, noteId: string },
-  "http://localhost:8000/saveNote/": { username: string, noteId: string, content: any },
-  "http://localhost:8000/newTheme/": {
+  [APIs.registerOrLogin]: { id: "sign-in" | "register", username: string, password: string, email?: string },
+  [APIs.forgetPassword]: { username: string, email: string },
+  [APIs.signOut]: { username: string },
+  [APIs.deleteFile]: { username: string, url: string, note_title_id: string },
+  [APIs.getInfo]: { username: string },
+  [APIs.updateInfo]: { username: string, image: string, data: any },
+  [APIs.getNote]: { username: string, noteId: string },
+  [APIs.addNote]: { username: string, noteId: string, notename: string, parentId: string | null, silbling_id: string | null },
+  [APIs.deleteNote]: { username: string, noteId: string },
+  [APIs.saveNote]: { username: string, noteId: string, content: any },
+  [APIs.addTheme]: {
     username: string,
     theme: {
       name: string,
@@ -24,36 +23,14 @@ type APIMap = {
       }
     }
   },
-  "http://localhost:8000/loadNoteTree/": { username: string },
-  "http://140.127.74.226:8000/gemma/": { text: string },
-  "http://localhost:8000/newCollaborate/": { username: string, noteId: string, url: string },
-  "http://localhost:8000/deleteCollaborate/": { username: string, noteId: string, masterName: string },
-  "http://localhost:8000/joinCollaborate/": { username: string, url: string },
-  "http://localhost:4000/room/number": { room: string },
+  [APIs.loadNoteTree]: { username: string },
+  [APIs.addCollaborate]: { username: string, noteId: string, url: string },
+  [APIs.deleteCollaborate]: { username: string, noteId: string, masterName: string },
+  [APIs.joinCollaborate]: { username: string, url: string },
+  [APIs.getNumber]: { room: string },
 }
 
-export enum APIs {
-  registerOrLogin = "http://localhost:8000/registerAndLogin/",
-  forgetPassword = "http://localhost:8000/forgetPassword/",
-  signOut = "http://localhost:8000/logout/",
-  // addFile = "http://localhost:8000/newMediaFile/",
-  deleteFile = "http://localhost:8000/deleteFile/",
-  getInfo = "http://localhost:8000/getInfo/",
-  updateInfo = "http://localhost:8000/updateInfo/",
-  getNote = "http://localhost:8000/getNote/",
-  addNote = "http://localhost:8000/newNote/",
-  deleteNote = "http://localhost:8000/deleteNote/",
-  saveNote = "http://localhost:8000/saveNote/",
-  addTheme = "http://localhost:8000/newTheme/",
-  loadNoteTree = "http://localhost:8000/loadNoteTree/",
-  callAI = "http://140.127.74.226:8000/gemma/",
-  addCollaborate = "http://localhost:8000/newCollaborate/",
-  deleteCollaborate = "http://localhost:8000/deleteCollaborate/",
-  joinCollaborate = "http://localhost:8000/joinCollaborate/",
-  getNumberInRoom = "http://localhost:4000/room/number",
-}
-
-export default function useAPI<T extends APIs>(api: T): (data: APIMap[T]) => [Promise<Response>, AbortController] {
+export default function useAPI<T extends keyof APIMap>(api: T): (data: APIMap[T]) => [Promise<Response>, AbortController] {
   return useCallback((data: APIMap[T]) => {
     const controller = new AbortController();
     const { signal } = controller;

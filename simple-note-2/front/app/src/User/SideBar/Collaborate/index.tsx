@@ -1,10 +1,10 @@
 import { CloseCircleOutlined, ShareAltOutlined, TeamOutlined } from "@ant-design/icons"
-import { Button, Space, Input, Modal, message, Typography, theme } from "antd"
+import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useCookies } from "react-cookie"
 import { useNavigate, useParams } from "react-router-dom"
 import { decodeBase64, encodeBase64 } from "../../../util/secret"
-import useAPI, { APIs } from "../../../util/api"
+import useAPI from "../../../util/api"
 import useNodes, { NoteDataNode } from "../NoteTree/store"
 
 interface Props {
@@ -37,9 +37,8 @@ export default function CollaborateModal(prop: Props) {
         const url = `${id}/${host}`;
 
         addCollaborate({ username: username, noteId: id as string, url: url })[0]
-            .then(res => res.status === 200)
-            .then(ok => {
-                if (!ok) return api.error("發起失敗");
+            .then(res => {
+                if (!res.ok) return api.error("發起失敗");
                 api.success("發起成功");
                 const node = findNode(id as string)?.current;
                 if (node) {

@@ -1,64 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { LexicalComposer } from '@lexical/react/LexicalComposer';
-import ToolBarPlugin from "./ToolBar/index";
-import DraggablePlugin from "./Draggable";
-import loader from "./loader";
-import PLUSLIST from "./PlusList";
-import CollaboratePlugin from "./Collaborate";
-import SavePlugin, { InitialNoteType } from "./Save";
-import ToolKitPlugin from "./ToolKit";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { Button, Flex, Result } from "antd";
 import { SyncOutlined } from "@ant-design/icons";
-import styles from "./index.module.css";
-import { $createParagraphNode, $getRoot, CLEAR_EDITOR_COMMAND } from "lexical";
 import { LOADER_WORD, NoteContentType } from "../util/provider";
-import useAPI, { APIs } from "../util/api";
-
-function onError(error: Error) {
-    console.error(error);
-}
-
-const Loader = loader();
-interface InnerEditorProps {
-    test?: boolean;
-    collab?: boolean;
-    initialNote?: InitialNoteType;
-    room?: string;
-}
-export const InnerEditor = ({ test, collab, initialNote, room }: InnerEditorProps) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    return <LexicalComposer
-        initialConfig={{
-            namespace: 'Editor', theme: Loader.theme, onError, nodes: Loader.nodes,
-            /** @see https://lexical.dev/docs/collaboration/react */
-            editorState: collab ? null : undefined,
-        }}>
-        {!test && !collab && <SavePlugin initialNote={initialNote} />}
-        <ToolBarPlugin />
-        <ToolKitPlugin />
-        <DraggablePlugin items={PLUSLIST} />
-        {
-            test && collab && <CollaboratePlugin room="test" cursorsContainerRef={containerRef}
-                initialNote={() => {
-                    const root = $getRoot();
-                    if (root.isEmpty()) {
-                        const p = $createParagraphNode();
-                        root.append(p);
-                        p.select();
-                    }
-                }} />
-        }
-        {!test && collab && room && <CollaboratePlugin room={room} initialNote={initialNote} cursorsContainerRef={containerRef} />}
-
-        <div id="editor-scroller" className={styles.editorScroller}>
-            <div id="editor-anchor" className={styles.anchor}>
-                {Loader.plugins.map((plugin, index) => <React.Fragment key={`${plugin?.toString()}-${index}`}>{plugin}</React.Fragment>)}
-            </div>
-        </div>
-    </LexicalComposer>;
-}
+import useAPI from "../util/api";
+import { decodeBase64 } from "../util/secret";
+import Editor from "./editor";
 
 function useErrorBoard(title: string, subTitle: string): [(value: boolean) => void, React.JSX.Element] {
     const [open, setOpen] = useState(false);
@@ -78,7 +25,7 @@ function useErrorBoard(title: string, subTitle: string): [(value: boolean) => vo
     return [error, contextHolder];
 }
 
-export default function Editor() {
+export default () => {
     const data = useLoaderData() as (NoteContentType | LOADER_WORD) | undefined;
     const { id, host } = useParams();
     const getNote = useAPI(APIs.getNote);
@@ -87,7 +34,7 @@ export default function Editor() {
     const collab = !!(id && host);
 
     useEffect(() => {
-        if(!data) return;
+        if(data === undefined) return;
         
         let con = false;
         let col = false;
@@ -96,25 +43,24 @@ export default function Editor() {
             con = false;
         }
         else if(data === LOADER_WORD.CONTENT_ERROR){ 
-            col = true;
+            con = true;
         }
         else{
             col = data === LOADER_WORD.COLLABORATE_FAIL;
         }
+
         contentError(con);
         collborateError(col);
 
     }, [collborateError, contentError, data]);
 
-    if(data === undefined) return null;
-
-    return <>
-        {!collab && data !== LOADER_WORD.CONTENT_ERROR && <InnerEditor initialNote={data as NoteContentType} />}
+    return data !== undefined ? <>
+        {!collab && data !== LOADER_WORD.CONTENT_ERROR && <Editor initialNote={data as NoteContentType} />}
         {
-            collab && data === LOADER_WORD.COLLABORATE_SUCCESS && <InnerEditor collab room={`${id}/${host}`}
+            collab && data === LOADER_WORD.COLLABORATE_SUCCESS && <Editor collab room={`${id}/${host}`}
                 initialNote={async (editor) => {
-                    const content = await getNote({ username: host, noteId: id })[0]
-                        .then(res => !res.ok ? res.text() : undefined)
+                    const content = await getNote({ username: decodeBase64(host), noteId: id })[0]
+                        .then(res => res.ok ? res.text() : undefined)
                         .catch(() => undefined);
 
                     if (!content) {
@@ -128,5 +74,5 @@ export default function Editor() {
         }
         {contentErrorContext}
         {collborateErrorContext}
-    </>
+    </> : null
 };
