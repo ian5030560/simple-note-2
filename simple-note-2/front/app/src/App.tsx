@@ -35,7 +35,7 @@ const router = createBrowserRouter(
         </Route>
       </Route>
 
-      <Route path="test" element={<UserLayout><Outlet /></UserLayout>}>
+      <Route path="test">
         <Route index element={<EditorComponent test />} />
         <Route path="collab" element={<EditorComponent test collab />} />
       </Route>

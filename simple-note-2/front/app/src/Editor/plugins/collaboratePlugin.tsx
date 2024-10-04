@@ -27,6 +27,7 @@ interface CollabotatePluginProps {
     room: string;
     initialNote?: InitialNoteType;
     cursorsContainerRef: CursorsContainerRef;
+    onError?: () => void;
 }
 export default function CollaboratePlugin(props: CollabotatePluginProps) {
 
@@ -51,7 +52,7 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
         getNumber({ room: id })[0]
             .then(res => res.ok ? res.json() : undefined)
             .then((data?: { count: number }) => {
-                if (!data) return;
+                if (!data) return props.onError?.();
                 const { count } = data;
                 const { initialNote } = props;
                 if (count === 0 && initialNote !== undefined) {
@@ -71,6 +72,7 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
                     editor.setEditable(true);
                 }
             })
+            .catch(() => props.onError?.());
         return p as unknown as Provider;
     }, [editor, getNumber, props]);
 

@@ -106,9 +106,9 @@ export const DragHandler = ({ pos, onDragStart, onDragEnd, items, mask }: DragHa
         {nodeKey && <PlusMenu mask={mask} items={items} nodeKey={nodeKey} ref={menuRef} onSelect={() => setNodeKey(undefined)} />}
         <div className={styles.draggable} draggable={true} ref={handlerRef}
             onDragStart={onDragStart} onDragEnd={onDragEnd} tabIndex={-1}
-            style={{ transform: `translate(calc(${pos.x - 5}px - 100%), calc(${pos.y}px - 50%))` }}>
-            <Button contentEditable={false} type="text" icon={<PlusOutlined />} onClick={handleClick} />
-            <Button className={styles.handleButton} contentEditable={false} type="text" icon={<HolderOutlined />} />
+            style={{ transform: `translate(calc(${pos.x - 8}px - 100%), calc(${pos.y}px - 50%))` }}>
+            <Button size="large" contentEditable={false} type="text" icon={<PlusOutlined />} onClick={handleClick} />
+            <Button size="large" className={styles.handleButton} contentEditable={false} type="text" icon={<HolderOutlined />} />
         </div>
     </>
 };

@@ -50,8 +50,18 @@ interface InnerEditorProps {
     collab?: boolean;
     initialNote?: InitialNoteType;
     room?: string;
+    onCollabError?: () => void;
 }
-export default function Editor({ test, collab, initialNote, room }: InnerEditorProps) {
+
+function $createEmptyForCollab() {
+    const root = $getRoot();
+    if (root.isEmpty()) {
+        const p = $createParagraphNode();
+        root.append(p);
+        p.select();
+    }
+}
+export default function Editor(props: InnerEditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const { token } = theme.useToken();
 
@@ -59,23 +69,19 @@ export default function Editor({ test, collab, initialNote, room }: InnerEditorP
         initialConfig={{
             namespace: 'Editor', theme: themes, onError, nodes: nodes,
             /** @see https://lexical.dev/docs/collaboration/react */
-            editorState: collab ? null : undefined,
+            editorState: props.collab ? null : undefined,
         }}>
-        {!test && !collab && <SavePlugin initialNote={initialNote} />}
+        {!props.test && !props.collab && <SavePlugin initialNote={props.initialNote} />}
         <ToolBarPlugin />
         <ToolKitPlugin />
         {
-            test && collab && <CollaboratePlugin room="test" cursorsContainerRef={containerRef}
-                initialNote={() => {
-                    const root = $getRoot();
-                    if (root.isEmpty()) {
-                        const p = $createParagraphNode();
-                        root.append(p);
-                        p.select();
-                    }
-                }} />
+            props.test && props.collab && <CollaboratePlugin room="test" cursorsContainerRef={containerRef}
+                initialNote={$createEmptyForCollab} onError={props.onCollabError}/>
         }
-        {!test && collab && room && <CollaboratePlugin room={room} initialNote={initialNote} cursorsContainerRef={containerRef} />}
+        {
+            !props.test && props.collab && props.room && <CollaboratePlugin room={props.room} initialNote={props.initialNote} 
+                onError={props.onCollabError} cursorsContainerRef={containerRef}/>
+        }
 
         <div id="editor-scroller" className={styles.editorScroller}>
             <div id="editor-anchor" className={styles.anchor}>
@@ -105,7 +111,7 @@ export default function Editor({ test, collab, initialNote, room }: InnerEditorP
                 <TableActionPlugin />
                 <TableModalPlugin />
                 <ImageToTextPlugin />
-                <TableOfContentPlugin/>
+                <TableOfContentPlugin />
                 <VideoPlugin />
             </div>
         </div>
