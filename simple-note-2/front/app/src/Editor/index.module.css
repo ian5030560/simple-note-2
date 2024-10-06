@@ -1,0 +1,5 @@
+.loading{
+    height: 100%;
+    padding: 50px;
+    overflow-y: auto;
+}

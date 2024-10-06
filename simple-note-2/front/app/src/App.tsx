@@ -8,7 +8,7 @@ import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateP
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
-import Editor from "./Editor";
+import Editor, { EditorErrorBoundary } from "./Editor";
 import EditorComponent from "./Editor/editor";
 
 const router = createBrowserRouter(
@@ -25,11 +25,19 @@ const router = createBrowserRouter(
         <Route path="note" element={<SettingProvider />} loader={settingLoader}>
           <Route element={<UserLayout><Outlet /></UserLayout>}>
             <Route path=":id/:host?" element={<Editor />}
+              errorElement={<EditorErrorBoundary/>}
               loader={(args: LoaderFunctionArgs<any>) => {
                 const { params } = args;
                 const { id, host } = params;
                 const collab = !!(id && host);
-                return collab ? collaborateLoader(args) : contentLoader(args);
+                return !collab ? contentLoader(args) : collaborateLoader(args)
+                  .then(async (only) => {
+                    if (only) return await contentLoader(args);
+                    return null;
+                  })
+                  .catch(() => {
+                    throw new Response(undefined, {status: 404})
+                  });
               }} />
           </Route>
         </Route>

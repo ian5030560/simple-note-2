@@ -45,14 +45,6 @@ function onError(error: Error) {
     console.error(error);
 }
 
-interface InnerEditorProps {
-    test?: boolean;
-    collab?: boolean;
-    initialNote?: InitialNoteType;
-    room?: string;
-    onCollabError?: () => void;
-}
-
 function $createEmptyForCollab() {
     const root = $getRoot();
     if (root.isEmpty()) {
@@ -60,6 +52,13 @@ function $createEmptyForCollab() {
         root.append(p);
         p.select();
     }
+}
+
+interface InnerEditorProps {
+    test?: boolean;
+    collab?: boolean;
+    initialNote?: InitialNoteType;
+    room?: string;
 }
 export default function Editor(props: InnerEditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -76,11 +75,11 @@ export default function Editor(props: InnerEditorProps) {
         <ToolKitPlugin />
         {
             props.test && props.collab && <CollaboratePlugin room="test" cursorsContainerRef={containerRef}
-                initialNote={$createEmptyForCollab} onError={props.onCollabError}/>
+                initialNote={$createEmptyForCollab}/>
         }
         {
-            !props.test && props.collab && props.room && <CollaboratePlugin room={props.room} initialNote={props.initialNote} 
-                onError={props.onCollabError} cursorsContainerRef={containerRef}/>
+            !props.test && props.collab && props.room && <CollaboratePlugin room={props.room}
+                cursorsContainerRef={containerRef} initialNote={props.initialNote} />
         }
 
         <div id="editor-scroller" className={styles.editorScroller}>
@@ -97,10 +96,10 @@ export default function Editor(props: InnerEditorProps) {
                 <ListPlugin />
                 <FloatingEditorLinkPlugin />
                 <CheckListPlugin />
-                <PlaceholderPlugin />
+                {/* <PlaceholderPlugin /> */}
                 <ClearEditorPlugin />
                 <CanvasPlugin />
-                {/* <AIPlaceholderPlugin/> */}
+                <AIPlaceholderPlugin/>
                 <AIQuestionPlugin />
                 <CodeHighlightPlugin />
                 <CodeActionPlugin />

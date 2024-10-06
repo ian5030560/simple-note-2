@@ -113,7 +113,7 @@ module.exports = {
                 deleteCollaborate: "http://localhost:8000/deleteCollaborate/",
                 joinCollaborate: "http://localhost:8000/joinCollaborate/",
                 getNumber: "http://localhost:4000/room/number",
-                getBreezeAI: "ws://localhost:8000/ws/ai/",
+                getBreezeAI: "ws://localhost:4000/ws/ai/",
             })
         })
     ],

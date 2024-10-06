@@ -4,6 +4,7 @@
 
 .simple-note-2-paragraph,
 [class^="simple-note-2-heading-"] {
+    position: relative;
     --placeholder-text: "輸入文字...";
     --placeholder-color: rgba(136, 136, 136, 0.6);
 }

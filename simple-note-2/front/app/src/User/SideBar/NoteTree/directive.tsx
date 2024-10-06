@@ -32,9 +32,9 @@ export default function useDirective() {
     const cancelCollborate = useAPI(APIs.deleteCollaborate);
 
     const clearAdd = () => setAdd({ input: "", open: false, node: null, error: false });
-    const handleAdd = useCallback(() => () => {
+    const handleAdd = useCallback(() => {
         const { error, node, input } = add;
-        if (error || !node || !input) return;
+        if (error || !input) return;
 
         const current = node ? node.key as string : null;
         const previous = (node ? node.children![node.children!.length - 1]?.key : nodes[nodes.length - 1]?.key) as string | null;
@@ -101,22 +101,24 @@ export default function useDirective() {
 
     const handleCancelCollab = useCallback(() => {
         const { node } = cancelCollab;
-        if(!node?.title || !node?.url) return;
-        const {title, url} = node;
+        if (!node?.title || !node?.url) return;
+        const { title, url } = node;
         const [id, host] = url.split("/");
-        
+
         const master = decodeBase64(host);
-        cancelCollborate({username: username, noteId: id, masterName: master})[0]
-        .then(res => {
-            if(!res.ok){
+        cancelCollborate({ username: username, noteId: id, masterName: master })[0]
+            .then(res => {
+                if (!res.ok) {
+                    api.error(`${title} 取消失敗`);
+                }
+                else {
+                    update(id, { url: undefined });
+                    api.success(`${title} 取消成功`);
+                }
+            })
+            .catch(() => {
                 api.error(`${title} 取消失敗`);
-            }
-            else{
-                update(id, {url: undefined});
-                api.success(`${title} 取消失敗`);
-            }
-        })
-        .then(() => api.error(`${title} 取消失敗`));
+            });
 
         clearCancelCollab();
     }, [api, cancelCollab, cancelCollborate, update, username]);

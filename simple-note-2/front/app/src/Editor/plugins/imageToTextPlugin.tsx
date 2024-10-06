@@ -41,6 +41,7 @@ function horizontalFlip(canvas: HTMLCanvasElement) {
   context.restore();
   return src;
 }
+
 export const OPEN_IMAGE_TO_TEXT_MODAL: LexicalCommand<void> = createCommand();
 export default function ImageToTextPlugin(){
   const [editor] = useLexicalComposerContext();
@@ -50,13 +51,13 @@ export default function ImageToTextPlugin(){
   const maskRef = useRef<HTMLDivElement>(null);
   const worker = useRef<Tesseract.Worker>();
   const [loading, setLoading] = useState(false);
-
+ 
   useEffect(() => {
     if (worker.current) return;
-    async function bindWorker() {
+    async function work() {
       worker.current = await createWorker(codes);
     }
-    bindWorker();
+    work();
   }, []);
 
   useEffect(() => {

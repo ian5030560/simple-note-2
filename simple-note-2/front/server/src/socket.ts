@@ -23,7 +23,16 @@ export default class Socket {
         this.wss.on("connection", (ws, req) => {
             const docName = (req.url || '').slice(1).split('?')[0];
             console.log(docName);
-            
+            if(docName === "ws/ai/"){
+                ws.on("message", () => {
+                    setTimeout(() => ws.send(JSON.stringify({result: randomUUID().split("-").join("")})), 3000);
+                });
+                ws.on("close", () => {
+                    console.log("disconnect");
+                });
+                return;
+            }
+
             let user: string;
             if(docName === this.test){
                 user = randomUUID();
@@ -35,8 +44,12 @@ export default class Socket {
             }
 
             setupWSConnection(ws, req);
-            if(!this.query(docName)) this.rooms.set(docName, new Set());
-            this.query(docName)?.add(user);
+            let room = this.query(docName);
+            if(!room){
+                room = new Set();
+                this.rooms.set(docName, room);
+            }
+            room.add(user);
 
             if(docName !== this.test){
                 let ydoc: Y.Doc = getYDoc(docName, true);

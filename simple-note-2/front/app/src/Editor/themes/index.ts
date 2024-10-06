@@ -46,8 +46,10 @@ export default {
         base: "simple-note-2-embedBlock"
     },
     ...code,
-    container: "simple-note-2-column-container",
-    item: "simple-note-2-column-item",
+    column: {
+        container: "simple-note-2-column-container",
+        item: "simple-note-2-column-item",
+    },
     document: "simple-note-2-document",
     image: "simple-note-2-image",
     math: "simple-note-2-math",

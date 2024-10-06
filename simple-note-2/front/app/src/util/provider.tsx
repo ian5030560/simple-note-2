@@ -110,15 +110,7 @@ export function SettingProvider() {
     return <Outlet />
 }
 
-export enum LOADER_WORD {
-    CONTENT_ERROR = 1,
-    COLLABORATE_SUCCESS = 2,
-    COLLABORATE_FAIL = 3,
-}
-
-export type NoteContentType = string | null;
-
-export async function contentLoader({ request, params }: LoaderFunctionArgs<NoteContentType | LOADER_WORD.CONTENT_ERROR>) {
+export async function contentLoader({ request, params }: LoaderFunctionArgs<string | null>) {
     const url = APIs.getNote;
     const cookie = getCookie();
     const username = cookie.get("username")!;
@@ -129,25 +121,47 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<Note
         signal: request.signal,
         body: JSON.stringify({ username: username, noteId: id }),
     })
-        .then(async res => res.ok ? res.status === 204 ? null : await res.text() : LOADER_WORD.CONTENT_ERROR)
-        .catch(() => LOADER_WORD.CONTENT_ERROR);
+        .then(async res => {
+            if (res.ok) return res.status === 204 ? null : await res.text();
+            throw new Response(undefined, { status: 404 });
+        })
+        .catch(() => {
+            throw new Response(undefined, { status: 404 })
+        });
 }
 
-export async function collaborateLoader({ request, params }: LoaderFunctionArgs<LOADER_WORD.COLLABORATE_SUCCESS | LOADER_WORD.COLLABORATE_FAIL>) {
-    const url = APIs.joinCollaborate;
+export async function collaborateLoader({ request, params }: LoaderFunctionArgs<boolean>) {
+    const joinUrl = APIs.joinCollaborate;
+    const numberUrl = APIs.getNumber;
     const cookie = getCookie();
     const username = cookie.get("username")!;
     const { id, host } = params;
+    const collabErr = new Response(undefined, { status: 403 });
 
-    return await fetch(url, {
-        ...requestInit,
-        signal: request.signal,
-        body: JSON.stringify({
-            username: username, noteId: id,
-            masterName: decodeBase64(host!),
-            url: `${id}/${host}`
-        }),
-    })
-        .then(res => res.ok ? LOADER_WORD.COLLABORATE_SUCCESS : LOADER_WORD.COLLABORATE_FAIL)
-        .catch(() => LOADER_WORD.COLLABORATE_FAIL);
+    return await Promise.all([
+        fetch(joinUrl, {
+            ...requestInit, signal: request.signal,
+            body: JSON.stringify({
+                username: username, noteId: id, url: `${id}/${host}`,
+                masterName: decodeBase64(host!),
+            })
+        })
+            .then(res => {
+                if (!res.ok) throw new Response(undefined, { status: 403 });
+            })
+            .catch(() => { throw collabErr }),
+
+        fetch(numberUrl, {
+            ...requestInit, signal: request.signal,
+            body: JSON.stringify({ room: `${id}/${host}` })
+        })
+            .then(async res => {
+                if (!res.ok) throw new Response(undefined, { status: 403 });
+                const { count } = await res.json() as { count: number };
+                return count === 0;
+            })
+            .catch(() => { throw collabErr })
+    ])
+        .then(reses => reses[1])
+        .catch(() => { throw collabErr });
 }
