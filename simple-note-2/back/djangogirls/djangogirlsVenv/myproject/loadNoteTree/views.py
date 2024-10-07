@@ -17,6 +17,7 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
+import json
 
 """@csrf_exempt"""
 """@csrf_protect"""
@@ -82,7 +83,7 @@ class LoadNoteTreeView(APIView):
                     
                 respDict = {"one": singleNoteDataArray, "multiple": multipleNoteDataArray}
           
-                return Response(respDict, status=status.HTTP_200_OK)
+                return JsonResponse(respDict)
             
             elif notesData == False:  # SQL error
                 return Response("SQL error.", status=status.HTTP_400_BAD_REQUEST)

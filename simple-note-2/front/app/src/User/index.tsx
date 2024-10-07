@@ -1,24 +1,21 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ConfigProvider, Layout, theme, Grid } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
+import { Layout, theme, Grid } from "antd";
 import SideBar from "./SideBar";
 import { BulbButton } from "../Welcome";
 import styles from "./index.module.css";
-import switchTheme, { defaultTheme } from "../util/theme";
-import useInfo from "./SideBar/info";
 import { DoubleLeftOutlined } from "@ant-design/icons";
+import { ThemeConfigProvider, useThemeConfig } from "../util/provider";
 
 export default function User({ children }: { children?: React.ReactNode }) {
 
-    const [darken, setDarken] = useState(false);
-    const { themes } = useInfo();
+    const {darken, setDarken} = useThemeConfig();
 
-    const seed = useMemo(() => themes?.find(theme => theme.data.isUsing), [themes]);
-
-    return <ConfigProvider theme={seed ? switchTheme(seed.data)(darken) : defaultTheme(darken)}>
+    return <ThemeConfigProvider>
         <Index>{children}</Index>
-        <BulbButton lighten={!darken} onClick={() => setDarken(prev => !prev)} />
-    </ConfigProvider>
+        <BulbButton darken={darken} onClick={() => setDarken(!darken)} />
+    </ThemeConfigProvider>;
 }
+
 
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -73,9 +70,9 @@ export const Index = (props: IndexProps) => {
                 onPointerDown={(e) => {
                     document.body.style.userSelect = "none"
                     setResizer(prev => ({ ...prev, resize: true, start: { ...prev.start, x: e.clientX } }))
-                }}/>
+                }} />
         }
-        <Content className={styles.editorFrame}>
+        <Content>
             {props.children}
         </Content>
     </Layout>

@@ -25,7 +25,7 @@ export default function theme(seed: ThemeSeed): (dark: boolean) => ThemeConfig{
     return (dark) => ({
         token: {
             colorPrimary: seed ? dark ? seed.colorDarkPrimary : seed.colorLightPrimary : undefined,
-            colorBgBase: seed ? dark ? seed.colorDarkNeutral : seed.colorLightNeutral : dark ? defaultSeed.colorDarkNeutral : defaultSeed.colorLightNeutral,
+            colorBgBase: seed ? dark ? seed.colorDarkNeutral : seed.colorLightNeutral : undefined,
         },
         algorithm: dark ? _theme.darkAlgorithm : _theme.defaultAlgorithm
     })

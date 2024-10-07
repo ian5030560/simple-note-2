@@ -1,8 +1,10 @@
 import { useCookies } from "react-cookie";
-import React, { useEffect } from "react";
-import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, useParams } from "react-router-dom";
-import useFiles from "../User/SideBar/NoteTree/store";
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, useParams, useNavigation } from "react-router-dom";
+import useNodes from "../User/SideBar/NoteTree/store";
 import { decodeBase64 } from "./secret";
+import { ConfigProvider, Spin, ThemeConfig } from "antd";
+import { defaultTheme } from "./theme";
 
 export function PublicProvider() {
     const [{ username }] = useCookies(["username"]);
@@ -75,24 +77,27 @@ export async function settingLoader({ request }: LoaderFunctionArgs<any>): Promi
     const cookie = getCookie();
     const username = cookie.get("username")!;
 
+    const notesError = new Response(undefined, { status: 410 });
+
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
         body: JSON.stringify({ username: username })
     })
-        .then(res => res.ok ? res.text() : null)
-        .then(res => res ? JSON.parse(res) : null)
-        .catch(() => null);
+        .then(res => {
+            if (!res.ok) throw notesError;
+            return res.json();
+        })
+        .catch(() => { throw notesError });
 }
 
 export function SettingProvider() {
-    const data = useLoaderData() as NoteFetchResult | null;
+    const data = useLoaderData() as NoteFetchResult;
     const navigate = useNavigate();
-    const { init } = useFiles();
+    const { init } = useNodes();
     const { id } = useParams();
 
     useEffect(() => {
-        if (!data) return;
         const sorted = sortNodes(data["one"]);
 
         init(sorted.map((it) => (
@@ -107,7 +112,7 @@ export function SettingProvider() {
         navigate(_id, { replace: true });
     }, []);
 
-    return <Outlet />
+    return <Outlet />;
 }
 
 export async function contentLoader({ request, params }: LoaderFunctionArgs<string | null>) {
@@ -165,3 +170,25 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
         .then(reses => reses[1])
         .catch(() => { throw collabErr });
 }
+
+type ThemeConfigContextType = {
+    darken: boolean;
+    setDarken: (value: boolean) => void;
+    themeFn: (dark: boolean) => ThemeConfig;
+    setThemeFn: (fn: ((dark: boolean) => ThemeConfig)) => void;
+}
+const ThemeConfigContext = createContext<ThemeConfigContextType>({
+    themeFn: defaultTheme, darken: false, setDarken: () => { }, setThemeFn: () => {}
+});
+export function ThemeConfigProvider(props: { children: React.ReactNode }) {
+    const [darken, setDarken] = useState(false);
+    const [themeFn, setThemeFn] = useState(() => defaultTheme);
+
+    return <ThemeConfigContext.Provider value={{darken, setDarken, themeFn, setThemeFn}}>
+        <ConfigProvider theme={themeFn(darken)}>
+            {props.children}
+        </ConfigProvider>
+    </ThemeConfigContext.Provider>;
+}
+
+export const useThemeConfig = () => useContext(ThemeConfigContext);

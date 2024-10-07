@@ -20,9 +20,3 @@
 .resizer:hover{
     transform: scaleX(2);
 }
-
-.editorFrame{
-    position: relative;
-    display: flex;
-    flex-direction: column;
-}

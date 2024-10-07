@@ -64,55 +64,57 @@ export default function Editor(props: InnerEditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const { token } = theme.useToken();
 
-    return <LexicalComposer
-        initialConfig={{
-            namespace: 'Editor', theme: themes, onError, nodes: nodes,
-            /** @see https://lexical.dev/docs/collaboration/react */
-            editorState: props.collab ? null : undefined,
-        }}>
-        {!props.test && !props.collab && <SavePlugin initialNote={props.initialNote} />}
-        <ToolBarPlugin />
-        <ToolKitPlugin />
-        {
-            props.test && props.collab && <CollaboratePlugin room="test" cursorsContainerRef={containerRef}
-                initialNote={$createEmptyForCollab}/>
-        }
-        {
-            !props.test && props.collab && props.room && <CollaboratePlugin room={props.room}
-                cursorsContainerRef={containerRef} initialNote={props.initialNote} />
-        }
-
-        <div id="editor-scroller" className={styles.editorScroller}>
-            <div id="editor-anchor" className={styles.anchor}>
-                <RichTextPlugin placeholder={<></>} ErrorBoundary={LexicalErrorBoundary}
-                    contentEditable={<ContentEditable style={{ color: token.colorText, outline: "none", cursor: "text" }} />} />
-                <DraggablePlugin items={items} />
-                <AutoFocusPlugin />
-                <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-                <HistoryPlugin />
-                <TabIndentationPlugin />
-                <LinkPlugin />
-                <ListMaxLevelPlugin maxLevel={5} />
-                <ListPlugin />
-                <FloatingEditorLinkPlugin />
-                <CheckListPlugin />
-                {/* <PlaceholderPlugin /> */}
-                <ClearEditorPlugin />
-                <CanvasPlugin />
-                <AIPlaceholderPlugin/>
-                <AIQuestionPlugin />
-                <CodeHighlightPlugin />
-                <CodeActionPlugin />
-                <ColumnPlugin />
-                <DocumentPlugin />
-                <ImagePlugin />
-                <TablePlugin />
-                <TableActionPlugin />
-                <TableModalPlugin />
-                <ImageToTextPlugin />
-                <TableOfContentPlugin />
-                <VideoPlugin />
+    return <div className={styles.editorFrame} style={{ backgroundColor: token.colorBgLayout }}>
+        <LexicalComposer
+            initialConfig={{
+                namespace: 'Editor', theme: themes, onError, nodes: nodes,
+                /** @see https://lexical.dev/docs/collaboration/react */
+                editorState: props.collab ? null : props.test ? props.initialNote : undefined,
+            }}>
+            {!props.test && !props.collab && <SavePlugin initialNote={props.initialNote} />}
+            <ToolBarPlugin />
+            <ToolKitPlugin />
+            {
+                props.test && props.collab && <CollaboratePlugin room="test" cursorsContainerRef={containerRef}
+                    initialNote={$createEmptyForCollab} />
+            }
+            {
+                !props.test && props.collab && props.room && <CollaboratePlugin room={props.room}
+                    cursorsContainerRef={containerRef} initialNote={props.initialNote} />
+            }
+            <div id="editor-scroller" className={styles.editorScroller}>
+                <div id="editor-anchor" className={styles.anchor}>
+                    <RichTextPlugin placeholder={<></>} ErrorBoundary={LexicalErrorBoundary}
+                        contentEditable={<ContentEditable style={{ color: token.colorText, outline: "none", cursor: "text" }} />} />
+                    <DraggablePlugin items={items} />
+                    <AutoFocusPlugin />
+                    <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+                    <HistoryPlugin />
+                    <TabIndentationPlugin />
+                    <LinkPlugin />
+                    <ListMaxLevelPlugin maxLevel={5} />
+                    <ListPlugin />
+                    <FloatingEditorLinkPlugin />
+                    <CheckListPlugin />
+                    {/* <PlaceholderPlugin /> */}
+                    <ClearEditorPlugin />
+                    <CanvasPlugin />
+                    <AIPlaceholderPlugin />
+                    <AIQuestionPlugin />
+                    <CodeHighlightPlugin />
+                    <CodeActionPlugin />
+                    <ColumnPlugin />
+                    <DocumentPlugin />
+                    <ImagePlugin />
+                    <TablePlugin />
+                    <TableActionPlugin />
+                    <TableModalPlugin />
+                    <ImageToTextPlugin />
+                    <TableOfContentPlugin />
+                    <VideoPlugin />
+                </div>
             </div>
-        </div>
-    </LexicalComposer>;
+
+        </LexicalComposer>
+    </div>;
 }
