@@ -28,34 +28,44 @@ class BreezeView(APIView):
 
     def ai(self, text):
         try:
-            
-            url = "http://localhost:8091"
+            # url = "http://127.0.0.1:8091/"  # 確認這個端點正確
+            url = "https://85a3-140-127-74-150.ngrok-free.app/"
             post_text = {
                 "title": "",
                 "content": text
             }
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer your_token"
+                # "Accept": "*/*",
+                # "Accept-Encoding": "gzip, deflate, br",
+                # "Connection": "keep-alive"
             }
 
             # 發送 POST 請求
             response = requests.post(url, json=post_text, headers=headers)
+            response.close()
+            # Debug print to see the response status and content
+            print(f"Response status: {response.status_code}")
+            print(f"Response content: {response.text}")
 
-            # 檢查回應
-            if response.status_code == 200:
+            # 檢查回應是否在成功範圍內
+            if 200 <= response.status_code < 300:
                 # 嘗試將回應解析為 JSON 格式
                 try:
                     result = response.json()
-                    # print(type(result))
+                    print("Parsed JSON result:", result)
                     return result  # 返回解析後的 JSON 回應
                 except ValueError:
                     # 如果回應不是 JSON 格式，直接返回原始文本內容
+                    print("Response is not in JSON format.")
                     return response.text
             else:
                 return f"Request failed with status code {response.status_code}"
-        except Exception as e:
-            return f'ai post error: {str(e)}'
+
+        except requests.RequestException as e:
+            # 捕獲 requests 的例外情況並打印具體的錯誤訊息
+            print(f"Request exception occurred: {str(e)}")
+            return f"ai post error: {str(e)}"
 
         
         
