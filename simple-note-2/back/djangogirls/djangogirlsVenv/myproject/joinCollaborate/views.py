@@ -52,13 +52,21 @@ class JoinCollaborateView(APIView):
             noteId = data.get("noteId") # noteTitleId
             url = data.get("url")  # 協作網址
 
-            # join collaborate by master_name, note_title_id, guest_name
-            isJoin = UserCollaborateNote.insert_newData(masterName, noteId, guestName, url)
+            # find all joined guest to check if they are already in the collaborate 
+            joinedUser = UserCollaborateNote.check_all_guest(masterName, noteId)
+            if guestName not in joinedUser:
+
+                # join collaborate by master_name, note_title_id, guest_name
+                isJoin = UserCollaborateNote.insert_newData(masterName, noteId, guestName, url)
             
-            if isJoin:  # 加入成功
-                return Response(status=status.HTTP_200_OK)
-            elif isJoin != True:  # 加入失敗
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                if isJoin:  # 加入成功
+                    return Response(status=status.HTTP_200_OK)
+                elif isJoin != True:  # 加入失敗
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+                
+            # guest already in the collaborate 
+            else:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
 
             # serializer
             serializer = JoinCollaborateSerializer(data=data)
