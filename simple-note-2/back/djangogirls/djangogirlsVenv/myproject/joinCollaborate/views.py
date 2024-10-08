@@ -54,7 +54,11 @@ class JoinCollaborateView(APIView):
 
             # find all joined guest to check if they are already in the collaborate 
             joinedUser = UserCollaborateNote.check_all_guest(masterName, noteId)
-            if guestName + ',' not in joinedUser:
+
+            # change guest name into tuple
+            guestNameTuple = (guestName,)
+
+            if guestNameTuple not in joinedUser:
 
                 # join collaborate by master_name, note_title_id, guest_name
                 isJoin = UserCollaborateNote.insert_newData(masterName, noteId, guestName, url)
