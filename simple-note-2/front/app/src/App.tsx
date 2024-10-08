@@ -1,15 +1,16 @@
 import React from "react";
-import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Outlet, Route, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, createRoutesFromElements, isRouteErrorResponse, LoaderFunctionArgs, Outlet, Route, RouterProvider, useRouteError } from "react-router-dom";
 import UserLayout from "./User";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
-import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateProvider, collaborateLoader } from "./util/provider";
+import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateProvider, collaborateLoader, ThemeConfigProvider } from "./util/provider";
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
-import Editor, { EditorErrorBoundary } from "./Editor";
+import Editor from "./Editor";
 import EditorComponent from "./Editor/editor";
+import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -22,10 +23,10 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<PrivateProvider />}>
-        <Route path="note" element={<SettingProvider />} loader={settingLoader}>
+        <Route path="note" element={<SettingProvider />} loader={settingLoader} errorElement={<SettingErrorBoundary />}>
           <Route element={<UserLayout><Outlet /></UserLayout>}>
             <Route path=":id/:host?" element={<Editor />}
-              errorElement={<EditorErrorBoundary/>}
+              errorElement={<EditorErrorBoundary />}
               loader={(args: LoaderFunctionArgs<any>) => {
                 const { params } = args;
                 const { id, host } = params;
@@ -36,7 +37,7 @@ const router = createBrowserRouter(
                     return null;
                   })
                   .catch(() => {
-                    throw new Response(undefined, {status: 404})
+                    throw new Response(undefined, { status: 404 })
                   });
               }} />
           </Route>
@@ -54,7 +55,9 @@ const router = createBrowserRouter(
 
 
 export default function App(): React.JSX.Element {
-  return <CookiesProvider defaultSetOptions={{ path: "/" }}>
-    <RouterProvider router={router} />
-  </CookiesProvider>
+  return <ThemeConfigProvider>
+    <CookiesProvider defaultSetOptions={{ path: "/" }}>
+      <RouterProvider router={router} />
+    </CookiesProvider>
+  </ThemeConfigProvider>
 }

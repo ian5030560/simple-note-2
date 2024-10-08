@@ -4,17 +4,15 @@ import { Row, Col, ConfigProvider, theme } from "antd";
 import Preview from "./Preview";
 import { BulbButton } from "../Welcome";
 import { defaultSeed } from "../util/theme";
+import { ThemeConfigProvider, useThemeConfig } from "../util/provider";
 
 const ThemePage = () => {
+    const {darken, setDarken} = useThemeConfig();
 
-    const [pageDarken, setPageDarken] = useState(false);
-
-    return <ConfigProvider
-        theme={{algorithm: pageDarken ? theme.darkAlgorithm : theme.defaultAlgorithm}}
-    >
+    return <ThemeConfigProvider>
         <Index />
-        <BulbButton lighten={!pageDarken} onClick={() => setPageDarken(prev => !prev)} />
-    </ConfigProvider>
+        <BulbButton darken={darken} onClick={() => setDarken(!darken)} />
+    </ThemeConfigProvider>
 
 }
 
@@ -33,20 +31,19 @@ const Index = () => {
 
     return <Row style={{ minHeight: "100%", backgroundColor: token.colorBgBase }}>
         <Col span={6}>
-            <SideBar light={{
-                primary: lightPrimary,
-                neutral: lightNeutral,
-                onPrimaryChange: (color) => handleColor(color, setLightPrimary),
-                onNeutralChange: (color) => handleColor(color, setLightNeutral)
-            }}
-
+            <SideBar
+                light={{
+                    primary: lightPrimary,
+                    neutral: lightNeutral,
+                    onPrimaryChange: (color) => handleColor(color, setLightPrimary),
+                    onNeutralChange: (color) => handleColor(color, setLightNeutral)
+                }}
                 dark={{
                     primary: darkPrimary,
                     neutral: darkNeutral,
                     onPrimaryChange: (color) => handleColor(color, setDarkPrimary),
                     onNeutralChange: (color) => handleColor(color, setDarkNeutral)
                 }}
-
                 onDarkenClick={() => setDarken(prev => !prev)}
             />
         </Col>

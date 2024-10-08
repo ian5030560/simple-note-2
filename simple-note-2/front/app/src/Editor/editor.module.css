@@ -11,3 +11,10 @@
     flex-grow: 1;
     line-height: 1.5;
 }
+
+.editorFrame{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
