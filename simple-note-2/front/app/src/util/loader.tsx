@@ -1,10 +1,10 @@
 import { useCookies } from "react-cookie";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { Navigate, Outlet, useLoaderData, useNavigate, LoaderFunctionArgs, useParams, useNavigation } from "react-router-dom";
-import useNodes from "../User/SideBar/NoteTree/store";
+import React, { createContext, useContext, useState } from "react";
+import { Navigate, Outlet, LoaderFunctionArgs } from "react-router-dom";
 import { decodeBase64 } from "./secret";
-import { ConfigProvider, Spin, ThemeConfig } from "antd";
+import { ConfigProvider, ThemeConfig } from "antd";
 import { defaultTheme } from "./theme";
+import { findNode, NoteDataNode } from "../User/SideBar/NoteTree/store";
 
 export function PublicProvider() {
     const [{ username }] = useCookies(["username"]);
@@ -58,7 +58,7 @@ function sortNodes(data: NoteTreeData[]) {
     return sortedData;
 }
 
-const getCookie = () => new Map(document.cookie.split(":").map((item) => item.split("=")) as [[string, string]]);
+export const getCookie = () => new Map(document.cookie.split(":").map((item) => item.split("=")) as [[string, string]]);
 const requestInit = {
     method: "POST",
     headers: {
@@ -67,11 +67,11 @@ const requestInit = {
     }
 }
 
-type NoteFetchResult = {
+export type NoteFetchResult = {
     one: Array<NoteTreeData>,
     multiple: Array<{ noteId: string, noteName: string, url: string }>
 }
-export async function settingLoader({ request }: LoaderFunctionArgs<any>): Promise<NoteFetchResult | null> {
+export async function settingLoader({ request }: LoaderFunctionArgs<NoteDataNode[]>) {
 
     const url = APIs.loadNoteTree;
     const cookie = getCookie();
@@ -88,38 +88,36 @@ export async function settingLoader({ request }: LoaderFunctionArgs<any>): Promi
             if (!res.ok) throw notesError;
             return res.json();
         })
+        .then(data => {
+            try{
+                const sorted = sortNodes(data["one"]);
+                const nodes = sorted.map((it) => (
+                    {
+                        key: it.noteId, title: it.noteName, children: [],
+                        parentKey: it.parentId, siblingKey: it.silblingId,
+                        url: data["multiple"].find(mul => mul.noteId === it.noteId)?.url
+                    }
+                ));
+                const newNodes: NoteDataNode[] = [];
+                for (const node of nodes) {
+                    let children = newNodes;
+                    if (node.parentKey) children = findNode(newNodes, node.parentKey)!.current.children!;
+                    const index = node.siblingKey ? nodes.findIndex(it => it.key === node.siblingKey) + 1 : nodes.length;
+                    children.splice(index, 0, { key: node.key, title: node.title, children: [], url: node.url });
+                }
+                return newNodes;
+            }
+            catch(e){
+                console.log(e);
+                throw notesError;
+            }
+        })
         .catch(() => { throw notesError });
 }
 
-export function SettingProvider() {
-    const data = useLoaderData() as NoteFetchResult;
-    const navigate = useNavigate();
-    const { init } = useNodes();
-    const { id } = useParams();
-
-    useEffect(() => {
-        const sorted = sortNodes(data["one"]);
-
-        init(sorted.map((it) => (
-            {
-                key: it.noteId, title: it.noteName, children: [],
-                parentKey: it.parentId, siblingKey: it.silblingId,
-                url: data["multiple"].find(mul => mul.noteId === it.noteId)?.url
-            }
-        )));
-        const _id = id ? id : sorted[0].noteId;
-
-        navigate(_id, { replace: true });
-    }, []);
-
-    return <Outlet />;
-}
-
-export async function contentLoader({ request, params }: LoaderFunctionArgs<string | null>) {
+export async function contentLoader({ request, params }: LoaderFunctionArgs<string | null>, username: string) {
     const url = APIs.getNote;
-    const cookie = getCookie();
-    const username = cookie.get("username")!;
-    const id = params.id!;
+    const { id } = params;
 
     return await fetch(url, {
         ...requestInit,
@@ -152,9 +150,11 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
             })
         })
             .then(res => {
-                if (!res.ok) throw new Response(undefined, { status: 403 });
+                if (!res.ok) throw collabErr;
             })
-            .catch(() => { throw collabErr }),
+            .catch(() => {
+                throw collabErr
+            }),
 
         fetch(numberUrl, {
             ...requestInit, signal: request.signal,
@@ -178,13 +178,13 @@ type ThemeConfigContextType = {
     setThemeFn: (fn: ((dark: boolean) => ThemeConfig)) => void;
 }
 const ThemeConfigContext = createContext<ThemeConfigContextType>({
-    themeFn: defaultTheme, darken: false, setDarken: () => { }, setThemeFn: () => {}
+    themeFn: defaultTheme, darken: false, setDarken: () => { }, setThemeFn: () => { }
 });
 export function ThemeConfigProvider(props: { children: React.ReactNode }) {
     const [darken, setDarken] = useState(false);
     const [themeFn, setThemeFn] = useState(() => defaultTheme);
 
-    return <ThemeConfigContext.Provider value={{darken, setDarken, themeFn, setThemeFn}}>
+    return <ThemeConfigContext.Provider value={{ darken, setDarken, themeFn, setThemeFn }}>
         <ConfigProvider theme={themeFn(darken)}>
             {props.children}
         </ConfigProvider>

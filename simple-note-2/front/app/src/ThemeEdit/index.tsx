@@ -4,7 +4,7 @@ import { Row, Col, ConfigProvider, theme } from "antd";
 import Preview from "./Preview";
 import { BulbButton } from "../Welcome";
 import { defaultSeed } from "../util/theme";
-import { ThemeConfigProvider, useThemeConfig } from "../util/provider";
+import { ThemeConfigProvider, useThemeConfig } from "../util/loader";
 
 const ThemePage = () => {
     const {darken, setDarken} = useThemeConfig();

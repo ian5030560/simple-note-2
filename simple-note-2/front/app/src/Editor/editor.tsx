@@ -22,7 +22,7 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import LinkPlugin from "./plugins/linkPlugins/link";
 import FloatingEditorLinkPlugin from "./plugins/linkPlugins/floatingLinkEditor";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
-import PlaceholderPlugin from "./plugins/placeholderPlugin";
+// import PlaceholderPlugin from "./plugins/placeholderPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
 import { TRANSFORMERS } from '@lexical/markdown';
 import CanvasPlugin from "./plugins/canvasPlugin";
@@ -54,13 +54,13 @@ function $createEmptyForCollab() {
     }
 }
 
-interface InnerEditorProps {
+interface EditorProps {
     test?: boolean;
     collab?: boolean;
     initialNote?: InitialNoteType;
     room?: string;
 }
-export default function Editor(props: InnerEditorProps) {
+export default function Editor(props: EditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const { token } = theme.useToken();
 
@@ -114,7 +114,6 @@ export default function Editor(props: InnerEditorProps) {
                     <VideoPlugin />
                 </div>
             </div>
-
         </LexicalComposer>
     </div>;
 }

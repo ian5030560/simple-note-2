@@ -9,7 +9,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import useAPI from "../../util/api";
 import useInfo from "./info";
 import CollaborateModal from "./Collaborate";
-import styles from "../index.module.css";
 import { ItemType } from "antd/es/menu/interface";
 
 const UserProfile = () => {

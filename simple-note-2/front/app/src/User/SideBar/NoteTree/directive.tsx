@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react"
 import { useCookies } from "react-cookie";
 import useAPI from "../../../util/api";
 import { useNavigate } from "react-router-dom";
-import useNodes, { NoteDataNode } from "./store";
+import { NoteDataNode, useNodes } from "./store";
 import { decodeBase64, uuid } from "../../../util/secret";
 
 type AddState = {

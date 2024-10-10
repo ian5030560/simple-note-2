@@ -1,16 +1,37 @@
 import React from "react";
-import { createBrowserRouter, createRoutesFromElements, isRouteErrorResponse, LoaderFunctionArgs, Outlet, Route, RouterProvider, useRouteError } from "react-router-dom";
-import UserLayout from "./User";
+import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Outlet, Route, RouterProvider } from "react-router-dom";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
-import { contentLoader, settingLoader, SettingProvider, PublicProvider, PrivateProvider, collaborateLoader, ThemeConfigProvider } from "./util/provider";
+import { contentLoader, settingLoader, PublicProvider, PrivateProvider, collaborateLoader, ThemeConfigProvider, getCookie } from "./util/loader";
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
 import Editor from "./Editor";
-import EditorComponent from "./Editor/editor";
+// import EditorComponent from "./Editor/editor";
 import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
+import { decodeBase64 } from "./util/secret";
+import UserLayout from "./User";
+
+function editorLoader(args: LoaderFunctionArgs<any>){
+  const { params } = args;
+  const { id, host } = params;
+  const collab = !!(id && host);
+
+  const cookie = getCookie();
+  const username = cookie.get("username");
+
+  return !collab ? contentLoader(args, username!) : collaborateLoader(args)
+    .then(async (only) => {
+      if (only) return await contentLoader(args, decodeBase64(host));
+      return null;
+    })
+    .catch(() => {
+      throw new Response(undefined, { status: 404 })
+    });
+}
+
+const EditorComponent = React.lazy(() => import("./Editor/editor"));
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,24 +44,8 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<PrivateProvider />}>
-        <Route path="note" element={<SettingProvider />} loader={settingLoader} errorElement={<SettingErrorBoundary />}>
-          <Route element={<UserLayout><Outlet /></UserLayout>}>
-            <Route path=":id/:host?" element={<Editor />}
-              errorElement={<EditorErrorBoundary />}
-              loader={(args: LoaderFunctionArgs<any>) => {
-                const { params } = args;
-                const { id, host } = params;
-                const collab = !!(id && host);
-                return !collab ? contentLoader(args) : collaborateLoader(args)
-                  .then(async (only) => {
-                    if (only) return await contentLoader(args);
-                    return null;
-                  })
-                  .catch(() => {
-                    throw new Response(undefined, { status: 404 })
-                  });
-              }} />
-          </Route>
+        <Route path="note" element={<UserLayout/>} loader={settingLoader} errorElement={<SettingErrorBoundary />}>
+          <Route path=":id/:host?" element={<Editor />} errorElement={<EditorErrorBoundary />} loader={editorLoader} />
         </Route>
       </Route>
 

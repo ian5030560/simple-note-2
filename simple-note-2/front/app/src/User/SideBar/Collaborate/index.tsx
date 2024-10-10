@@ -2,10 +2,10 @@ import { CloseCircleOutlined, ShareAltOutlined, TeamOutlined } from "@ant-design
 import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useCookies } from "react-cookie"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { decodeBase64, encodeBase64 } from "../../../util/secret"
 import useAPI from "../../../util/api"
-import useNodes, { NoteDataNode } from "../NoteTree/store"
+import { NoteDataNode, useNodes } from "../NoteTree/store"
 
 interface Props {
     open?: boolean
@@ -18,7 +18,6 @@ export default function CollaborateModal(prop: Props) {
     const [api, context] = message.useMessage();
     const addCollaborate = useAPI(APIs.addCollaborate);
     const { findNode, update } = useNodes();
-    const navigate = useNavigate();
     const { token } = theme.useToken();
     const deleteCollab = useAPI(APIs.deleteCollaborate);
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -27,10 +26,8 @@ export default function CollaborateModal(prop: Props) {
         const node = findNode(id!)?.current as NoteDataNode | undefined;
         const url = node?.url;
         setUrl(url ? `http://localhost:3000/note/${url}` : undefined);
-        if (url && !host) navigate(url, { replace: true });
-        if (!url && host) navigate(id!, { replace: true });
 
-    }, [findNode, host, id, navigate]);
+    }, [findNode, host, id]);
 
     const requestCollaborate = useCallback(() => {
         const host = encodeBase64(username);
