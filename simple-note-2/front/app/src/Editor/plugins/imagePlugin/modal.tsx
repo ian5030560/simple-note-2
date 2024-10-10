@@ -19,7 +19,7 @@ const ImageModal: React.FC = () => {
     const [open, setOpen] = useState(false);
     const [{ username }] = useCookies(["username"]);
     const { id } = useParams();
-    const { nodes, findNode } = useNodes();
+    const { findNode } = useNodes();
 
     const handleURL = useCallback(() => {
         const url = urlRef.current!.input!.value;
