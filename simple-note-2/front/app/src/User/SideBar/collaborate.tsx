@@ -3,9 +3,10 @@ import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useCookies } from "react-cookie"
 import { useParams } from "react-router-dom"
-import { decodeBase64, encodeBase64 } from "../../../util/secret"
-import useAPI from "../../../util/api"
-import { NoteDataNode, useNodes } from "../NoteTree/store"
+import { useNodes } from "./NoteTree/store";
+import useAPI from "../../util/api"
+import { encodeBase64, decodeBase64 } from "../../util/secret"
+import { NoteDataNode } from "./NoteTree/store"
 
 interface Props {
     open?: boolean

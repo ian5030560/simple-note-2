@@ -40,6 +40,7 @@ import ImageToTextPlugin from "./plugins/imageToTextPlugin";
 import VideoPlugin from "./plugins/videoPlugin";
 import items from "./items";
 import TableOfContentPlugin from "./plugins/tableOfContentPlugin";
+import MathPlugin from "./plugins/mathPlugin";
 
 function onError(error: Error) {
     console.error(error);
@@ -112,6 +113,7 @@ export default function Editor(props: EditorProps) {
                     <ImageToTextPlugin />
                     <TableOfContentPlugin />
                     <VideoPlugin />
+                    <MathPlugin/>
                 </div>
             </div>
         </LexicalComposer>

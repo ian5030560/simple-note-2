@@ -1,12 +1,12 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { theme } from "antd";
 import { $getSelection, $isRangeSelection, ElementNode, LexicalNode, $createParagraphNode, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ARROW_UP_COMMAND, KEY_ARROW_LEFT_COMMAND } from "lexical";
-import { $findMatchingParent, mergeRegister, $insertNodeToNearestRoot } from "@lexical/utils";
+import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { useEffect } from "react";
 import ColumnAction from "./action";
-import { INSERT_COLUMNS, APPEND_COLUMNS } from "./command";
+import { APPEND_COLUMNS } from "./command";
 import ColumnLayoutModal from "./modal";
-import ColumnContainerNode, { $createColumnContainerNode, $isColumnContainerNode } from "../../nodes/column/container";
+import ColumnContainerNode, { $isColumnContainerNode } from "../../nodes/column/container";
 import ColumnItemNode, { $createColumnItemNode, $isColumnItemNode } from "../../nodes/column/item";
 
 export default function ColumnPlugin(){
@@ -14,7 +14,7 @@ export default function ColumnPlugin(){
     const [editor] = useLexicalComposerContext();
     const { token } = theme.useToken();
 
-    const onEscape = (before: boolean) => {
+    const $onEscape = (before: boolean) => {
         const selection = $getSelection();
         if (
             $isRangeSelection(selection) &&
@@ -58,23 +58,11 @@ export default function ColumnPlugin(){
     useEffect(() => {
 
         return mergeRegister(
-            editor.registerCommand(INSERT_COLUMNS, (payload) => {
-                editor.update(() => {
-                    const container = $createColumnContainerNode(payload);
-                    for (let i = 0; i < payload; i++) {
-                        container.append($createColumnItemNode().append($createParagraphNode()))
-                    }
 
-                    $insertNodeToNearestRoot(container);
-                    container.selectStart();
-                })
-                return true;
-            }, 4),
-
-            editor.registerCommand(KEY_ARROW_DOWN_COMMAND, () => onEscape(false), 1),
-            editor.registerCommand(KEY_ARROW_RIGHT_COMMAND, () => onEscape(false), 1),
-            editor.registerCommand(KEY_ARROW_UP_COMMAND, () => onEscape(true), 1),
-            editor.registerCommand(KEY_ARROW_LEFT_COMMAND, () => onEscape(true), 1),
+            editor.registerCommand(KEY_ARROW_DOWN_COMMAND, () => $onEscape(false), 1),
+            editor.registerCommand(KEY_ARROW_RIGHT_COMMAND, () => $onEscape(false), 1),
+            editor.registerCommand(KEY_ARROW_UP_COMMAND, () => $onEscape(true), 1),
+            editor.registerCommand(KEY_ARROW_LEFT_COMMAND, () => $onEscape(true), 1),
             editor.registerNodeTransform(ColumnItemNode, (node) => {
                 const parent = node.getParent<ElementNode>();
                 if (!$isColumnContainerNode(parent)) {

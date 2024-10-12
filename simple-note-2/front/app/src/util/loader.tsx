@@ -4,7 +4,7 @@ import { Navigate, Outlet, LoaderFunctionArgs } from "react-router-dom";
 import { decodeBase64 } from "./secret";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { defaultTheme } from "./theme";
-import { findNode, NoteDataNode } from "../User/SideBar/NoteTree/store";
+import { findNode, NoteDataNode, useNodes } from "../User/SideBar/NoteTree/store";
 
 export function PublicProvider() {
     const [{ username }] = useCookies(["username"]);
@@ -105,6 +105,8 @@ export async function settingLoader({ request }: LoaderFunctionArgs<NoteDataNode
                     const index = node.siblingKey ? nodes.findIndex(it => it.key === node.siblingKey) + 1 : nodes.length;
                     children.splice(index, 0, { key: node.key, title: node.title, children: [], url: node.url });
                 }
+
+                useNodes.setState({nodes: newNodes});
                 return newNodes;
             }
             catch(e){

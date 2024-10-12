@@ -1,6 +1,6 @@
 import UserComponent from "./component";
 import { Navigate, Outlet, useLoaderData, useParams } from "react-router-dom";
-import { NoteDataNode, TreeProvider } from "./SideBar/NoteTree/store";
+import { NoteDataNode } from "./SideBar/NoteTree/store";
 import { useMemo } from "react";
 
 export default () => {
@@ -10,14 +10,12 @@ export default () => {
     const _id = useMemo(() => {
         const collab = !!(id && host);
         const _id = id ? !collab ? id : `${id}/${host}` : data[0].key as string;
- 
-        return _id;
-    }, []);
 
-    return <TreeProvider nodes={data}>
-        <UserComponent>
-            <Navigate to={_id} replace/>
-            <Outlet />
-        </UserComponent>
-    </TreeProvider>
+        return _id;
+    }, [data, host, id]);
+
+    return <UserComponent>
+        <Navigate to={_id} replace />
+        <Outlet />
+    </UserComponent>;
 }

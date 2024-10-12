@@ -1,5 +1,5 @@
 import React from "react";
-import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Outlet, Route, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Route, RouterProvider } from "react-router-dom";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
@@ -8,7 +8,6 @@ import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
 import Editor from "./Editor";
-// import EditorComponent from "./Editor/editor";
 import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
 import { decodeBase64 } from "./util/secret";
 import UserLayout from "./User";

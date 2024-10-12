@@ -7,5 +7,5 @@
 
 .simple-note-2-document:hover{
     background-color: rgba(0, 0, 0, 0.06);
-    transition: filter 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: background-color 250ms cubic-bezier(0.645, 0.045, 0.355, 1);
 }
