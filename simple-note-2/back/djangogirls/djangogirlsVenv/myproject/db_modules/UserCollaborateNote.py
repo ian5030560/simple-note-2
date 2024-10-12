@@ -45,7 +45,7 @@ def create_session():
 
 
 # Insert new data by master_name, note_title_id, guest_name, url
-def insert_newData(note_master_input, note_title_id_input, note_guest_input, url_input):
+def insert_newData(note_master_input: str, note_title_id_input: str, note_guest_input: str, url_input: str) -> bool:
     session = create_session()
     new_note_id = check_id(note_master_input, note_title_id_input)
     try:
@@ -60,17 +60,17 @@ def insert_newData(note_master_input, note_title_id_input, note_guest_input, url
             session.commit()
             return True
         else:
-            return "note id not exist"
+            return False
     except SQLAlchemyError as e:
         session.rollback()
         print(e)
-        return str(e)
+        return False
     finally:
         session.close()
 
 
 # Check all guest by master_name, note_title_id
-def check_all_guest(note_master_input, note_title_id_input):
+def check_all_guest(note_master_input: str, note_title_id_input: str) -> list[tuple[str]] | None:
     session = create_session()
     note_id_query = check_id(note_master_input, note_title_id_input)
     try:
@@ -87,11 +87,11 @@ def check_all_guest(note_master_input, note_title_id_input):
             )
             return stmt
         else:
-            return "note id not exist"
+            return None
     except SQLAlchemyError as e:
         session.rollback()
         print(e)
-        return str(e)
+        return None
     finally:
         session.close()
 

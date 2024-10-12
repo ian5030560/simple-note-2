@@ -152,7 +152,7 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
             })
         })
             .then(res => {
-                if (!res.ok) throw collabErr;
+                if (!(res.ok || res.status == 401)) throw collabErr;
             })
             .catch(() => {
                 throw collabErr
@@ -163,7 +163,7 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
             body: JSON.stringify({ room: `${id}/${host}` })
         })
             .then(async res => {
-                if (!res.ok) throw new Response(undefined, { status: 403 });
+                if (!res.ok) throw collabErr;
                 const { count } = await res.json() as { count: number };
                 return count === 0;
             })

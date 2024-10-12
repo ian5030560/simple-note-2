@@ -100,7 +100,7 @@ export default function Editor(props: EditorProps) {
                     {/* <PlaceholderPlugin /> */}
                     <ClearEditorPlugin />
                     <CanvasPlugin />
-                    <AIPlaceholderPlugin />
+                    {/* <AIPlaceholderPlugin /> */}
                     <AIQuestionPlugin />
                     <CodeHighlightPlugin />
                     <CodeActionPlugin />
