@@ -53,7 +53,8 @@ class DeleteCollaborateView(APIView):
             masterName = data.get("masterName") # master帳號名稱
             noteId = data.get("noteId") # noteTitleId
 
-            isDelete = UserCollaborateNote.delete_one_data(masterName, noteId, guestName)
+            # isDelete = UserCollaborateNote.delete_one_data(masterName, noteId, guestName)
+            isDelete = UserCollaborateNote.delete_all_data(masterName, noteId)
             
             if isDelete:  # 若刪除成功
                 return Response(status=status.HTTP_200_OK)

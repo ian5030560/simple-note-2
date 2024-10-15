@@ -74,6 +74,7 @@ class LoadNoteTreeView(APIView):
                     print("--------------------------------")
                     if collaborateUrl:
                         multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                        multipleNoteDataArray.append(multipleNoteData)
                     else: # url == null
                         multipleNoteData = []
                         multipleNoteDataArray.append(multipleNoteData)
