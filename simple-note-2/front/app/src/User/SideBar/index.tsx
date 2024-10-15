@@ -4,12 +4,11 @@ import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined } from "@
 import { BsBoxArrowRight } from "react-icons/bs";
 import NoteTree from "./NoteTree";
 import { useCookies } from "react-cookie";
-import SettingModal from "./Setting";
+import SettingModal from "./setting";
 import { useNavigate, useParams } from "react-router-dom";
 import useAPI from "../../util/api";
 import useInfo from "./info";
-import CollaborateModal from "./Collaborate";
-import styles from "../index.module.css";
+import CollaborateModal from "./collaborate";
 import { ItemType } from "antd/es/menu/interface";
 
 const UserProfile = () => {

@@ -41,3 +41,7 @@
     position: absolute;
     inset: 0;
 }
+
+.listItem:hover{
+    background-color: rgba(0, 0, 0, 0.06);
+}

@@ -1,3 +1,4 @@
+import { LexicalNode } from "lexical";
 import { useState, useEffect } from "react";
 
 export function inside(x: number, y: number, element: HTMLElement) {
@@ -12,4 +13,8 @@ export const useAnchor = () => {
     }, []);
 
     return anchor;
+}
+
+export function $contains(parent: LexicalNode, child: LexicalNode) {
+    return parent.is(child) || child.getParents().forEach(p => p === parent);
 }

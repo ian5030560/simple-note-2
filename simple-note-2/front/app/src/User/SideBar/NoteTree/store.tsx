@@ -1,5 +1,4 @@
 import { TreeDataNode } from "antd";
-import { useCallback } from "react";
 import { create } from "zustand";
 
 export type NoteDataNode = Omit<TreeDataNode, 'children'> & { url?: string, children: NoteDataNode[] };
@@ -8,7 +7,7 @@ type FindResult = {
     current: NoteDataNode,
     previous: NoteDataNode | undefined,
 }
-function findNode(nodes: NoteDataNode[], key: string): FindResult | undefined {
+export function findNode(nodes: NoteDataNode[], key: string): FindResult | undefined {
     for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
         if (node.key === key) {
@@ -36,23 +35,18 @@ function findNode(nodes: NoteDataNode[], key: string): FindResult | undefined {
     return undefined
 }
 
-function travesal(nodes: NoteDataNode[], fn: (node: NoteDataNode) => void){
-    for(let node of nodes){
-        fn(node);
-        travesal(node.children, fn);
-    }
-}
-
 type TreeState = {
     nodes: NoteDataNode[];
 }
+
 type TreeAction = {
     add: (key: string, title: string, children: NoteDataNode[], parentKey: string | null, siblingKey: string | null, url?: string) => void;
     remove: (key: string) => void;
-    init: (nodes: { key: string, title: string, children: NoteDataNode[], parentKey: string | null, siblingKey: string | null, url?: string }[]) => void;
     update: (key: string, options: Partial<NoteDataNode>) => void;
+    findNode: (key: string) => FindResult | undefined;
 }
-const useStore = create<TreeState & TreeAction>()(set => ({
+
+const useStore = create<TreeState & TreeAction>()((set, get) => ({
     nodes: [],
     add: (key, title, children, parentKey, siblingKey, url) => set((prev) => {
         let nodes = prev.nodes;
@@ -68,32 +62,56 @@ const useStore = create<TreeState & TreeAction>()(set => ({
         nodes?.splice(nodes.findIndex(it => it.key === key), 1);
         return { nodes: [...prev.nodes] };
     }),
-
-    init: (nodes) => set(() => {
-        const newNodes: NoteDataNode[] = [];
-        for (const node of nodes) {
-            let children = newNodes;
-            if (node.parentKey) children = findNode(newNodes, node.parentKey)!.current.children!;
-            const index = node.siblingKey ? nodes.findIndex(it => it.key === node.siblingKey) + 1 : nodes.length;
-            children.splice(index, 0, { key: node.key, title: node.title, children: [], url: node.url });
-        }
-        return { nodes: newNodes }
-    }),
-
+    
     update: (key, options) => set(({ nodes }) => {
         const node = findNode(nodes, key)?.current;
-        if (!node) throw ("This node is not existed");
+        if (!node) throw new Error("This node is not existed");
         Object.assign(node, options);
 
         return { nodes: [...nodes] };
-    })
-}))
- 
-export default function useNodes() {
-    const store = useStore();
+    }),
+    findNode: (key) => findNode(get().nodes, key)
+}));
 
-    const _findNode = useCallback((key: string) => findNode(store.nodes, key), [store.nodes]);
-    const _travesal = useCallback((fn: (node: NoteDataNode) => void) => travesal(store.nodes, fn), [store.nodes]);
+// type TreeProps = TreeState;
+// const createTreeStore = (props: TreeProps) => {
+    
+//     return createStore<TreeState & TreeAction>()((set, get) => ({
+//         nodes: props.nodes,
+//         add: (key, title, children, parentKey, siblingKey, url) => set((prev) => {
+//             let nodes = prev.nodes;
+//             if (parentKey) nodes = findNode(prev.nodes, parentKey)!.current.children!;
+//             const index = siblingKey ? nodes.findIndex(it => it.key === siblingKey) + 1 : nodes.length;
+//             nodes.splice(index, 0, { key: key, title: title, children: children, url: url });
 
-    return { ...store, findNode: _findNode, travesal: _travesal };
-}
+//             return { nodes: [...prev.nodes] };
+//         }),
+//         remove: (key) => set((prev) => {
+//             const parent = findNode(prev.nodes, key)!.parent;
+//             const nodes = parent ? parent.children! : prev.nodes;
+//             nodes?.splice(nodes.findIndex(it => it.key === key), 1);
+//             return { nodes: [...prev.nodes] };
+//         }),
+        
+//         update: (key, options) => set(({ nodes }) => {
+//             const node = findNode(nodes, key)?.current;
+//             if (!node) throw new Error("This node is not existed");
+//             Object.assign(node, options);
+
+//             return { nodes: [...nodes] };
+//         }),
+//         findNode: (key) => findNode(get().nodes, key)
+//     }))
+// }
+
+// const TreeContext = createContext<ReturnType<typeof createTreeStore> | null>(null);
+
+// export function TreeProvider(props: React.PropsWithChildren<TreeProps>){
+//     const store = useRef(createTreeStore({nodes: props.nodes}));
+
+//     return <TreeContext.Provider value={store.current}>
+//         {props.children}
+//     </TreeContext.Provider>
+// }
+
+export const useNodes = useStore;

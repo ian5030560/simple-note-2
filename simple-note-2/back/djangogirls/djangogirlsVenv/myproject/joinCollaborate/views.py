@@ -53,24 +53,26 @@ class JoinCollaborateView(APIView):
             url = data.get("url")  # 協作網址
 
             # find all joined guest to check if they are already in the collaborate 
-            joinedUser = UserCollaborateNote.check_all_guest(masterName, noteId)
+            joinedUsers = UserCollaborateNote.check_all_guest(masterName, noteId)
 
-            # change guest name into tuple
-            guestNameTuple = (guestName,)
-
-            if guestNameTuple not in joinedUser:
-
-                # join collaborate by master_name, note_title_id, guest_name
-                isJoin = UserCollaborateNote.insert_newData(masterName, noteId, guestName, url)
+            if not joinedUsers: return Response(status=status.HTTP_400_BAD_REQUEST)
             
-                if isJoin:  # 加入成功
-                    return Response(status=status.HTTP_200_OK)
-                elif isJoin != True:  # 加入失敗
-                    return Response(status=status.HTTP_400_BAD_REQUEST)
-                
-            # guest already in the collaborate 
-            else:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            exist = False
+            user: tuple[str]
+            for user in joinedUsers:
+                name = user[0]
+                if(name == guestName):
+                    exist = True
+                    break
+            
+            if exist: return Response(status=status.HTTP_200_OK)
+            
+            isJoin = UserCollaborateNote.insert_newData(masterName, noteId, guestName, url)
+            
+            if isJoin:  # 加入成功
+                return Response(status=status.HTTP_200_OK)
+            elif isJoin != True:  # 加入失敗
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
             serializer = JoinCollaborateSerializer(data=data)

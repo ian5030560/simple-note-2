@@ -14,7 +14,7 @@ import FloatBoard from '../../ui/floatBoard';
 import AlignableBlock from '../../ui/alignable';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    '../../../../../node_modules/react-pdf/node_modules/pdfjs-dist/build/pdf.worker.min.js',
+    'pdfjs-dist/build/pdf.worker.min.mjs',
     import.meta.url,
 ).toString();
 

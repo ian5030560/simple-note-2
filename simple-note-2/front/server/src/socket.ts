@@ -58,9 +58,10 @@ export default class Socket {
                     const lexicalJSON = headlessConvertYDocStateToLexicalJSON(nodes, Y.encodeStateAsUpdate(ydoc));
                     const content = JSON.stringify(lexicalJSON);
                     console.log(content);
+                    
                     const [id, username] = docName.split("/");
                     fetch("http://localhost:8000/saveNote/", {
-                      body: JSON.stringify({username: username, noteId: id, content: content}), method: "POST",
+                      body: JSON.stringify({username: atob(username), noteId: id, content: content}), method: "POST",
                       headers: {
                         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
                         "content-type": "application/json",

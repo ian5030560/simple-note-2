@@ -10,6 +10,8 @@ import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { MarkNode } from "@lexical/mark";
+import PDFNode from "./pdf";
+import MathNode from "./math";
 
 export default [
     HeadingNode,
@@ -30,4 +32,6 @@ export default [
     TableRowNode,
     TableNode,
     VideoNode,
+    MathNode,
+    // PDFNode,
 ];

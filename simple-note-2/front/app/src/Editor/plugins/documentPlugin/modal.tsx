@@ -1,42 +1,50 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Button } from "antd";
-import { LexicalCommand, createCommand } from "lexical";
+import { LexicalCommand, LexicalNode, createCommand } from "lexical";
 import { useCallback, useRef, useState } from "react";
 import { FaUpload } from "react-icons/fa";
-import { INSERT_FILE } from ".";
 import Modal from "../../ui/modal";
+import { $createDocumentNode } from "../../nodes/document";
+import useMenuFocused from "../draggablePlugin/store";
+import { $insertNodeToNearestRoot } from "@lexical/utils";
+import { $createPDFNode } from "../../nodes/pdf";
 
 export const OPEN_DOCUMENT_MODAL: LexicalCommand<void> = createCommand();
 const DocumentModal = () => {
     const [editor] = useLexicalComposerContext();
     const inputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
+    const { node } = useMenuFocused();
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+
         if (!e.target || !e.target.files) return;
         const file = e.target.files[0];
         const [type] = file.name.split(".").reverse();
 
-        // switch (type) {
-        //     case "pdf":
-        //         editor.dispatchCommand(INSERT_FILE, {
-        //             name: "pdf",
-        //             payload: { width: 800, height: 400, src: URL.createObjectURL(file), }
-        //         })
-        //         break;
-        //     default:
+        editor.update(() => {
+            const src = URL.createObjectURL(file);
+            const name = file.name;
 
-        // }
-        editor.dispatchCommand(INSERT_FILE, {
-            name: type,
-            payload: {
-                src: URL.createObjectURL(file),
-                name: file.name,
+            let doc = $createDocumentNode(src, name);
+            // switch(type){
+            //     case "pdf":
+            //         doc = $createPDFNode(800, 400, src);
+            //         break;
+            //     default:
+            //         doc = $createDocumentNode(src, name);
+            // }
+
+            if (!node) {
+                $insertNodeToNearestRoot(doc);
             }
-        })
+            else {
+                node.insertAfter(doc);
+            }
+        });
 
         setOpen(false);
-    }, [editor]);
+    }, [editor, node]);
 
 
     return <Modal command={OPEN_DOCUMENT_MODAL} open={open} title="上傳文件"

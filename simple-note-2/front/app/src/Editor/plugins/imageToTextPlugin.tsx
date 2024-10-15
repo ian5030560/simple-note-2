@@ -1,12 +1,14 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Button, Flex, Spin, Tabs, TabsProps } from "antd";
-import { $getSelection, $isRangeSelection, LexicalCommand, createCommand, $getRoot, $isRootNode } from "lexical";
+import { $getSelection, $isRangeSelection, LexicalCommand, createCommand, $getRoot } from "lexical";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styles from "./imageToTextPlugin.module.css";
 import { FaRegDotCircle } from "react-icons/fa";
 import Tesseract, { createWorker } from "tesseract.js";
 import Modal from "../ui/modal";
+import useMenuFocused from "./draggablePlugin/store";
+import { $contains } from "../utils";
 
 // const codes = require("../../../resource/tesseract.json").map((lang: { code: string, name: string }) => lang.code) as string[];
 const codes = ["eng", "chi_sim", "chi_tra", "jpn", "kor"];
@@ -43,7 +45,7 @@ function horizontalFlip(canvas: HTMLCanvasElement) {
 }
 
 export const OPEN_IMAGE_TO_TEXT_MODAL: LexicalCommand<void> = createCommand();
-export default function ImageToTextPlugin(){
+export default function ImageToTextPlugin() {
   const [editor] = useLexicalComposerContext();
   const [open, setOpen] = useState(false);
   const camRef = useRef<Webcam>(null);
@@ -51,7 +53,8 @@ export default function ImageToTextPlugin(){
   const maskRef = useRef<HTMLDivElement>(null);
   const worker = useRef<Tesseract.Worker>();
   const [loading, setLoading] = useState(false);
- 
+  const { node } = useMenuFocused();
+
   useEffect(() => {
     if (worker.current) return;
     async function work() {
@@ -82,18 +85,23 @@ export default function ImageToTextPlugin(){
 
   const insertText = useCallback((text: string) => {
     editor.update(() => {
-      let selection = $getSelection();
+      const selection = $getSelection();
       if (!$isRangeSelection(selection)) {
-        selection = $getRoot().selectEnd();
+        $getRoot().selectEnd().insertParagraph()?.selectStart().insertText(text);
       }
       else {
-        if ($isRootNode(selection.anchor.getNode())) {
-          selection.insertParagraph();
+        const offset = selection.focus.offset;
+        const focus = selection.focus.getNode();
+
+        if (!node || $contains(node, focus)) {
+          focus.select(offset).insertText(text);
+        }
+        else {
+          node.selectEnd().insertText(text);
         }
       }
-      selection!.insertText(text);
     })
-  }, [editor]);
+  }, [editor, node]);
 
   const prcoessImage = useCallback((src: string) => {
     if (!worker.current) return;

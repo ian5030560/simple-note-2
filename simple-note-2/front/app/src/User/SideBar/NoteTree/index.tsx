@@ -1,6 +1,6 @@
 import { Tree, theme, Button, Flex, Typography, ButtonProps } from "antd";
 import { FaPlus } from "react-icons/fa6";
-import useFiles, { NoteDataNode } from "./store";
+import { NoteDataNode, useNodes } from "./store";
 import { useState } from "react";
 import { CloseOutlined, DeleteOutlined, PlusOutlined, SwapOutlined } from "@ant-design/icons";
 import useDirective from "./directive";
@@ -24,7 +24,7 @@ const NodeButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex"
 
 const NoteTree = () => {
     const { token } = theme.useToken();
-    const { nodes } = useFiles();
+    const { nodes } = useNodes();
     const navigate = useNavigate();
     const [collaborative, setCollaborative] = useState(false);
     const {add, remove, contextHolder, cancelCollab} = useDirective();

@@ -1,21 +1,40 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Flex, Button, InputNumber } from "antd";
 import { useState, useRef, useCallback, useMemo } from "react";
-import { INSERT_COLUMNS, OPEN_COLUMN_MODAL } from "./command";
+import { OPEN_COLUMN_MODAL } from "./command";
 import Modal from "../../ui/modal";
+import { $createColumnContainerNode } from "../../nodes/column/container";
+import { $createColumnItemNode } from "../../nodes/column/item";
+import useMenuFocused from "../draggablePlugin/store";
+import { $createParagraphNode, $insertNodes } from "lexical";
 
-export default function ColumnLayoutModal(){
+export default function ColumnLayoutModal() {
     const [open, setOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const [editor] = useLexicalComposerContext();
+    const { node } = useMenuFocused();
 
     const handleOk = useCallback(() => {
         const value = inputRef.current?.value;
-        if (value) {
-            editor.dispatchCommand(INSERT_COLUMNS, parseInt(value));
-        }
+        if (!value) return;
+
+        const payload = parseInt(value);
+        editor.update(() => {
+            const container = $createColumnContainerNode(payload);
+            for (let i = 0; i < payload; i++) {
+                container.append($createColumnItemNode().append($createParagraphNode()))
+            }
+
+            if(!node){
+                $insertNodes([container]);
+            }
+            else{
+                node.insertAfter(container);
+            }
+            container.selectStart();
+        })
         setOpen(false);
-    }, [editor]);
+    }, [editor, node]);
 
     const footer = useMemo(() => {
         return <Flex gap={"small"} dir="rtl">

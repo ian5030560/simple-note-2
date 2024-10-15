@@ -78,7 +78,7 @@ class NewMediaFileView(APIView):
             print(folderSaved)
             if dbSaved and folderSaved == True:
                 url = (
-                    "localhost:8000/viewMediaFile/"
+                    "http://localhost:8000/viewMediaFile/"
                     + str(username)
                     + "/"
                     + str(notename)

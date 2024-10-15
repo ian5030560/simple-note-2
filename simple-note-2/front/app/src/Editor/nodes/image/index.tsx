@@ -3,9 +3,9 @@ import {
     SerializedLexicalNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput,
     $applyNodeReplacement,
 } from "lexical";
-import React, { ReactNode } from "react";
+import React, { ReactNode, Suspense } from "react";
 import { Spread } from "lexical/LexicalEditor";
-import Load from "../../ui/load";
+import { Empty } from "antd";
 
 const LazyImageView = React.lazy(() => import("./component"));
 
@@ -60,11 +60,11 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
     }
 
     setWidth(width: number): void {
-        this.__width = width;
+        this.getWritable().__width = width;
     }
 
     setHeight(height: number): void {
-        this.__height = height;
+        this.getWritable().__height = height;
     }
 
     getWidth(): number | "inherit" {
@@ -75,7 +75,7 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
         return this.__height;
     }
 
-    createDOM(_config: EditorConfig, _editor: LexicalEditor): HTMLElement {
+    createDOM(_config: EditorConfig): HTMLElement {
         const span = document.createElement("span");
 
         const theme = _config.theme;
@@ -86,7 +86,7 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
         return span;
     }
 
-    updateDOM(_prevNode: ImageNode, _dom: HTMLElement, _config: EditorConfig): boolean {
+    updateDOM(): boolean {
         return false;
     }
 
@@ -103,16 +103,15 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
     }
 
     decorate(): ReactNode {
-
-        return <Load width={this.__width} height={this.__width}>
+        
+        return <Suspense fallback={<Empty image/>}>
             <LazyImageView
                 src={this.__src}
                 alt={this.__alt}
                 width={this.__width}
                 height={this.__height}
-                nodeKey={this.__key}
-            />
-        </Load>
+                nodeKey={this.__key} />
+        </Suspense>
     }
 
     static importJSON(_serializedNode: SerializedImageNode): ImageNode {

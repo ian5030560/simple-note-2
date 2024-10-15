@@ -36,6 +36,8 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
     useEffect(() => {
         editor.setEditable(false);
         const initial = props.initialNote;
+        provider.current?.connect();
+        
         if (initial !== undefined) {
             if (typeof initial === "function") {
                 editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
@@ -51,7 +53,6 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
             }
         }
         editor.setEditable(true);
-        provider.current?.connect();
 
     }, [editor, props.initialNote]);
 

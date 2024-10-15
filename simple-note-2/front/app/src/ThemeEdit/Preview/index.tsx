@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import '../../../node_modules/reactflow/dist/style.css';
 import ReactFlow, { Controls, Background, BackgroundVariant, useNodesState } from "reactflow";
-import { Index } from "../../User";
+import User from "../../User/component";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { Node } from "@reactflow/core/dist/esm/types/nodes"
 
 const PreviewComponent = ({ data }: { data: ThemeConfig }) => {
     return <ConfigProvider theme={data}>
-        <Index style={{ width: 1200, height: 600 }} />;
+        <User style={{ width: 1200, height: 600 }} />;
     </ConfigProvider>
 }
 

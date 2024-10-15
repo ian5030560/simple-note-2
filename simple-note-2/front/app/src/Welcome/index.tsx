@@ -4,7 +4,7 @@ import Brand from "./brand";
 import { Flex, FloatButton, theme } from "antd";
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import { Outlet } from "react-router-dom";
-import { useThemeConfig } from "../util/provider";
+import { useThemeConfig } from "../util/loader";
 
 const Header = () => {
     const { token } = theme.useToken();

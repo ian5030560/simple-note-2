@@ -1,32 +1,23 @@
 import { Button } from "antd";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LexicalCommand, createCommand } from "lexical";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { MdOutlineFileUpload } from "react-icons/md";
 import Modal from "../ui/modal";
-import VideoNode, { $createVideoNode, VideoNodeProp } from "../nodes/video";
-
-export const INSERT_VIDEO: LexicalCommand<Omit<VideoNodeProp, "className" | "nodeKey" | "format">> = createCommand();
+import VideoNode, { $createVideoNode } from "../nodes/video";
+import useMenuFocused from "./draggablePlugin/store";
 
 export const OPEN_VIDEO_MODAL: LexicalCommand<void> = createCommand();
 const VideoModal = () => {
     const [editor] = useLexicalComposerContext();
     const inputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
+    const { node } = useMenuFocused();
 
-    useEffect(() => {
-        if (!editor.hasNodes([VideoNode])) {
-            throw new Error('VideoPlugin: VideoNode not registered on editor');
-        }
-
-        return editor.registerCommand(INSERT_VIDEO, (payload) => {
-            const node = $createVideoNode(payload.width, payload.height, payload.src);
-            $insertNodeToNearestRoot(node);
-            return true
-        }, 0)
-
-    }, [editor]);
+    if (!editor.hasNodes([VideoNode])) {
+        throw new Error('VideoPlugin: VideoNode not registered on editor');
+    }
 
     const WIDTH = useMemo(() => {
         const rect = editor.getRootElement()?.getBoundingClientRect();
@@ -35,13 +26,24 @@ const VideoModal = () => {
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
-        const file = e.target.files[0];
 
-        const src = URL.createObjectURL(file);
-        editor.dispatchCommand(INSERT_VIDEO, { width: WIDTH, height: 300, src: src });
+        editor.update(() => {
+            const file = e.target.files![0];
+
+            const src = URL.createObjectURL(file);
+            const video = $createVideoNode(WIDTH, 300, src);
+    
+            if(!node){
+                $insertNodeToNearestRoot(video);
+            }
+            else{
+                node.insertAfter(video);
+            }
+        });
+
 
         setOpen(false);
-    }, [WIDTH, editor]);
+    }, [WIDTH, editor, node]);
 
 
     return <Modal command={OPEN_VIDEO_MODAL} title="上傳影片" footer={null} open={open}

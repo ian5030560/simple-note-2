@@ -1,6 +1,7 @@
 @import "./code.css";
 @import "./column.css";
 @import "./table.css";
+@import "./document.css";
 
 .simple-note-2-paragraph,
 [class^="simple-note-2-heading-"] {
@@ -143,6 +144,13 @@
 
 .simple-note-2-math{
     cursor: default;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.simple-note-2-image{
+    display: inline-block;
+    position: relative;
     -webkit-user-select: none;
     user-select: none;
 }

@@ -1,11 +1,11 @@
 import { Modal, Flex, Image, Button, Select, Typography, SelectProps, theme } from "antd"
 import { useCallback, useRef, useState } from "react";
-import styles from "./index.module.css";
-import useAPI from "../../../util/api";
-import useInfo from "../info";
+import styles from "./setting.module.css";
 import { useCookies } from "react-cookie";
 import { SyncOutlined, UploadOutlined } from "@ant-design/icons";
 import { ButtonProps } from "antd";
+import useAPI from "../../util/api";
+import useInfo from "./info";
 
 type UploadProps = Omit<ButtonProps, "type"> & { onUpload: (src: string) => void };
 const Upload = ({ onUpload, ...prop }: UploadProps) => {
