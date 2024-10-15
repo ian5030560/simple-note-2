@@ -31,10 +31,9 @@ const NoteTree = () => {
 
     return <Flex vertical justify="space-between" style={{ flex: 1 }}>
         <div>
-            <Tree treeData={!collaborative ? nodes : filter(nodes)} blockNode defaultExpandAll selectable={false}
-                rootStyle={{ overflowY: "auto" }}
+            <Tree treeData={!collaborative ? nodes : filter(nodes)} blockNode 
+                rootStyle={{ overflowY: "auto" }} defaultExpandAll selectable={false}
                 titleRender={(data) => {
-
                     const first = nodes[0].key === data.key;
                     return <Flex justify="space-between" onClick={() => navigate(data.url ? data.url : data.key as string)}
                         style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>

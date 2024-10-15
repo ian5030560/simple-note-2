@@ -3,16 +3,16 @@ import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Rout
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
-import { contentLoader, settingLoader, PublicProvider, PrivateProvider, collaborateLoader, ThemeConfigProvider, getCookie } from "./util/loader";
+import { contentLoader, settingLoader, Public, Private, collaborateLoader, ThemeConfigProvider, getCookie } from "./util/loader";
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
 import Editor from "./Editor";
 import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
 import { decodeBase64 } from "./util/secret";
-import UserLayout from "./User";
+import UserLayout, { Switch } from "./User";
 
-function editorLoader(args: LoaderFunctionArgs<any>){
+function editorLoader(args: LoaderFunctionArgs<any>) {
   const { params } = args;
   const { id, host } = params;
   const collab = !!(id && host);
@@ -22,11 +22,12 @@ function editorLoader(args: LoaderFunctionArgs<any>){
 
   return !collab ? contentLoader(args, username!) : collaborateLoader(args)
     .then(async (only) => {
+      console.log(only);
       if (only) return await contentLoader(args, decodeBase64(host));
-      return null;
+      return false;
     })
     .catch(() => {
-      throw new Response(undefined, { status: 404 })
+      throw new Response(undefined, { status: 403 })
     });
 }
 
@@ -35,16 +36,16 @@ const EditorComponent = React.lazy(() => import("./Editor/editor"));
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route element={<PublicProvider />}>
+      <Route element={<Public />}>
         <Route path="/" element={<WelcomeLayout />}>
           <Route index element={<Intro />} />
           <Route path="auth" element={<Auth />} />
         </Route>
       </Route>
 
-      <Route element={<PrivateProvider />}>
-        <Route path="note" element={<UserLayout/>} loader={settingLoader} errorElement={<SettingErrorBoundary />}>
-          <Route path=":id/:host?" element={<Editor />} errorElement={<EditorErrorBoundary />} loader={editorLoader} />
+      <Route element={<Private />}>
+        <Route path="note" element={<UserLayout />} loader={settingLoader} errorElement={<SettingErrorBoundary />}>
+            <Route path=":id/:host?" element={<Editor />} errorElement={<EditorErrorBoundary />} loader={editorLoader} />
         </Route>
       </Route>
 

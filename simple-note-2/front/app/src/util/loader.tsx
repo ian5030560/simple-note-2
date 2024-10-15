@@ -4,14 +4,14 @@ import { Navigate, Outlet, LoaderFunctionArgs } from "react-router-dom";
 import { decodeBase64 } from "./secret";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { defaultTheme } from "./theme";
-import { findNode, NoteDataNode, useNodes } from "../User/SideBar/NoteTree/store";
+import { createStore, findNode, NoteDataNode, useNodes } from "../User/SideBar/NoteTree/store";
 
-export function PublicProvider() {
+export function Public() {
     const [{ username }] = useCookies(["username"]);
     return username ? <Navigate to={"note"} replace /> : <Outlet />
 }
 
-export function PrivateProvider() {
+export function Private() {
     const [{ username }] = useCookies(["username"]);
     return !username ? <Navigate to={"/"} replace /> : <Outlet />
 }
@@ -58,7 +58,7 @@ function sortNodes(data: NoteTreeData[]) {
     return sortedData;
 }
 
-export const getCookie = () => new Map(document.cookie.split(":").map((item) => item.split("=")) as [[string, string]]);
+export const getCookie = () => new Map(document.cookie.split(";").map((item) => item.trim().split("=")) as [[string, string]]);
 const requestInit = {
     method: "POST",
     headers: {
@@ -71,7 +71,7 @@ export type NoteFetchResult = {
     one: Array<NoteTreeData>,
     multiple: Array<{ noteId: string, noteName: string, url: string }>
 }
-export async function settingLoader({ request }: LoaderFunctionArgs<NoteDataNode[]>) {
+export async function settingLoader({ request }: LoaderFunctionArgs<string>) {
 
     const url = APIs.loadNoteTree;
     const cookie = getCookie();
@@ -105,9 +105,9 @@ export async function settingLoader({ request }: LoaderFunctionArgs<NoteDataNode
                     const index = node.siblingKey ? nodes.findIndex(it => it.key === node.siblingKey) + 1 : nodes.length;
                     children.splice(index, 0, { key: node.key, title: node.title, children: [], url: node.url });
                 }
-
-                useNodes.setState({nodes: newNodes});
-                return newNodes;
+                console.log(data);
+                createStore.setState({nodes: newNodes});
+                return newNodes[0].key;
             }
             catch(e){
                 console.log(e);
@@ -170,7 +170,9 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
             .catch(() => { throw collabErr })
     ])
         .then(reses => reses[1])
-        .catch(() => { throw collabErr });
+        .catch(() => {
+            throw collabErr
+         });
 }
 
 type ThemeConfigContextType = {

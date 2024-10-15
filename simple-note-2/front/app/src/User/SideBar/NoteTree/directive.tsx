@@ -98,7 +98,6 @@ export default function useDirective() {
     }, [_delete, api, deleteNote, findNode, navigate, remove, username]);
 
     const clearCancelCollab = () => setCancelCollab({ open: false, node: null });
-
     const handleCancelCollab = useCallback(() => {
         const { node } = cancelCollab;
         if (!node?.title || !node?.url) return;
@@ -113,6 +112,7 @@ export default function useDirective() {
                 }
                 else {
                     update(id, { url: undefined });
+                    navigate(id, {replace: true});
                     api.success(`${title} 取消成功`);
                 }
             })

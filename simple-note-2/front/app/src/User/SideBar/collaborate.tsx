@@ -2,17 +2,17 @@ import { CloseCircleOutlined, ShareAltOutlined, TeamOutlined } from "@ant-design
 import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useCookies } from "react-cookie"
-import { useParams } from "react-router-dom"
+import { redirect, useNavigate, useParams } from "react-router-dom"
 import { useNodes } from "./NoteTree/store";
 import useAPI from "../../util/api"
 import { encodeBase64, decodeBase64 } from "../../util/secret"
 import { NoteDataNode } from "./NoteTree/store"
 
-interface Props {
+interface CollaborateModalProps {
     open?: boolean
     onCancel: () => void
 }
-export default function CollaborateModal(prop: Props) {
+export default function CollaborateModal(prop: CollaborateModalProps) {
     const { id, host } = useParams();
     const [{ username }] = useCookies(["username"]);
     const [url, setUrl] = useState<string>();
@@ -22,13 +22,13 @@ export default function CollaborateModal(prop: Props) {
     const { token } = theme.useToken();
     const deleteCollab = useAPI(APIs.deleteCollaborate);
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const node = findNode(id!)?.current as NoteDataNode | undefined;
         const url = node?.url;
         setUrl(url ? `http://localhost:3000/note/${url}` : undefined);
-
-    }, [findNode, host, id]);
+    }, [findNode, host, id, navigate]);
 
     const requestCollaborate = useCallback(() => {
         const host = encodeBase64(username);
@@ -37,15 +37,19 @@ export default function CollaborateModal(prop: Props) {
         addCollaborate({ username: username, noteId: id as string, url: url })[0]
             .then(res => {
                 if (!res.ok) return api.error("發起失敗");
-                api.success("發起成功");
                 const node = findNode(id as string)?.current;
-                if (node) {
+                if (!node) {
+                    api.error("發起失敗");
+                }
+                else {
                     update(node.key as string, { url: url });
+                    navigate(url, {replace: true});
+                    api.success("發起成功");
                 }
             })
             .catch(() => api.error("發起失敗"));
 
-    }, [addCollaborate, api, findNode, id, update, username]);
+    }, [addCollaborate, api, findNode, id, navigate, update, username]);
 
     const handleCollab = useCallback(() => {
         if (!url) {
@@ -57,19 +61,14 @@ export default function CollaborateModal(prop: Props) {
         }
     }, [api, requestCollaborate, url]);
 
-    const footer = useMemo(() => {
-        const f = [
-            <Button key={"request"} icon={!url ? <TeamOutlined /> : <ShareAltOutlined />}
-                type="primary" onClick={handleCollab}>
-                {!url ? "發起" : "分享"}
-            </Button>
-        ]
-
-        if (id && host) f.push(<Button key={"cancel"} icon={<CloseCircleOutlined />} danger
-            onClick={() => setDeleteOpen(true)}>取消</Button>);
-
-        return f;
-    }, [handleCollab, host, id, url]);
+    const footer = useMemo(() => <>
+        <Button key={"request"} icon={!url ? <TeamOutlined /> : <ShareAltOutlined />}
+            type="primary" onClick={handleCollab}>
+            {!url ? "發起" : "分享"}
+        </Button>
+        {id && host && <Button key={"cancel"} icon={<CloseCircleOutlined />} danger
+            onClick={() => setDeleteOpen(true)}>取消</Button>}
+    </>, [handleCollab, host, id, url]);
 
     const handleDelete = useCallback(() => {
         deleteCollab({ username: username, noteId: id!, masterName: decodeBase64(host!) })[0]
@@ -78,14 +77,20 @@ export default function CollaborateModal(prop: Props) {
                     api.error("取消失敗");
                 }
                 else {
-                    api.success("取消成功");
                     const node = findNode(id!)?.current;
-                    if (node) update(node.key as string, { url: undefined });
+                    if (!node){
+                        api.success("取消失敗");
+                    }
+                    else{
+                        update(node.key as string, { url: undefined });
+                        navigate(node.key as string, {replace: true});
+                        api.success("取消成功");
+                    }
                 }
             });
 
         setDeleteOpen(false);
-    }, [api, deleteCollab, findNode, host, id, update, username]);
+    }, [api, deleteCollab, findNode, host, id, navigate, update, username]);
 
     return <>
         <Modal open={prop.open} footer={footer} title="協作" onCancel={prop.onCancel}>

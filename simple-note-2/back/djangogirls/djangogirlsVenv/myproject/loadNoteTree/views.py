@@ -83,8 +83,8 @@ class LoadNoteTreeView(APIView):
                             noteTitleID = UserNoteData.check_note_title_id_by_note_id(noteIDList[i])
 
                             # find note name
-                            noteName = UserNoteData.check_note_name_by_note_title_id(noteTitleID)
-                            multipleNoteData = {"noteId": noteIDList[i], "noteName": noteName, "url": collaborateUrlList[i]}
+                            noteName = UserNoteData.check_note_name_by_note_id(noteIDList[i])
+                            multipleNoteData = {"noteId": noteTitleID, "noteName": noteName, "url": collaborateUrlList[i]}
                             multipleNoteDataArray.append(multipleNoteData)
 
                     else: # url == null(False) 
@@ -92,7 +92,8 @@ class LoadNoteTreeView(APIView):
                         multipleNoteDataArray.append(multipleNoteData)
                     
                 respDict = {"one": singleNoteDataArray, "multiple": multipleNoteDataArray}
-          
+                print(respDict)
+                print("------------------------------------------------------------")
                 return JsonResponse(respDict)
             
             elif notesData == False:  # SQL error
