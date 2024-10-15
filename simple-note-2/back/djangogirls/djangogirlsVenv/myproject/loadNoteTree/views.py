@@ -49,6 +49,7 @@ class LoadNoteTreeView(APIView):
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
 
+            
             notesData = UserNoteData.check_user_all_notes(username)  # 透過username來取得資料
                 
             if notesData:  # 取得成功
@@ -56,40 +57,39 @@ class LoadNoteTreeView(APIView):
                 multipleNoteDataArray = [] # list of multiple note
                 isCollaborativeNoteExist = 0 # check is Collaborative Note Exist? 0: no, 1: yes
                 
-                
+                # single note
                 for i in range(len(notesData)):
                     notesDataID = notesData[i][1]
                     notesDataName = notesData[i][0]
                     
-                    # single note
                     parentId = UserSubNoteData.check_parent_id(notesDataID)
                     silblingId = UserSubNoteData.check_sibling_id(notesDataID)
                     singleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "parentId": parentId, "silblingId": silblingId}
                     singleNoteDataArray.append(singleNoteData)
                     
-                    # multiple note  
-                    # try get collaborateb url? True: response, False: don't response
-                    collaborateUrl = UserCollaborateNote.check_url(username)
-                    if collaborateUrl:
-                        # change collaborator urls from tuple to list
-                        collaborateUrlList = [str(item[0]) for item in collaborateUrl]
-                        
-                        # find all noteID, and change noteID from tuple to list
-                        noteID = UserCollaborateNote.check_all_noteID_by_guest(username)
-                        noteIDList = [str(item[0]) for item in noteID]
+                # multiple note  
+                # try get collaborateb url? True: response, False: don't response
+                collaborateUrl = UserCollaborateNote.check_url(username)
+                if collaborateUrl:
+                    # change collaborator urls from tuple to list
+                    collaborateUrlList = [str(item[0]) for item in collaborateUrl]
+                    
+                    # find all noteID, and change noteID from tuple to list
+                    noteID = UserCollaborateNote.check_all_noteID_by_guest(username)
+                    noteIDList = [str(item[0]) for item in noteID]
 
-                        for i in range(len(collaborateUrlList)):
-                            # get note title id using note id
-                            noteTitleID = UserNoteData.check_note_title_id_by_note_id(noteIDList[i])
+                    for i in range(len(collaborateUrlList)):
+                        # get note title id using note id
+                        noteTitleID = UserNoteData.check_note_title_id_by_note_id(noteIDList[i])
 
-                            # find note name
-                            noteName = UserNoteData.check_note_name_by_note_id(noteIDList[i])
-                            multipleNoteData = {"noteId": noteTitleID, "noteName": noteName, "url": collaborateUrlList[i]}
-                            multipleNoteDataArray.append(multipleNoteData)
-
-                    else: # url == null(False) 
-                        multipleNoteData = []
+                        # find note name
+                        noteName = UserNoteData.check_note_name_by_note_id(noteIDList[i])
+                        multipleNoteData = {"noteId": noteTitleID, "noteName": noteName, "url": collaborateUrlList[i]}
                         multipleNoteDataArray.append(multipleNoteData)
+
+                else: # url == null(False) 
+                    multipleNoteData = []
+                    multipleNoteDataArray.append(multipleNoteData)
                     
                 respDict = {"one": singleNoteDataArray, "multiple": multipleNoteDataArray}
                 print(respDict)
