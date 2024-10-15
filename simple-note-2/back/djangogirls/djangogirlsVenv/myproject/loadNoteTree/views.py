@@ -71,11 +71,19 @@ class LoadNoteTreeView(APIView):
                     # try get collaborateb url? True: response, False: don't response
                     collaborateUrl = UserCollaborateNote.check_url(username)
                     if collaborateUrl:
+                        # change collaborator urls from tuple to list
                         collaborateUrlList = [str(item[0]) for item in collaborateUrl]
-                        UserNoteData.check_note_name_by_note_title_id()
-                        UserCollaborateNote.check_all_noteID_by_guest()
-                        multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-                        multipleNoteDataArray.append(multipleNoteData)
+                        
+                        # find all noteID, and change noteID from tuple to list
+                        noteID = UserCollaborateNote.check_all_noteID_by_guest(username)
+                        noteIDList = [str(item[0]) for item in noteID]
+
+                        for i in range(len(collaborateUrlList)):
+                            # find note name
+                            noteName = UserNoteData.check_note_name_by_note_title_id(noteIDList[i])
+                            multipleNoteData = {"noteId": noteIDList[i], "noteName": noteName, "url": collaborateUrlList[i]}
+                            multipleNoteDataArray.append(multipleNoteData)
+
                     else: # url == null(False) 
                         multipleNoteData = []
                         multipleNoteDataArray.append(multipleNoteData)
