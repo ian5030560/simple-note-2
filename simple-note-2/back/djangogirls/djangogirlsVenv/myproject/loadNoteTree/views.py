@@ -68,17 +68,14 @@ class LoadNoteTreeView(APIView):
                     singleNoteDataArray.append(singleNoteData)
                     
                     # multiple note  
-                    # check Collaborative Note Exist? 0: no, 1: yes
-                    if UserCollaborateNote.check_collaborativeNote_exist(username, notesDataID):
-                        isCollaborativeNoteExist = 1 # Collaborative Note Exist
-                        
-                        # try get collaborateb url
-                        # collaborateUrl = UserCollaborateNote.check_url(username)
-                        collaborateUrl = UserCollaborateNote.get_note_url(username, notesDataID)
-                        if collaborateUrl != []: # url != null
-                            multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
-                        else: # url == null
-                            multipleNoteData = []
+                    # try get collaborateb url? True: response, False: don't response
+                    collaborateUrl = UserCollaborateNote.check_url(username)
+                    print("collaborateUrl", collaborateUrl)
+                    print("--------------------------------")
+                    if collaborateUrl:
+                        multipleNoteData = {"noteId": notesDataID, "noteName": notesDataName, "url": collaborateUrl}
+                    else: # url == null
+                        multipleNoteData = []
                         multipleNoteDataArray.append(multipleNoteData)
                     
                 respDict = {"one": singleNoteDataArray, "multiple": multipleNoteDataArray}
