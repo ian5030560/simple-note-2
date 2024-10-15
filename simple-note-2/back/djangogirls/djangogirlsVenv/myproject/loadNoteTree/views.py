@@ -79,8 +79,11 @@ class LoadNoteTreeView(APIView):
                         noteIDList = [str(item[0]) for item in noteID]
 
                         for i in range(len(collaborateUrlList)):
+                            # get note title id using note id
+                            noteTitleID = UserNoteData.check_note_title_id_by_note_id(noteIDList[i])
+
                             # find note name
-                            noteName = UserNoteData.check_note_name_by_note_title_id(noteIDList[i])
+                            noteName = UserNoteData.check_note_name_by_note_title_id(noteTitleID)
                             multipleNoteData = {"noteId": noteIDList[i], "noteName": noteName, "url": collaborateUrlList[i]}
                             multipleNoteDataArray.append(multipleNoteData)
 
