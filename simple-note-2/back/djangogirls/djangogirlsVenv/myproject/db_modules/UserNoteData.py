@@ -184,9 +184,9 @@ def check_note_name_by_note_title_id(note_title_id_input):
         result = (
             session.query(User_Note_Data.note_name)
             .filter(User_Note_Data.note_title_id == note_title_id_input)
-            .all()
+            .first()
         )
-        return result
+        return result[0]
 
     except SQLAlchemyError as e:
         session.rollback()

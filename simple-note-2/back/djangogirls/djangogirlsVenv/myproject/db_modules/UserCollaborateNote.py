@@ -112,6 +112,7 @@ def check_url(note_guest_input):
         return False
     finally:
         session.close()
+
 # check all noteID by guest_name
 def check_all_noteID_by_guest(note_guest_input):
     session = create_session()
