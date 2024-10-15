@@ -28,8 +28,8 @@ class BreezeView(APIView):
 
     def ai(self, text):
         try:
-            # url = "http://127.0.0.1:8091/"  # 確認這個端點正確
-            url = "https://85a3-140-127-74-150.ngrok-free.app/"
+            url = "http://192.168.196.106:8091"  # ZeroTier IP for AI API
+            # url = "https://85a3-140-127-74-150.ngrok-free.app/"
             post_text = {
                 "title": "",
                 "content": text

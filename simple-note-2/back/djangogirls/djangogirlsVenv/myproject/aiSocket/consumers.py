@@ -23,7 +23,7 @@ class AIConsumer(AsyncWebsocketConsumer):
     async def send_ai_request(self, text):
         import aiohttp
         
-        url = "http://localhost:8091"
+        url = "http://192.168.196.106:8091"
         post_text = {
             "title": "",
             "content": text
