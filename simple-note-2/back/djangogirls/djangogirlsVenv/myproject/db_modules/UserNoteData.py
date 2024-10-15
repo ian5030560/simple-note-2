@@ -177,13 +177,13 @@ def check_id(usernames, note_title_id):
     finally:
         session.close()
 
-#check all note_name by note_title_id
-def check_note_name_by_note_title_id(note_title_id_input):
+#check note_name by note_id
+def check_note_name_by_note_id(note_id_input):
     session = create_session()
     try:
         result = (
             session.query(User_Note_Data.note_name)
-            .filter(User_Note_Data.note_title_id == note_title_id_input)
+            .filter(User_Note_Data.id == note_id_input)
             .first()
         )
         return result[0]
@@ -193,6 +193,40 @@ def check_note_name_by_note_title_id(note_title_id_input):
         return False
     finally:
         session.close()
+
+#check note_name by note_id
+def check_note_name_by_note_id(note_id_input):
+    session = create_session()
+    try:
+        result = (
+            session.query(User_Note_Data.note_name)
+            .filter(User_Note_Data.id == note_id_input)
+            .first()
+        )
+        return result[0]
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False
+    finally:
+        session.close()
+
+#check note_title_id by note_id
+def check_note_title_id_by_note_id(note_id_input):
+    session = create_session()
+    try:
+        result = (
+            session.query(User_Note_Data.note_title_id)
+            .filter(User_Note_Data.id == note_id_input)
+            .first()
+        )
+        return result[0]
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False
+    finally:
+        session.close()                 
 
 
 
