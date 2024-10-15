@@ -112,6 +112,24 @@ def check_url(note_guest_input):
         return False
     finally:
         session.close()
+# check all noteID by guest_name
+def check_all_noteID_by_guest(note_guest_input):
+    session = create_session()
+    try:
+        stmt = (
+            session.query(User_Collaborate_Note.note_id)
+            .filter((User_Collaborate_Note.note_guest == note_guest_input))
+            .all()
+        )
+        return stmt
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        # print(e)
+        return False
+    finally:
+        session.close()
+    
 
 def get_note_url(guest_name: str, note_title_id: str):
     session = create_session()

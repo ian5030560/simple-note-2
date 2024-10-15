@@ -177,6 +177,23 @@ def check_id(usernames, note_title_id):
     finally:
         session.close()
 
+#check all note_name by note_title_id
+def check_note_name_by_note_title_id(note_title_id_input):
+    session = create_session()
+    try:
+        result = (
+            session.query(User_Note_Data.note_name)
+            .filter(User_Note_Data.note_title_id == note_title_id_input)
+            .all()
+        )
+        return result
+
+    except SQLAlchemyError as e:
+        session.rollback()
+        return False
+    finally:
+        session.close()
+
 
 
 # check all user's notes
