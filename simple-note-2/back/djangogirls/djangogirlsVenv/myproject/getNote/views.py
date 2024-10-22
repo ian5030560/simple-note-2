@@ -53,7 +53,7 @@ class GetNoteView(APIView):
             returnNoteContent = returnNoteContent[0]
 
             if returnNoteContent != False:  # 取得成功
-                return Response(returnNoteContent, status=status.HTTP_200_OK if returnNoteContent else status.HTTP_204_NO_CONTENT)
+                return Response(returnNoteContent, status=status.HTTP_200_OK if returnNoteContent else status.HTTP_204_NO_CONTENT, content_type="text/plain")
             elif returnNoteContent == False:  # error
                 return Response(returnNoteContent, status=status.HTTP_400_BAD_REQUEST)
 

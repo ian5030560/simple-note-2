@@ -24,7 +24,7 @@ const SavePlugin = (props: { initialNote?: InitialNoteType }) => {
 
         if (initialNote !== undefined) {
             if(typeof initialNote === "string"){
-                const editorState = editor.parseEditorState(JSON.parse(initialNote));
+                const editorState = editor.parseEditorState(initialNote);
                 editor.setEditorState(editorState, {tag: "history-merge"});
             }
             else if(typeof initialNote === "function"){

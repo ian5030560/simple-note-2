@@ -49,7 +49,7 @@ export default function useDirective() {
                 }
                 else {
                     api.success(`${input} 創建成功`);
-                    _add(key, input, [], current, previous);
+                    _add(key, input, {parentKey: current, siblingKey: previous});
                     navigate(`${key}`);
                 }
             });
@@ -121,7 +121,7 @@ export default function useDirective() {
             });
 
         clearCancelCollab();
-    }, [api, cancelCollab, cancelCollborate, update, username]);
+    }, [api, cancelCollab, cancelCollborate, navigate, update, username]);
 
     const deleteTitle = useMemo(() => {
         const { node } = _delete;

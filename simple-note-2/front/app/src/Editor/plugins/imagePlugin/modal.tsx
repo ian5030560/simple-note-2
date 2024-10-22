@@ -71,7 +71,6 @@ const ImageModal = () => {
 
         editor.update(() => $insertImage(src));
 
-
         fileRef.current!.value = "";
         setOpen(false);
     }, [$insertImage, editor, findNode, id, username]);

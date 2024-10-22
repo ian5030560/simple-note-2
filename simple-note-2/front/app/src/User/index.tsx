@@ -2,6 +2,8 @@ import UserComponent from "./component";
 import { Navigate, Outlet, useLoaderData, useParams } from "react-router-dom";
 import { NoteDataNode, useNodes } from "./SideBar/NoteTree/store";
 import { useMemo } from "react";
+import { useCookies } from "react-cookie";
+import { decodeBase64 } from "../util/secret";
 
 export default () => {
     const first = useLoaderData() as string;
@@ -14,8 +16,9 @@ export default () => {
 }
 
 export const Switch = (props: React.PropsWithChildren) => {
-    const { findNode, nodes } = useNodes();
+    const { findNode } = useNodes();
     const { id, host } = useParams();
+
 
     const url = useMemo(() => {
         const node = findNode(id!)?.current as NoteDataNode | undefined;
@@ -23,7 +26,6 @@ export const Switch = (props: React.PropsWithChildren) => {
         
         return url;
     }, [findNode, id]);
-    console.log(nodes);
 
     return <>
         {props.children}

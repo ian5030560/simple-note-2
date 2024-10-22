@@ -39,47 +39,55 @@ type TreeState = {
     nodes: NoteDataNode[];
 }
 
+type AddOption = {
+    children?: NoteDataNode[];
+    parentKey?: string | null;
+    siblingKey?: string | null;
+    url?: string;
+}
 type TreeAction = {
-    add: (key: string, title: string, children: NoteDataNode[], parentKey: string | null, siblingKey: string | null, url?: string) => void;
+    add: (key: string, title: string, option: AddOption) => void;
     remove: (key: string) => void;
     update: (key: string, options: Partial<NoteDataNode>) => void;
     findNode: (key: string) => FindResult | undefined;
 }
 
-export const createStore = create<TreeState & TreeAction>()((set, get) => ({
-    nodes: [],
-    add: (key, title, children, parentKey, siblingKey, url) => set((prev) => {
+const createStore = create<TreeState & TreeAction>()((set, get) => ({
+    nodes: [
+        {
+            key: "one",
+            children: [],
+        },
+        {
+            key: "multiple",
+            children: [],
+        }
+    ],
+    add: (key, title, { children, parentKey, siblingKey, url }) => set((prev) => {
         let nodes = prev.nodes;
-        if (parentKey) nodes = findNode(prev.nodes, parentKey)!.current.children!;
+        if (parentKey) nodes = findNode(nodes, parentKey)!.current.children!;
         const index = siblingKey ? nodes.findIndex(it => it.key === siblingKey) + 1 : nodes.length;
-        nodes.splice(index, 0, { key: key, title: title, children: children, url: url });
+        nodes.splice(index, 0, { key: key, title: title, children: children || [], url: url });
 
-        return { nodes: [...prev.nodes] };
+        return { ...prev };
     }),
     remove: (key) => set((prev) => {
-        const parent = findNode(prev.nodes, key)!.parent;
-        const nodes = parent ? parent.children! : prev.nodes;
-        nodes?.splice(nodes.findIndex(it => it.key === key), 1);
-        return { nodes: [...prev.nodes] };
+        const nodes = prev.nodes;
+        const parent = findNode(nodes, key)!.parent;
+        const children = parent ? parent.children! : nodes;
+        children?.splice(nodes.findIndex(it => it.key === key), 1);
+        return { ...prev };
     }),
-    
-    update: (key, options) => set(({ nodes }) => {
+
+    update: (key, options) => set((prev) => {
+        const nodes = prev.nodes;
         const node = findNode(nodes, key)?.current;
         if (!node) throw new Error("This node is not existed");
         Object.assign(node, options);
-        
-        return { nodes: [...nodes] };
+
+        return { ...prev };
     }),
     findNode: (key) => findNode(get().nodes, key)
 }));
-
-// export const useNodes = () => {
-//     const store = createStore();
-
-//     return {
-//         ...store,
-//         findNode: (key: string) => findNode(store.nodes, key)
-//     }
-// };
 
 export const useNodes = createStore;

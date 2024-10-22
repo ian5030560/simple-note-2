@@ -4,7 +4,7 @@ import { Navigate, Outlet, LoaderFunctionArgs } from "react-router-dom";
 import { decodeBase64 } from "./secret";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { defaultTheme } from "./theme";
-import { createStore, findNode, NoteDataNode, useNodes } from "../User/SideBar/NoteTree/store";
+import { useNodes, findNode, NoteDataNode } from "../User/SideBar/NoteTree/store";
 
 export function Public() {
     const [{ username }] = useCookies(["username"]);
@@ -88,26 +88,40 @@ export async function settingLoader({ request }: LoaderFunctionArgs<string>) {
             if (!res.ok) throw notesError;
             return res.json();
         })
-        .then(data => {
+        .then((data: NoteFetchResult) => {
             try{
-                const sorted = sortNodes(data["one"]);
-                const nodes = sorted.map((it) => (
+                const oneSorted = sortNodes(data["one"]);
+                const oneMapped = oneSorted.map((it) => (
                     {
                         key: it.noteId, title: it.noteName, children: [],
                         parentKey: it.parentId, siblingKey: it.silblingId,
                         url: data["multiple"].find(mul => mul.noteId === it.noteId)?.url
                     }
                 ));
-                const newNodes: NoteDataNode[] = [];
-                for (const node of nodes) {
-                    let children = newNodes;
-                    if (node.parentKey) children = findNode(newNodes, node.parentKey)!.current.children!;
-                    const index = node.siblingKey ? nodes.findIndex(it => it.key === node.siblingKey) + 1 : nodes.length;
+
+                const ones: NoteDataNode[] = [];
+                for (const node of oneMapped) {
+                    let children = ones;
+                    if (node.parentKey) children = findNode(ones, node.parentKey)!.current.children!;
+                    const index = node.siblingKey ? oneMapped.findIndex(it => it.key === node.siblingKey) + 1 : oneMapped.length;
                     children.splice(index, 0, { key: node.key, title: node.title, children: [], url: node.url });
                 }
-                console.log(data);
-                createStore.setState({nodes: newNodes});
-                return newNodes[0].key;
+
+                const mutiples: NoteDataNode[] = data["multiple"].map(it => {
+                    const [id, host] = it.url.split("/");
+                    const title = `${decodeBase64(host)}-${it.noteName}`;
+                    return {
+                        title: title, key: id + host, children: [], url: it.url,
+                    }
+                })
+                useNodes.setState(({nodes, ...rest}) => {
+                    const [prevOnes, prevMultiple] = nodes;
+                    prevOnes.children = ones;
+                    prevMultiple.children = mutiples;
+
+                    return {...rest, nodes};
+                });
+                return ones[0].key;
             }
             catch(e){
                 console.log(e);
@@ -127,7 +141,7 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<stri
         body: JSON.stringify({ username: username, noteId: id }),
     })
         .then(async res => {
-            if (res.ok) return res.status === 204 ? null : await res.text();
+            if (res.ok) return res.status === 204 ? null : JSON.parse(await res.text());
             throw new Response(undefined, { status: 404 });
         })
         .catch(() => {

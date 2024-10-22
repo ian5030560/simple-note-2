@@ -8,13 +8,13 @@ type NoteRelationItem = {
     key: string;
 }
 export default function BreadCrumb() {
-    const { nodes, findNode } = useNodes();
-    const { id } = useParams();
+    const { findNode } = useNodes();
+    const { id, host } = useParams();
     const items = useMemo(() => {
         const crumbs: NoteRelationItem[] = [];
-        if (nodes.length === 0) return crumbs;
+        const collab = !!(id && host);
 
-        let current = id;
+        let current = !collab ? id : id + host;
         while (current) {
             const found = findNode(current);
             if (!found) break;
@@ -23,7 +23,7 @@ export default function BreadCrumb() {
         }
 
         return crumbs.reverse();
-    }, [findNode, id, nodes.length]);
+    }, [findNode, host, id]);
 
     const last = items.length - 1;
 

@@ -64,7 +64,7 @@ interface EditorProps {
 export default function Editor(props: EditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const { token } = theme.useToken();
-
+    
     return <div className={styles.editorFrame} style={{ backgroundColor: token.colorBgLayout }}>
         <LexicalComposer
             initialConfig={{
