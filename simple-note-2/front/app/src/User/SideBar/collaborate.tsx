@@ -2,7 +2,7 @@ import { CloseCircleOutlined, ShareAltOutlined, TeamOutlined } from "@ant-design
 import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useCookies } from "react-cookie"
-import { redirect, useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useNodes } from "./NoteTree/store";
 import useAPI from "../../util/api"
 import { encodeBase64, decodeBase64 } from "../../util/secret"

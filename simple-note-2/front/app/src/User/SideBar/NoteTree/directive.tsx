@@ -36,9 +36,10 @@ export default function useDirective() {
         const { error, node, input } = add;
         if (error || !input) return;
 
-        const current = node ? node.key as string : null;
-        const previous = (node ? node.children![node.children!.length - 1]?.key : nodes[nodes.length - 1]?.key) as string | null;
+        const current = node?.key as string || null;
+        const previous = (node ? node.children![node.children!.length - 1]?.key : nodes["one"].at(-1)?.key) as string | null;
         const key = uuid();
+
         addNote({
             username: username, noteId: key, notename: input,
             parentId: current, silbling_id: previous
@@ -49,8 +50,8 @@ export default function useDirective() {
                 }
                 else {
                     api.success(`${input} 創建成功`);
-                    _add(key, input, {parentKey: current, siblingKey: previous});
-                    navigate(`${key}`);
+                    _add(key, input, { parentKey: current, siblingKey: previous });
+                    navigate(key);
                 }
             });
 
@@ -59,15 +60,16 @@ export default function useDirective() {
 
     const handleAddInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { node } = add;
-        const children = node ? findNode(node.key as string)?.current?.children : nodes;
+        const children = node ? findNode(node.key as string)?.current?.children : nodes["one"];
         if (!children) return;
+
         let flag = false;
-        children.forEach(it => {
+        for(const it of children){
             if (it.title === e.target.value) {
                 flag = true;
-                return;
+                break;
             }
-        });
+        }
         setAdd(prev => ({ ...prev, error: flag, input: e.target.value }));
     }, [add, findNode, nodes]);
 
@@ -111,8 +113,14 @@ export default function useDirective() {
                     api.error(`${title} 取消失敗`);
                 }
                 else {
-                    update(id, { url: undefined });
-                    navigate(id, {replace: true});
+                    if(master !== username){
+                        navigate("..", {replace: true, relative: "route"});
+                    }
+                    else{
+                        update(id, { url: undefined });
+                        navigate(id, { replace: true });
+                    }
+                    
                     api.success(`${title} 取消成功`);
                 }
             })

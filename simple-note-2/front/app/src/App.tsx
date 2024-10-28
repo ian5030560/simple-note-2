@@ -10,7 +10,7 @@ import Auth from "./Welcome/Auth";
 import Editor from "./Editor";
 import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
 import { decodeBase64 } from "./util/secret";
-import UserLayout, { Switch } from "./User";
+import UserLayout from "./User";
 
 function editorLoader(args: LoaderFunctionArgs<any>) {
   const { params } = args;
@@ -22,7 +22,6 @@ function editorLoader(args: LoaderFunctionArgs<any>) {
 
   return !collab ? contentLoader(args, username!) : collaborateLoader(args)
     .then(async (only) => {
-      console.log(only);
       if (only) return await contentLoader(args, decodeBase64(host));
       return false;
     })

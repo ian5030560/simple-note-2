@@ -107,18 +107,16 @@ export async function settingLoader({ request }: LoaderFunctionArgs<string>) {
                     children.splice(index, 0, { key: node.key, title: node.title, children: [], url: node.url });
                 }
 
-                const mutiples: NoteDataNode[] = data["multiple"].map(it => {
+                const multiples: NoteDataNode[] = data["multiple"].map(it => {
                     const [id, host] = it.url.split("/");
                     const title = `${decodeBase64(host)}-${it.noteName}`;
                     return {
                         title: title, key: id + host, children: [], url: it.url,
                     }
-                })
-                useNodes.setState(({nodes, ...rest}) => {
-                    const [prevOnes, prevMultiple] = nodes;
-                    prevOnes.children = ones;
-                    prevMultiple.children = mutiples;
+                });
 
+                useNodes.setState(({nodes, ...rest}) => {
+                    nodes = {one: ones, multiple: multiples};
                     return {...rest, nodes};
                 });
                 return ones[0].key;
