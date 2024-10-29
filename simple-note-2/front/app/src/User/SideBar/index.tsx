@@ -17,7 +17,6 @@ const UserProfile = () => {
         setting: { open: false, label: "設定", icon: <SettingOutlined /> },
         signOut: { open: false, label: "登出", icon: <BsBoxArrowRight /> },
         collab: { open: false, label: "協作", icon: <TeamOutlined /> },
-        // deleteCollab: { open: false, label: "取消協作", icon: <CloseCircleOutlined />, danger: true },
     });
 
     const updateModal = useCallback((key: keyof typeof state, value: boolean) => setState(prev => {
@@ -29,19 +28,17 @@ const UserProfile = () => {
     const [{ username }, , removeCookies] = useCookies(["username"]);
     const navigate = useNavigate();
     const signOut = useAPI(APIs.signOut);
-    const { id, host } = useParams();
     const { picture } = useInfo();
 
     const items = useMemo(() => {
         const arr: ItemType[] = [];
         for (let key in state) {
-            if (key === "deleteCollab" && !(id && host)) continue;
-            const { _, ...rest } = state[key];
+            const rest = state[key];
 
             arr.push({ key, ...rest });
         }
         return arr;
-    }, [host, id, state]);
+    }, [state]);
 
     const handleClick = ({ key }: { key: string }) => {
         updateModal(key as keyof typeof state, true);

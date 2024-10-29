@@ -18,7 +18,7 @@ export default function CollaborateModal(prop: CollaborateModalProps) {
     const [url, setUrl] = useState<string>();
     const [api, context] = message.useMessage();
     const addCollaborate = useAPI(APIs.addCollaborate);
-    const { findNode, update } = useNodes();
+    const { findNode, update, add } = useNodes();
     const { token } = theme.useToken();
     const deleteCollab = useAPI(APIs.deleteCollaborate);
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -43,13 +43,14 @@ export default function CollaborateModal(prop: CollaborateModalProps) {
                 }
                 else {
                     update(node.key as string, { url: url });
+                    add(node.key as string, node.title as string, {}, "multiple");
                     navigate(url, {replace: true});
                     api.success("發起成功");
                 }
             })
             .catch(() => api.error("發起失敗"));
 
-    }, [addCollaborate, api, findNode, id, navigate, update, username]);
+    }, [add, addCollaborate, api, findNode, id, navigate, update, username]);
 
     const handleCollab = useCallback(() => {
         if (!url) {

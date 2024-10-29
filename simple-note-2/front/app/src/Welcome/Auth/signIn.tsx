@@ -46,7 +46,6 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                     setCookie("username", values["username"]);
                     setState(STATE.SUCCESS);
                 }
-
             })
             .catch(() => setState(STATE.FAILURE));
     };

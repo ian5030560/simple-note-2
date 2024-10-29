@@ -1,12 +1,12 @@
 import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
-import { Provider } from "@lexical/yjs";
+import { CONNECTED_COMMAND, Provider } from "@lexical/yjs";
 import { WebsocketProvider } from "y-websocket";
 import { Doc } from "yjs";
 import { useCallback, useEffect, useRef } from "react";
 import { useCookies } from "react-cookie";
 import { $empty, InitialNoteType } from "../plugins/savePlugin";
 import { CursorsContainerRef } from "@lexical/react/shared/useYjsCollaboration";
-import { CLEAR_EDITOR_COMMAND } from "lexical";
+import { $getRoot, CLEAR_EDITOR_COMMAND, COMMAND_PRIORITY_CRITICAL } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 function getDocFromMap(id: string, yjsDocMap: Map<string, Doc>): Doc {
@@ -33,41 +33,48 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
     const provider = useRef<WebsocketProvider | null>(null);
     const [editor] = useLexicalComposerContext();
 
-    useEffect(() => {
+    useEffect(() => editor.registerCommand(CONNECTED_COMMAND, (connected) => {
+        if(!connected) return false;
+
         editor.setEditable(false);
         const initial = props.initialNote;
-        provider.current?.connect();
-        
+        console.log(initial);
         if (initial !== undefined) {
             if (typeof initial === "function") {
                 editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-                editor.update(() => initial(editor), {tag: "history-merge"});
+                editor.update(() => initial(editor), { tag: "history-merge" });
             }
-            else if(typeof initial === "string") {
+            else if (typeof initial === "string") {
                 const editorState = editor.parseEditorState(JSON.parse(initial));
-                editor.setEditorState(editorState, {tag: "history-merge"});
+                if(!editorState.isEmpty()){
+                    editor.setEditorState(editorState, { tag: "history-merge" });
+                }
+                else{
+                    $getRoot().select().insertParagraph()?.select();
+                }
             }
-            else{
+            else {
                 editor.dispatchCommand(CLEAR_EDITOR_COMMAND, undefined);
-                editor.update($empty, {tag: "history-merge"});
+                editor.update($empty, { tag: "history-merge" });
             }
         }
         editor.setEditable(true);
 
-    }, [editor, props.initialNote]);
+        return false;
+    }, COMMAND_PRIORITY_CRITICAL), [editor, props.initialNote]);
 
     const providerFactory = useCallback((id: string, yjsMap: Map<string, Doc>) => {
         const { current } = provider;
         if (current) {
-            if(current.roomname === id) return provider.current as unknown as Provider;
+            if (current.roomname === id) return provider.current as unknown as Provider;
             current.disconnect();
             current.destroy();
         }
-        
-        const doc = getDocFromMap(id, yjsMap);
-        const p = new WebsocketProvider("ws://localhost:4000", id, doc, { connect: false });
-        provider.current = p;
 
+        const doc = getDocFromMap(id, yjsMap);
+        const p = new WebsocketProvider("ws://localhost:4000", id, doc, { connect: true });
+        provider.current = p;
+        
         return p as unknown as Provider;
     }, []);
 

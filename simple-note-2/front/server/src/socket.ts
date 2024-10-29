@@ -53,6 +53,7 @@ export default class Socket {
 
             if(docName !== this.test){
                 let ydoc: Y.Doc = getYDoc(docName, true);
+                
                 ydoc.on("update", () => {
                     // @ts-ignore
                     const lexicalJSON = headlessConvertYDocStateToLexicalJSON(nodes, Y.encodeStateAsUpdate(ydoc));
