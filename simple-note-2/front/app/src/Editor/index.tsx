@@ -1,7 +1,9 @@
 import { useLoaderData, useNavigation, useParams } from "react-router-dom";
-import { Skeleton, Spin } from "antd";
+import { Skeleton } from "antd";
 import styles from "./index.module.css";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense } from "react";
+import { useCookies } from "react-cookie";
+import { LongWaiting } from "../User";
 
 function Loading() {
     return <div className={styles.loading}>
@@ -16,27 +18,15 @@ export default () => {
     const { id, host } = useParams();
     const collab = !!(id && host);
     const navigation = useNavigation();
-    const [waiting, setWaiting] = useState(false);
-
-    useEffect(() => {
-        let id: NodeJS.Timeout | undefined = undefined;
-        if (navigation.state !== "loading") {
-            setWaiting(false);
-        }
-        else {
-            id = setTimeout(() => {
-                setWaiting(true);
-            }, 1000);
-        }
-
-        return () => { if (id) clearTimeout(id) }
-    }, [navigation.state]);
+    const [{ username }] = useCookies(["username"]);
 
     return <>
         <Suspense fallback={<Loading />}>
-            <Editor initialNote={data !== false ? data : undefined} collab={collab}
-                room={collab ? `${id}/${host}` : undefined} />
+            {
+                navigation.state !== "loading" && <Editor initialEditorState={data !== false ? data : undefined} collab={collab}
+                    room={collab ? `${id}/${host}` : undefined} username={username} />
+            }
         </Suspense>
-        {waiting && <Spin spinning fullscreen size="large"/>}
+        <LongWaiting delay={1000} text="正在載入內容"/>
     </>
 };

@@ -15,6 +15,7 @@
     "@lexical/yjs": "^0.13.1",
     "@types/cookie": "^0.6.0",
     "cookie": "^0.6.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "express": "^4.21.0",
     "ignore-styles": "^5.0.1",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@lexical/react": "^0.13.1",
+    "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.5.4",

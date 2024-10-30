@@ -136,6 +136,7 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<stri
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
+        credentials: "same-origin",
         body: JSON.stringify({ username: username, noteId: id }),
     })
         .then(async res => {
@@ -172,7 +173,7 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
 
         fetch(numberUrl, {
             ...requestInit, signal: request.signal,
-            body: JSON.stringify({ room: `${id}/${host}` })
+            body: JSON.stringify({ room: `${id}/${host}` }),
         })
             .then(async res => {
                 if (!res.ok) throw collabErr;
