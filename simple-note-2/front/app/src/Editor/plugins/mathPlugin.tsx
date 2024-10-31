@@ -1,23 +1,31 @@
-import { $getRoot, $getSelection, $isRangeSelection, createCommand, LexicalCommand } from "lexical"
-import { useCallback, useState } from "react";
-import Modal from "../ui/modal";
+import { $getRoot, $getSelection, $isRangeSelection, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical"
+import { useCallback, useEffect, useState } from "react";
 import { Button, Checkbox, Flex, Form, Input, Space, Typography } from "antd";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createMathNode } from "../nodes/math";
 import { MathRender } from "../nodes/math/component";
-import useMenuFocused from "./draggablePlugin/store";
 import { $contains } from "../utils";
+import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
+import Modal from "../ui/modal";
 
-export const OPEN_MATH_MODAL: LexicalCommand<void> = createCommand();
 type MathFormData = { inline: boolean, content: string };
-function MathModal() {
+export default function MathPlugin() {
     const [open, setOpen] = useState(false);
     const [form] = Form.useForm<MathFormData>();
     const [editor] = useLexicalComposerContext();
     const [preview, setPreview] = useState("");
-    const { node } = useMenuFocused();
+    const [node, setNode] = useState<LexicalNode>();
 
-    const handleClose = useCallback(() => {
+    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
+        if (value === "math") {
+            setNode(node);
+            setOpen(true);
+        }
+
+        return false;
+    }, COMMAND_PRIORITY_CRITICAL), [editor]);
+
+    const handleCancel = useCallback(() => {
         setOpen(false);
         setPreview("");
         form.resetFields();
@@ -55,11 +63,10 @@ function MathModal() {
             })
         }
 
-        handleClose();
-    }, [editor, handleClose, node]);
+        handleCancel();
+    }, [editor, handleCancel, node]);
 
-    return <Modal title="輸入數學" command={OPEN_MATH_MODAL} open={open}
-        onOpen={() => setOpen(true)} onClose={handleClose}>
+    return <Modal title="輸入數學" open={open} onCancel={handleCancel}>
         <Form name="math-form" form={form} onFinish={handleFinish} clearOnDestroy
             onValuesChange={(_, values) => setPreview(values.content || "")} autoComplete="off">
             <Form.Item labelCol={{ span: 4 }} label="是否inline" name="inline" valuePropName="checked">
@@ -73,9 +80,9 @@ function MathModal() {
                     <Button type="primary" htmlType="submit"
                         onClick={() => {
                             const content = form.getFieldValue("content") as string | undefined;
-                            if (!content || content.trim().length === 0) handleClose();
+                            if (!content || content.trim().length === 0) handleCancel();
                         }}>提交</Button>
-                    <Button type="text" onClick={handleClose}>取消</Button>
+                    <Button type="text" onClick={handleCancel}>取消</Button>
                 </Space>
             </Form.Item>
         </Form>
@@ -88,6 +95,3 @@ function MathModal() {
         </Flex>
     </Modal>
 };
-
-const MathPlugin = MathModal;
-export default MathPlugin;

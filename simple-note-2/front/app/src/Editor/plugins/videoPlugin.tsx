@@ -1,23 +1,29 @@
 import { Button } from "antd";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { LexicalCommand, createCommand } from "lexical";
+import { COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { MdOutlineFileUpload } from "react-icons/md";
+import { $createVideoNode } from "../nodes/video";
+import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import Modal from "../ui/modal";
-import VideoNode, { $createVideoNode } from "../nodes/video";
-import useMenuFocused from "./draggablePlugin/store";
 
-export const OPEN_VIDEO_MODAL: LexicalCommand<void> = createCommand();
-const VideoModal = () => {
+export default function VideoPlugin(){
     const [editor] = useLexicalComposerContext();
     const inputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
-    const { node } = useMenuFocused();
+    const [node, setNode] = useState<LexicalNode>();
 
-    if (!editor.hasNodes([VideoNode])) {
-        throw new Error('VideoPlugin: VideoNode not registered on editor');
-    }
+    useEffect(() => {
+        return editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
+            if (value === "video") {
+                setNode(node);
+                setOpen(true);
+            }
+            return false;
+        }, COMMAND_PRIORITY_CRITICAL);
+    }, [editor]);
+
 
     const WIDTH = useMemo(() => {
         const rect = editor.getRootElement()?.getBoundingClientRect();
@@ -32,11 +38,11 @@ const VideoModal = () => {
 
             const src = URL.createObjectURL(file);
             const video = $createVideoNode(WIDTH, 300, src);
-    
-            if(!node){
+
+            if (!node) {
                 $insertNodeToNearestRoot(video);
             }
-            else{
+            else {
                 node.insertAfter(video);
             }
         });
@@ -45,14 +51,8 @@ const VideoModal = () => {
         setOpen(false);
     }, [WIDTH, editor, node]);
 
-
-    return <Modal command={OPEN_VIDEO_MODAL} title="上傳影片" footer={null} open={open}
-        onOpen={() => setOpen(true)} onClose={() => setOpen(false)}>
+    return <Modal title="上傳影片" footer={null} open={open} onCancel={() => setOpen(false)} centered>
         <Button block icon={<MdOutlineFileUpload />} type="primary" onClick={() => inputRef.current?.click()}>上傳</Button>
         <input type="file" accept="video/mp4,video/x-m4v,video/*" style={{ display: "none" }} ref={inputRef} onChange={handleChange} />
     </Modal>
 }
-
-const VideoPlugin = () => <VideoModal />;
-
-export default VideoPlugin;

@@ -1,7 +1,7 @@
 import { DOMConversionMap, DOMExportOutput, DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import { ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
-import { lazy } from "react";
-import Load from "../../ui/load";
+import { lazy, Suspense } from "react";
+import { Skeleton } from "antd";
 
 type Dimension = number | "inherit";
 
@@ -14,7 +14,7 @@ export type SerializedCanvasNode = Spread<
     SerializedLexicalNode
 >;
 
-function convertCanvasElement(dom: HTMLSpanElement) {
+function $convertCanvasElement(dom: HTMLSpanElement) {
     if (!dom.hasAttribute("data-canvas-data")) return null;
 
     const data = JSON.parse(dom.getAttribute("data-canvas-data")!);
@@ -97,7 +97,7 @@ export default class CanvasNode extends DecoratorNode<JSX.Element> {
     static importDOM(): DOMConversionMap<HTMLSpanElement> | null {
         return {
             span: () => ({
-                conversion: convertCanvasElement,
+                conversion: $convertCanvasElement,
                 priority: 1,
             })
         }
@@ -123,9 +123,9 @@ export default class CanvasNode extends DecoratorNode<JSX.Element> {
     }
 
     decorate(): JSX.Element {
-        return <Load>
+        return <Suspense fallback={<Skeleton.Image active/>}>
             <LazyCanvasComponent data={this.__data} nodeKey={this.__key} width={this.__width} height={this.__height}/>
-        </Load>
+        </Suspense>
     }
 
     setWidth(width: Dimension){

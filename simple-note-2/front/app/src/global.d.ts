@@ -15,6 +15,6 @@ declare const APIs: {
     addCollaborate: "http://localhost:8000/newCollaborate/",
     deleteCollaborate: "http://localhost:8000/deleteCollaborate/",
     joinCollaborate: "http://localhost:8000/joinCollaborate/",
-    getNumber: "http://localhost:4000/room/number",
+    getNumber: "http://localhost:4000/room?",
     getBreezeAI: "ws://localhost:4000/ws/ai/"
 }

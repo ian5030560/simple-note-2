@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Excalidraw } from "@excalidraw/excalidraw";
 import { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
 import { Button, Flex, Modal } from "antd";
@@ -13,7 +13,7 @@ interface CanvasModalProps {
 const CanvasModal = (prop: CanvasModalProps) => {
     const [api, callback] = useState<ExcalidrawImperativeAPI>();
 
-    return <Modal open={prop.open} title={null} width={800} centered footer={null} closeIcon={null}
+    return <Modal open={prop.open} title="編輯圖畫" width={800} centered footer={null} closeIcon={null}
         styles={{ body: { height: 400 }, content: {height: 500} }}>
         <Flex justify="end">
             <Button type="text" icon={<FaRegTrashAlt />} size="large" onClick={prop.onDiscard} />

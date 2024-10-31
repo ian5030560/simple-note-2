@@ -1,3 +1,4 @@
+import { Skeleton } from "antd";
 import katex from "katex";
 import { $applyNodeReplacement, DecoratorNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import React from "react";
@@ -7,7 +8,7 @@ const LazyMathView = React.lazy(() => import("./component"));
 
 type SerializedMathNode = Spread<{ content: string, inline: boolean }, SerializedLexicalNode>;
 
-function convertMathElement(node: Node): DOMConversionOutput | null {
+function $convertMathElement(node: Node): DOMConversionOutput | null {
     const element = node as HTMLElement;
     const content = element.getAttribute("data-content");
     const inline = element.tagName === "span";
@@ -69,7 +70,7 @@ export default class MathNode extends DecoratorNode<React.ReactNode> {
 
     decorate(): React.ReactNode {
 
-        return <Suspense fallback={null}>
+        return <Suspense fallback={<Skeleton.Node active style={{width: "30px"}}/>}>
             <LazyMathView content={this.__content} inline={this.__inline} nodeKey={this.__key}/>
         </Suspense>;
     }
@@ -88,7 +89,7 @@ export default class MathNode extends DecoratorNode<React.ReactNode> {
         }
     }
 
-    exportDOM(editor: LexicalEditor): DOMExportOutput {
+    exportDOM(): DOMExportOutput {
         const element = document.createElement(this.__inline ? "span" : "div");
         element.setAttribute("data-content", this.__content);
         element.setAttribute("data-inline", this.__inline ? "true" : "false");
@@ -108,7 +109,7 @@ export default class MathNode extends DecoratorNode<React.ReactNode> {
     static importDOM(): DOMConversionMap | null {
         return {
             math: (_: Node) => ({
-                conversion: convertMathElement,
+                conversion: $convertMathElement,
                 priority: 1,
             })
         };

@@ -1,18 +1,24 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Flex, Button, InputNumber } from "antd";
-import { useState, useRef, useCallback, useMemo } from "react";
-import { OPEN_COLUMN_MODAL } from "./command";
-import Modal from "../../ui/modal";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { $createColumnContainerNode } from "../../nodes/column/container";
 import { $createColumnItemNode } from "../../nodes/column/item";
-import useMenuFocused from "../draggablePlugin/store";
-import { $createParagraphNode, $insertNodes } from "lexical";
+import { $createParagraphNode, $insertNodes, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
+import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
+import Modal from "../../ui/modal";
 
 export default function ColumnLayoutModal() {
     const [open, setOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const [editor] = useLexicalComposerContext();
-    const { node } = useMenuFocused();
+    const [node, setNode] = useState<LexicalNode>();
+
+    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({node, value}) => {
+        if(value !== "column") return false;
+        setNode(node);
+        setOpen(true);
+        return true;
+    }, COMMAND_PRIORITY_CRITICAL), [editor]);
 
     const handleOk = useCallback(() => {
         const value = inputRef.current?.value;
@@ -43,8 +49,7 @@ export default function ColumnLayoutModal() {
         </Flex>;
     }, [handleOk]);
 
-    return <Modal command={OPEN_COLUMN_MODAL} open={open} title="插入欄位" width={300}
-        onOpen={() => setOpen(true)} onClose={() => setOpen(false)} footer={footer}>
+    return <Modal open={open} title="插入欄位" onCancel={() => setOpen(false)} footer={footer}>
         <InputNumber min={1} max={10} size="large" ref={inputRef} style={{ width: "100%" }} defaultValue={3} />
-    </Modal>;
+    </Modal>
 }

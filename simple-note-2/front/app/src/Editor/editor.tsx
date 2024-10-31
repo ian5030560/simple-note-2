@@ -10,9 +10,7 @@ import styles from "./editor.module.css";
 import { notification, theme, Typography } from "antd";
 import themes from "./themes";
 import nodes from "./nodes";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
-import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import RichTextPlugin from "./plugins/richTextPlugin";
 import AutoFocusPlugin from "./plugins/autoFocusPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
@@ -63,8 +61,6 @@ export default function Editor(props: EditorProps) {
     const { token } = theme.useToken();
     const [api, contextHolder] = notification.useNotification();
 
-    console.log(!props.test, props.collab, props.room);
-
     const handleError = useCallback((err: Error) => {
         if(!props.debug) return console.log(err);
         
@@ -79,7 +75,6 @@ export default function Editor(props: EditorProps) {
         })
     }, [api, props.debug]);
 
-    console.log(props.collab ? null : !props.test ? props.initialEditorState : undefined);
     return <div className={styles.editorFrame} style={{ backgroundColor: token.colorBgLayout }}>
         <LexicalComposer
             initialConfig={{
@@ -100,8 +95,7 @@ export default function Editor(props: EditorProps) {
             }
             <div id="editor-scroller" className={styles.editorScroller}>
                 <div id="editor-anchor" className={styles.anchor}>
-                    <RichTextPlugin placeholder={<></>} ErrorBoundary={LexicalErrorBoundary}
-                        contentEditable={<ContentEditable style={{ color: token.colorText, outline: "none", cursor: "text" }} />} />
+                    <RichTextPlugin/>
                     <DraggablePlugin items={items} />
                     <AutoFocusPlugin />
                     <MarkdownShortcutPlugin transformers={TRANSFORMERS} />

@@ -1,11 +1,11 @@
 import {
-    DecoratorNode, EditorConfig, LexicalEditor, LexicalNode, NodeKey,
+    DecoratorNode, EditorConfig, LexicalNode, NodeKey,
     SerializedLexicalNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput,
     $applyNodeReplacement,
 } from "lexical";
 import React, { ReactNode, Suspense } from "react";
 import { Spread } from "lexical/LexicalEditor";
-import { Empty } from "antd";
+import { Skeleton } from "antd";
 
 const LazyImageView = React.lazy(() => import("./component"));
 
@@ -104,7 +104,7 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
 
     decorate(): ReactNode {
         
-        return <Suspense fallback={<Empty image/>}>
+        return <Suspense fallback={<Skeleton.Image active />}>
             <LazyImageView
                 src={this.__src}
                 alt={this.__alt}

@@ -44,7 +44,6 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
         return p as unknown as Provider;
     }, []);
 
-    console.log(props.initialEditorState);
     return <CollaborationPlugin
         id={props.room} shouldBootstrap={true}
         providerFactory={providerFactory}

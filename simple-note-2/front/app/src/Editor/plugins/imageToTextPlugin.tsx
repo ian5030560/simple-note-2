@@ -1,14 +1,14 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Button, Flex, Spin, Tabs, TabsProps } from "antd";
-import { $getSelection, $isRangeSelection, LexicalCommand, createCommand, $getRoot } from "lexical";
+import { $getSelection, $isRangeSelection, LexicalCommand, createCommand, $getRoot, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styles from "./imageToTextPlugin.module.css";
 import { FaRegDotCircle } from "react-icons/fa";
 import Tesseract, { createWorker } from "tesseract.js";
-import Modal from "../ui/modal";
-import useMenuFocused from "./draggablePlugin/store";
 import { $contains } from "../utils";
+import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
+import Modal from "../ui/modal";
 
 // const codes = require("../../../resource/tesseract.json").map((lang: { code: string, name: string }) => lang.code) as string[];
 const codes = ["eng", "chi_sim", "chi_tra", "jpn", "kor"];
@@ -53,12 +53,20 @@ export default function ImageToTextPlugin() {
   const maskRef = useRef<HTMLDivElement>(null);
   const worker = useRef<Tesseract.Worker>();
   const [loading, setLoading] = useState(false);
-  const { node } = useMenuFocused();
+  const [node, setNode] = useState<LexicalNode>();
+
+  useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
+    if (value === "imageToText"){
+      setNode(node);
+      setOpen(true);
+    };
+    return false;
+  }, COMMAND_PRIORITY_CRITICAL), [editor]);
 
   useEffect(() => {
     if (worker.current) return;
     async function work() {
-      worker.current = await createWorker(codes);
+      worker.current = await createWorker(codes, Tesseract.OEM.DEFAULT);
     }
     work();
   }, []);
@@ -176,9 +184,8 @@ export default function ImageToTextPlugin() {
     ]
   }, [handleClick, handleUpload, open]);
 
-  return <Modal command={OPEN_IMAGE_TO_TEXT_MODAL} title="圖文辨識" open={open}
-    onOpen={() => setOpen(true)} onClose={() => setOpen(false)} destroyOnClose
-    styles={{ header: { pointerEvents: loading ? "none" : undefined } }}>
+  return <Modal title="圖文辨識" open={open} onCancel={() => setOpen(false)}
+    styles={{ header: { pointerEvents: loading ? "none" : undefined } }} footer={null}>
     <Tabs items={items} defaultActiveKey="camera" destroyInactiveTabPane />
     <Spin tip="辨識中" spinning={loading} size="large" fullscreen />
   </Modal>

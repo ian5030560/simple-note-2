@@ -3,18 +3,16 @@ import styles from "./component.module.css";
 import { HolderOutlined, PlusOutlined } from "@ant-design/icons";
 import { createPortal } from "react-dom";
 import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
-import { $getNodeByKey, createCommand, LexicalEditor, LexicalNode, NodeKey } from "lexical";
+import { $getNodeByKey, NodeKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { getBlockFromPoint } from "./getBlockFromPoint";
 import { inside, useAnchor } from "../../utils";
-import useMenuFocused from "./store";
+import { PLUSMENU_SELECTED } from "./command";
 
-export const NEED_PLUS = createCommand<LexicalNode>();
 export interface PlusItem {
-    value: string,
-    label: string,
-    icon: React.ReactNode,
-    onSelect: (editor: LexicalEditor, nodeKey: NodeKey) => void,
+    value: string;
+    label: string;
+    icon: React.ReactNode;
 }
 
 interface PlusMenuProps {
@@ -28,7 +26,6 @@ const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask }: PlusMenuProps, 
     const { token } = theme.useToken();
     const [pos, setPos] = useState<{ x: number, y: number }>();
     const [editor] = useLexicalComposerContext();
-    const { setNode } = useMenuFocused();
 
     useEffect(() => {
         const element = editor.getElementByKey(nodeKey);
@@ -59,10 +56,10 @@ const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask }: PlusMenuProps, 
                     <Button icon={item.icon} block type="text" style={{ justifyContent: "flex-start" }}
                         onClick={() => {
                             onSelect();
-                            editor.update(() => {
-                                setNode($getNodeByKey(nodeKey));
-                                item.onSelect(editor, nodeKey);
-                            });
+                            const node = editor.getEditorState().read(() => $getNodeByKey(nodeKey));
+                            if(!node) return;
+
+                            editor.dispatchCommand(PLUSMENU_SELECTED, {node: node, value: item.value})
                         }}>
                         {item.label}
                     </Button>

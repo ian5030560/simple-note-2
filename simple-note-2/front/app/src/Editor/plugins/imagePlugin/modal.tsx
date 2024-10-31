@@ -1,17 +1,23 @@
-import { Tabs, TabsProps, Input, Button, Space, InputRef } from "antd";
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
-import { $createParagraphNode, LexicalCommand, createCommand } from "lexical";
+import { Tabs, TabsProps, Input, Button, Space } from "antd";
+import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { $createParagraphNode, COMMAND_PRIORITY_CRITICAL, LexicalCommand, LexicalNode, createCommand } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { AiOutlineFileImage, AiOutlineUpload } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
-import Modal from "../../ui/modal";
 import { useCookies } from "react-cookie";
 import { useNodes } from "../../../User/SideBar/NoteTree/store";
 import { useParams } from "react-router-dom";
-import useMenuFocused from "../draggablePlugin/store";
 import { $createImageNode } from "../../nodes/image";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
+import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
+import Modal from "../../ui/modal";
 
+function createFormData(data: Record<string, any>) {
+    const formData = new FormData();
+    Object.keys(data).forEach(key => formData.append(key, data[key]));
+
+    return formData;
+}
 export const OPEN_IMAGE_MODAL: LexicalCommand<void> = createCommand();
 const ImageModal = () => {
 
@@ -21,8 +27,16 @@ const ImageModal = () => {
     const [{ username }] = useCookies(["username"]);
     const { id } = useParams();
     const { findNode } = useNodes();
-    const { node } = useMenuFocused();
+    const [node, setNode] = useState<LexicalNode>();
     const [url, setUrl] = useState("");
+
+    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
+        if (value === "image") {
+            setOpen(true);
+            setNode(node);
+        }
+        return false;
+    }, COMMAND_PRIORITY_CRITICAL), [editor]);
 
     const $insertImage = useCallback((src: string) => {
         const image = $createImageNode(src, "");
@@ -46,15 +60,15 @@ const ImageModal = () => {
 
     const handleFile = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) return;
+
         const image = e.target.files[0];
-
-        const data = new FormData();
         const node = findNode(id!);
-
-        data.append("username", username);
-        data.append("filename", image.name);
-        data.append("notename", node!.current.title as string);
-        data.append("content", image);
+        const data = createFormData({
+            username: username,
+            filename: image.name,
+            notename: node!.current.title as string,
+            content: image
+        });
 
         const src = await fetch(APIs.addFile,
             {
@@ -96,11 +110,7 @@ const ImageModal = () => {
         }
     ], [handleFile, handleURL, url]);
 
-    return <Modal command={OPEN_IMAGE_MODAL} open={open} title="上傳圖片" onOpen={() => setOpen(true)}
-        onClose={() => {
-            setOpen(false);
-            setUrl("");
-        }}>
+    return <Modal open={open} title="上傳圖片" onCancel={() => {setOpen(false); setUrl("")}}>
         <Tabs defaultActiveKey="file" items={items} />
     </Modal>
 }

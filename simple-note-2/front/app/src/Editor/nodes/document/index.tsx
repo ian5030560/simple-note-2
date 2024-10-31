@@ -1,11 +1,11 @@
 import { DOMConversionMap, DOMExportOutput, DecoratorNode, EditorConfig, LexicalEditor, Spread, SerializedLexicalNode, LexicalNode } from "lexical";
-import React from "react";
+import React, { Suspense } from "react";
 import Document from "./component";
-import Load from "../../ui/load";
+import { Skeleton } from "antd";
 
 export type SerializedDocumentNode = Spread<{ src: string, name: string }, SerializedLexicalNode>;
 
-function convertDocElement(dom: HTMLElement) {
+function $convertDocElement(dom: HTMLElement) {
     const src = dom.getAttribute("data-document-src");
     const name = dom.getAttribute("data-document-name");
 
@@ -53,9 +53,9 @@ export default class DocumentNode extends DecoratorNode<React.JSX.Element> {
     }
 
     decorate(): JSX.Element {
-        return <Load width={"inherit"} height={"inherit"}>
+        return <Suspense fallback={<Skeleton.Input active block/>}>
             <Document src={this.__src} name={this.__name} nodeKey={this.__key} />
-        </Load>
+        </Suspense>
     }
 
     createDOM(_config: EditorConfig): HTMLElement {
@@ -103,7 +103,7 @@ export default class DocumentNode extends DecoratorNode<React.JSX.Element> {
     static importDOM(): DOMConversionMap | null {
         return {
             document: () => ({
-                conversion: convertDocElement,
+                conversion: $convertDocElement,
                 priority: 1,
             })
         }

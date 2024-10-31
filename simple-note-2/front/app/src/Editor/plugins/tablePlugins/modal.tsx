@@ -1,21 +1,28 @@
 import { Button, Flex, InputNumber } from "antd";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import styles from "./modal.module.css";
-import { $createParagraphNode, LexicalCommand, createCommand } from "lexical";
+import { $createParagraphNode, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createTableNodeWithDimensions } from "@lexical/table";
-import Modal from "../../ui/modal";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
-import useMenuFocused from "../draggablePlugin/store";
+import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
+import Modal from "../../ui/modal";
 
-export const OPEN_TABLE_MODAL: LexicalCommand<void> = createCommand();
 export default function TableModalPlugin() {
 
     const [editor] = useLexicalComposerContext();
     const rowRef = useRef<HTMLInputElement>(null);
     const colRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
-    const { node } = useMenuFocused();
+    const [node, setNode] = useState<LexicalNode>();
+
+    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({node, value}) => {
+        if(value === "table"){
+            setOpen(true);
+            setNode(node);
+        } 
+        return false;
+    }, COMMAND_PRIORITY_CRITICAL), [editor]);
 
     const handleClick = useCallback(() => {
         const row = rowRef.current!.value;
@@ -42,8 +49,7 @@ export default function TableModalPlugin() {
         return <Button type="primary" onClick={handleClick}>插入</Button>
     }, [handleClick]);
 
-    return <Modal command={OPEN_TABLE_MODAL} title="插入表格" footer={footer} open={open}
-        onOpen={() => setOpen(true)} onClose={() => setOpen(false)}>
+    return <Modal title="插入表格" footer={footer} open={open} onCancel={() => setOpen(false)}>
         <Flex justify="center" align="center">
             <form>
                 <div className={styles.tableFormWrapper}>

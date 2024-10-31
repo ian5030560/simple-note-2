@@ -150,10 +150,10 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<stri
 
 export async function collaborateLoader({ request, params }: LoaderFunctionArgs<boolean>) {
     const joinUrl = APIs.joinCollaborate;
-    const numberUrl = APIs.getNumber;
     const cookie = getCookie();
     const username = cookie.get("username")!;
     const { id, host } = params;
+    const numberUrl = APIs.getNumber + new URLSearchParams({id: `${id}/${host}`}).toString();
     const collabErr = new Response(undefined, { status: 403 });
 
     return await Promise.all([
@@ -172,8 +172,10 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
             }),
 
         fetch(numberUrl, {
+            // ...requestInit, signal: request.signal,
+            // body: JSON.stringify({ room: `${id}/${host}` }),
             ...requestInit, signal: request.signal,
-            body: JSON.stringify({ room: `${id}/${host}` }),
+            method: "GET",
         })
             .then(async res => {
                 if (!res.ok) throw collabErr;

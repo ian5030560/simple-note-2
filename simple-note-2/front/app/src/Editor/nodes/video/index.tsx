@@ -1,8 +1,8 @@
 import { SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import { DOMConversionMap, DOMExportOutput, EditorConfig, ElementFormatType, LexicalEditor, LexicalNode, Spread } from "lexical";
-import React from "react";
-import Load from "../../ui/load";
+import React, { Suspense } from "react";
 import DecoratorBlockNode from "../decoratorBlockNode";
+import { Skeleton } from "antd";
 
 export interface VideoNodeProp {
     width: number;
@@ -99,7 +99,7 @@ export default class VideoNode extends DecoratorBlockNode {
     decorate(_: LexicalEditor, config: EditorConfig): JSX.Element {
         const className = this.getEmbedClass(config);
 
-        return <Load width={this.__width} height={this.__height}>
+        return <Suspense fallback={<Skeleton.Node active style={{width: "100%", height: "250px"}}/>}>
             <LazyVideo
                 width={this.__width}
                 height={this.__height}
@@ -107,7 +107,7 @@ export default class VideoNode extends DecoratorBlockNode {
                 nodeKey={this.__key}
                 src={this.__src}
                 className={className} />
-        </Load>
+        </Suspense>
     }
 }
 
