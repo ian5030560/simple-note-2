@@ -4,12 +4,12 @@ import { useNodes } from "./store";
 import { useMemo } from "react";
 import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useDirective from "./directive";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { decodeBase64 } from "../../../util/secret";
 import { useCookies } from "react-cookie";
 
 const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="default" size="small" tabIndex={-1}
-    onClick={(e) => { e.stopPropagation(); onClick?.(e) }} {...props} />;
+    onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(e) }} {...props} />;
 
 const NoteTree = () => {
     const { nodes } = useNodes();
@@ -26,19 +26,20 @@ const NoteTree = () => {
                 <Typography.Text type="secondary">個人筆記</Typography.Text>
                 <ToolButton icon={<FaPlus />} onClick={() => add(null)} />
             </Flex>
-            <Tree treeData={one} blockNode selectable={false} 
+            <Tree treeData={one} blockNode selectable={false}
                 rootStyle={{ overflowY: "auto" }} defaultExpandAll
                 titleRender={(data) => {
                     const first = one[0].key === data.key;
 
-                    return <Flex justify="space-between" onClick={() => navigate(data.url ? data.url : data.key as string)}
-                        style={{ paddingTop: 3, paddingBottom: 3 }}>
-                        <Typography.Text>{data.title as string}</Typography.Text>
-                        <Flex gap={3}>
-                            {!first && <ToolButton icon={<DeleteOutlined />} onClick={() => remove(data)} />}
-                            <ToolButton icon={<PlusOutlined />} onClick={() => add(data)} />
+                    return <Link to={data.url ? data.url : data.key as string}>
+                        <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3 }}>
+                            <Typography.Text>{data.title as string}</Typography.Text>
+                            <Flex gap={3}>
+                                {!first && <ToolButton icon={<DeleteOutlined />} onClick={() => remove(data)} />}
+                                <ToolButton icon={<PlusOutlined />} onClick={() => add(data)} />
+                            </Flex>
                         </Flex>
-                    </Flex>
+                    </Link>
                 }} />
         </div>
 
@@ -51,11 +52,13 @@ const NoteTree = () => {
                     rootStyle={{ overflowY: "auto" }} defaultExpandAll
                     titleRender={(data) => {
                         // const [_, host] = data.url!.split("/");
-                        return <Flex justify="space-between" onClick={() => navigate(data.url!)}
-                            style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
-                            <Typography.Text>{data.title as string}</Typography.Text>
-                            < ToolButton icon={<CloseOutlined />} onClick={() => cancelCollab(data)} />
-                        </Flex>
+                        return <Link to={data.url!}>
+                            <Flex justify="space-between" onClick={() => navigate(data.url!)}
+                                style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
+                                <Typography.Text>{data.title as string}</Typography.Text>
+                                <ToolButton icon={<CloseOutlined />} onClick={() => cancelCollab(data)} />
+                            </Flex>
+                        </Link>
                     }} />
             </div>
         }

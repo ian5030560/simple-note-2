@@ -12,7 +12,7 @@ from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from db_modules.SaveFile import SaveFile  # 資料庫來的檔案
 from rest_framework import status
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
@@ -85,7 +85,7 @@ class NewMediaFileView(APIView):
                     + "/"
                     + str(filename)
                 )
-                return Response(url, status=status.HTTP_200_OK)
+                return HttpResponse(url, status=200)
 
             elif dbSaved or folderSaved != True:
                 return Response(dbSaved, status=status.HTTP_400_BAD_REQUEST)

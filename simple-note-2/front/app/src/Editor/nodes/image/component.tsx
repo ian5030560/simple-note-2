@@ -52,7 +52,7 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
     return <>
         {error ? <div><img src={noImage} alt={alt} width={width} height={height}/></div> :
             <Resizer onResize={handleResize} showHandle={isSelected}>
-                <img crossOrigin="anonymous" src={src} alt={alt} ref={imageRef}
+                <img src={src} alt={alt} ref={imageRef}
                     width={width} height={height} />
             </Resizer>}
     </>;

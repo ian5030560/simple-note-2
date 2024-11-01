@@ -32,8 +32,19 @@ const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask }: PlusMenuProps, 
         if (!element || !anchor) return;
 
         function update() {
-            const { x, y, height } = element!.getBoundingClientRect();
-            setPos({ x, y: y + height + 8 });
+            const { x, y: _y, height } = element!.getBoundingClientRect();
+            // const {height: bh} = document.body.getBoundingClientRect();
+            const y = _y + height + 8;
+            setPos({ x, y });
+            // if(y + height <= bh) {
+            //     setPos({ x, y });
+            // }
+            // else{
+            //     const mask = document.getElementById("menu-mask")!;
+            //     if(!mask) return;
+            //     const {height: mh} = mask.getBoundingClientRect();
+            //     setPos({x, y: _y - mh - 8});
+            // }
         }
 
         const resizer = new ResizeObserver(update);

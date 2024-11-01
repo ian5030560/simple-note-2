@@ -8,11 +8,14 @@ import { APPEND_COLUMNS } from "./command";
 import ColumnLayoutModal from "./modal";
 import ColumnContainerNode, { $isColumnContainerNode } from "../../nodes/column/container";
 import ColumnItemNode, { $createColumnItemNode, $isColumnItemNode } from "../../nodes/column/item";
+import { useValidateNodeClasses } from "../../utils";
 
 export default function ColumnPlugin(){
 
     const [editor] = useLexicalComposerContext();
     const { token } = theme.useToken();
+
+    useValidateNodeClasses([ColumnContainerNode, ColumnItemNode]);
 
     const $onEscape = (before: boolean) => {
         const selection = $getSelection();

@@ -56,9 +56,7 @@ const Align: React.FC = () => {
         );
     })
 
-    return <OptionGroup
-        options={ALIGN}
-        select={(key) => current === key}
+    return <OptionGroup options={ALIGN} select={(key) => current === key}
         onClick={(key) => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, key !== current ? key as ElementFormatType : "")}
     />
 }

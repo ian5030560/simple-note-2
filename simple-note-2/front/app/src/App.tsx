@@ -1,5 +1,5 @@
 import React from "react";
-import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Route, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Route, RouterProvider, ShouldRevalidateFunctionArgs } from "react-router-dom";
 import ThemePage from "./ThemeEdit";
 import { CookiesProvider } from "react-cookie";
 import "./App.css";
@@ -31,7 +31,9 @@ function editorLoader(args: LoaderFunctionArgs<any>) {
 }
 
 const EditorComponent = React.lazy(() => import("./Editor/editor"));
-
+function shouldRevalidateFn({ currentParams: { id: oid }, nextParams: { id: nid } }: ShouldRevalidateFunctionArgs) {
+  return oid !== nid;
+}
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
@@ -43,14 +45,16 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<Private />}>
-        <Route path="note" element={<UserLayout />} loader={settingLoader} errorElement={<SettingErrorBoundary />}>
-            <Route path=":id/:host?" element={<Editor />} errorElement={<EditorErrorBoundary />} loader={editorLoader} />
+        <Route path="note" element={<UserLayout />} loader={settingLoader}
+          shouldRevalidate={shouldRevalidateFn} errorElement={<SettingErrorBoundary />}>
+          <Route path=":id/:host?" element={<Editor />} errorElement={<EditorErrorBoundary />}
+            loader={editorLoader} shouldRevalidate={shouldRevalidateFn}/>
         </Route>
       </Route>
 
       <Route path="test">
-        <Route index element={<EditorComponent test />} />
-        <Route path="collab" element={<EditorComponent test collab />} />
+        <Route index element={<EditorComponent test showError />} />
+        <Route path="collab" element={<EditorComponent test collab showError />} />
       </Route>
       <Route path="theme" element={<ThemePage />} />
     </>

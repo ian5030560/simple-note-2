@@ -60,6 +60,30 @@ export default class VideoNode extends DecoratorBlockNode {
         return node;
     }
 
+    getSrc(){
+        return this.getWritable().__src;
+    }
+
+    setSrc(src: string){
+        this.getWritable().__src = src;
+    }
+
+    setWidth(val: number){
+        this.getWritable().__width = val;
+    }
+
+    getWidth(){
+        return this.getWritable().__width;
+    }
+
+    setHeight(val: number){
+        this.getWritable().__height = val;
+    }
+
+    getHeight(){
+        return this.getWritable().__height;
+    }
+
     exportJSON(): SerializedVideoNode {
         return {
             ...super.exportJSON(),

@@ -114,6 +114,6 @@ export function $createDocumentNode(src: string, name: string): DocumentNode {
     return new DocumentNode(src, name);
 }
 
-export function $isDocumentNode(node: LexicalNode): node is DocumentNode {
+export function $isDocumentNode(node: LexicalNode | null): node is DocumentNode {
     return node instanceof DocumentNode;
 }

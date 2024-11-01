@@ -1,32 +1,23 @@
 import { Tabs, TabsProps, Input, Button, Space } from "antd";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { $createParagraphNode, COMMAND_PRIORITY_CRITICAL, LexicalCommand, LexicalNode, createCommand } from "lexical";
+import { $createParagraphNode, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { AiOutlineFileImage, AiOutlineUpload } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
-import { useCookies } from "react-cookie";
-import { useNodes } from "../../../User/SideBar/NoteTree/store";
-import { useParams } from "react-router-dom";
 import { $createImageNode } from "../../nodes/image";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
 import Modal from "../../ui/modal";
+import { RAISE_ERROR } from "../ErrorPlugin";
 
-function createFormData(data: Record<string, any>) {
-    const formData = new FormData();
-    Object.keys(data).forEach(key => formData.append(key, data[key]));
-
-    return formData;
+interface ImageModalProps{
+    insertFile: (file: File) => string | Promise<string>;
 }
-export const OPEN_IMAGE_MODAL: LexicalCommand<void> = createCommand();
-const ImageModal = () => {
+const ImageModal = (props: ImageModalProps) => {
 
     const [editor] = useLexicalComposerContext();
     const fileRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
-    const [{ username }] = useCookies(["username"]);
-    const { id } = useParams();
-    const { findNode } = useNodes();
     const [node, setNode] = useState<LexicalNode>();
     const [url, setUrl] = useState("");
 
@@ -62,32 +53,19 @@ const ImageModal = () => {
         if (!e.target.files) return;
 
         const image = e.target.files[0];
-        const node = findNode(id!);
-        const data = createFormData({
-            username: username,
-            filename: image.name,
-            notename: node!.current.title as string,
-            content: image
-        });
+        try{
+            const src = await props.insertFile(image);
+            editor.update(() => $insertImage(src));
 
-        const src = await fetch(APIs.addFile,
-            {
-                body: data, method: "POST",
-                headers: {
-                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-                },
+            fileRef.current!.value = "";
+            setOpen(false);
+        }
+        catch(err){
+            if(err instanceof Error){
+                editor.dispatchCommand(RAISE_ERROR, err);
             }
-        )
-            .then(res => {
-                console.log(res);
-                return res.text();
-            })
-
-        editor.update(() => $insertImage(src));
-
-        fileRef.current!.value = "";
-        setOpen(false);
-    }, [$insertImage, editor, findNode, id, username]);
+        }
+    }, [$insertImage, editor, props]);
 
     const items: TabsProps["items"] = useMemo(() => [
         {

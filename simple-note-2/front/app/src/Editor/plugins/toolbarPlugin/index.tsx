@@ -11,6 +11,7 @@ import Text from "./text";
 import Link from "./link";
 import List from "./list";
 import Table from "./table";
+import ComponentPicker from "./componentPicker";
 
 const TOOLS: React.ReactNode[] = [
     <History />,
@@ -30,6 +31,7 @@ const TOOLS: React.ReactNode[] = [
         <Link />
         <Table />
     </Flex>,
+    <ComponentPicker/>
 ]
 
 export default function ToolBarPlugin(){

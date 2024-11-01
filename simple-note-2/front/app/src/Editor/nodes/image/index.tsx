@@ -144,7 +144,7 @@ export default class ImageNode extends DecoratorNode<React.ReactNode> {
 
     static importDOM(): DOMConversionMap | null {
         return {
-            img: (_: Node) => ({
+            img: () => ({
                 conversion: $convertImageElement,
                 priority: 0,
             })

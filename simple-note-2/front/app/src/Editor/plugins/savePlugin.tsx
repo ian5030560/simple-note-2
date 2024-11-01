@@ -1,36 +1,28 @@
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { useCallback, useEffect, useState } from "react";
-import { $createParagraphNode, $getRoot, EditorState } from "lexical";
-import { useCookies } from "react-cookie";
-import { useParams } from "react-router-dom";
+import { EditorState } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import useAPI from "../../util/api";
+import { RAISE_ERROR } from "./ErrorPlugin";
 
-export function $empty(){
-    const p = $createParagraphNode();
-    $getRoot().append(p);
-    p.select(); 
+interface SavePluginProps{
+    onSave: (editorState: EditorState) => void;
 }
-const SavePlugin = () => {
-    const saveNote = useAPI(APIs.saveNote);
+const SavePlugin = (props: SavePluginProps) => {
     const [editor] = useLexicalComposerContext();
-    const [{ username }] = useCookies(["username"]);
-    const { id } = useParams();
     const [typing, isTyping] = useState(false);
 
     useEffect(() => {
 
         function handleTyping() {
-            const content = editor.getEditorState()
-            saveNote({
-                username: username,
-                noteId: id!,
-                content: JSON.stringify(content.toJSON()),
-            })[0].then((res) => {
-                if (res.status === 200) {
-                    console.log("saved!!");
+            const content = editor.getEditorState();
+            try{
+                props.onSave(content);
+            }
+            catch(err){
+                if(err instanceof Error){
+                    editor.dispatchCommand(RAISE_ERROR, err);
                 }
-            })
+            }
             isTyping(false);
         }
 
@@ -40,12 +32,11 @@ const SavePlugin = () => {
         }
 
         return () => timer && clearTimeout(timer);
-    }, [editor, id, saveNote, typing, username]);
+    }, [editor, props, typing]);
 
     const handleChange = useCallback((editorState: EditorState) => {
         console.log(editorState);
         isTyping(() => true);
-
     }, []);
 
     return <OnChangePlugin onChange={handleChange} ignoreSelectionChange={true} />;

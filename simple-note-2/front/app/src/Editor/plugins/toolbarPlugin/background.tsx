@@ -34,7 +34,6 @@ const BackgroundColor: React.FC = () => {
                     if (!$isTextNode(node)) return;
 
                     $patchStyleText(selection, {"background-color": hex === current ? null : hex});
-
                 })
             }
         }}

@@ -4,7 +4,7 @@ import { BoldOutlined, ItalicOutlined, UnderlineOutlined } from "@ant-design/ico
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { FORMAT_TEXT_COMMAND, TextFormatType } from "lexical"
 import useSelectionListener from "./useSelectionListener"
-import { FaCode } from "react-icons/fa";
+import { FaCode, FaSubscript, FaSuperscript } from "react-icons/fa";
 
 const MARKDOWN: Option[] = [
     {
@@ -22,6 +22,14 @@ const MARKDOWN: Option[] = [
     {
         key: "code",
         icon: <FaCode />,
+    },
+    {
+        key: "subscript",
+        icon: <FaSubscript />
+    },
+    {
+        key: "superscript",
+        icon: <FaSuperscript />
     }
 ]
 
@@ -31,8 +39,8 @@ const Markdown: React.FC = () => {
     const [current, setCurrent] = useState<string[]>([]);
 
     useSelectionListener((selection) => {
-        
-        if(!selection) return;
+
+        if (!selection) return;
 
         const marks: string[] = [];
         for (const { key } of MARKDOWN) {

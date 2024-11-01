@@ -11,7 +11,7 @@ from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
@@ -53,7 +53,7 @@ class GetNoteView(APIView):
             returnNoteContent = returnNoteContent[0]
 
             if returnNoteContent != False:  # 取得成功
-                return Response(returnNoteContent, status=status.HTTP_200_OK if returnNoteContent else status.HTTP_204_NO_CONTENT, content_type="text/plain")
+                return HttpResponse(returnNoteContent, status=status.HTTP_200_OK if returnNoteContent else status.HTTP_204_NO_CONTENT, content_type="text/plain")
             elif returnNoteContent == False:  # error
                 return Response(returnNoteContent, status=status.HTTP_400_BAD_REQUEST)
 

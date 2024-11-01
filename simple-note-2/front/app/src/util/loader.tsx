@@ -140,7 +140,7 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<stri
         body: JSON.stringify({ username: username, noteId: id }),
     })
         .then(async res => {
-            if (res.ok) return res.status === 204 ? null : JSON.parse(await res.text());
+            if (res.ok) return res.status === 204 ? null : await res.text();
             throw new Response(undefined, { status: 404 });
         })
         .catch(() => {
