@@ -53,8 +53,8 @@ const router = createBrowserRouter(
       </Route>
 
       <Route path="test">
-        <Route index element={<EditorComponent test showError />} />
-        <Route path="collab" element={<EditorComponent test collab showError />} />
+        <Route index element={<EditorComponent test />} />
+        <Route path="collab" element={<EditorComponent test collab />} />
       </Route>
       <Route path="theme" element={<ThemePage />} />
     </>

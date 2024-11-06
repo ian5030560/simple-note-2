@@ -5,7 +5,7 @@ import ImageModal from "./modal";
 import { mergeRegister } from "@lexical/utils";
 import ImageNode, { $isImageNode } from "../../nodes/image";
 import { FilePluginProps, useValidateNodeClasses } from "../../utils";
-import { RAISE_ERROR } from "../ErrorPlugin";
+import { RAISE_ERROR } from "../errorPlugin";
 
 export default function ImagePlugin(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();

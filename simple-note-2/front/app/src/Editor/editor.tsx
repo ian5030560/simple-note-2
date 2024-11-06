@@ -38,7 +38,7 @@ import VideoPlugin from "./plugins/videoPlugin";
 import items from "./items";
 import TableOfContentPlugin from "./plugins/tableOfContentPlugin";
 import MathPlugin from "./plugins/mathPlugin";
-import ErrorPlugin from "./plugins/ErrorPlugin";
+import ErrorPlugin from "./plugins/errorPlugin";
 
 function $createEmptyContent() {
     const root = $getRoot();
@@ -95,7 +95,7 @@ export default function Editor(props: EditorProps) {
                     cursorsContainerRef={containerRef} initialEditorState={props.initialEditorState} username={props.username} />
             }
             <div id="editor-scroller" className={styles.editorScroller}>
-                <div id="editor-anchor" className={styles.anchor}>
+                <div id="editor-anchor" className={styles.anchor} ref={containerRef}>
                     <RichTextPlugin />
                     <DraggablePlugin items={items} />
                     <AutoFocusPlugin />

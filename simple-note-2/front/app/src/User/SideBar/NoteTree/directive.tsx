@@ -1,10 +1,9 @@
 import { Input, message, Modal, Typography } from "antd";
 import { useCallback, useMemo, useState } from "react"
-import { useCookies } from "react-cookie";
 import useAPI from "../../../util/api";
 import { useNavigate } from "react-router-dom";
-import { NoteDataNode, useNodes } from "./store";
 import { decodeBase64, uuid } from "../../../util/secret";
+import useNoteManager, {NoteDataNode} from "./useNoteManager";
 
 type AddState = {
     open: boolean;
@@ -19,12 +18,12 @@ type DeleteState = {
 }
 
 type CancelCollabState = DeleteState;
-export default function useDirective() {
+export default function useDirective(username: string) {
     const [add, setAdd] = useState<AddState>({ open: false, input: "", error: false, node: null });
     const [_delete, setDelete] = useState<DeleteState>({ open: false, node: null });
     const [cancelCollab, setCancelCollab] = useState<CancelCollabState>({ open: false, node: null });
-    const { nodes, findNode, update, add: _add, remove } = useNodes();
-    const [{ username }] = useCookies(["username"]);
+    // const { nodes, find, update, add: _add, remove } = useNodes();
+    const {nodes, find, update, add: _add, remove} = useNoteManager();
     const [api, contextHolder] = message.useMessage();
     const navigate = useNavigate();
     const addNote = useAPI(APIs.addNote);
@@ -50,7 +49,7 @@ export default function useDirective() {
                 }
                 else {
                     api.success(`${input} 創建成功`);
-                    _add(key, input, { parentKey: current, siblingKey: previous });
+                    _add({key, title: input}, current);
                     navigate(key);
                 }
             });
@@ -60,7 +59,7 @@ export default function useDirective() {
 
     const handleAddInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const { node } = add;
-        const children = node ? findNode(node.key as string)?.current?.children : nodes["one"];
+        const children = node ? find(node.key as string)?.children : nodes["one"];
         if (!children) return;
 
         let flag = false;
@@ -71,14 +70,13 @@ export default function useDirective() {
             }
         }
         setAdd(prev => ({ ...prev, error: flag, input: e.target.value }));
-    }, [add, findNode, nodes]);
+    }, [add, find, nodes]);
 
     const clearDelete = () => setDelete({ open: false, node: null });
     const handleDelete = useCallback(() => {
         const { node } = _delete;
         if (!node?.title) return;
         const { title } = node;
-        const nodeFind = findNode(node.key as string);
 
         deleteNote({ username: username, noteId: node.key as string })[0]
             .then(res => {
@@ -88,16 +86,17 @@ export default function useDirective() {
                 else {
                     api.success(`${title} 刪除成功`);
                     remove(node!.key as string);
-                    const prev = nodeFind?.previous?.key as string | undefined;
-                    const parent = nodeFind?.parent?.key as string;
+                    const children = node!.parent ? find(node!.parent)!.children : nodes["one"];
+                    const index = children.findIndex(it => it.key === node.key) - 1;
+                    const prev = children[index].key;
 
-                    navigate(prev ? prev : parent);
+                    navigate(prev ? prev : node.parent!);
                 }
             })
             .catch(() => api.error(`${title} 刪除失敗`));
 
         clearDelete();
-    }, [_delete, api, deleteNote, findNode, navigate, remove, username]);
+    }, [_delete, api, deleteNote, find, navigate, nodes, remove, username]);
 
     const clearCancelCollab = () => setCancelCollab({ open: false, node: null });
     const handleCancelCollab = useCallback(() => {
@@ -113,6 +112,8 @@ export default function useDirective() {
                     api.error(`${title} 取消失敗`);
                 }
                 else {
+                    remove(id + host, "multiple");
+                    
                     if(master !== username){
                         navigate("..", {replace: true, relative: "route"});
                     }
@@ -129,7 +130,7 @@ export default function useDirective() {
             });
 
         clearCancelCollab();
-    }, [api, cancelCollab, cancelCollborate, navigate, update, username]);
+    }, [api, cancelCollab, cancelCollborate, navigate, remove, update, username]);
 
     const deleteTitle = useMemo(() => {
         const { node } = _delete;

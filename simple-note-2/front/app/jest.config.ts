@@ -1,10 +1,18 @@
-import type { JestConfigWithTsJest } from 'ts-jest'
+import { JestConfigWithTsJest } from 'ts-jest'
 
 const config: JestConfigWithTsJest = {
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['./setup-jest.ts'],
+  testEnvironment: "jsdom",
+  moduleNameMapper: {
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+      '<rootDir>/__mocks__/fileMock.js',
+    '\\.(css|less)$': '<rootDir>/__mocks__/styleMock.js',
+  },
+  moduleDirectories: ['node_modules',],
+  setupFiles: [
+    "fake-indexeddb/auto",
+    "whatwg-fetch",
+    "<rootDir>/global.d.ts"
+  ]
 }
 
 export default config
-

@@ -1,7 +1,7 @@
 import { TreeDataNode } from "antd";
 import { create } from "zustand";
 
-export type NoteDataNode = Omit<TreeDataNode, 'children'> & { url?: string, children: NoteDataNode[] };
+export type NoteDataNode = Omit<TreeDataNode, 'children' | 'key' | 'title'> & { url?: string, children: NoteDataNode[], key: string, title: string };
 type FindResult = {
     parent: NoteDataNode | undefined,
     current: NoteDataNode,

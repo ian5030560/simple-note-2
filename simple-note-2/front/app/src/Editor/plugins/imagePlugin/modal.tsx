@@ -8,7 +8,7 @@ import { $createImageNode } from "../../nodes/image";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
 import Modal from "../../ui/modal";
-import { RAISE_ERROR } from "../ErrorPlugin";
+import { RAISE_ERROR } from "../errorPlugin";
 
 interface ImageModalProps{
     insertFile: (file: File) => string | Promise<string>;

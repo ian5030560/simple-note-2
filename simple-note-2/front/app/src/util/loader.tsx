@@ -4,7 +4,8 @@ import { Navigate, Outlet, LoaderFunctionArgs } from "react-router-dom";
 import { decodeBase64 } from "./secret";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { defaultTheme } from "./theme";
-import { useNodes, findNode, NoteDataNode } from "../User/SideBar/NoteTree/store";
+import useNoteManager, { NoteDataNode, NoteObject, findNode, getNoteStore } from "../User/SideBar/NoteTree/useNoteManager";
+// import { useNodes, findNode, NoteDataNode } from "../User/SideBar/NoteTree/store";
 
 export function Public() {
     const [{ username }] = useCookies(["username"]);
@@ -89,7 +90,7 @@ export async function settingLoader({ request }: LoaderFunctionArgs<string>) {
             return res.json();
         })
         .then((data: NoteFetchResult) => {
-            try{
+            try {
                 const oneSorted = sortNodes(data["one"]);
                 const oneMapped = oneSorted.map((it) => (
                     {
@@ -102,26 +103,30 @@ export async function settingLoader({ request }: LoaderFunctionArgs<string>) {
                 const ones: NoteDataNode[] = [];
                 for (const node of oneMapped) {
                     let children = ones;
-                    if (node.parentKey) children = findNode(ones, node.parentKey)!.current.children!;
+                    if (node.parentKey) children = findNode(ones, node.parentKey)!.children;
                     const index = node.siblingKey ? oneMapped.findIndex(it => it.key === node.siblingKey) + 1 : oneMapped.length;
-                    children.splice(index, 0, { key: node.key, title: node.title, children: [], url: node.url });
+                    children.splice(index, 0, {
+                        key: node.key, title: node.title,
+                        children: [], url: node.url, parent: node.parentKey
+                    });
                 }
 
                 const multiples: NoteDataNode[] = data["multiple"].map(it => {
                     const [id, host] = it.url.split("/");
                     const title = `${decodeBase64(host)}-${it.noteName}`;
                     return {
-                        title: title, key: id + host, children: [], url: it.url,
+                        title: title, key: id + host, children: [],
+                        url: it.url, parent: null
                     }
                 });
 
-                useNodes.setState(({nodes, ...rest}) => {
-                    nodes = {one: ones, multiple: multiples};
-                    return {...rest, nodes};
+                useNoteManager.setState(({ nodes, ...rest }) => {
+                    nodes = { one: ones, multiple: multiples };
+                    return { ...rest, nodes };
                 });
                 return ones[0].key;
             }
-            catch(e){
+            catch (e) {
                 console.log(e);
                 throw notesError;
             }
@@ -129,23 +134,68 @@ export async function settingLoader({ request }: LoaderFunctionArgs<string>) {
         .catch(() => { throw notesError });
 }
 
-export async function contentLoader({ request, params }: LoaderFunctionArgs<string | null>, username: string) {
+async function requestNote(request: Request, username: string, id: string) {
     const url = APIs.getNote;
-    const { id } = params;
 
     return await fetch(url, {
         ...requestInit,
         signal: request.signal,
         credentials: "same-origin",
         body: JSON.stringify({ username: username, noteId: id }),
+    }).then(async res => {
+        if (res.ok) return res.status === 204 ? null : await res.text();
+        throw new Response(undefined, { status: 404 });
+    }).catch(() => {
+        throw new Response(undefined, { status: 404 })
     })
-        .then(async res => {
-            if (res.ok) return res.status === 204 ? null : await res.text();
-            throw new Response(undefined, { status: 404 });
-        })
-        .catch(() => {
-            throw new Response(undefined, { status: 404 })
+}
+export async function contentLoader({ request, params }: LoaderFunctionArgs<string | null>, username: string) {
+    const { id } = params;
+    const Note = await getNoteStore();
+    const result = await new Promise((resolve, reject) => {
+        const request = Note.get(id!);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    }) as NoteObject | undefined;
+
+    if (!result) {
+        const data = await requestNote(request, username, id!);
+        new Promise((resolve, reject) => {
+            getNoteStore().then(Note => {
+                const request = Note.add({ id: id, content: data, uploaded: true });
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
         });
+
+        return data;
+    }
+    else {
+        const { uploaded, content } = result;
+        if (uploaded) {
+            return content;
+        }
+        else {
+            return await Promise.all([
+                requestNote(request, username, id!),
+
+                fetch(APIs.saveNote, {
+                    ...requestInit, signal: request.signal,
+                    body: JSON.stringify({ username, content, noteId: id })
+                }).then(async res => {
+                    if (!res.ok) {
+                        throw new Response(undefined, { status: 405 });
+                    }
+                    else {
+                        const request = Note.put({ id, content, uploaded: true });
+                        request.onerror = () => { throw new Response(undefined, { status: 405 }) };
+                    }
+                }).catch(() => {
+                    throw new Response(undefined, { status: 405 });
+                })
+            ]).then((reses) => reses[0]);
+        }
+    }
 }
 
 export async function collaborateLoader({ request, params }: LoaderFunctionArgs<boolean>) {
@@ -153,7 +203,7 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
     const cookie = getCookie();
     const username = cookie.get("username")!;
     const { id, host } = params;
-    const numberUrl = APIs.getNumber + new URLSearchParams({id: `${id}/${host}`}).toString();
+    const numberUrl = APIs.getNumber + new URLSearchParams({ id: `${id}/${host}` }).toString();
     const collabErr = new Response(undefined, { status: 403 });
 
     return await Promise.all([
@@ -171,23 +221,14 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
                 throw collabErr
             }),
 
-        fetch(numberUrl, {
-            // ...requestInit, signal: request.signal,
-            // body: JSON.stringify({ room: `${id}/${host}` }),
-            ...requestInit, signal: request.signal,
-            method: "GET",
-        })
+        fetch(numberUrl, { ...requestInit, signal: request.signal, method: "GET" })
             .then(async res => {
                 if (!res.ok) throw collabErr;
                 const { count } = await res.json() as { count: number };
                 return count === 0;
             })
             .catch(() => { throw collabErr })
-    ])
-        .then(reses => reses[1])
-        .catch(() => {
-            throw collabErr
-         });
+    ]).then(reses => reses[1]);
 }
 
 type ThemeConfigContextType = {

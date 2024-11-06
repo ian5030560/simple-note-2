@@ -1,8 +1,8 @@
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { EditorState } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { RAISE_ERROR } from "./ErrorPlugin";
+import { RAISE_ERROR } from "./errorPlugin";
 
 interface SavePluginProps{
     onSave: (editorState: EditorState) => void;
@@ -34,11 +34,6 @@ const SavePlugin = (props: SavePluginProps) => {
         return () => timer && clearTimeout(timer);
     }, [editor, props, typing]);
 
-    const handleChange = useCallback((editorState: EditorState) => {
-        console.log(editorState);
-        isTyping(() => true);
-    }, []);
-
-    return <OnChangePlugin onChange={handleChange} ignoreSelectionChange={true} />;
+    return <OnChangePlugin onChange={() => isTyping(true)} ignoreSelectionChange={true} />;
 }
 export default SavePlugin;

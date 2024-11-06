@@ -9,7 +9,7 @@ import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
 import Modal from "../../ui/modal";
 import { FilePluginProps, useValidateNodeClasses } from "../../utils";
 import { mergeRegister } from "@lexical/utils";
-import { RAISE_ERROR } from "../ErrorPlugin";
+import { RAISE_ERROR } from "../errorPlugin";
 
 export default function DocumentModal(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();

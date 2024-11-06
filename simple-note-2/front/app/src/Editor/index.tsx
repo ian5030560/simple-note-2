@@ -1,7 +1,7 @@
 import { useLoaderData, useNavigation, useParams } from "react-router-dom";
 import { notification, Skeleton, Spin } from "antd";
 import styles from "./index.module.css";
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useCookies } from "react-cookie";
 import { EditorState, LexicalNode } from "lexical";
 import { $isImageNode } from "./nodes/image";
@@ -10,6 +10,7 @@ import { $isVideoNode } from "./nodes/video";
 import { $isDocumentNode } from "./nodes/document";
 import { useNodes } from "../User/SideBar/NoteTree/store";
 import { Typography } from "antd";
+import useNoteManager from "../User/SideBar/NoteTree/useNoteManager";
 
 function Loading() {
     return <div className={styles.loading}>
@@ -57,16 +58,17 @@ export default () => {
     const navigation = useNavigation();
     const [{ username }] = useCookies(["username"]);
     const deleteFile = useAPI(APIs.deleteFile);
-    const { findNode } = useNodes();
+    // const { findNode } = useNodes();
+    const {find, save} = useNoteManager();
     const [api, contextHolder] = notification.useNotification();
-    const saveNote = useAPI(APIs.saveNote);
-
+    // const saveNote = useAPI(APIs.saveNote);
+    console.log(data);
     const insertFile = useCallback((file: File) => {
-        const node = findNode(id!);
+        const node = find(id!);
         const data = createFormData({
             username: username,
             filename: file.name,
-            notename: node!.current.title as string,
+            notename: node!.title as string,
             content: file
         });
 
@@ -80,7 +82,7 @@ export default () => {
             return res.text();
         }).catch(() => { throw new Error(`${file.name} is not uploaded successfully`); });
 
-    }, [findNode, id, username]);
+    }, [find, id, username]);
 
     const destroyFile = useCallback((node: LexicalNode) => {
         let param: { username: string, url?: string, note_title_id: string } = { username, note_title_id: id! };
@@ -110,22 +112,23 @@ export default () => {
     }, [api]);
 
     const handleSave = useCallback((editorState: EditorState) => {
-        saveNote({
-            username: username,
-            noteId: id!,
-            content: JSON.stringify(editorState.toJSON()),
-        })[0].then((res) => {
-            if (res.ok) {
-                console.log("saved!!");
-            }
-            else{
-                throw new Error("Failed to save");
-            }
-        }).catch(() => {
-            throw new Error("Failed to save");
-        });
-    }, [id, saveNote, username]);
-
+        // save(id!, editorState);
+        // saveNote({
+        //     username: username,
+        //     noteId: id!,
+        //     content: JSON.stringify(editorState.toJSON()),
+        // })[0].then((res) => {
+        //     if (res.ok) {
+        //         console.log("saved!!");
+        //     }
+        //     else{
+        //         throw new Error("Failed to save");
+        //     }
+        // }).catch(() => {
+        //     throw new Error("Failed to save");
+        // });
+    }, []);
+    
     return <>
         <Suspense fallback={<Loading />}>
             {

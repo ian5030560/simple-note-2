@@ -5,7 +5,7 @@ import { BsBoxArrowRight } from "react-icons/bs";
 import NoteTree from "./NoteTree";
 import { useCookies } from "react-cookie";
 import SettingModal from "./setting";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAPI from "../../util/api";
 import useInfo from "./info";
 import CollaborateModal from "./collaborate";
@@ -77,7 +77,7 @@ const UserProfile = () => {
         </Modal>
         <SettingModal open={state.setting.open} onOk={() => updateModal("setting", false)}
             onCancel={() => updateModal("setting", false)} />
-        <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} />
+        <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} username={username}/>
         {contextHolder}
     </Flex>
 }
@@ -86,10 +86,11 @@ const UserProfile = () => {
 const { Text } = Typography;
 
 const SideBar = () => {
+    const [{ username }] = useCookies(["username"]);
 
-    return <Flex vertical style={{height: "100%", padding: "24px 12px"}}>
+    return <Flex vertical style={{ height: "100%", padding: "24px 12px" }}>
         <UserProfile />
-        <NoteTree />
+        <NoteTree username={username}/>
     </Flex>
 }
 

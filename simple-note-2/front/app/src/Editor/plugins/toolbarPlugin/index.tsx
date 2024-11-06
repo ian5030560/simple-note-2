@@ -31,7 +31,7 @@ const TOOLS: React.ReactNode[] = [
         <Link />
         <Table />
     </Flex>,
-    <ComponentPicker/>
+    // <ComponentPicker/>
 ]
 
 export default function ToolBarPlugin(){

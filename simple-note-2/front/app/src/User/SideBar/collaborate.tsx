@@ -1,56 +1,57 @@
 import { CloseCircleOutlined, ShareAltOutlined, TeamOutlined } from "@ant-design/icons"
 import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { useCookies } from "react-cookie"
 import { useNavigate, useParams } from "react-router-dom"
 import { useNodes } from "./NoteTree/store";
 import useAPI from "../../util/api"
 import { encodeBase64, decodeBase64 } from "../../util/secret"
 import { NoteDataNode } from "./NoteTree/store"
+import useNoteManager from "./NoteTree/useNoteManager";
 
 interface CollaborateModalProps {
-    open?: boolean
-    onCancel: () => void
+    open?: boolean;
+    onCancel: () => void;
+    username: string;
 }
-export default function CollaborateModal(prop: CollaborateModalProps) {
+export default function CollaborateModal(props: CollaborateModalProps) {
     const { id, host } = useParams();
-    const [{ username }] = useCookies(["username"]);
     const [url, setUrl] = useState<string>();
     const [api, context] = message.useMessage();
     const addCollaborate = useAPI(APIs.addCollaborate);
-    const { findNode, update, add } = useNodes();
+    const { find, update, add, remove } = useNoteManager();
+    // const { find, update, add, remove } = useNodes();
     const { token } = theme.useToken();
     const deleteCollab = useAPI(APIs.deleteCollaborate);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
-        const node = findNode(id!)?.current as NoteDataNode | undefined;
+        const node = find(id!) as NoteDataNode | undefined;
         const url = node?.url;
         setUrl(url ? `http://localhost:3000/note/${url}` : undefined);
-    }, [findNode, host, id, navigate]);
+    }, [find, host, id, navigate]);
 
     const requestCollaborate = useCallback(() => {
-        const host = encodeBase64(username);
+        const host = encodeBase64(props.username);
         const url = `${id}/${host}`;
 
-        addCollaborate({ username: username, noteId: id as string, url: url })[0]
+        addCollaborate({ username: props.username, noteId: id as string, url: url })[0]
             .then(res => {
                 if (!res.ok) return api.error("發起失敗");
-                const node = findNode(id as string)?.current;
+                const node = find(id as string);
                 if (!node) {
                     api.error("發起失敗");
                 }
                 else {
                     update(node.key as string, { url: url });
-                    add(node.key as string, node.title as string, {}, "multiple");
-                    navigate(url, {replace: true});
+                    add({ key: node.key + host, title: node.title, url: url }, null, "multiple");
+                    navigate(url, { replace: true });
                     api.success("發起成功");
                 }
             })
             .catch(() => api.error("發起失敗"));
 
-    }, [add, addCollaborate, api, findNode, id, navigate, update, username]);
+    }, [add, addCollaborate, api, find, id, navigate, props.username, update]);
 
     const handleCollab = useCallback(() => {
         if (!url) {
@@ -72,29 +73,30 @@ export default function CollaborateModal(prop: CollaborateModalProps) {
     </>, [handleCollab, host, id, url]);
 
     const handleDelete = useCallback(() => {
-        deleteCollab({ username: username, noteId: id!, masterName: decodeBase64(host!) })[0]
+        deleteCollab({ username: props.username, noteId: id!, masterName: decodeBase64(host!) })[0]
             .then(res => {
                 if (!res.ok) {
                     api.error("取消失敗");
                 }
                 else {
-                    const node = findNode(id!)?.current;
-                    if (!node){
+                    const node = find(id!);
+                    if (!node) {
                         api.success("取消失敗");
                     }
-                    else{
+                    else {
                         update(node.key as string, { url: undefined });
-                        navigate(node.key as string, {replace: true});
+                        remove(node.key + host!, "multiple");
+                        navigate(node.key as string, { replace: true });
                         api.success("取消成功");
                     }
                 }
             });
 
         setDeleteOpen(false);
-    }, [api, deleteCollab, findNode, host, id, navigate, update, username]);
+    }, [api, deleteCollab, find, host, id, navigate, props.username, remove, update]);
 
     return <>
-        <Modal open={prop.open} footer={footer} title="協作" onCancel={prop.onCancel}>
+        <Modal open={props.open} footer={footer} title="協作" onCancel={props.onCancel}>
             <Input disabled value={url} styles={{ input: { color: token.colorText } }} />
         </Modal>
         <Modal open={deleteOpen} title="取消協作" okText="是" cancelText="否" okButtonProps={{ danger: true }}

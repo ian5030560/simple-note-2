@@ -39,6 +39,7 @@ export default [
       "@typescript-eslint/no-empty-object-type": "off",
       "react/prop-types": "off",
       "no-inline-styles": "off",
+      "@typescript-eslint/ban-ts-comment": "off"
     }
   }
 ];

@@ -1,5 +1,6 @@
 import { SyncOutlined } from "@ant-design/icons";
-import { Flex, Result, Button } from "antd";
+import { Flex, Result, Button, notification, Typography } from "antd";
+import { useEffect } from "react";
 import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router-dom";
 
 interface ErrorBoardProps {
@@ -18,10 +19,26 @@ function ErrorBoard(props: ErrorBoardProps) {
 
 export function EditorErrorBoundary() {
     const error = useRouteError() as Response;
+    const [api, contextHolder] = notification.useNotification();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isRouteErrorResponse(error) && error.status === 405) {
+            api.warning({
+                message: "上次內容未正確儲存",
+                description: <>
+                    <Typography.Text>上次內容未正確儲存，可忽略或重新整理</Typography.Text>
+                    <Button type="primary" onClick={() => navigate(0)}>重新整理</Button>
+                </>,
+                placement: "bottomRight"
+            });
+        }
+    }, [api, error, navigate]);
 
     return isRouteErrorResponse(error) ? <>
         <ErrorBoard open={error.status === 404} title="取得失敗" subTitle="此筆記無法取得內容，請重新整理" />
         <ErrorBoard open={error.status === 403} title="連線失敗" subTitle="此筆記無法取得連線，請重新整理" />
+        {contextHolder}
     </> : null;
 }
 
@@ -30,6 +47,6 @@ export function SettingErrorBoundary() {
 
     return isRouteErrorResponse(error) ? <>
         <ErrorBoard open={error.status === 404} title="初始化失敗" subTitle="無法取得個人資訊" />
-        <ErrorBoard open={error.status === 410} title="初始化失敗" subTitle="無法取得所有筆記資訊"/>
+        <ErrorBoard open={error.status === 410} title="初始化失敗" subTitle="無法取得所有筆記資訊" />
     </> : null;
 }

@@ -1,21 +1,23 @@
 import { Tree, Button, Flex, Typography, ButtonProps } from "antd";
 import { FaPlus } from "react-icons/fa6";
-import { useNodes } from "./store";
+// import { useNodes } from "./store";
 import { useMemo } from "react";
 import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useDirective from "./directive";
 import { Link, useNavigate } from "react-router-dom";
-import { decodeBase64 } from "../../../util/secret";
-import { useCookies } from "react-cookie";
+import useNoteManager from "./useNoteManager";
 
 const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="default" size="small" tabIndex={-1}
     onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(e) }} {...props} />;
 
-const NoteTree = () => {
-    const { nodes } = useNodes();
+interface NoteTreeProps {
+    username: string;
+}
+const NoteTree = (props: NoteTreeProps) => {
+    // const { nodes } = useNodes();
+    const { nodes } = useNoteManager();
     const navigate = useNavigate();
-    const { add, remove, contextHolder, cancelCollab } = useDirective();
-    const [{ username }] = useCookies(["username"]);
+    const { add, remove, contextHolder, cancelCollab } = useDirective(props.username);
 
     const one = useMemo(() => nodes["one"], [nodes]);
     const multiple = useMemo(() => nodes["multiple"], [nodes]);
@@ -51,7 +53,7 @@ const NoteTree = () => {
                 <Tree treeData={multiple} blockNode selectable={false}
                     rootStyle={{ overflowY: "auto" }} defaultExpandAll
                     titleRender={(data) => {
-                        // const [_, host] = data.url!.split("/");
+
                         return <Link to={data.url!}>
                             <Flex justify="space-between" onClick={() => navigate(data.url!)}
                                 style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
