@@ -48,7 +48,7 @@ class NewNoteView(APIView):
             noteId = data.get("noteId")  # 筆記ID
             notename = data.get("notename")  # 筆記名稱
             parentId = data.get("parentId")  # 父筆記名稱
-            silblingId = data.get("silbling_id")  # 兄弟筆記名稱
+            silblingId = data.get("silblingId")  # 兄弟筆記名稱
             
             if parentId:
                 pass
