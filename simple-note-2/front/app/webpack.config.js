@@ -93,29 +93,6 @@ module.exports = {
             filename: "css/[file].css"
         }),
         new ReactRefreshPlugin(),
-        new DefinePlugin({
-            'process.env': JSON.stringify(process.env),
-            APIs: JSON.stringify({
-                registerOrLogin: "http://localhost:8000/registerAndLogin/",
-                forgetPassword: "http://localhost:8000/forgetPassword/",
-                signOut: "http://localhost:8000/logout/",
-                addFile: "http://localhost:8000/newMediaFile/",
-                deleteFile: "http://localhost:8000/deleteFile/",
-                getInfo: "http://localhost:8000/getInfo/",
-                updateInfo: "http://localhost:8000/updateInfo/",
-                getNote: "http://localhost:8000/getNote/",
-                addNote: "http://localhost:8000/newNote/",
-                deleteNote: "http://localhost:8000/deleteNote/",
-                saveNote: "http://localhost:8000/saveNote/",
-                addTheme: "http://localhost:8000/newTheme/",
-                loadNoteTree: "http://localhost:8000/loadNoteTree/",
-                addCollaborate: "http://localhost:8000/newCollaborate/",
-                deleteCollaborate: "http://localhost:8000/deleteCollaborate/",
-                joinCollaborate: "http://localhost:8000/joinCollaborate/",
-                getNumber: "http://localhost:4000/room?",
-                getBreezeAI: "ws://localhost:4000/ws/ai/",
-            })
-        })
     ],
     devServer: {
         static: path.resolve(__dirname, "dist"),

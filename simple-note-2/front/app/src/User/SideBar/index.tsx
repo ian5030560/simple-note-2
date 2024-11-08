@@ -27,7 +27,7 @@ const UserProfile = () => {
     const [api, contextHolder] = notification.useNotification();
     const [{ username }, , removeCookies] = useCookies(["username"]);
     const navigate = useNavigate();
-    const signOut = useAPI(APIs.signOut);
+    const { auth: { signOut } } = useAPI();
     const { picture } = useInfo();
 
     const items = useMemo(() => {
@@ -47,7 +47,7 @@ const UserProfile = () => {
     const handleSignOutOk = useCallback(() => {
         updateModal("signOut", false);
 
-        signOut({ username: username })[0]
+        signOut(username)
             .then((value) => {
                 if (!value) {
                     api.error({ message: "登出發生錯誤，請重新登出", placement: "top" })
@@ -77,7 +77,7 @@ const UserProfile = () => {
         </Modal>
         <SettingModal open={state.setting.open} onOk={() => updateModal("setting", false)}
             onCancel={() => updateModal("setting", false)} />
-        <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} username={username}/>
+        <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} username={username} />
         {contextHolder}
     </Flex>
 }
@@ -90,7 +90,7 @@ const SideBar = () => {
 
     return <Flex vertical style={{ height: "100%", padding: "24px 12px" }}>
         <UserProfile />
-        <NoteTree username={username}/>
+        <NoteTree username={username} />
     </Flex>
 }
 

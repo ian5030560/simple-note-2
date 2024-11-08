@@ -53,7 +53,7 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
     const [darkPrimary, setDarkPrimary] = useState(dark.primary ? dark.primary : token.colorPrimary);
     const [darkNeutral, setDarkNeutral] = useState(dark.neutral ? dark.neutral : token.colorBgBase);
     const [api, contextHolder] = message.useMessage();
-    const addTheme = useAPI(APIs.addTheme);
+    const { theme: { add } } = useAPI();
     const [{ username }] = useCookies(["username"]);
     const [input, setInput] = useState("");
     const [_export, setExport] = useState(false);
@@ -79,34 +79,23 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
     }
 
     const handleOk = useCallback(() => {
-        addTheme({
-            username: username,
-            theme: {
-                name: name!,
-                data: {
-                    colorLightPrimary: lightPrimary,
-                    colorLightNeutral: lightNeutral,
-                    colorDarkPrimary: darkPrimary,
-                    colorDarkNeutral: darkNeutral
-                },
-            }
-        })[0]
-            .then(() => {
-                api.success({ content: "新增成功!" });
-            })
-            .catch(() => {
-                api.error({ content: "新增失敗，請重新上傳" })
-            })
+        // add()
+        //     .then(() => {
+        //         api.success({ content: "新增成功!" });
+        //     })
+        //     .catch(() => {
+        //         api.error({ content: "新增失敗，請重新上傳" })
+        //     })
         setExport(false);
         setInput("");
-    }, [addTheme, api, darkNeutral, darkPrimary, lightNeutral, lightPrimary, username]);
+    }, [add, api]);
 
     const handleCancel = () => {
         setExport(false);
         setInput("");
     };
-    
-    return <Space direction="vertical" style={{width: "100%", justifyContent: "center"}}>
+
+    return <Space direction="vertical" style={{ width: "100%", justifyContent: "center" }}>
         <Flex justify="end" align="center" style={{ padding: token.padding, paddingBottom: "0px" }}>
             <Button type="primary" icon={<TiExport />} style={{ marginRight: 8 }} onClick={() => setExport(true)}>輸出</Button>
             <Switch unCheckedChildren="亮" checkedChildren="暗" onClick={onDarkenClick} />

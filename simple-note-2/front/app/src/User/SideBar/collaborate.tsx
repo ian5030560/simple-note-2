@@ -17,11 +17,10 @@ export default function CollaborateModal(props: CollaborateModalProps) {
     const { id, host } = useParams();
     const [url, setUrl] = useState<string>();
     const [api, context] = message.useMessage();
-    const addCollaborate = useAPI(APIs.addCollaborate);
+    const { collab } = useAPI();
     const { find, update, add, remove } = useNoteManager();
     // const { find, update, add, remove } = useNodes();
     const { token } = theme.useToken();
-    const deleteCollab = useAPI(APIs.deleteCollaborate);
     const [deleteOpen, setDeleteOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -32,10 +31,11 @@ export default function CollaborateModal(props: CollaborateModalProps) {
     }, [find, host, id, navigate]);
 
     const requestCollaborate = useCallback(() => {
-        const host = encodeBase64(props.username);
+        const { username } = props;
+        const host = encodeBase64(username);
         const url = `${id}/${host}`;
 
-        addCollaborate({ username: props.username, noteId: id as string, url: url })[0]
+        collab.add(username, id!, url)
             .then(res => {
                 if (!res.ok) return api.error("發起失敗");
                 const node = find(id as string);
@@ -51,7 +51,7 @@ export default function CollaborateModal(props: CollaborateModalProps) {
             })
             .catch(() => api.error("發起失敗"));
 
-    }, [add, addCollaborate, api, find, id, navigate, props.username, update]);
+    }, [add, api, collab, find, id, navigate, props, update]);
 
     const handleCollab = useCallback(() => {
         if (!url) {
@@ -73,27 +73,29 @@ export default function CollaborateModal(props: CollaborateModalProps) {
     </>, [handleCollab, host, id, url]);
 
     const handleDelete = useCallback(() => {
-        deleteCollab({ username: props.username, noteId: id!, masterName: decodeBase64(host!) })[0]
-            .then(res => {
-                if (!res.ok) {
-                    api.error("取消失敗");
+        const { username } = props;
+        const master = decodeBase64(host!);
+
+        collab.delete(username, id!, master).then(res => {
+            if (!res.ok) {
+                api.error("取消失敗");
+            }
+            else {
+                const node = find(id!);
+                if (!node) {
+                    api.success("取消失敗");
                 }
                 else {
-                    const node = find(id!);
-                    if (!node) {
-                        api.success("取消失敗");
-                    }
-                    else {
-                        update(node.key as string, { url: undefined });
-                        remove(node.key + host!, "multiple");
-                        navigate(node.key as string, { replace: true });
-                        api.success("取消成功");
-                    }
+                    update(node.key as string, { url: undefined });
+                    remove(node.key + host!, "multiple");
+                    navigate(node.key as string, { replace: true });
+                    api.success("取消成功");
                 }
-            });
+            }
+        });
 
         setDeleteOpen(false);
-    }, [api, deleteCollab, find, host, id, navigate, props.username, remove, update]);
+    }, [api, collab, find, host, id, navigate, props, remove, update]);
 
     return <>
         <Modal open={props.open} footer={footer} title="協作" onCancel={props.onCancel}>

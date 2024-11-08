@@ -10,32 +10,30 @@ interface ForgetProp {
 export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
-  const forgetPassword = useAPI(APIs.forgetPassword);
+  const { auth: { forgetPassword } } = useAPI();
 
   const handleFinished = (values: any) => {
     setLoading(true);
 
-    forgetPassword(values)[0]
-      .then((res) => {
-        if (res.status === 200) {
-          api.success({
-            message: "已傳送密碼至您的email",
-            placement: "top",
-          });
-        } else {
-          api.error({
-            message: "密碼傳送失敗，請重新提交",
-            placement: "top",
-          });
-        }
-      })
-      .catch(() => {
+    const { username, email } = values;
+    forgetPassword(username, email).then((res) => {
+      if (res.status === 200) {
+        api.success({
+          message: "已傳送密碼至您的email",
+          placement: "top",
+        });
+      } else {
         api.error({
           message: "密碼傳送失敗，請重新提交",
           placement: "top",
         });
-      })
-      .finally(() => setLoading(false));
+      }
+    }).catch(() => {
+      api.error({
+        message: "密碼傳送失敗，請重新提交",
+        placement: "top",
+      });
+    }).finally(() => setLoading(false));
   };
 
   return (
@@ -103,11 +101,11 @@ export const AuthModal: React.FC<AuthProp> = ({ success, failure }) => {
   return <>
     <Modal title={success.title} open={success.open} closeIcon={null}
       footer={<Button type="primary" onClick={() => success.onSuccessClose()}>確定</Button>}>
-      <Result status="success" title={success.title} subTitle={success.subtitle}/>
+      <Result status="success" title={success.title} subTitle={success.subtitle} />
     </Modal>
     <Modal title={failure.title} open={failure.open} closeIcon={null}
       footer={<Button type="primary" onClick={() => failure.onFailureClose()}>確定</Button>}>
-      <Result status="error" title={failure.title} subTitle={failure.subtitle}/>
+      <Result status="error" title={failure.title} subTitle={failure.subtitle} />
     </Modal>
   </>
 };

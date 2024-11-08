@@ -20,7 +20,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [submittable, setSubmittable] = useState(false);
     const [, setCookie] = useCookies(["username"]);
     const values = Form.useWatch([], form);
-    const signIn = useAPI(APIs.registerOrLogin);
+    const { auth: { signIn } } = useAPI();
 
     useEffect(() => {
         form.validateFields({ validateOnly: true })
@@ -30,13 +30,11 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             );
     }, [form, values]);
 
-    const handleFinished = (values: SignInSubmisson) => {
+    const handleFinished = ({ username, password }: SignInSubmisson) => {
 
         setState(STATE.LOADING);
 
-        const data = { ...values, id: "sign-in" as const };
-
-        signIn(data)[0]
+        signIn(username, password)
             .then((res) => res.status === 200 || res.status === 201)
             .then(async ok => {
                 if (!ok) {

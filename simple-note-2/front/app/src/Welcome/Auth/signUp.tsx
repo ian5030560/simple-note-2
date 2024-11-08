@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthModal } from "./modal";
 import { AuthProp, STATE, validateMessages } from "./constant";
 import useAPI from "../../util/api";
-import {uuid} from "../../util/secret";
+import { uuid } from "../../util/secret";
 
 const { Title } = Typography;
 
@@ -21,39 +21,30 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
     const [submittable, setSubmittable] = useState<boolean>(false);
     const [state, setState] = useState<STATE | null>();
     const values = Form.useWatch([], form);
-    const signUp = useAPI(APIs.registerOrLogin);
-    const addNote = useAPI(APIs.addNote);
+    const { auth: { signUp }, note } = useAPI();
 
     useEffect(() => {
-        form.validateFields({validateOnly: true})
+        form.validateFields({ validateOnly: true })
             .then(
                 () => setSubmittable(true),
                 () => setSubmittable(false)
             );
     }, [form, values]);
 
-    const handleFinished = (values: SignUpSubmisson) => {
+    const handleFinished = ({ username, email, password }: SignUpSubmisson) => {
         setState(STATE.LOADING);
 
-        const data = { ...values, id: "register" as const };
-
-        signUp(data)[0]
+        signUp(username, password, email)
             .then(async res => {
                 if (res.status === 200 || res.status === 201) {
-                    const res1 = await addNote({ 
-                        username: values["username"], 
-                        noteId: uuid(),
-                        notename: "我的筆記",
-                        parentId: null,
-                        silbling_id: null,
-                    })[0].then(res => {
+                    const res1 = await note.add(username, uuid(), "我的筆記", null, null).then(res => {
                         console.log(res);
                         return res;
                     }).then(res => res.status === 200).catch((e) => {
                         console.log(e);
                         return false;
                     });
-                    
+
                     // let res2 = await addTheme({
                     //     username: values["username"],
                     //     theme: {name: "預設", data: defaultSeed}
@@ -82,7 +73,7 @@ const SignUp: React.FC<SignUpProp> = ({ onChange }) => {
         <Form form={form} size="large" validateMessages={validateMessages}
             labelWrap style={{ width: "40%" }} autoComplete="on" onFinish={handleFinished}>
             <Title>註冊</Title>
-            <Form.Item label="帳號" name="username" rules={[{required: true}]}>
+            <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
                 <Input />
             </Form.Item>
             <Form.Item label="信箱" name="email"

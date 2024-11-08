@@ -46,7 +46,7 @@ interface SettingModalProp {
     onCancel: () => void;
 }
 const SettingModal = (prop: SettingModalProp) => {
-    const updateInfo = useAPI(APIs.updateInfo);
+    const { info } = useAPI();
     const [{ username }] = useCookies(["username"]);
     const { themes, updatePicture, updateThemes, updateThemeUsage } = useInfo();
     const { token } = theme.useToken();
@@ -58,32 +58,31 @@ const SettingModal = (prop: SettingModalProp) => {
     const handleOk = useCallback(async () => {
         const { theme, picture } = update.current;
 
-        updateInfo({
-            username: username, image: picture,
-            data: {
-                // theme: {
-                //     data: {
-                //         oldName: themes.find(theme => theme.data.isUsing)!.name,
-                //         newName: themes[theme].name
-                //     }
-                // }
-            }
-        })[0]
-            .then(res => {
-                if (res.status !== 200) return;
-                // updateThemeUsage(theme);
-                updatePicture(picture);
-                update.current = {
-                    theme: -1,
-                    picture: ""
-                }
-            })
-            .catch((e) => {
-                console.log(e);
-            });
+        // info.update({
+        //     username: username, image: picture,
+        //     data: {
+        //         // theme: {
+        //         //     data: {
+        //         //         oldName: themes.find(theme => theme.data.isUsing)!.name,
+        //         //         newName: themes[theme].name
+        //         //     }
+        //         // }
+        //     }
+        // }).then(res => {
+        //         if (res.status !== 200) return;
+        //         // updateThemeUsage(theme);
+        //         updatePicture(picture);
+        //         update.current = {
+        //             theme: -1,
+        //             picture: ""
+        //         }
+        //     })
+        //     .catch((e) => {
+        //         console.log(e);
+        //     });
 
         prop.onOk();
-    }, [prop, updateInfo, updatePicture, username]);
+    }, [prop]);
 
     const options: SelectProps["options"] = themes?.map((item, index) => ({
         value: index,
@@ -105,7 +104,7 @@ const SettingModal = (prop: SettingModalProp) => {
                     {username}
                 </Typography.Title>
                 <Flex flex={3}>
-                    <Flex style={{width: "100%", height: "fit-content"}} align="center" gap={5} flex={0}>
+                    <Flex style={{ width: "100%", height: "fit-content" }} align="center" gap={5} flex={0}>
                         <Typography.Text>主題</Typography.Text>
                         <Select style={{ flex: 1 }} options={options} variant="filled"
                             defaultValue={options?.find(opt => opt.item.isUsing)?.value}
