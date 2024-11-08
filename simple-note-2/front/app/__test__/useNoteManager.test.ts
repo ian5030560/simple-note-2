@@ -5,24 +5,13 @@ import "core-js/stable/structured-clone";
 import "fake-indexeddb";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $createParagraphNode, $createTextNode, $getRoot, LexicalEditor } from "lexical";
-import { uuid } from "./utils";
+import { prepareNoteManager, uuid } from "./utils";
 
 function createNoteManagerHook() {
     const { result } = renderHook(() => useNoteManager());
     const hook = result.current;
 
     return hook;
-}
-
-async function prepareNoteManager(data: { nodes: { one: NoteDataNode[], multiple: NoteDataNode[] } }) {
-    useNoteManager.setState(prev => ({ ...prev, ...data }));
-    const Note = await getNoteStore();
-
-    const flatten = data.nodes.one.flat(Infinity);
-    for (const node of flatten) {
-        const obj: NoteObject = { id: node.key, content: null, uploaded: true };
-        Note.add(obj);
-    }
 }
 
 beforeEach(() => {
@@ -204,7 +193,7 @@ describe("測試useNoteManager", () => {
             });
 
             const Note = await getNoteStore();
-
+            
             const result = await new Promise<NoteObject | undefined>((resolve, reject) => {
                 const request = Note.get(param.key);
                 request.onsuccess = () => resolve(request.result);

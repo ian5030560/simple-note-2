@@ -67,6 +67,14 @@ export async function getNoteStore() {
     return transaction.objectStore("Note");
 }
 
+export async function operate<T>(requestFn: () => Promise<IDBRequest<T>>){
+    const request = await requestFn();
+    return new Promise<T>((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
 export class NoteStorageError extends Error {
     constructor(message: string) {
         super(message);

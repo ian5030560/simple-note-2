@@ -4,8 +4,8 @@ import { Navigate, Outlet, LoaderFunctionArgs } from "react-router-dom";
 import { decodeBase64 } from "./secret";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { defaultTheme } from "./theme";
-import useNoteManager, { NoteDataNode, NoteObject, findNode, getNoteStore } from "../User/SideBar/NoteTree/useNoteManager";
-// import { useNodes, findNode, NoteDataNode } from "../User/SideBar/NoteTree/store";
+import useNoteManager, { NoteDataNode, NoteObject, findNode, getNoteStore, operate } from "../User/SideBar/NoteTree/useNoteManager";
+import utilizeAPI from "./api";
 
 export function Public() {
     const [{ username }] = useCookies(["username"]);
@@ -60,112 +60,91 @@ function sortNodes(data: NoteTreeData[]) {
 }
 
 export const getCookie = () => new Map(document.cookie.split(";").map((item) => item.trim().split("=")) as [[string, string]]);
-const requestInit = {
-    method: "POST",
-    headers: {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        "content-type": "application/json",
-    }
-}
 
 export type NoteFetchResult = {
     one: Array<NoteTreeData>,
     multiple: Array<{ noteId: string, noteName: string, url: string }>
 }
-export async function settingLoader({ request }: LoaderFunctionArgs<string>) {
+export async function settingLoader() {
 
-    const url = APIs.loadNoteTree;
+    const { note: { loadTree } } = utilizeAPI();
     const cookie = getCookie();
     const username = cookie.get("username")!;
 
     const notesError = new Response(undefined, { status: 410 });
 
-    return await fetch(url, {
-        ...requestInit,
-        signal: request.signal,
-        body: JSON.stringify({ username: username })
-    })
-        .then(res => {
-            if (!res.ok) throw notesError;
-            return res.json();
-        })
-        .then((data: NoteFetchResult) => {
-            try {
-                const oneSorted = sortNodes(data["one"]);
-                const oneMapped = oneSorted.map((it) => (
-                    {
-                        key: it.noteId, title: it.noteName, children: [],
-                        parentKey: it.parentId, siblingKey: it.silblingId,
-                        url: data["multiple"].find(mul => mul.noteId === it.noteId)?.url
-                    }
-                ));
-
-                const ones: NoteDataNode[] = [];
-                for (const node of oneMapped) {
-                    let children = ones;
-                    if (node.parentKey) children = findNode(ones, node.parentKey)!.children;
-                    const index = node.siblingKey ? oneMapped.findIndex(it => it.key === node.siblingKey) + 1 : oneMapped.length;
-                    children.splice(index, 0, {
-                        key: node.key, title: node.title,
-                        children: [], url: node.url, parent: node.parentKey
-                    });
+    return await loadTree(username).then(res => {
+        if (!res.ok) throw notesError;
+        return res.json();
+    }).then((data: NoteFetchResult) => {
+        try {
+            const oneSorted = sortNodes(data["one"]);
+            const oneMapped = oneSorted.map((it) => (
+                {
+                    key: it.noteId, title: it.noteName, children: [],
+                    parentKey: it.parentId, siblingKey: it.silblingId,
+                    url: data["multiple"].find(mul => mul.noteId === it.noteId)?.url
                 }
+            ));
 
-                const multiples: NoteDataNode[] = data["multiple"].map(it => {
-                    const [id, host] = it.url.split("/");
-                    const title = `${decodeBase64(host)}-${it.noteName}`;
-                    return {
-                        title: title, key: id + host, children: [],
-                        url: it.url, parent: null
-                    }
+            const ones: NoteDataNode[] = [];
+            for (const node of oneMapped) {
+                let children = ones;
+                if (node.parentKey) children = findNode(ones, node.parentKey)!.children;
+                const index = node.siblingKey ? oneMapped.findIndex(it => it.key === node.siblingKey) + 1 : oneMapped.length;
+                children.splice(index, 0, {
+                    key: node.key, title: node.title,
+                    children: [], url: node.url, parent: node.parentKey
                 });
+            }
 
-                useNoteManager.setState(({ nodes, ...rest }) => {
-                    nodes = { one: ones, multiple: multiples };
-                    return { ...rest, nodes };
-                });
-                return ones[0].key;
-            }
-            catch (e) {
-                console.log(e);
-                throw notesError;
-            }
-        })
-        .catch(() => { throw notesError });
+            const multiples: NoteDataNode[] = data["multiple"].map(it => {
+                const [id, host] = it.url.split("/");
+                const title = `${decodeBase64(host)}-${it.noteName}`;
+                return {
+                    title: title, key: id + host, children: [],
+                    url: it.url, parent: null
+                }
+            });
+
+            useNoteManager.setState(({ nodes, ...rest }) => {
+                nodes = { one: ones, multiple: multiples };
+                return { ...rest, nodes };
+            });
+            return ones[0].key;
+        }
+        catch (e) {
+            console.log(e);
+            throw notesError;
+        }
+    }).catch(() => { throw notesError });
 }
 
-async function requestNote(request: Request, username: string, id: string) {
-    const url = APIs.getNote;
+async function getNote(username: string, id: string) {
+    const { note: { get } } = utilizeAPI();
 
-    return await fetch(url, {
-        ...requestInit,
-        signal: request.signal,
-        credentials: "same-origin",
-        body: JSON.stringify({ username: username, noteId: id }),
-    }).then(async res => {
+    return await get(username, id).then(async res => {
         if (res.ok) return res.status === 204 ? null : await res.text();
         throw new Response(undefined, { status: 404 });
     }).catch(() => {
         throw new Response(undefined, { status: 404 })
     })
-}
-export async function contentLoader({ request, params }: LoaderFunctionArgs<string | null>, username: string) {
+};
+
+export async function contentLoader({ params }: LoaderFunctionArgs<string | null>, username: string) {
     const { id } = params;
-    const Note = await getNoteStore();
-    const result = await new Promise((resolve, reject) => {
-        const request = Note.get(id!);
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    }) as NoteObject | undefined;
+    const { note: { save } } = utilizeAPI();
+    const result = await operate<NoteObject | undefined>(async () => {
+        const Note = await getNoteStore();
+        return Note.get(id!);
+    });
 
     if (!result) {
-        const data = await requestNote(request, username, id!);
-        new Promise((resolve, reject) => {
-            getNoteStore().then(Note => {
-                const request = Note.add({ id: id, content: data, uploaded: true });
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+        const data = await getNote(username, id!);
+
+        operate(async () => {
+            const Note = await getNoteStore();
+            return Note.add({ id: id, content: data, uploaded: true });
         });
 
         return data;
@@ -177,18 +156,16 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<stri
         }
         else {
             return await Promise.all([
-                requestNote(request, username, id!),
-
-                fetch(APIs.saveNote, {
-                    ...requestInit, signal: request.signal,
-                    body: JSON.stringify({ username, content, noteId: id })
-                }).then(async res => {
+                getNote(username, id!),
+                save(username, id!, content).then(async res => {
                     if (!res.ok) {
                         throw new Response(undefined, { status: 405 });
                     }
                     else {
-                        const request = Note.put({ id, content, uploaded: true });
-                        request.onerror = () => { throw new Response(undefined, { status: 405 }) };
+                        operate(async () => {
+                            const Note = await getNoteStore();
+                            return Note.put({ id, content, uploaded: true });
+                        }).catch(() => { throw new Response(undefined, { status: 405 }) });
                     }
                 }).catch(() => {
                     throw new Response(undefined, { status: 405 });
@@ -198,22 +175,16 @@ export async function contentLoader({ request, params }: LoaderFunctionArgs<stri
     }
 }
 
-export async function collaborateLoader({ request, params }: LoaderFunctionArgs<boolean>) {
-    const joinUrl = APIs.joinCollaborate;
+export async function collaborateLoader({ params }: LoaderFunctionArgs<boolean>) {
+    const { collab: { join, people } } = utilizeAPI();
     const cookie = getCookie();
     const username = cookie.get("username")!;
     const { id, host } = params;
-    const numberUrl = APIs.getNumber + new URLSearchParams({ id: `${id}/${host}` }).toString();
     const collabErr = new Response(undefined, { status: 403 });
+    const master = decodeBase64(host!);
 
     return await Promise.all([
-        fetch(joinUrl, {
-            ...requestInit, signal: request.signal,
-            body: JSON.stringify({
-                username: username, noteId: id, url: `${id}/${host}`,
-                masterName: decodeBase64(host!),
-            })
-        })
+        join(username, `${id}/${host}`, master)
             .then(res => {
                 if (!(res.ok || res.status == 401)) throw collabErr;
             })
@@ -221,7 +192,7 @@ export async function collaborateLoader({ request, params }: LoaderFunctionArgs<
                 throw collabErr
             }),
 
-        fetch(numberUrl, { ...requestInit, signal: request.signal, method: "GET" })
+        people(new URLSearchParams({ id: `${id}/${host}` }))
             .then(async res => {
                 if (!res.ok) throw collabErr;
                 const { count } = await res.json() as { count: number };

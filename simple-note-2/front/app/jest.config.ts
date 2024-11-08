@@ -11,8 +11,13 @@ const config: JestConfigWithTsJest = {
   setupFiles: [
     "fake-indexeddb/auto",
     "whatwg-fetch",
-    "<rootDir>/global.d.ts"
-  ]
+  ],
+  // setupFilesAfterEnv: [
+  //   "<rootDir>/src/global.d.ts"
+  // ],
+  transform: {
+    '^.+\\.(ts|tsx)$': ["ts-jest", { isolatedModules: true }],
+  },
 }
 
 export default config

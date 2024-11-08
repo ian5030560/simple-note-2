@@ -1,16 +1,15 @@
 import { useLoaderData, useNavigation, useParams } from "react-router-dom";
-import { notification, Skeleton, Spin } from "antd";
+import { Button, notification, Skeleton, Spin } from "antd";
 import styles from "./index.module.css";
-import React, { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { EditorState, LexicalNode } from "lexical";
 import { $isImageNode } from "./nodes/image";
 import useAPI from "../util/api";
 import { $isVideoNode } from "./nodes/video";
 import { $isDocumentNode } from "./nodes/document";
-import { useNodes } from "../User/SideBar/NoteTree/store";
 import { Typography } from "antd";
-import useNoteManager from "../User/SideBar/NoteTree/useNoteManager";
+import useNoteManager, { getNoteStore, NoteObject, operate } from "../User/SideBar/NoteTree/useNoteManager";
 
 function Loading() {
     return <div className={styles.loading}>
@@ -44,60 +43,77 @@ const LongWaiting = (props: LongWaitingProps) => {
     return waiting ? <Spin spinning fullscreen size="large" tip={props.text} /> : null;
 }
 
-function createFormData(data: Record<string, any>) {
-    const formData = new FormData();
-    Object.keys(data).forEach(key => formData.append(key, data[key]));
-
-    return formData;
-}
-
 export default () => {
     const data = useLoaderData() as string | null | false;
     const { id, host } = useParams();
     const collab = !!(id && host);
     const navigation = useNavigation();
     const [{ username }] = useCookies(["username"]);
-    const deleteFile = useAPI(APIs.deleteFile);
+    const { file, note } = useAPI();
     // const { findNode } = useNodes();
-    const {find, save} = useNoteManager();
+    const { find, save } = useNoteManager();
     const [api, contextHolder] = notification.useNotification();
-    // const saveNote = useAPI(APIs.saveNote);
-    console.log(data);
-    const insertFile = useCallback((file: File) => {
-        const node = find(id!);
-        const data = createFormData({
-            username: username,
-            filename: file.name,
-            notename: node!.title as string,
-            content: file
-        });
+    const [isStored, setIsStored] = useState(true);
 
-        return fetch(APIs.addFile, {
-            body: data, method: "POST",
-            headers: {
-                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            const result = await operate<NoteObject | undefined>(async () => {
+                const Note = await getNoteStore();
+                return Note.get(id!);
+            });
+
+            if (!result) {
+                return api.warning({
+                    message: "儲存異常",
+                    description: <>
+                        <Typography.Text type="warning">無法正常讀取本地儲存，建議重整頁面</Typography.Text>
+                        <Button type="primary" onClick={() => window.location.reload()}>重整頁面</Button>
+                    </>
+                })
             }
-        }).then(res => {
-            if (!res.ok) throw new Error(`${file.name} is not uploaded successfully`);
-            return res.text();
-        }).catch(() => { throw new Error(`${file.name} is not uploaded successfully`); });
 
-    }, [find, id, username]);
+            if (!result.uploaded) {
+                return
+            }
+        }, 2500);
+
+        return clearInterval(interval);
+    }, [api, id]);
+
+    useEffect(() => {
+        function handleBeforeUnload(e: WindowEventMap["beforeunload"]) {
+
+        }
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, []);
+
+    const insertFile = useCallback((f: File) => {
+        const node = find(id!);
+
+        return file.add(username, f, node!.title).then(res => {
+            if (!res.ok) throw new Error(`${f.name} is not uploaded successfully`);
+            return res.text();
+        }).catch(() => { throw new Error(`${f.name} is not uploaded successfully`); });
+
+    }, [file, find, id, username]);
 
     const destroyFile = useCallback((node: LexicalNode) => {
-        let param: { username: string, url?: string, note_title_id: string } = { username, note_title_id: id! };
+        let url: string;
         if ($isImageNode(node) || $isVideoNode(node) || $isDocumentNode(node)) {
-            param.url = node.getSrc();
+            url = node.getSrc();
         }
         else {
             throw new Error(`${node.__type} is not supported by deleteFile`);
         }
 
-        deleteFile({ ...param, url: param.url })[0]
-            .then(res => { if (!res.ok) throw new Error(`Your file: ${param.url} failed to be deleted`); })
-            .catch(() => { throw new Error(`Your file: ${param.url} failed to be deleted`); });
+        file.delete(username, url, id!)
+            .then(res => { if (!res.ok) throw new Error(`Your file: ${url} failed to be deleted`); })
+            .catch(() => { throw new Error(`Your file: ${url} failed to be deleted`); });
 
-    }, [deleteFile, id, username]);
+    }, [file, id, username]);
 
     const handleError = useCallback((err: Error) => {
         api.error({
@@ -111,30 +127,45 @@ export default () => {
         });
     }, [api]);
 
-    const handleSave = useCallback((editorState: EditorState) => {
-        // save(id!, editorState);
-        // saveNote({
-        //     username: username,
-        //     noteId: id!,
-        //     content: JSON.stringify(editorState.toJSON()),
-        // })[0].then((res) => {
-        //     if (res.ok) {
-        //         console.log("saved!!");
-        //     }
-        //     else{
-        //         throw new Error("Failed to save");
-        //     }
-        // }).catch(() => {
-        //     throw new Error("Failed to save");
-        // });
-    }, []);
-    
+    const handleSave = useCallback(async (editorState: EditorState) => {
+        await save(id!, editorState);
+        setIsStored(false);
+        const _id = id!;
+        const content = editorState;
+
+        setTimeout(async () => {
+            const result = await operate<NoteObject | undefined>(async () => {
+                const Note = await getNoteStore();
+                return Note.get(_id);
+            });
+
+            if (!result) {
+                note.save(username, _id, content)
+                    .catch(() => {
+
+                    });
+                return api.warning({
+                    message: "儲存異常",
+                    description: <>
+                        <Typography.Text type="warning">無法正常讀取本地儲存，建議重整頁面</Typography.Text>
+                        <Button type="primary" onClick={() => window.location.reload()}>重整頁面</Button>
+                    </>
+                })
+            }
+
+            if (!result.uploaded) {
+                return
+            }
+        }, 2500);
+
+    }, [api, id, note, save, username]);
+
     return <>
         <Suspense fallback={<Loading />}>
             {
                 navigation.state !== "loading" && <Editor initialEditorState={data !== false ? data : undefined} collab={collab}
                     room={collab ? `${id}/${host}` : undefined} username={username} onSave={handleSave}
-                    insertFile={insertFile} destroyFile={destroyFile} whenRaiseError={handleError}/>
+                    insertFile={insertFile} destroyFile={destroyFile} whenRaiseError={handleError} />
             }
         </Suspense>
         <LongWaiting delay={500} text="正在載入內容" />
