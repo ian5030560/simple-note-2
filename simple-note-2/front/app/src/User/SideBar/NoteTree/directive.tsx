@@ -82,11 +82,13 @@ export default function useDirective(username: string) {
                 remove(node!.key as string);
                 const children = node!.parent ? find(node!.parent)!.children : nodes["one"];
                 const index = children.findIndex(it => it.key === node.key) - 1;
-                const prev = children[index].key;
-
-                navigate(prev ? prev : node.parent!);
+                const prev = children[index]?.key;
+                navigate(prev ? prev : node.parent!, {replace: true});
             }
-        }).catch(() => api.error(`${title} 刪除失敗`));
+        }).catch((e) => {
+            console.log(e);
+            api.error(`${title} 刪除失敗`);
+        });
 
         clearDelete();
     }, [_delete, api, find, navigate, nodes, note, remove, username]);

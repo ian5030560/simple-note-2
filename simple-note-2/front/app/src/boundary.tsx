@@ -21,15 +21,15 @@ export function EditorErrorBoundary() {
     const error = useRouteError() as Response;
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
-
+    
     useEffect(() => {
         if (isRouteErrorResponse(error) && error.status === 405) {
             api.warning({
                 message: "上次內容未正確儲存",
-                description: <>
+                description: <Flex vertical gap={5}>
                     <Typography.Text>上次內容未正確儲存，可忽略或重新整理</Typography.Text>
                     <Button type="primary" onClick={() => navigate(0)}>重新整理</Button>
-                </>,
+                </Flex>,
                 placement: "bottomRight"
             });
         }

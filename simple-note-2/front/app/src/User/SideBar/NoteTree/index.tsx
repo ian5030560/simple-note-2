@@ -1,11 +1,11 @@
 import { Tree, Button, Flex, Typography, ButtonProps } from "antd";
 import { FaPlus } from "react-icons/fa6";
-// import { useNodes } from "./store";
 import { useMemo } from "react";
 import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useDirective from "./directive";
-import { Link, useNavigate } from "react-router-dom";
-import useNoteManager from "./useNoteManager";
+import { Link, useParams } from "react-router-dom";
+import useNoteManager, { getNoteStore, NoteObject, operate } from "./useNoteManager";
+import useAPI from "../../../util/api";
 
 const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="default" size="small" tabIndex={-1}
     onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(e) }} {...props} />;
@@ -14,13 +14,12 @@ interface NoteTreeProps {
     username: string;
 }
 const NoteTree = (props: NoteTreeProps) => {
-    // const { nodes } = useNodes();
     const { nodes } = useNoteManager();
-    const navigate = useNavigate();
     const { add, remove, contextHolder, cancelCollab } = useDirective(props.username);
-
+    const { id } = useParams();
     const one = useMemo(() => nodes["one"], [nodes]);
     const multiple = useMemo(() => nodes["multiple"], [nodes]);
+    const { note: { save } } = useAPI();
 
     return <Flex vertical gap={5} style={{ flex: 1, overflowY: "auto" }}>
         <div>
@@ -33,7 +32,24 @@ const NoteTree = (props: NoteTreeProps) => {
                 titleRender={(data) => {
                     const first = one[0].key === data.key;
 
-                    return <Link to={data.url ? data.url : data.key as string}>
+                    const to = data.url ? data.url : data.key as string;
+                    return <Link to={to} onClick={async () => {
+                        const result = await operate<NoteObject | undefined>(async () => {
+                            const Note = await getNoteStore();
+                            return Note.get(id!)
+                        });
+
+                        if (!result || result.uploaded) return;
+                        save(props.username, id!, JSON.stringify(result.content), true).then(res => {
+                            if (!res.ok) return;
+
+                            operate(async () => {
+                                const Note = await getNoteStore();
+                                return Note.put({ id, content: result.content, uploaded: true });
+                            })
+                        });
+
+                    }}>
                         <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3 }}>
                             <Typography.Text>{data.title as string}</Typography.Text>
                             <Flex gap={3}>
@@ -55,7 +71,7 @@ const NoteTree = (props: NoteTreeProps) => {
                     titleRender={(data) => {
 
                         return <Link to={data.url!}>
-                            <Flex justify="space-between" onClick={() => navigate(data.url!)}
+                            <Flex justify="space-between"
                                 style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
                                 <Typography.Text>{data.title as string}</Typography.Text>
                                 <ToolButton icon={<CloseOutlined />} onClick={() => cancelCollab(data)} />

@@ -152,12 +152,12 @@ export async function contentLoader({ params }: LoaderFunctionArgs<string | null
     else {
         const { uploaded, content } = result;
         if (uploaded) {
-            return content;
+            return content === null ? null : JSON.stringify(content);
         }
         else {
             return await Promise.all([
                 getNote(username, id!),
-                save(username, id!, content).then(async res => {
+                save(username, id!, JSON.stringify(content)).then(async res => {
                     if (!res.ok) {
                         throw new Response(undefined, { status: 405 });
                     }
@@ -192,13 +192,11 @@ export async function collaborateLoader({ params }: LoaderFunctionArgs<boolean>)
                 throw collabErr
             }),
 
-        people(new URLSearchParams({ id: `${id}/${host}` }))
-            .then(async res => {
-                if (!res.ok) throw collabErr;
-                const { count } = await res.json() as { count: number };
-                return count === 0;
-            })
-            .catch(() => { throw collabErr })
+        people(`${id}/${host}`).then(async res => {
+            if (!res.ok) throw collabErr;
+            const { count } = await res.json() as { count: number };
+            return count === 0;
+        }).catch(() => { throw collabErr })
     ]).then(reses => reses[1]);
 }
 

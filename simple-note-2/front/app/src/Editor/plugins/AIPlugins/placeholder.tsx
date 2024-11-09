@@ -8,6 +8,7 @@ import {
 } from "lexical";
 import { $isHeadingNode } from "@lexical/rich-text";
 import "./placeholder.css";
+import useAPI from "../../../util/api";
 
 export default function AIPlaceholderPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -16,10 +17,11 @@ export default function AIPlaceholderPlugin() {
     const [content, setContent] = useState("");
     const socket = useRef<WebSocket>();
     const [needUpdate, setNeedUpdate] = useState(false);
+    const { ai } = useAPI();
 
     useEffect(() => {
-        if(socket.current) return;
-        socket.current = new WebSocket(APIs.getBreezeAI);
+        if (socket.current) return;
+        socket.current = ai.socket();
         const { current } = socket;
 
         function handleMessage(e: MessageEvent<string>) {
@@ -27,12 +29,12 @@ export default function AIPlaceholderPlugin() {
             setText(JSON.parse(data).result);
         }
 
-        function handleClose(){
+        function handleClose() {
             console.log("client disconnect");
             socket.current = undefined;
         }
 
-        function handleOpen(){
+        function handleOpen() {
             console.log("client connect");
         }
         current.addEventListener("open", handleOpen);

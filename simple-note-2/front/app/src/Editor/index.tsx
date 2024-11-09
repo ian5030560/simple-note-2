@@ -1,9 +1,9 @@
-import { useLoaderData, useNavigation, useParams } from "react-router-dom";
-import { Button, notification, Skeleton, Spin } from "antd";
+import { useLoaderData, useNavigate, useNavigation, useParams } from "react-router-dom";
+import { Button, Flex, notification, Skeleton, Spin } from "antd";
 import styles from "./index.module.css";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
-import { EditorState, LexicalNode } from "lexical";
+import { EditorState, LexicalNode, SerializedEditorState } from "lexical";
 import { $isImageNode } from "./nodes/image";
 import useAPI from "../util/api";
 import { $isVideoNode } from "./nodes/video";
@@ -50,45 +50,75 @@ export default () => {
     const navigation = useNavigation();
     const [{ username }] = useCookies(["username"]);
     const { file, note } = useAPI();
-    // const { findNode } = useNodes();
     const { find, save } = useNoteManager();
     const [api, contextHolder] = notification.useNotification();
-    const [isStored, setIsStored] = useState(true);
+    const navigate = useNavigate();
+    
+    const handleSaveToServer = useCallback((username: string, id: string, content: SerializedEditorState | null, keepAlive?: boolean) => {
+        note.save(username, id, JSON.stringify(content), keepAlive).then(res => {
+            if (res.ok) return;
+            api.error({
+                message: "儲存錯誤",
+                description: <Flex vertical gap={5}>
+                    <Typography.Text>無法發送內容至伺服器，請勿繼續更新目前內容，請嘗試手動發送</Typography.Text>
+                    <Button type="primary" block onClick={() => handleSaveToServer(username, id, content, keepAlive)}>重新發送</Button>
+                </Flex>
+            })
+        });
+
+        operate(async () => {
+            const Note = await getNoteStore();
+            return Note.put({id, content, uploaded: true});
+        })
+    }, [api, note]);
 
     useEffect(() => {
         const interval = setInterval(async () => {
+            
+            const result = await operate<NoteObject | undefined>(async () => {
+                const Note = await getNoteStore();
+                return Note.get(id!);
+            });
+            
+            if (!result) {
+                return api.warning({
+                    message: "儲存異常",
+                    description: <Flex vertical gap={5}>
+                        <Typography.Text type="warning">無法正常讀取本地快取，建議重整頁面</Typography.Text>
+                        <Button type="primary" block onClick={() => navigate(0)}>重整頁面</Button>
+                    </Flex>
+                });
+            }
+
+            if (!result.uploaded) {
+                handleSaveToServer(username, id!, result.content);
+                console.log("saved");
+            }
+        }, 2500);
+
+        return () => clearInterval(interval);
+    }, [api, handleSaveToServer, id, navigate, note, username]);
+
+    useEffect(() => {
+        async function handleBeforeUnload(e: WindowEventMap["beforeunload"]) {
             const result = await operate<NoteObject | undefined>(async () => {
                 const Note = await getNoteStore();
                 return Note.get(id!);
             });
 
-            if (!result) {
-                return api.warning({
-                    message: "儲存異常",
-                    description: <>
-                        <Typography.Text type="warning">無法正常讀取本地儲存，建議重整頁面</Typography.Text>
-                        <Button type="primary" onClick={() => window.location.reload()}>重整頁面</Button>
-                    </>
-                })
+            if(!result) return;
+
+            if(!result.uploaded){
+                handleSaveToServer(username, id!, result.content, true);
+                e.preventDefault();
+                e.returnValue = true;
             }
-
-            if (!result.uploaded) {
-                return
-            }
-        }, 2500);
-
-        return clearInterval(interval);
-    }, [api, id]);
-
-    useEffect(() => {
-        function handleBeforeUnload(e: WindowEventMap["beforeunload"]) {
-
         }
 
         window.addEventListener("beforeunload", handleBeforeUnload);
 
         return window.removeEventListener("beforeunload", handleBeforeUnload);
-    }, []);
+    }, [handleSaveToServer, id, username]);
 
     const insertFile = useCallback((f: File) => {
         const node = find(id!);
@@ -129,36 +159,8 @@ export default () => {
 
     const handleSave = useCallback(async (editorState: EditorState) => {
         await save(id!, editorState);
-        setIsStored(false);
-        const _id = id!;
-        const content = editorState;
-
-        setTimeout(async () => {
-            const result = await operate<NoteObject | undefined>(async () => {
-                const Note = await getNoteStore();
-                return Note.get(_id);
-            });
-
-            if (!result) {
-                note.save(username, _id, content)
-                    .catch(() => {
-
-                    });
-                return api.warning({
-                    message: "儲存異常",
-                    description: <>
-                        <Typography.Text type="warning">無法正常讀取本地儲存，建議重整頁面</Typography.Text>
-                        <Button type="primary" onClick={() => window.location.reload()}>重整頁面</Button>
-                    </>
-                })
-            }
-
-            if (!result.uploaded) {
-                return
-            }
-        }, 2500);
-
-    }, [api, id, note, save, username]);
+        console.log("save in indexeddb");
+    }, [id, save]);
 
     return <>
         <Suspense fallback={<Loading />}>

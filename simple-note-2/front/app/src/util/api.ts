@@ -34,7 +34,7 @@ const API = {
     people: "http://localhost:4000/room?",
   },
 
-  AI: "ws://localhost:4000/ws/ai"
+  AI: "ws://cf00-61-216-112-156.ngrok-free.app/ws/ai/"
 }
 
 // type APIMap = {
@@ -111,7 +111,7 @@ export default function useAPI() {
         return fetch(API.Note.add, { ...postSetup, body: JSON.stringify({ username, noteId, notename, parentId, silblingId }) })
       },
       delete: (username: string, noteId: string) => fetch(API.Note.delete, { ...postSetup, body: JSON.stringify({ username, noteId }) }),
-      save: (username: string, noteId: string, content: any) => fetch(API.Note.save, { ...postSetup, body: JSON.stringify({ username, noteId, content }) }),
+      save: (username: string, noteId: string, content: string, keepAlive?: boolean) => fetch(API.Note.save, { ...postSetup, body: JSON.stringify({ username, noteId, content }), keepalive: keepAlive }),
       loadTree: (username: string) => fetch(API.Note.loadTree, { ...postSetup, body: JSON.stringify({ username }) }),
     },
 
@@ -121,7 +121,7 @@ export default function useAPI() {
       join: (username: string, url: string, masterName: string) => fetch(API.Collaborate.join, { ...postSetup, body: JSON.stringify({ username, url, masterName }) }),
 
       // 取得房間人數
-      people: (room: URLSearchParams) => fetch(API.Collaborate.people + room.toString(), { method: "GET", ...setup })
+      people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({id: room}), { method: "GET", ...setup })
     },
 
     info: {
@@ -131,6 +131,10 @@ export default function useAPI() {
 
     theme: {
       add: () => { },
+    },
+
+    ai: {
+      socket: () => new WebSocket(API.AI)
     }
   }
 }

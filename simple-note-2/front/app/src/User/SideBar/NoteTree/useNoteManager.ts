@@ -1,5 +1,5 @@
 import { TreeDataNode } from "antd";
-import { EditorState } from "lexical";
+import { EditorState, SerializedEditorState } from "lexical";
 import { create } from "zustand";
 
 export interface NoteDataNode extends TreeDataNode {
@@ -12,7 +12,7 @@ export interface NoteDataNode extends TreeDataNode {
 
 export type NoteObject = {
     id: string;
-    content: any | null;
+    content: SerializedEditorState | null;
     uploaded: boolean;
 };
 
@@ -52,10 +52,7 @@ function openSimpleNote2IndexedDB(): Promise<IDBDatabase> {
     return new Promise((resolve, reject) => {
         request.onupgradeneeded = () => {
             const db = request.result;
-            const store = db.createObjectStore("Note", { keyPath: "id" });
-            store.createIndex("id", "id", {unique: true});
-            store.createIndex("content", "content", {unique: false});
-            store.createIndex("uploaded", "uploaded", {unique: false});
+            db.createObjectStore("Note", { keyPath: "id" });
         }
         request.onsuccess = () => resolve(request.result);
         request.onerror = () => reject(request.error);
@@ -113,14 +110,14 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
     },
 
     remove: async (key, type) => {
-        const result = await new Promise((resolve, reject) => {
+        const result = await new Promise<boolean>((resolve, reject) => {
             if (type === "multiple") {
                 resolve(true);
             }
             else {
                 getNoteStore().then(Note => {
                     const request = Note.delete(key);
-                    request.onsuccess = () => resolve(true);
+                    request.onsuccess = () => resolve(request.result === undefined);
                     request.onerror = () => reject(request.error);
                 });
             }
@@ -154,11 +151,9 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
         const node = findNode(get().nodes["one"], key);
         if(!node) throw new NoteStorageError(`Can't find the Node-${key}`);
         else{
-            const Note = await getNoteStore();
-            await new Promise((resolve, reject) => {
-                const request = Note.put({content: content.toJSON(), uploaded: false, id: key});
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
+            operate(async () => {
+                const Note = await getNoteStore();
+                return Note.put({content: content.toJSON(), uploaded: false, id: key});
             });
         }
     }
