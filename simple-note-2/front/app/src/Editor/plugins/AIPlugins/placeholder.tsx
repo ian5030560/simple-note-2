@@ -122,7 +122,8 @@ export default function AIPlaceholderPlugin() {
             const textContent = collectTextWithSilbings();
 
             if (!textContent) return;
-            element.setAttribute(AI_PLACEHOLDER, sliceTextByCommon(textContent!, message));
+            console.log(textContent, message);
+            element.setAttribute(AI_PLACEHOLDER, sliceTextByCommon(textContent, message));
         }
         current.addEventListener("message", handleMessage);
 
@@ -155,7 +156,7 @@ export default function AIPlaceholderPlugin() {
             if (!attrValue) return false;
 
             const node = $getNodeByKey(key);
-            if (!node || !node.isSelected()) return false;
+            if (!$isTextNode(node) || !node.isSelected()) return false;
 
             const selection = $getSelection();
             if ($isRangeSelection(selection) &&
@@ -164,10 +165,9 @@ export default function AIPlaceholderPlugin() {
                 selection.focus.offset === node.getTextContentSize()
             ) {
                 e.preventDefault();
-                selection.insertRawText(attrValue);
+                node.setTextContent(node.getTextContent() + attrValue);
                 element!.removeAttribute(AI_PLACEHOLDER);
-                
-                setTimeout(() => editor.update(() => node.selectEnd()), 0);
+                node.selectEnd();
                 return true;
             }
 
