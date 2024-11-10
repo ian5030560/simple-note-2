@@ -109,7 +109,7 @@ export default function Editor(props: EditorProps) {
                     <CheckListPlugin />
                     <ClearEditorPlugin />
                     <CanvasPlugin />
-                    {/* <AIPlaceholderPlugin /> */}
+                    <AIPlaceholderPlugin />
                     <AIQuestionPlugin />
                     <CodeHighlightPlugin />
                     <CodeActionPlugin />

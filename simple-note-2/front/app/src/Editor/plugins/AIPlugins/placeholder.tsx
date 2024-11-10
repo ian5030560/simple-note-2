@@ -1,133 +1,214 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
     $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode,
     SELECTION_CHANGE_COMMAND, KEY_DOWN_COMMAND, KEY_TAB_COMMAND,
-    $isParagraphNode
+    $isParagraphNode,
+    COMMAND_PRIORITY_HIGH,
+    ParagraphNode,
+    LexicalNode,
+    NodeKey,
+    TextNode,
+    COMMAND_PRIORITY_NORMAL
 } from "lexical";
-import { $isHeadingNode } from "@lexical/rich-text";
+import { $isHeadingNode, HeadingNode } from "@lexical/rich-text";
 import "./placeholder.css";
 import useAPI from "../../../util/api";
+import { notification, Typography } from "antd";
 
+type Send = { message: string };
+type Recieve = { result: { message: string } };
+
+function sliceTextByCommon(s1: string, s2: string) {
+    const length = Math.max(s1.length, s2.length);
+
+    let index = 0;
+    for (let i = 0; i < length; i++) {
+        if (s1[i] !== s2[i]) {
+            index = i;
+            break;
+        }
+    }
+    return s2.slice(index, s2.length);
+}
+
+const AI_PLACEHOLDER = "data-ai-placeholder";
 export default function AIPlaceholderPlugin() {
     const [editor] = useLexicalComposerContext();
-    const [key, setKey] = useState("");
-    const [text, setText] = useState("");
-    const [content, setContent] = useState("");
-    const socket = useRef<WebSocket>();
-    const [needUpdate, setNeedUpdate] = useState(false);
     const { ai } = useAPI();
+    const socket = useRef<WebSocket>();
+    const [api, contextHolder] = notification.useNotification();
+    const [key, setKey] = useState<NodeKey>();
 
     useEffect(() => {
         if (socket.current) return;
-        socket.current = ai.socket();
-        const { current } = socket;
 
-        function handleMessage(e: MessageEvent<string>) {
-            const { data } = e;
-            setText(JSON.parse(data).result);
-        }
+        let retry = 3;
+        const interval = setInterval(() => {
+            if (retry === 0) {
+                clearInterval(interval);
+                api.warning({
+                    message: "無法連接AI",
+                    description: <Typography.Text>無法連接AI，請檢查你的網路設備</Typography.Text>,
+                })
+            };
 
-        function handleClose() {
-            console.log("client disconnect");
-            socket.current = undefined;
-        }
+            socket.current = ai.socket();
+            const { current } = socket;
 
-        function handleOpen() {
-            console.log("client connect");
-        }
-        current.addEventListener("open", handleOpen);
-        current.addEventListener("message", handleMessage);
-        current.addEventListener("close", handleClose);
-        return () => {
-            current.removeEventListener("close", handleOpen);
-            current.removeEventListener("message", handleMessage);
-            current.removeEventListener("close", handleClose);
-            current.close();
-            socket.current = undefined;
-        }
-    }, []);
+            function handleClose() {
+                console.log("client disconnect");
+                current.removeEventListener("open", handleOpen);
+                current.removeEventListener("error", handleError);
+                socket.current = undefined;
+            }
 
-    useEffect(() => {
-        const { current } = socket;
-        if (!content || !current || !needUpdate) return;
+            function handleOpen() {
+                console.log("client connect");
+                clearInterval(interval);
+            }
 
-        const id = setTimeout(() => {
-            current.send(content.length > 300 ? content.slice(300) : content);
-        }, 500);
+            function handleError() {
+                api.warning({
+                    message: "AI連接錯誤",
+                    description: <Typography.Text>正在嘗試連接AI...</Typography.Text>,
+                });
+                retry--;
+            }
 
-        return () => clearTimeout(id);
-    }, [content, needUpdate]);
+            current.addEventListener("open", handleOpen);
+            current.addEventListener("close", handleClose);
+            current.addEventListener("error", handleError);
+        }, 1000);
 
-    const refresh = useCallback((k: string) => {
-        if (!key || k === key) return;
-        const element = editor.getElementByKey(key);
-        element?.removeAttribute("data-ai-placeholder");
+        return () => clearInterval(interval);
+    }, [ai, api]);
 
+    const collectTextWithSilbings = useCallback(() => {
+        return editor.read(() => {
+            const node = $getNodeByKey(key!);
+            if (!node) return;
+
+            let content = node.getTextContent();
+
+            let left = node.getPreviousSibling();
+            while ($isTextNode(left)) {
+                const leftText = left.getTextContent();
+                content = leftText + content;
+                left = left.getPreviousSibling();
+            }
+
+            let right = node.getNextSibling();
+            while ($isTextNode(right)) {
+                const rightText = right.getTextContent();
+                content += rightText;
+            }
+
+            return content;
+        });
     }, [editor, key]);
 
     useEffect(() => {
-        if (!key) return;
-        const element = editor.getElementByKey(key);
-        element?.setAttribute("data-ai-placeholder", text);
-    }, [editor, key, text]);
+        if (!socket.current) return;
 
-    useEffect(() => {
-        return mergeRegister(
-            editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
-                const selection = $getSelection();
-                let key = "";
-                if ($isRangeSelection(selection) && selection.isCollapsed()) {
-                    const node = selection.anchor.getNode();
-                    const point = selection.getStartEndPoints()![0];
-                    const size = node.getTextContentSize();
+        const { current } = socket;
+        function handleMessage({ data }: MessageEvent<string>) {
+            const { result: { message } } = JSON.parse(data) as Recieve;
 
-                    if ($isTextNode(node) && point.offset === size) {
-                        key = node.getKey();
-                    }
-                }
-                refresh(key);
-                setKey(key);
-                return false;
-            }, 4),
-            editor.registerCommand(KEY_TAB_COMMAND, (e) => {
-                if (e.shiftKey && key && text) {
-                    e.preventDefault();
-                    const node = $getNodeByKey(key);
-                    if ($isTextNode(node)) {
-                        node.getWritable().__text += text;
-                        setText("");
-                        node.selectEnd();
+            if (!key) return;
+            const element = editor.getElementByKey(key);
+            if (!element) return;
+            const textContent = collectTextWithSilbings();
+
+            if (!textContent) return;
+            element.setAttribute(AI_PLACEHOLDER, sliceTextByCommon(textContent!, message));
+        }
+        current.addEventListener("message", handleMessage);
+
+        return () => current.removeEventListener("message", handleMessage);
+    }, [collectTextWithSilbings, editor, key]);
+
+    useEffect(() => mergeRegister(
+        editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+            if (!socket.current) return false;
+
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                const node = selection.focus.getNode();
+                if ($isTextNode(node)) {
+                    let parent = $findMatchingParent(node, p => $isParagraphNode(p) || $isHeadingNode(p));
+                    if (parent !== null && node.getTextContent().trim().length > 0) {
+                        setKey(node.getKey());
                         return true;
                     }
                 }
-                return false;
-            }, 4),
-            editor.registerCommand(KEY_DOWN_COMMAND, (e) => {
-                if (key && text) {
-                    if (text[0] === e.key) {
-                        setText(text.substring(1));
-                    }
-                }
-                return false;
-            }, 4),
-            editor.registerTextContentListener(() => {
-                editor.getEditorState().read(() => {
-                    const selection = $getSelection();
-                    if ($isRangeSelection(selection) && selection.isCollapsed()) {
-                        const node = selection.anchor.getNode();
-                        const parent = $isParagraphNode(node) || $isHeadingNode(node) ? node : $findMatchingParent(node, p => $isParagraphNode(p) || $isHeadingNode(p));
+            }
+            setKey(undefined);
+            return false;
+        }, COMMAND_PRIORITY_HIGH),
 
-                        if (parent) {
-                            setContent(parent.getTextContent());
-                            setNeedUpdate(true);
-                        }
-                    }
-                });
-            })
-        )
-    }, [editor, key, refresh, text]);
+        editor.registerCommand(KEY_TAB_COMMAND, (e) => {
+            if (!key || !e.shiftKey) return false;
+            const element = editor.getElementByKey(key);
+            const attrValue = element?.getAttribute(AI_PLACEHOLDER);
+            if (!attrValue) return false;
 
-    return null;
+            const node = $getNodeByKey(key);
+            if (!node || !node.isSelected()) return false;
+
+            const selection = $getSelection();
+            if ($isRangeSelection(selection) &&
+                selection.focus.getNode().getKey() === key &&
+                selection.isCollapsed() &&
+                selection.focus.offset === node.getTextContentSize()
+            ) {
+                e.preventDefault();
+                selection.insertRawText(attrValue);
+                element!.removeAttribute(AI_PLACEHOLDER);
+                
+                setTimeout(() => editor.update(() => node.selectEnd()), 0);
+                return true;
+            }
+
+            return false;
+        }, COMMAND_PRIORITY_NORMAL)
+    ), [editor, key]);
+
+    useEffect(() => {
+        const root = editor.getRootElement();
+        if (!key || !root) return;
+        const { current } = socket;
+        if (!current) return;
+        const element = editor.getElementByKey(key);
+        if (!element) return;
+
+        let timer: NodeJS.Timer | undefined = undefined;
+        function handleInput(e: Event) {
+            const { isComposing } = e as InputEvent;
+            if (isComposing) return;
+            const textContent = collectTextWithSilbings();
+            if (!textContent) return;
+
+            if (timer) {
+                clearTimeout(timer);
+                timer = undefined;
+            }
+
+            timer = setTimeout(() => {
+                const message: Send = { message: textContent };
+                current?.send(JSON.stringify(message));
+                console.log("send to server");
+            }, 1000);
+        }
+
+        root.addEventListener("input", handleInput);
+
+        return () => {
+            root.removeEventListener("input", handleInput);
+            element.removeAttribute(AI_PLACEHOLDER);
+        };
+    }, [collectTextWithSilbings, editor, key]);
+
+    return contextHolder;
 }

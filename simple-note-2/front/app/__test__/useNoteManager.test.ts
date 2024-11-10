@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom"
 import { renderHook, act } from '@testing-library/react'
-import useNoteManager, { NoteObject, NoteDataNode, NoteStorageError, getNoteStore } from "../src/User/SideBar/NoteTree/useNoteManager";
+import useNoteManager, { NoteObject, NoteStorageError, getNoteStore } from "../src/User/SideBar/NoteTree/useNoteManager";
 import "core-js/stable/structured-clone";
 import "fake-indexeddb";
 import { createHeadlessEditor } from "@lexical/headless";
