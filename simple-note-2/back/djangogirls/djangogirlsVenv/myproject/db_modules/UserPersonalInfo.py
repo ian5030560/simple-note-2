@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker,scoped_session
 from pprint import pprint
 from sqlalchemy.exc import SQLAlchemyError
 import os
-from .Common import engine
+from Common import engine
 Base = declarative_base()
 # engine_url = os.environ.get("env")
 # # engine_url = "mysql+pymysql://root@localhost/simplenote2db"
