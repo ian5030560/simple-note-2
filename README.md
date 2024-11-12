@@ -28,7 +28,13 @@ ngrok http 8000
 ngrok config add-authtoken <your_token>
 ```
 
-### 3. 啟動 ZeroTier ( _開啟軟體程式_ )
+### 3. 啟動 Breeze AI ( _在桌面的資料夾_ )
+
+```bash
+直接啟動 Breeze.py
+```
+
+### 4. 啟動 ZeroTier ( _開啟軟體程式_ )
 
 ```bash
 連接到 AI API 的本地伺服器（通常為 localhost:8091）
