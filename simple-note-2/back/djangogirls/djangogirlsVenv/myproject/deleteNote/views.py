@@ -50,13 +50,17 @@ class DeleteNoteView(APIView):
             username = data.get("username")  # 帳號名稱
             noteId = data.get("noteId")  # 筆記ID
 
-            returnStatus = UserSubNoteData.delete_data(noteId)  # 透過noteId來刪除資料
-
-            if returnStatus:  # 刪除成功
+            deleteDataReturnStatus = UserSubNoteData.delete_data(noteId)  # 透過noteId來刪除資料
+            deleteNoteReturnStatus = UserNoteData.delete_note_by_usernames_note_title_id(username, noteId)
+            
+            if deleteDataReturnStatus and deleteNoteReturnStatus:  # 刪除成功
                 return Response(status=status.HTTP_200_OK)
-            elif returnStatus != True:  # error
-                print(returnStatus)
-                return Response(returnStatus, status=status.HTTP_400_BAD_REQUEST)
+            elif deleteDataReturnStatus != True:  # error
+                print(deleteDataReturnStatus)
+                return Response(deleteDataReturnStatus, status=status.HTTP_400_BAD_REQUEST)
+            elif deleteNoteReturnStatus != True:
+                print(deleteNoteReturnStatus)
+                return Response(deleteNoteReturnStatus, status=status.HTTP_401_UNAUTHORIZED)
 
             # serializer
             serializer = DeleteNoteSerializer(data=data)
