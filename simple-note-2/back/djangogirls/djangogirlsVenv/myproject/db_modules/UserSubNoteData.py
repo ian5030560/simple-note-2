@@ -4,13 +4,13 @@ from sqlalchemy import Column
 from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
 from sqlalchemy.orm import sessionmaker ,scoped_session
 
-from UserNoteData import User_Note_Data
+from .UserNoteData import User_Note_Data
 
 # from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
 import os
 import base64
-from Common import engine
+from .Common import engine
 
 Base = declarative_base()
 # engine_url = os.environ.get("env")
