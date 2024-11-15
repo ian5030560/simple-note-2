@@ -2,10 +2,9 @@ import { Button, List, theme } from "antd";
 import styles from "./component.module.css";
 import { HolderOutlined, PlusOutlined } from "@ant-design/icons";
 import { createPortal } from "react-dom";
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
 import { $getNodeByKey, NodeKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { getBlockFromPoint } from "./getBlockFromPoint";
 import { inside, useAnchor } from "../../utils";
 import { PLUSMENU_SELECTED } from "./command";
 
@@ -20,8 +19,10 @@ interface PlusMenuProps {
     nodeKey: NodeKey;
     onSelect: () => void;
     mask: React.LegacyRef<HTMLDivElement>;
+    open: boolean;
 }
-const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask }: PlusMenuProps, ref: React.LegacyRef<HTMLDivElement>) => {
+
+const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask, open }: PlusMenuProps, ref: React.LegacyRef<HTMLDivElement>) => {
     const anchor = useAnchor();
     const { token } = theme.useToken();
     const [pos, setPos] = useState<{ x: number, y: number }>();
@@ -33,18 +34,9 @@ const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask }: PlusMenuProps, 
 
         function update() {
             const { x, y: _y, height } = element!.getBoundingClientRect();
-            // const {height: bh} = document.body.getBoundingClientRect();
-            const y = _y + height + 8;
-            setPos({ x, y });
-            // if(y + height <= bh) {
-            //     setPos({ x, y });
-            // }
-            // else{
-            //     const mask = document.getElementById("menu-mask")!;
-            //     if(!mask) return;
-            //     const {height: mh} = mask.getBoundingClientRect();
-            //     setPos({x, y: _y - mh - 8});
-            // }
+            const {height: bh} = document.body.getBoundingClientRect();
+            const over = _y + height + 8 + 250 > bh;
+            setPos({x, y: !over ? _y + height + 8 : _y - 250 - 8});
         }
 
         const resizer = new ResizeObserver(update);
@@ -56,7 +48,9 @@ const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask }: PlusMenuProps, 
         }
     }, [anchor, editor, nodeKey]);
 
-    return pos ? createPortal(<div className={styles.mask} id="menu-mask" ref={mask}>
+    if(!pos || !open) return null;
+
+    return createPortal(<div className={styles.mask} ref={mask}>
         <div style={{ position: "relative" }}>
             <div className={styles.dropDown} ref={ref}
                 style={{
@@ -68,16 +62,16 @@ const PlusMenu = forwardRef(({ items, nodeKey, onSelect, mask }: PlusMenuProps, 
                         onClick={() => {
                             onSelect();
                             const node = editor.getEditorState().read(() => $getNodeByKey(nodeKey));
-                            if(!node) return;
+                            if (!node) return;
 
-                            editor.dispatchCommand(PLUSMENU_SELECTED, {node: node, value: item.value})
+                            editor.dispatchCommand(PLUSMENU_SELECTED, { node: node, value: item.value })
                         }}>
                         {item.label}
                     </Button>
                 </List.Item>} dataSource={items} />
             </div>
         </div>
-    </div>, document.body) : null;
+    </div>, document.body);
 })
 
 interface DragHandlerProps {
@@ -86,42 +80,32 @@ interface DragHandlerProps {
     onDragEnd: (e: React.DragEvent) => void;
     items: PlusItem[];
     mask: React.LegacyRef<HTMLDivElement>;
+    nodeKey: NodeKey;
 }
-export const DragHandler = ({ pos, onDragStart, onDragEnd, items, mask }: DragHandlerProps) => {
-    const [nodeKey, setNodeKey] = useState<NodeKey>();
-    const [editor] = useLexicalComposerContext();
+export const DragHandler = ({ pos, onDragStart, onDragEnd, items, mask, nodeKey }: DragHandlerProps) => {
     const menuRef = useRef<HTMLDivElement>(null);
     const handlerRef = useRef<HTMLDivElement>(null);
-
-    const handleClickOutside = useCallback((e: MouseEvent) => {
-        const menu = menuRef.current;
-        const handler = handlerRef.current;
-        const { clientX, clientY } = e;
-        if (!menu || !handler || inside(clientX, clientY, menu) || inside(clientX, clientY, handler)) return;
-        setNodeKey(undefined);
-    }, []);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const body = document.body;
+        function handleClickOutside(e: MouseEvent){
+            const menu = menuRef.current;
+            const handler = handlerRef.current;
+            const { clientX, clientY } = e;
+            if (!menu || !handler || inside(clientX, clientY, menu) || inside(clientX, clientY, handler)) return;
+            setOpen(false);
+        }
         body.addEventListener("click", handleClickOutside);
         return () => body.removeEventListener("click", handleClickOutside);
-    }, [handleClickOutside]);
-
-    const handleClick = useCallback((e: React.MouseEvent) => {
-        const scroller = document.getElementById('editor-scroller');
-        if (!scroller) return;
-        const { clientX, clientY } = e;
-        const id = getBlockFromPoint(editor, clientX, clientY, scroller);
-        if (id) setNodeKey(id);
-
-    }, [editor]);
+    }, []);
 
     return <>
-        {nodeKey && <PlusMenu mask={mask} items={items} nodeKey={nodeKey} ref={menuRef} onSelect={() => setNodeKey(undefined)} />}
+        <PlusMenu mask={mask} items={items} nodeKey={nodeKey} ref={menuRef} open={open} onSelect={() => setOpen(false)} />
         <div className={styles.draggable} draggable={true} ref={handlerRef}
             onDragStart={onDragStart} onDragEnd={onDragEnd} tabIndex={-1}
             style={{ transform: `translate(calc(${pos.x - 8}px - 100%), calc(${pos.y}px - 50%))` }}>
-            <Button size="large" contentEditable={false} type="text" icon={<PlusOutlined />} onClick={handleClick} />
+            <Button size="large" contentEditable={false} type="text" icon={<PlusOutlined />} onClick={() => setOpen(true)} />
             <Button size="large" className={styles.handleButton} contentEditable={false} type="text" icon={<HolderOutlined />} />
         </div>
     </>
@@ -133,6 +117,8 @@ interface DragLineProps {
 }
 export const DragLine = ({ pos, size }: DragLineProps) => {
 
-    return <div className={styles.dropLine}
-        style={{ transform: `translate(${pos.x}px, ${pos.y}px)`, width: size.width, height: size.height }} />
+    return <div className={styles.dropLine} style={{
+        transform: `translate(${pos.x}px, ${pos.y}px)`,
+        width: size.width, height: size.height
+    }} />
 }

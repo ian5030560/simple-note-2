@@ -1,4 +1,3 @@
-import { CiCircleChevDown } from "react-icons/ci";
 import { Button, Dropdown, MenuProps } from "antd";
 import { cloneElement, useEffect, useMemo, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
@@ -12,6 +11,7 @@ import { $getSelection, $isRangeSelection, NodeKey, SELECTION_CHANGE_COMMAND } f
 import styles from "./action.module.css";
 import Action from "../../ui/action";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
+import { PencilSquare } from "react-bootstrap-icons";
 
 export default function TableActionPlugin(){
     const [editor] = useLexicalComposerContext();
@@ -96,7 +96,7 @@ export default function TableActionPlugin(){
             <Dropdown menu={{ items }} trigger={["click"]} placement="bottom" autoAdjustOverflow
                 dropdownRender={(node) => cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
                 <Button type="text" className="simple-note-2-table-cell-action-button"
-                    icon={<CiCircleChevDown size={20} />} />
+                    icon={<PencilSquare size={16} />} />
             </Dropdown>
         </div>
     </Action> : null;

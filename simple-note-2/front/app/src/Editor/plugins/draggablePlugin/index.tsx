@@ -166,8 +166,8 @@ export default function DraggablePlugin(props: { items: PlusItem[] }){
     }, []);
 
     return createPortal(<>
-        {handler && <DragHandler items={props.items} pos={handler} mask={mask}
-            onDragStart={handleDragStart} onDragEnd={handleDragEnd} />}
+        {handler && id && <DragHandler items={props.items} pos={handler} mask={mask}
+            onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeKey={id}/>}
         {line && <DragLine pos={{ x: line.x, y: line.y }} size={{ width: line.width, height: line.height }} />}
     </>, anchor || document.body);
 }

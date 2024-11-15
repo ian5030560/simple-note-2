@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined } from "@ant-design/icons";
-import { BsBoxArrowRight } from "react-icons/bs";
 import NoteTree from "./NoteTree";
 import { useCookies } from "react-cookie";
 import SettingModal from "./setting";
@@ -10,12 +9,13 @@ import useAPI from "../../util/api";
 import useInfo from "./info";
 import CollaborateModal from "./collaborate";
 import { ItemType } from "antd/es/menu/interface";
+import { BoxArrowRight } from "react-bootstrap-icons";
 
 const UserProfile = () => {
     const { token } = theme.useToken();
     const [state, setState] = useState({
         setting: { open: false, label: "設定", icon: <SettingOutlined /> },
-        signOut: { open: false, label: "登出", icon: <BsBoxArrowRight /> },
+        signOut: { open: false, label: "登出", icon: <BoxArrowRight /> },
         collab: { open: false, label: "協作", icon: <TeamOutlined /> },
     });
 

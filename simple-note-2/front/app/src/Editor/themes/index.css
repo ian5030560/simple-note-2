@@ -73,7 +73,7 @@
     position: relative;
     outline: none;
     list-style-type: none;
-    padding-left: 20px;
+    padding-left: 24px;
 }
 
 .simple-note-2-checked-list-unchecked::before,
@@ -81,8 +81,8 @@
     display: block;
     position: absolute;
     content: "";
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     top: 2px;
     left: 0px;
     border-radius: 2px;

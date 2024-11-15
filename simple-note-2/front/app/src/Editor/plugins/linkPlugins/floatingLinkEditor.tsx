@@ -3,12 +3,11 @@ import { InputRef, theme, Flex, Typography, Input, Button } from "antd";
 import { RangeSelection, TextNode, ElementNode, NodeKey, $getSelection, $isRangeSelection } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
-import { CiEdit } from "react-icons/ci";
-import { FaTrash } from "react-icons/fa6";
 import Action from "../../ui/action";
 import { $isAtNodeEnd } from "@lexical/selection";
 import {$isLinkNode, TOGGLE_LINK_COMMAND} from "@lexical/link";
 import styles from "./floatingLinkEditor.module.css";
+import { PencilSquare, Trash3Fill } from "react-bootstrap-icons";
 
 function getSelectedNode(selection: RangeSelection): TextNode | ElementNode {
     const anchor = selection.anchor;
@@ -75,8 +74,8 @@ export default function FloatingEditorLinkPlugin(){
                         style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>
                     <Input type="url" ref={inputRef} style={{ display: editable ? undefined : "none" }} />
                     <Flex gap={"small"}>
-                        <Button type={editable ? "primary" : "default"} icon={<CiEdit size={20} />} onClick={handleEdit} />
-                        <Button icon={<FaTrash size={20} />} onClick={handleDiscard} />
+                        <Button type={editable ? "primary" : "default"} icon={<PencilSquare size={16} />} onClick={handleEdit} />
+                        <Button icon={<Trash3Fill size={16} />} onClick={handleDiscard} />
                     </Flex>
                 </Flex>
             </Action>

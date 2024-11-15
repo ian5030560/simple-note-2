@@ -1,7 +1,6 @@
 import { Breadcrumb, Typography } from "antd";
 import { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useNodes } from "../../../User/SideBar/NoteTree/store";
 import useNoteManager from "../../../User/SideBar/NoteTree/useNoteManager";
 
 type NoteRelationItem = {
@@ -9,7 +8,6 @@ type NoteRelationItem = {
     key: string;
 }
 export default function BreadCrumb() {
-    // const { findNode } = useNodes();
     const {find} = useNoteManager();
     const { id, host } = useParams();
     const items = useMemo(() => {

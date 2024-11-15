@@ -117,6 +117,7 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
             else {
                 getNoteStore().then(Note => {
                     const request = Note.delete(key);
+                    console.log(result);
                     request.onsuccess = () => resolve(request.result === undefined);
                     request.onerror = () => reject(request.error);
                 });

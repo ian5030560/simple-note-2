@@ -1,6 +1,5 @@
 import UserComponent from "./component";
 import { Navigate, Outlet, useLoaderData, useParams } from "react-router-dom";
-import { NoteDataNode, useNodes } from "./SideBar/NoteTree/store";
 import { useMemo } from "react";
 
 

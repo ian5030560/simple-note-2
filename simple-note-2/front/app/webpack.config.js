@@ -93,6 +93,9 @@ module.exports = {
             filename: "css/[file].css"
         }),
         new ReactRefreshPlugin(),
+        new DefinePlugin({
+            'process.env': JSON.stringify(process.env)
+        })
     ],
     devServer: {
         static: path.resolve(__dirname, "dist"),

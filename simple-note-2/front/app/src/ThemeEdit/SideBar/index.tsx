@@ -5,10 +5,10 @@ import {
 } from "antd";
 
 import { SwitchClickEventHandler } from "antd/es/switch";
-import { TiExport } from "react-icons/ti";
 import useAPI from "../../util/api";
 import { useCookies } from "react-cookie";
 import { Color } from "antd/es/color-picker";
+import { CaretLeftFill } from "react-bootstrap-icons";
 
 const { Text, Title } = Typography;
 
@@ -88,7 +88,7 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
         //     })
         setExport(false);
         setInput("");
-    }, [add, api]);
+    }, []);
 
     const handleCancel = () => {
         setExport(false);
@@ -97,7 +97,7 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
 
     return <Space direction="vertical" style={{ width: "100%", justifyContent: "center" }}>
         <Flex justify="end" align="center" style={{ padding: token.padding, paddingBottom: "0px" }}>
-            <Button type="primary" icon={<TiExport />} style={{ marginRight: 8 }} onClick={() => setExport(true)}>輸出</Button>
+            <Button type="primary" icon={<CaretLeftFill />} style={{ marginRight: 8 }} onClick={() => setExport(true)}>輸出</Button>
             <Switch unCheckedChildren="亮" checkedChildren="暗" onClick={onDarkenClick} />
         </Flex>
 

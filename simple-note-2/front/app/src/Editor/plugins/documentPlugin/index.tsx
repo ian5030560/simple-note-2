@@ -2,7 +2,6 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { Button } from "antd";
 import { $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { FaUpload } from "react-icons/fa";
 import DocumentNode, { $createDocumentNode, $isDocumentNode } from "../../nodes/document";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
@@ -10,6 +9,7 @@ import Modal from "../../ui/modal";
 import { FilePluginProps, useValidateNodeClasses } from "../../utils";
 import { mergeRegister } from "@lexical/utils";
 import { RAISE_ERROR } from "../errorPlugin";
+import { Upload } from "react-bootstrap-icons";
 
 export default function DocumentModal(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();
@@ -85,7 +85,7 @@ export default function DocumentModal(props: FilePluginProps) {
     }, [editor, node, props]);
 
     return <Modal open={open} title="上傳文件" onCancel={() => setOpen(false)}>
-        <Button block type="primary" icon={<FaUpload />} onClick={() => inputRef.current?.click()}>上傳</Button>
+        <Button block type="primary" icon={<Upload />} onClick={() => inputRef.current?.click()}>上傳</Button>
         <input type="file" style={{ display: "none" }} ref={inputRef} onChange={(e) => handleChange(e)} />
     </Modal>
 }

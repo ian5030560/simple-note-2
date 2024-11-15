@@ -4,12 +4,13 @@ import Comment from "./comment";
 import QuestionAI from "./questionAI";
 import SpeechToText from "./speechToText";
 import TableOfContent from "./tableOfContent";
+import AIPlaceholder from "./aiPlaceholder";
 
 export default function ToolKitPlugin(){
     return <Flex vertical style={{ margin: 8 }} dir="rtl" id="toolkit-container">
         <Flex gap={"small"}>
             <QuestionAI />
-            <Comment />
+            <AIPlaceholder/>
             <SpeechToText />
             <TableOfContent />
         </Flex>

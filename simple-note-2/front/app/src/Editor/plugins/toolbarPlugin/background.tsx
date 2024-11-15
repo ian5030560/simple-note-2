@@ -1,46 +1,31 @@
-import React, { useState } from "react";
-import { ColorButton } from "./UI/button";
-import { HighlightOutlined } from "@ant-design/icons";
+import { useCallback, useState } from "react";
+import ColorPickerButton from "./ui/colorPickerButton";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $patchStyleText, $getSelectionStyleValueForProperty } from "@lexical/selection";
-import { $getSelection, $isTextNode } from "lexical";
+import { $getSelection, $isRangeSelection } from "lexical";
 import useSelectionListener from "./useSelectionListener";
+import { BrushFill } from "react-bootstrap-icons";
 
-const BackgroundColor: React.FC = () => {
+export default function Background() {
 
     const [editor] = useLexicalComposerContext();
-    const [current, setCurrent] = useState<string | null>(null);
+    const [color, setColor] = useState<string | null>(null);
 
     useSelectionListener((selection) => {
-        const bg = $getSelectionStyleValueForProperty(selection, "background-color");
-        setCurrent(() => bg ? bg : null);
+        if ($isRangeSelection(selection)) {
+            const bg = $getSelectionStyleValueForProperty(selection, "background-color");
+            setColor(bg ? bg : null);
+        }
+        return false;
     }, 1);
 
-    return <ColorButton
-        colorPickerProp={{
-            presets: [
-                {
-                    label: 'Recommend',
-                    colors: ["red", "yellow", "green", "blue"],
-                    defaultOpen: true
-                }
-            ],
-            onChange: (_, hex) => {
-                editor.update(() => {
-                    const selection = $getSelection();
-                    if (!selection) return;
+    const $updateColor = useCallback((color: string | null) => {
+        const selection = $getSelection();
+        if (!selection) return;
+        $patchStyleText(selection, { "background-color": color });
+    }, []);
 
-                    const node = selection.getNodes()[0];
-                    if (!$isTextNode(node)) return;
-
-                    $patchStyleText(selection, {"background-color": hex === current ? null : hex});
-                })
-            }
-        }}
-
-        icon={<HighlightOutlined />}
-        style={{color: current ? current : undefined}}
-    />
+    return <ColorPickerButton icon={<BrushFill size={16} />} value={color ?? undefined}
+        onRemove={() => editor.update(() => $updateColor(null))}
+        onChange={(hex) => editor.update(() => $updateColor(hex === color ? null : hex))} />
 }
-
-export default BackgroundColor;

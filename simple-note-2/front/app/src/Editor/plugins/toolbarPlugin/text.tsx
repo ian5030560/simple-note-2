@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Select } from "antd";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useSelectionListener from "./useSelectionListener";
@@ -7,7 +7,7 @@ import { $getSelection, $isRangeSelection, $createParagraphNode, $isElementNode,
 import { $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
 import { $findMatchingParent } from "@lexical/utils";
 
-const TEXT = [
+const options = [
     {
         value: "paragraph",
         label: "Paragraph",
@@ -48,49 +48,38 @@ const handlers: { [x: string]: () => ElementNode } = {
     h6: () => $createHeadingNode("h6")
 };
 
-const Text: React.FC = () => {
+export default function Text() {
 
     const [editor] = useLexicalComposerContext();
-    const [current, setCurrent] = useState<string | null>();
+    const [nodeType, setNodeType] = useState<keyof typeof handlers | null>();
 
     useSelectionListener((selection) => {
-        const node = selection.getNodes()[0];
-        let result: LexicalNode | null;
-        if ($isElementNode(node)) result = node;
-        else {
-            const parent = $findMatchingParent(
-                node,
-                (p) => $isElementNode(p) && !p.isInline()
+        if ($isRangeSelection(selection)) {
+            const node = selection.getNodes()[0];
+            const parent = $isElementNode(node) ? node :
+                $findMatchingParent(node, (p) => $isElementNode(p) && !p.isInline());
+            setNodeType(() => $isParagraphNode(parent) ? "paragraph" :
+                $isHeadingNode(parent) ? parent.getTag() : undefined
             );
-            result = parent;
         }
-        setCurrent(() => $isParagraphNode(result) ? "paragraph" : $isHeadingNode(result) ? result.getTag() : undefined);
+
+        return false;
     }, 1)
 
-    return <Select
-        options={TEXT}
-        value={current}
-        onChange={value => {
-            editor.update(() => {
-                const selection = $getSelection();
-
-                if (!$isRangeSelection(selection)) return;
-
-                const node = selection.getNodes()[0];
+    return <Select options={options} value={nodeType}
+        onChange={value => editor.update(() => {
+            const selection = $getSelection();
+            if ($isRangeSelection(selection)) {
+                const node = selection.anchor.getNode();
                 if ($isElementNode(node)) {
                     $setBlocksType(selection, handlers[value]);
                 }
                 else {
-                    const parent = $findMatchingParent(
-                        node,
-                        (p) => $isElementNode(p) && !p.isInline()
-                    );
+                    const parent = $findMatchingParent(node, (p) => $isElementNode(p) && !p.isInline());
                     if (!$isElementNode(parent)) return;
                     $setBlocksType(selection, handlers[value]);
                 }
-            })
-        }}
+            }
+        })}
     />
 }
-
-export default Text;

@@ -1,62 +1,56 @@
-import React, { useState } from "react"
-import OptionGroup, { Option } from "./UI/option"
-import { BoldOutlined, ItalicOutlined, UnderlineOutlined } from "@ant-design/icons"
+import { useState } from "react"
+import OptionButtonGroup, { Option } from "./ui/optionButtonGroup"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
-import { FORMAT_TEXT_COMMAND, TextFormatType } from "lexical"
+import { $isRangeSelection, FORMAT_TEXT_COMMAND, TextFormatType } from "lexical"
 import useSelectionListener from "./useSelectionListener"
-import { FaCode, FaSubscript, FaSuperscript } from "react-icons/fa";
+import { CodeSlash, Subscript, Superscript, TypeBold, TypeItalic, TypeUnderline } from "react-bootstrap-icons"
 
-const MARKDOWN: Option[] = [
+const options: Option[] = [
     {
         key: "bold",
-        icon: <BoldOutlined />
+        icon: <TypeBold size={16} />
     },
     {
         key: "italic",
-        icon: <ItalicOutlined />
+        icon: <TypeItalic size={16} />
     },
     {
         key: "underline",
-        icon: <UnderlineOutlined />
+        icon: <TypeUnderline size={16} />
     },
     {
         key: "code",
-        icon: <FaCode />,
+        icon: <CodeSlash size={16} />,
     },
     {
         key: "subscript",
-        icon: <FaSubscript />
+        icon: <Subscript size={16} />
     },
     {
         key: "superscript",
-        icon: <FaSuperscript />
+        icon: <Superscript size={16} />
     }
 ]
 
-const Markdown: React.FC = () => {
+export default function Markdown() {
 
     const [editor] = useLexicalComposerContext();
-    const [current, setCurrent] = useState<string[]>([]);
+    const [format, setFormat] = useState<TextFormatType[]>([]);
 
     useSelectionListener((selection) => {
+        if ($isRangeSelection(selection)) {
+            const marks: TextFormatType[] = [];
+            for (const { key } of options) {
 
-        if (!selection) return;
-
-        const marks: string[] = [];
-        for (const { key } of MARKDOWN) {
-
-            if (selection.hasFormat(key as TextFormatType)) {
-                marks.push(key)
+                if (selection.hasFormat(key as TextFormatType)) {
+                    marks.push(key as TextFormatType)
+                }
             }
+            setFormat(marks);
         }
-        setCurrent(() => marks);
-    }, 1)
+        return false;
+    }, 1);
 
-    return <OptionGroup
-        options={MARKDOWN}
-        select={(key) => current.includes(key)}
-        onClick={(key) => editor.dispatchCommand(FORMAT_TEXT_COMMAND, key as TextFormatType)}
-    />
+    return <OptionButtonGroup value={format} options={options}
+        onSelect={(key) => editor.dispatchCommand(FORMAT_TEXT_COMMAND, key as TextFormatType)} />
 }
-
-export default Markdown;

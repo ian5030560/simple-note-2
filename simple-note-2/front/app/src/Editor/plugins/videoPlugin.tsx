@@ -3,13 +3,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
-import { MdOutlineFileUpload } from "react-icons/md";
 import VideoNode, { $createVideoNode, $isVideoNode } from "../nodes/video";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import Modal from "../ui/modal";
 import { FilePluginProps, useValidateNodeClasses } from "../utils";
 import { mergeRegister } from "@lexical/utils";
 import { RAISE_ERROR } from "./errorPlugin";
+import { Upload } from "react-bootstrap-icons";
 
 export default function VideoPlugin(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();
@@ -78,7 +78,7 @@ export default function VideoPlugin(props: FilePluginProps) {
     }, [WIDTH, editor, node, props]);
 
     return <Modal title="上傳影片" footer={null} open={open} onCancel={() => setOpen(false)} centered>
-        <Button block icon={<MdOutlineFileUpload />} type="primary" onClick={() => inputRef.current?.click()}>上傳</Button>
+        <Button block icon={<Upload />} type="primary" onClick={() => inputRef.current?.click()}>上傳</Button>
         <input type="file" accept="video/mp4,video/x-m4v,video/*" style={{ display: "none" }} ref={inputRef} onChange={handleChange} />
     </Modal>
 }

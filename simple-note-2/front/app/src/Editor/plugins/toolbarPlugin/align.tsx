@@ -1,64 +1,53 @@
-import React, { useCallback, useEffect, useState } from "react";
-import OptionGroup, { Option } from "./UI/option";
-import { AlignCenterOutlined, AlignLeftOutlined, AlignRightOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import OptionButtonGroup, { Option } from "./ui/optionButtonGroup";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { FORMAT_ELEMENT_COMMAND, ElementFormatType, $isElementNode, SELECTION_CHANGE_COMMAND, $getSelection, $isRangeSelection, $isNodeSelection, LexicalNode, $isBlockElementNode, ElementNode } from "lexical";
+import { FORMAT_ELEMENT_COMMAND, ElementFormatType, $isElementNode, $isRangeSelection, $isNodeSelection, ElementNode } from "lexical";
 import { $isDecoratorBlockNode, DecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
-import { mergeRegister, $findMatchingParent } from "@lexical/utils";
+import { $findMatchingParent } from "@lexical/utils";
+import { TextCenter, TextLeft, TextRight } from "react-bootstrap-icons";
+import useSelectionListener from "./useSelectionListener";
 
-const ALIGN: Option[] = [
+const options: Option[] = [
     {
         key: "left",
-        icon: <AlignLeftOutlined />
+        icon: <TextLeft size={16} />
     },
     {
         key: "center",
-        icon: <AlignCenterOutlined />
+        icon: <TextCenter size={16} />
     },
     {
         key: "right",
-        icon: <AlignRightOutlined />
+        icon: <TextRight size={16} />
     }
 ]
 
-const Align: React.FC = () => {
+export default function Align() {
     const [editor] = useLexicalComposerContext();
-    const [current, setCurrent] = useState<string | undefined>();
+    const [value, setValue] = useState<string>();
 
-    const handleSelect = useCallback(() => {
-        const selection = $getSelection();
-
-        let text: string | undefined = undefined;
+    useSelectionListener((selection) => {
+        let val: string | undefined = undefined;
         if ($isRangeSelection(selection) || $isNodeSelection(selection)) {
             const node = selection.getNodes()[0];
 
-            let tmp: ElementNode | DecoratorBlockNode | null;
-            tmp = $isElementNode(node) || $isDecoratorBlockNode(node) ? node :
+            let parent: ElementNode | DecoratorBlockNode | null;
+            parent = $isElementNode(node) || $isDecoratorBlockNode(node) ? node :
                 $findMatchingParent(node, p => $isElementNode(p) || $isDecoratorBlockNode(p)) as ElementNode | DecoratorBlockNode | null;
 
-            if($isElementNode(tmp)){
-                text = tmp.getFormatType();
+            if ($isElementNode(parent)) {
+                val = parent.getFormatType();
             }
 
-            if($isDecoratorBlockNode(tmp)){
-                text = tmp.__format;
+            if ($isDecoratorBlockNode(parent)) {
+                val = parent.__format;
             }
         }
+        setValue(val);
 
-        setCurrent(() => text);
         return false;
-    }, []);
+    }, 1);
 
-    useEffect(() => {
-        return mergeRegister(
-            editor.registerCommand(SELECTION_CHANGE_COMMAND, handleSelect, 1),
-            editor.registerUpdateListener(({ editorState }) => editorState.read(handleSelect)),
-        );
-    })
-
-    return <OptionGroup options={ALIGN} select={(key) => current === key}
-        onClick={(key) => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, key !== current ? key as ElementFormatType : "")}
-    />
+    return <OptionButtonGroup value={value} options={options}
+        onSelect={(key) => editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, value !== key ? key as ElementFormatType : "")} />
 }
-
-export default Align;

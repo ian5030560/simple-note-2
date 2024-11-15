@@ -1,15 +1,14 @@
 import { Button } from "antd";
-import { FaRegTrashAlt } from "react-icons/fa";
 import { $findMatchingParent } from "@lexical/utils";
 import Action from "../../ui/action";
 import { useEffect, useRef, useState } from "react";
 import { $getNodeByKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { FaPlus } from "react-icons/fa6";
 import { APPEND_COLUMNS } from "./command";
 import { inside } from "../../utils";
 import ColumnItemNode, { $isColumnItemNode } from "../../nodes/column/item";
 import { $isColumnContainerNode } from "../../nodes/column/container";
+import { PlusLg, Trash3Fill } from "react-bootstrap-icons";
 
 const ColumnAction = () => {
     const [editor] = useLexicalComposerContext();
@@ -46,7 +45,7 @@ const ColumnAction = () => {
 
     return key ? <>
         <Action placement={["top", "right"]} open={remove} nodeKey={key}>
-            <Button type="text" icon={<FaRegTrashAlt />} ref={removeButtonRef} onClick={() => {
+            <Button type="text" icon={<Trash3Fill />} ref={removeButtonRef} onClick={() => {
                 if (!key) return;
 
                 editor.update(() => {
@@ -70,7 +69,7 @@ const ColumnAction = () => {
         </Action>
 
         <Action nodeKey={key} placement={{ top: false, right: true }} open={add} autoHeight>
-            <Button ref={addButtonRef} type="text" icon={<FaPlus />} size="small" style={{ height: "100%" }}
+            <Button ref={addButtonRef} type="text" icon={<PlusLg />} size="small" style={{ height: "100%" }}
                 onClick={() => editor.dispatchCommand(APPEND_COLUMNS, 1)} />
         </Action>
     </> : null;

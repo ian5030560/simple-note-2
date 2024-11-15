@@ -3,10 +3,10 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $getNodeByKey, NodeKey } from "lexical";
 import { CodeNode } from "@lexical/code";
 import { Button, Flex, message, Select } from "antd";
-import { MdOutlineContentCopy } from "react-icons/md";
 import { CODE_LANGUAGE_FRIENDLY_NAME_MAP } from "@lexical/code";
 import Action from "../../ui/action";
 import { inside } from "../../utils";
+import { Clipboard } from "react-bootstrap-icons";
 
 const LANGUAGES = CODE_LANGUAGE_FRIENDLY_NAME_MAP;
 
@@ -85,7 +85,7 @@ export default function CodeActionPlugin(){
             <Select size="small" value={lang} onSelect={handleSelect} style={{ minWidth: 100 }}
                 options={Object.keys(LANGUAGES).map(key => ({ value: key, label: LANGUAGES[key] }))} />
             <Button type="primary" ghost style={{ marginLeft: 5 }} size="small"
-                onClick={handleCopy} icon={<MdOutlineContentCopy />} />
+                onClick={handleCopy} icon={<Clipboard />} />
             {contextholder}
         </Flex>
     </Action> : null;

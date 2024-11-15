@@ -2,13 +2,12 @@ import { Tabs, TabsProps, Input, Button, Space } from "antd";
 import { ChangeEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { $createParagraphNode, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { AiOutlineFileImage, AiOutlineUpload } from "react-icons/ai";
-import { CiEdit } from "react-icons/ci";
 import { $createImageNode } from "../../nodes/image";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
 import Modal from "../../ui/modal";
 import { RAISE_ERROR } from "../errorPlugin";
+import { FileEarmarkImageFill, PencilSquare, Upload } from "react-bootstrap-icons";
 
 interface ImageModalProps{
     insertFile: (file: File) => string | Promise<string>;
@@ -71,16 +70,16 @@ const ImageModal = (props: ImageModalProps) => {
         {
             key: "file",
             label: "上傳文件",
-            icon: <AiOutlineFileImage />,
+            icon: <FileEarmarkImageFill />,
             children: <>
-                <Button type="primary" block icon={<AiOutlineUpload />} onClick={() => { fileRef.current!.click() }}>上傳</Button>
+                <Button type="primary" block icon={<Upload />} onClick={() => { fileRef.current!.click() }}>上傳</Button>
                 <input type="file" accept="image/*" style={{ display: "none" }} ref={fileRef} onChange={handleFile} />
             </>
         },
         {
             key: "url",
             label: "上傳網址",
-            icon: <CiEdit />,
+            icon: <PencilSquare />,
             children: <Space.Compact style={{ width: "100%" }}>
                 <Input placeholder="https://" autoFocus value={url} onChange={(e) => setUrl(e.target.value)} />
                 <Button type="primary" onClick={handleURL}>上傳</Button>

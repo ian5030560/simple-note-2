@@ -5,10 +5,10 @@ import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection"
 import { exportToSvg } from "@excalidraw/excalidraw";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Button } from "antd";
-import { FaEdit } from "react-icons/fa";
 import { $isCanvasNode } from ".";
 import Resizer from "../../ui/resizer";
 import CanvasModal from "./modal";
+import { PencilFill } from "react-bootstrap-icons";
 
 const removeStyleFromSvg_HACK = (svg: SVGElement) => {
     const styleTag = svg?.firstElementChild?.firstElementChild;
@@ -109,7 +109,7 @@ export default function CanvasComponent(prop: CanvasComponentProps) {
             prop.data.elements && prop.data.elements.length > 0 && <Resizer onResize={handleResize} showHandle={isSelected}>
                 <div>
                     <div dangerouslySetInnerHTML={{ __html: content }} ref={ref} style={{ width: prop.width, height: prop.height }} />
-                    <Button style={{ position: "absolute", top: 0, right: 0 }} type="text" icon={<FaEdit />} size="large" onClick={() => setOpen(true)} />
+                    <Button style={{ position: "absolute", top: 0, right: 0 }} type="text" icon={<PencilFill />} size="large" onClick={() => setOpen(true)} />
                 </div>
             </Resizer>
         }

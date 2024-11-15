@@ -1,26 +1,27 @@
-import React, { useState } from "react";
-import OptionGroup, { Option } from "./UI/option";
-import { OrderedListOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { useState } from "react";
+import OptionButtonGroup, { Option } from "./ui/optionButtonGroup";
 import useSelectionListener from "./useSelectionListener";
-import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND, 
-    $isListNode, INSERT_CHECK_LIST_COMMAND } from "@lexical/list";
+import {
+    INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND,
+    $isListNode, INSERT_CHECK_LIST_COMMAND, ListType
+} from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { LexicalCommand } from "lexical";
+import { $isRangeSelection, LexicalCommand } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
-import { LuListTodo } from "react-icons/lu";
+import { ListCheck, ListOl, ListUl } from "react-bootstrap-icons";
 
-const LIST: Option[] = [
+const options: Option[] = [
     {
         key: "number",
-        icon: <OrderedListOutlined />
+        icon: <ListOl size={16} />
     },
     {
         key: "bullet",
-        icon: <UnorderedListOutlined />
+        icon: <ListUl size={16} />
     },
     {
         key: "check",
-        icon: <LuListTodo/>
+        icon: <ListCheck size={16} />
     }
 ]
 
@@ -30,39 +31,24 @@ const LISTCOMMANDS: { [x: string]: LexicalCommand<void> } = {
     check: INSERT_CHECK_LIST_COMMAND,
 }
 
-const List: React.FC = () => {
-    const [current, setCurrent] = useState<string | null>();
+export default function List() {
+    const [type, setType] = useState<ListType | null>(null);
     const [editor] = useLexicalComposerContext();
 
     useSelectionListener((selection) => {
-        const node = selection.getNodes()[0];
-        const parent = $findMatchingParent(
-            node,
-            (p) => $isListNode(p)
-        )
-        if ($isListNode(parent)) {
-            const type = parent.getListType();
-            setCurrent(() => type);
+        if ($isRangeSelection(selection)) {
+            const node = selection.anchor.getNode();
+            const parent = $findMatchingParent(node, (p) => $isListNode(p));
+            setType($isListNode(parent) ? parent.getListType() : null);
         }
-        else {
-            setCurrent(() => null);
-        }
+
+        return false;
     }, 1)
 
-    return <OptionGroup
-        options={LIST}
-        select={(key) => current === key}
-        onClick={(key) => {
-            if (current === key) {
-                editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-                setCurrent(() => null);
-            }
-            else { 
-                editor.dispatchCommand(LISTCOMMANDS[key], undefined);
-                setCurrent(() => key);
-            }
-        }}
-    />
+    return <OptionButtonGroup options={options} value={type ?? undefined}
+        onSelect={(key) => {
+            const isSame = type === key;
+            editor.dispatchCommand(isSame ? REMOVE_LIST_COMMAND : LISTCOMMANDS[key], undefined);
+            setType(isSame ? null : key as ListType);
+        }} />
 }
-
-export default List;

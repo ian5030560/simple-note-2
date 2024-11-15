@@ -1,41 +1,37 @@
-import { FaCamera, FaColumns, FaFileCode, FaPaintBrush, FaTable } from "react-icons/fa";
 import { PlusItem } from "./plugins/draggablePlugin/component";
-import { FunctionOutlined } from "@ant-design/icons";
-import { AiOutlinePicture } from "react-icons/ai";
-import { BsTypeH1, BsTypeH2, BsTypeH3, BsTypeH4, BsTypeH5, BsTypeH6, BsParagraph } from "react-icons/bs";
-import { IoDocumentText } from "react-icons/io5";
-import { MdOndemandVideo } from "react-icons/md";
+import { Camera, CardImage, CodeSlash, FileText, LayoutThreeColumns, PaletteFill, Paragraph, PersonVideo, PlusSlashMinus, Table, TypeH1, TypeH2, TypeH3, TypeH4, TypeH5, TypeH6 } from "react-bootstrap-icons";
 
+const ICON_SIZE = 24;
 const heading = [
     {
         value: "h1",
         label: "標題一",
-        icon: <BsTypeH1 size={24} />,
+        icon: <TypeH1 size={ICON_SIZE} />,
     },
     {
         value: "h2",
         label: "標題二",
-        icon: <BsTypeH2 size={24} />,
+        icon: <TypeH2 size={ICON_SIZE} />,
     },
     {
         value: "h3",
         label: "標題三",
-        icon: <BsTypeH3 size={24} />,
+        icon: <TypeH3 size={ICON_SIZE} />,
     },
     {
         value: "h4",
         label: "標題四",
-        icon: <BsTypeH4 size={24} />,
+        icon: <TypeH4 size={ICON_SIZE} />,
     },
     {
         value: "h5",
         label: "標題五",
-        icon: <BsTypeH5 size={24} />,
+        icon: <TypeH5 size={ICON_SIZE} />,
     },
     {
         value: "h6",
         label: "標題六",
-        icon: <BsTypeH6 size={24} />,
+        icon: <TypeH6 size={ICON_SIZE} />,
     },
 ]
 
@@ -43,52 +39,52 @@ export default [
     {
         value: "paragraph",
         label: "段落",
-        icon: <BsParagraph size={24} />,
+        icon: <Paragraph size={ICON_SIZE} />,
     },
     ...heading,
     {
         value: "code",
         label: "程式碼",
-        icon: <FaFileCode size={24} />,
+        icon: <CodeSlash size={ICON_SIZE}/>
     },
     {
         value: "math",
         label: "數學公式",
-        icon: <FunctionOutlined style={{ fontSize: 24 }} />,
+        icon: <PlusSlashMinus size={ICON_SIZE} />,
     },
     {
         value: "image",
         label: "圖片",
-        icon: <AiOutlinePicture size={24} />,
+        icon: <CardImage size={ICON_SIZE} />
     },
     {
         value: "table",
-        label: "標格",
-        icon: <FaTable size={24}/>,
+        label: "表格",
+        icon: <Table size={ICON_SIZE} />
     },
     {
         value: "column",
         label: "欄",
-        icon: <FaColumns size={24} />,
+        icon: <LayoutThreeColumns size={ICON_SIZE} />
     },
     {
         value: "canvas",
         label: "畫布",
-        icon: <FaPaintBrush size={24} />,
+        icon: <PaletteFill size={ICON_SIZE} />
     },
     {
         value: "video",
         label: "影片",
-        icon: <MdOndemandVideo size={24}/>,
+        icon: <PersonVideo size={ICON_SIZE} />
     },
     {
         value: "document",
         label: "文件",
-        icon: <IoDocumentText size={24} />,
+        icon: <FileText size={ICON_SIZE} />
     },
     {
         value: "imageToText",
         label: "圖文識別",
-        icon: <FaCamera size={24} />,
+        icon: <Camera size={ICON_SIZE} />
     },
 ] as PlusItem[];

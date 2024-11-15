@@ -1,11 +1,10 @@
 import { Tree, Button, Flex, Typography, ButtonProps } from "antd";
-import { FaPlus } from "react-icons/fa6";
 import { useMemo } from "react";
-import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import useDirective from "./directive";
 import { Link, useParams } from "react-router-dom";
 import useNoteManager, { getNoteStore, NoteObject, operate } from "./useNoteManager";
 import useAPI from "../../../util/api";
+import { PlusLg, Trash3, XLg } from "react-bootstrap-icons";
 
 const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="default" size="small" tabIndex={-1}
     onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(e) }} {...props} />;
@@ -25,7 +24,7 @@ const NoteTree = (props: NoteTreeProps) => {
         <div>
             <Flex justify="space-between" align="center" style={{ padding: 8, paddingRight: 4 }}>
                 <Typography.Text type="secondary">個人筆記</Typography.Text>
-                <ToolButton icon={<FaPlus />} onClick={() => add(null)} />
+                <ToolButton icon={<PlusLg />} onClick={() => add(null)} />
             </Flex>
             <Tree treeData={one} blockNode selectable={false}
                 rootStyle={{ overflowY: "auto" }} defaultExpandAll
@@ -53,8 +52,8 @@ const NoteTree = (props: NoteTreeProps) => {
                         <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3 }}>
                             <Typography.Text>{data.title as string}</Typography.Text>
                             <Flex gap={3}>
-                                {!first && <ToolButton icon={<DeleteOutlined />} onClick={() => remove(data)} />}
-                                <ToolButton icon={<PlusOutlined />} onClick={() => add(data)} />
+                                {!first && <ToolButton icon={<Trash3 size={16}/>} onClick={() => remove(data)} />}
+                                <ToolButton icon={<PlusLg size={16}/>} onClick={() => add(data)} />
                             </Flex>
                         </Flex>
                     </Link>
@@ -74,7 +73,7 @@ const NoteTree = (props: NoteTreeProps) => {
                             <Flex justify="space-between"
                                 style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
                                 <Typography.Text>{data.title as string}</Typography.Text>
-                                <ToolButton icon={<CloseOutlined />} onClick={() => cancelCollab(data)} />
+                                <ToolButton icon={<XLg size={16}/>} onClick={() => cancelCollab(data)} />
                             </Flex>
                         </Link>
                     }} />

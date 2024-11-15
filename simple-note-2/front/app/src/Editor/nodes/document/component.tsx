@@ -1,10 +1,10 @@
 import { Button, Flex, Typography } from "antd";
-import { MdUploadFile } from "react-icons/md";
 import { filesize } from "filesize";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey } from "lexical";
 import { CloseOutlined } from "@ant-design/icons";
+import { FileEarmarkArrowUpFill } from "react-bootstrap-icons";
 
 const { Text } = Typography;
 interface DocumentProps {
@@ -33,7 +33,7 @@ export default function Document(prop: DocumentProps) {
     }, [editor, prop.nodeKey]);
     
     return <Flex gap={5} onClick={() => window.open(prop.src, "_blank", "noreferrer")} style={{padding: 5}}>
-        <MdUploadFile size={24} />
+        <FileEarmarkArrowUpFill size={24} />
         <Text strong style={{ marginRight: 8 }}>{prop.name}</Text>
         <Text>{filesize(size)}</Text>
         <Button icon={<CloseOutlined />} type="default"

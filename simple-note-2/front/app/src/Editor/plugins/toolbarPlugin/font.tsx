@@ -1,50 +1,35 @@
-import React, { useState } from "react";
-import { ColorButton } from "./UI/button";
-import { FontColorsOutlined } from "@ant-design/icons";
+import React, { useCallback, useState } from "react";
+import ColorPickerButton from "./ui/colorPickerButton";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useSelectionListener from "./useSelectionListener";
-import { $getSelection, $isTextNode } from "lexical";
+import { $getSelection, $isRangeSelection, $isTextNode } from "lexical";
 import { $patchStyleText, $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { InputNumber, Select } from "antd";
 import FONT_FAMILY, { DEFAULT } from "./fontFamily";
+import { Highlighter } from "react-bootstrap-icons";
 
 export const FontColor: React.FC = () => {
 
     const [editor] = useLexicalComposerContext();
-    const [current, setCurrent] = useState<string | null>(null);
+    const [value, setValue] = useState<string | null>(null);
 
     useSelectionListener((selection) => {
-        const fc = $getSelectionStyleValueForProperty(selection, "color");
-        setCurrent(() => fc ? fc : null);
+        if ($isRangeSelection(selection)) {
+            const fc = $getSelectionStyleValueForProperty(selection, "color");
+            setValue(fc);
+        }
+        return false;
     }, 1);
 
-    return <ColorButton
-        colorPickerProp={{
-            presets: [
-                {
-                    label: 'Recommend',
-                    colors: [
-                        "red", "yellow", "green", "blue", "white"
-                    ],
-                    defaultOpen: true
-                }
-            ],
-
-            onChange: (_, hex) => {
-                editor.update(() => {
-                    const selection = $getSelection();
-                    if (!selection) return;
-
-                    const node = selection.getNodes()[0];
-                    if (!$isTextNode(node)) return;
-
-                    $patchStyleText(selection, {"color": hex === current ? null : hex});
-                })
-            }
-        }}
-        icon={<FontColorsOutlined size={24}/>}
-        style={{color: current ? current : undefined}}
-    />
+    const $updateColor = useCallback((color: string | null) => {
+        const selection = $getSelection();
+        if (!selection) return;
+        $patchStyleText(selection, { "color": color });
+    }, []);
+    
+    return <ColorPickerButton icon={<Highlighter size={16} />} value={value ?? undefined}
+        onRemove={() => editor.update(() => $updateColor(null))}
+        onChange={(hex) => editor.update(() => $updateColor(hex === value ? null : hex))} />
 }
 
 
@@ -53,11 +38,14 @@ export const FontFamily: React.FC = () => {
     const [family, setFamily] = useState<string | null>();
 
     useSelectionListener((selection) => {
-        const node = selection.getNodes()[0];
-        if (!$isTextNode(node)) return;
-
-        const f = $getSelectionStyleValueForProperty(selection, "font-family", DEFAULT);
-        setFamily(() => f);
+        if ($isRangeSelection(selection)) {
+            const node = selection.anchor.getNode();
+            if ($isTextNode(node)) {
+                const f = $getSelectionStyleValueForProperty(selection, "font-family", DEFAULT);
+                setFamily(() => f);
+            }
+        }
+        return false;
     }, 1)
 
     return <Select showSearch options={FONT_FAMILY}
@@ -89,16 +77,16 @@ export const FontSize: React.FC = () => {
     const [editor] = useLexicalComposerContext();
 
     useSelectionListener((selection) => {
-        const v = $getSelectionStyleValueForProperty(selection, "font-size", `${SIZE.DEFAULT}px`);
-        const result = parseInt(v.replace("px", ""));
-        setValue(() => Number.isNaN(result) ? SIZE.DEFAULT : result);
+        if ($isRangeSelection(selection)) {
+            const v = $getSelectionStyleValueForProperty(selection, "font-size", `${SIZE.DEFAULT}px`);
+            const result = parseInt(v.replace("px", ""));
+            setValue(() => Number.isNaN(result) ? SIZE.DEFAULT : result);
+        }
+        return false;
     }, 1)
 
-    return <InputNumber
-        min={SIZE.MIN}
-        max={SIZE.MAX}
-        value={value}
-        variant="filled"
+    return <InputNumber min={SIZE.MIN} max={SIZE.MAX}
+        value={value} variant="filled"
         onChange={(val) => {
             editor.update(() => {
                 const selection = $getSelection();
@@ -107,9 +95,7 @@ export const FontSize: React.FC = () => {
                 const node = selection.getNodes()[0];
                 if (!$isTextNode(node)) return;
 
-                $patchStyleText(selection, {
-                    "font-size": `${val}px`,
-                })
+                $patchStyleText(selection, { "font-size": `${val}px` })
 
                 if (!val) setValue(() => SIZE.DEFAULT);
                 else setValue(() => val);

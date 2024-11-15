@@ -4,11 +4,11 @@ import { $getSelection, $isRangeSelection, LexicalCommand, createCommand, $getRo
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Webcam from "react-webcam";
 import styles from "./imageToTextPlugin.module.css";
-import { FaRegDotCircle } from "react-icons/fa";
 import Tesseract, { createWorker } from "tesseract.js";
 import { $contains } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import Modal from "../ui/modal";
+import { Fullscreen } from "react-bootstrap-icons";
 
 // const codes = require("../../../resource/tesseract.json").map((lang: { code: string, name: string }) => lang.code) as string[];
 const codes = ["eng", "chi_sim", "chi_tra", "jpn", "kor"];
@@ -169,7 +169,7 @@ export default function ImageToTextPlugin() {
           }
           <div className={styles.cameraMask} ref={maskRef} />
           <button title="trigger" className={styles.cameraButton} onClick={handleClick}>
-            <FaRegDotCircle size={40} />
+            <Fullscreen size={40} />
           </button>
         </Flex>
       },
