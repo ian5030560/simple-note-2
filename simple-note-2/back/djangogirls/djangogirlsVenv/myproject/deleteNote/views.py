@@ -55,10 +55,10 @@ class DeleteNoteView(APIView):
             
             if deleteDataReturnStatus and deleteNoteReturnStatus:  # 刪除成功
                 return Response(status=status.HTTP_200_OK)
-            elif deleteDataReturnStatus != True:  # error
+            elif deleteDataReturnStatus != True:  # delete Data error
                 print(deleteDataReturnStatus)
                 return Response(deleteDataReturnStatus, status=status.HTTP_400_BAD_REQUEST)
-            elif deleteNoteReturnStatus != True:
+            elif deleteNoteReturnStatus != True:  # delete Note error
                 print(deleteNoteReturnStatus)
                 return Response(deleteNoteReturnStatus, status=status.HTTP_401_UNAUTHORIZED)
 
