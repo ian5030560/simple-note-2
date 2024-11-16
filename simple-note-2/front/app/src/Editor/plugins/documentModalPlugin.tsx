@@ -1,19 +1,19 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
 import { $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { useCallback, useEffect, useRef, useState } from "react";
-import DocumentNode, { $createDocumentNode, $isDocumentNode } from "../../nodes/document";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
-import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
-import Modal from "../../ui/modal";
-import { FilePluginProps, useValidateNodeClasses } from "../../utils";
 import { mergeRegister } from "@lexical/utils";
-import { RAISE_ERROR } from "../errorPlugin";
 import { Upload } from "react-bootstrap-icons";
+import DocumentNode, { $isDocumentNode, $createDocumentNode } from "../nodes/document";
+import { FilePluginProps, useValidateNodeClasses } from "../utils";
+import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
+import { RAISE_ERROR } from "./errorPlugin";
+import UploadModal from "../ui/uploadModal";
+import { uuid } from "../../util/secret";
 
 export default function DocumentModal(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();
-    const inputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
     const [node, setNode] = useState<LexicalNode>();
 
@@ -47,45 +47,50 @@ export default function DocumentModal(props: FilePluginProps) {
         })
     ), [editor, props]);
 
-    const handleChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const $insertDocument = useCallback((src: string, name: string) => {
+        let doc = $createDocumentNode(src, name);
+    
+        if (!node) {
+            $insertNodeToNearestRoot(doc);
+        }
+        else {
+            node.insertAfter(doc);
+        }
+    }, [node]);
 
+    const handleURL = useCallback((url?: string) => {
+        setOpen(false);
+        if (!url || url.trim().length === 0) return;
+        
+        if(url.startsWith("data:") || url.startsWith("object:")){
+            editor.update(() => $insertDocument(url, uuid()));
+        }
+        else{
+            const urlObj = new URL(url);
+            const filename = urlObj.pathname.split("/").pop();
+            editor.update(() => $insertDocument(url, filename ?? uuid()));
+        }
+    }, [$insertDocument, editor]);
+
+    const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setOpen(false);
         if (!e.target || !e.target.files) return;
         const file = e.target.files[0];
-        // const [type] = file.name.split(".").reverse();
 
         try{
             const src = await props.insertFile(file);
             const name = file.name;
     
-            editor.update(async () => {
-                let doc = $createDocumentNode(src, name);
-                // switch(type){
-                //     case "pdf":
-                //         doc = $createPDFNode(800, 400, src);
-                //         break;
-                //     default:
-                //         doc = $createDocumentNode(src, name);
-                // }
-    
-                if (!node) {
-                    $insertNodeToNearestRoot(doc);
-                }
-                else {
-                    node.insertAfter(doc);
-                }
-            });
-    
-            setOpen(false);
+            editor.update(() => $insertDocument(src, name));
         }
         catch(err){
             if(err instanceof Error){
                 editor.dispatchCommand(RAISE_ERROR, err);
             }
         }
-    }, [editor, node, props]);
+    }, [$insertDocument, editor, props]);
 
-    return <Modal open={open} title="上傳文件" onCancel={() => setOpen(false)}>
-        <Button block type="primary" icon={<Upload />} onClick={() => inputRef.current?.click()}>上傳</Button>
-        <input type="file" style={{ display: "none" }} ref={inputRef} onChange={(e) => handleChange(e)} />
-    </Modal>
+    return <UploadModal open={open} title="上傳文件" onCancel={() => setOpen(false)}
+        onUploadFile={handleFile} onUploadURL={handleURL}
+    />
 }

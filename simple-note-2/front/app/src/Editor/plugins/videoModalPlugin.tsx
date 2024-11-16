@@ -1,19 +1,16 @@
-import { Button } from "antd";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import VideoNode, { $createVideoNode, $isVideoNode } from "../nodes/video";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
-import Modal from "../ui/modal";
 import { FilePluginProps, useValidateNodeClasses } from "../utils";
 import { mergeRegister } from "@lexical/utils";
 import { RAISE_ERROR } from "./errorPlugin";
-import { Upload } from "react-bootstrap-icons";
+import UploadModal from "../ui/uploadModal";
 
-export default function VideoPlugin(props: FilePluginProps) {
+export default function VideoModalPlugin(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();
-    const inputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
     const [node, setNode] = useState<LexicalNode>();
 
@@ -48,37 +45,39 @@ export default function VideoPlugin(props: FilePluginProps) {
     ), [editor, props]);
 
 
-    const WIDTH = useMemo(() => {
-        const rect = editor.getRootElement()?.getBoundingClientRect();
-        return rect ? rect.width / 2 : 500;
-    }, [editor]);
+    const $insertVideo = useCallback((src: string) => {
+        const video = $createVideoNode(500, 300, src);
+        if (!node) {
+            $insertNodeToNearestRoot(video);
+        }
+        else {
+            node.insertAfter(video);
+        }
+    }, [node]);
 
-    const handleChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFile = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setOpen(false);
+
         if (!e.target.files) return;
         const file = e.target.files![0];
 
         try {
             const src = await props.insertFile(file);
-            editor.update(() => {
-                const video = $createVideoNode(WIDTH, 300, src);
-                if (!node) {
-                    $insertNodeToNearestRoot(video);
-                }
-                else {
-                    node.insertAfter(video);
-                }
-            });
-            setOpen(false);
+            editor.update(() => $insertVideo(src));
         }
-        catch(err){
-            if(err instanceof Error){
+        catch (err) {
+            if (err instanceof Error) {
                 editor.dispatchCommand(RAISE_ERROR, err);
             }
         }
-    }, [WIDTH, editor, node, props]);
+    }, [$insertVideo, editor, props]);
 
-    return <Modal title="上傳影片" footer={null} open={open} onCancel={() => setOpen(false)} centered>
-        <Button block icon={<Upload />} type="primary" onClick={() => inputRef.current?.click()}>上傳</Button>
-        <input type="file" accept="video/mp4,video/x-m4v,video/*" style={{ display: "none" }} ref={inputRef} onChange={handleChange} />
-    </Modal>
+    const handleURL = useCallback((url?: string) => {
+        setOpen(false);
+        if (url?.trim().length === 0) return;
+        editor.update(() => $insertVideo(url!));
+    }, [$insertVideo, editor]);
+
+    return <UploadModal open={open} title="上傳影片" accept="video/mp4,video/x-m4v,video/*"
+        onUploadFile={handleFile} onUploadURL={handleURL} onCancel={() => setOpen(false)} />
 }

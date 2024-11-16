@@ -28,13 +28,13 @@ import AIQuestionPlugin from "./plugins/AIPlugins/question";
 import CodeHighlightPlugin from "./plugins/codePlugins/highlight";
 import CodeActionPlugin from "./plugins/codePlugins/action";
 import ColumnPlugin from "./plugins/columnPlugin";
-import DocumentPlugin from "./plugins/documentPlugin";
-import ImagePlugin from "./plugins/imagePlugin";
+import DocumentModalPlugin from "./plugins/documentModalPlugin";
+import ImageModalPlugin from "./plugins/imageModalPlugin";
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import TableActionPlugin from "./plugins/tablePlugins/action";
 import TableModalPlugin from "./plugins/tablePlugins/modal";
 import ImageToTextPlugin from "./plugins/imageToTextPlugin";
-import VideoPlugin from "./plugins/videoPlugin";
+import VideoModalPlugin from "./plugins/videoModalPlugin";
 import items from "./items";
 import TableOfContentPlugin from "./plugins/tableOfContentPlugin";
 import MathPlugin from "./plugins/mathPlugin";
@@ -114,14 +114,14 @@ export default function Editor(props: EditorProps) {
                     <CodeHighlightPlugin />
                     <CodeActionPlugin />
                     <ColumnPlugin />
-                    <DocumentPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
-                    <ImagePlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
+                    <DocumentModalPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
+                    <ImageModalPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
                     <TablePlugin />
                     <TableActionPlugin />
                     <TableModalPlugin />
                     <ImageToTextPlugin />
                     <TableOfContentPlugin />
-                    <VideoPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
+                    <VideoModalPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
                     <MathPlugin />
                 </div>
             </div>
