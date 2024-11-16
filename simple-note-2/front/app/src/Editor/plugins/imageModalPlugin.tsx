@@ -4,9 +4,10 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $insertNodeToNearestRoot, mergeRegister } from "@lexical/utils";
 import ImageNode, { $isImageNode, $createImageNode } from "../nodes/image";
 import UploadModal from "../ui/uploadModal";
-import { FilePluginProps, useValidateNodeClasses } from "../utils";
+import { useValidateNodeClasses } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import { RAISE_ERROR } from "./errorPlugin";
+import { FilePluginProps } from "../types";
 
 export default function ImageModalPlugin(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();

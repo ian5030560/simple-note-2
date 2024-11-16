@@ -3,9 +3,9 @@ import { InputRef, theme, Flex, Typography, Input, Button } from "antd";
 import { RangeSelection, TextNode, ElementNode, NodeKey, $getSelection, $isRangeSelection } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
-import Action from "../../ui/action";
+import Action, { WithAnchorProps } from "../../ui/action";
 import { $isAtNodeEnd } from "@lexical/selection";
-import {$isLinkNode, TOGGLE_LINK_COMMAND} from "@lexical/link";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import styles from "./floatingLinkEditor.module.css";
 import { PencilSquare, Trash3Fill } from "react-bootstrap-icons";
 
@@ -25,7 +25,8 @@ function getSelectedNode(selection: RangeSelection): TextNode | ElementNode {
     }
 }
 
-export default function FloatingEditorLinkPlugin(){
+type FloatingEditorLinkPluginProps = WithAnchorProps;
+export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPluginProps) {
     const [url, setUrl] = useState<string>();
     const [show, setShow] = useState(false);
     const [nodeKey, setNodeKey] = useState<NodeKey>();
@@ -66,19 +67,15 @@ export default function FloatingEditorLinkPlugin(){
         clear();
     }, [clear, editor]);
 
-    return <>
-        {
-            nodeKey && <Action open={show} nodeKey={nodeKey} placement={{ bottom: true, left: false }}>
-                <Flex style={{ backgroundColor: token.colorBgBase }} gap={"small"} className={styles.floatingLinkEditor} align="center">
-                    <Typography.Link target="_blank" rel="noopener noreferrer" href={url}
-                        style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>
-                    <Input type="url" ref={inputRef} style={{ display: editable ? undefined : "none" }} />
-                    <Flex gap={"small"}>
-                        <Button type={editable ? "primary" : "default"} icon={<PencilSquare size={16} />} onClick={handleEdit} />
-                        <Button icon={<Trash3Fill size={16} />} onClick={handleDiscard} />
-                    </Flex>
-                </Flex>
-            </Action>
-        }
-    </>
+    return <Action open={show} nodeKey={nodeKey} placement={{ bottom: true, left: false }} anchor={props.anchor}>
+        <Flex style={{ backgroundColor: token.colorBgBase }} gap={"small"} className={styles.floatingLinkEditor} align="center">
+            <Typography.Link target="_blank" rel="noopener noreferrer" href={url}
+                style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>
+            <Input type="url" ref={inputRef} style={{ display: editable ? undefined : "none" }} />
+            <Flex gap={"small"}>
+                <Button type={editable ? "primary" : "default"} icon={<PencilSquare size={16} />} onClick={handleEdit} />
+                <Button icon={<Trash3Fill size={16} />} onClick={handleDiscard} />
+            </Flex>
+        </Flex>
+    </Action>
 }

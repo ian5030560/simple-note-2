@@ -4,10 +4,11 @@ import { $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import VideoNode, { $createVideoNode, $isVideoNode } from "../nodes/video";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
-import { FilePluginProps, useValidateNodeClasses } from "../utils";
+import { useValidateNodeClasses } from "../utils";
 import { mergeRegister } from "@lexical/utils";
 import { RAISE_ERROR } from "./errorPlugin";
 import UploadModal from "../ui/uploadModal";
+import { FilePluginProps } from "../types";
 
 export default function VideoModalPlugin(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();

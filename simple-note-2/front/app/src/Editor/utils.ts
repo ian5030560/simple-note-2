@@ -1,38 +1,59 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Klass, LexicalNode } from "lexical";
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function inside(x: number, y: number, element: HTMLElement) {
-    const { x: ex, y: ey, width, height } = element.getBoundingClientRect();
-    return x >= ex && x <= ex + width && y >= ey && y <= ey + height
-}
-
-export const useAnchor = () => {
-    const [anchor, setAnchor] = useState<HTMLElement | null>(null);
-    useEffect(() => {
-        setAnchor(document.getElementById("editor-anchor"));
-    }, []);
-
-    return anchor;
+  const { x: ex, y: ey, width, height } = element.getBoundingClientRect();
+  return x >= ex && x <= ex + width && y >= ey && y <= ey + height
 }
 
 export function $contains(parent: LexicalNode, child: LexicalNode) {
-    return parent.is(child) || child.getParents().forEach(p => p === parent);
+  return parent.is(child) || child.getParents().forEach(p => p === parent);
 }
 
-export function useValidateNodeClasses(nodeClasses: Klass<LexicalNode>[]){
-    const [editor] = useLexicalComposerContext();
-    
-    useEffect(() => {
-        nodeClasses.forEach(nodeClass => {
-            if(!editor.hasNode(nodeClass)){
-                throw new Error(`${nodeClass.getType()} is missing`);
-            }
-        })
-    }, [editor, nodeClasses]);
+export function useValidateNodeClasses(nodeClasses: Klass<LexicalNode>[]) {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    nodeClasses.forEach(nodeClass => {
+      if (!editor.hasNode(nodeClass)) {
+        throw new Error(`${nodeClass.getType()} is missing`);
+      }
+    })
+  }, [editor, nodeClasses]);
 }
 
-export interface FilePluginProps{
-    insertFile: (file: File) => string | Promise<string>;
-    destroyFile: (node: LexicalNode) => void;
+export function mergeRefs<T>(
+  ...inputRefs: (React.Ref<T> | undefined)[]
+): React.Ref<T> | React.RefCallback<T> {
+  const filteredInputRefs = inputRefs.filter(Boolean);
+
+  if (filteredInputRefs.length <= 1) {
+    const firstRef = filteredInputRefs[0];
+
+    return firstRef || null;
+  }
+
+  return function mergedRefs(ref) {
+    for (const inputRef of filteredInputRefs) {
+      if (typeof inputRef === 'function') {
+        inputRef(ref);
+      } else if (inputRef) {
+        (inputRef as React.MutableRefObject<T | null>).current = ref;
+      }
+    }
+  };
+}
+
+export function useOverlayLockState(overlayContainer: HTMLElement | null): [boolean, (value: boolean) => void]{
+  const [open, setOpen] = useState(false);
+  return [open, useCallback((value: boolean) => {
+    setOpen(value);
+    if(value){
+      overlayContainer?.style.removeProperty("pointer-events");
+    }
+    else{
+      overlayContainer?.style.setProperty("pointer-events", "none");
+    }
+  }, [])]
 }

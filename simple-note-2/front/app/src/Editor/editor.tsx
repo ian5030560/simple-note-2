@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import SavePlugin from "./plugins/savePlugin";
 import { InitialEditorStateType, LexicalComposer } from "@lexical/react/LexicalComposer";
 import ToolBarPlugin from "./plugins/toolbarPlugin";
@@ -27,7 +27,7 @@ import AIPlaceholderPlugin from "./plugins/AIPlugins/placeholder";
 import AIQuestionPlugin from "./plugins/AIPlugins/question";
 import CodeHighlightPlugin from "./plugins/codePlugins/highlight";
 import CodeActionPlugin from "./plugins/codePlugins/action";
-import ColumnPlugin from "./plugins/columnPlugin";
+import ColumnPlugin from "./plugins/columnPlugins";
 import DocumentModalPlugin from "./plugins/documentModalPlugin";
 import ImageModalPlugin from "./plugins/imageModalPlugin";
 import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
@@ -39,6 +39,9 @@ import items from "./items";
 import TableOfContentPlugin from "./plugins/tableOfContentPlugin";
 import MathPlugin from "./plugins/mathPlugin";
 import ErrorPlugin from "./plugins/errorPlugin";
+import ColumnActionPlugin from "./plugins/columnPlugins/action";
+import { mergeRefs } from "./utils";
+import ColumnModalPlugin from "./plugins/columnPlugins/modal";
 
 function $createEmptyContent() {
     const root = $getRoot();
@@ -74,6 +77,8 @@ interface EditorProps {
 export default function Editor(props: EditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const { token } = theme.useToken();
+    const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+    const [overlayContainer, setOverlayContainer] = useState<HTMLElement | null>(null);
 
     return <div className={styles.editorFrame} style={{ backgroundColor: token.colorBgLayout }}>
         <LexicalComposer
@@ -82,10 +87,10 @@ export default function Editor(props: EditorProps) {
                 /** @see https://lexical.dev/docs/collaboration/react */
                 editorState: props.collab ? null : !props.test ? !props.initialEditorState ? $createEmptyContent : props.initialEditorState : undefined,
             }}>
-            {!props.test && !props.collab && <SavePlugin onSave={props.onSave || dummyFn}/>}
+            {!props.test && !props.collab && <SavePlugin onSave={props.onSave || dummyFn} />}
             <ToolBarPlugin />
             <ToolKitPlugin />
-            <ErrorPlugin whenRaiseError={props.whenRaiseError || dummyFn}/>
+            <ErrorPlugin whenRaiseError={props.whenRaiseError || dummyFn} />
             {
                 props.test && props.collab && <CollaboratePlugin room="test" cursorsContainerRef={containerRef}
                     initialEditorState={$createEmptyContent} />
@@ -95,9 +100,9 @@ export default function Editor(props: EditorProps) {
                     cursorsContainerRef={containerRef} initialEditorState={props.initialEditorState} username={props.username} />
             }
             <div id="editor-scroller" className={styles.editorScroller}>
-                <div id="editor-anchor" className={styles.anchor} ref={containerRef}>
+                <div id="editor-anchor" className={styles.anchor} ref={mergeRefs(containerRef, (node) => setAnchor(node))}>
                     <RichTextPlugin />
-                    <DraggablePlugin items={items} />
+                    <DraggablePlugin items={items} anchor={anchor} overlayContainer={overlayContainer}/>
                     <AutoFocusPlugin />
                     <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
                     <HistoryPlugin />
@@ -105,19 +110,21 @@ export default function Editor(props: EditorProps) {
                     <LinkPlugin />
                     <ListMaxLevelPlugin maxLevel={5} />
                     <ListPlugin />
-                    <FloatingEditorLinkPlugin />
+                    <FloatingEditorLinkPlugin anchor={anchor} />
                     <CheckListPlugin />
                     <ClearEditorPlugin />
                     <CanvasPlugin />
                     <AIPlaceholderPlugin />
                     <AIQuestionPlugin />
                     <CodeHighlightPlugin />
-                    <CodeActionPlugin />
+                    <CodeActionPlugin anchor={anchor} />
                     <ColumnPlugin />
+                    <ColumnActionPlugin anchor={anchor} />
+                    <ColumnModalPlugin />
                     <DocumentModalPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
                     <ImageModalPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
                     <TablePlugin />
-                    <TableActionPlugin />
+                    <TableActionPlugin anchor={anchor} />
                     <TableModalPlugin />
                     <ImageToTextPlugin />
                     <TableOfContentPlugin />
@@ -126,5 +133,8 @@ export default function Editor(props: EditorProps) {
                 </div>
             </div>
         </LexicalComposer>
+        <div style={{ pointerEvents: "none", position: "absolute", inset: 0 }} ref={(node) => setOverlayContainer(node)}>
+            <div style={{position: "relative"}}/>
+        </div>
     </div>;
 }

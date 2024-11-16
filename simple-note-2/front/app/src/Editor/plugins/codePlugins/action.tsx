@@ -4,13 +4,15 @@ import { $getNodeByKey, NodeKey } from "lexical";
 import { CodeNode } from "@lexical/code";
 import { Button, Flex, message, Select } from "antd";
 import { CODE_LANGUAGE_FRIENDLY_NAME_MAP } from "@lexical/code";
-import Action from "../../ui/action";
+import Action, { WithAnchorProps } from "../../ui/action";
 import { inside } from "../../utils";
 import { Clipboard } from "react-bootstrap-icons";
 
 const LANGUAGES = CODE_LANGUAGE_FRIENDLY_NAME_MAP;
 
-export default function CodeActionPlugin(){
+type CodeActionPluginProps = WithAnchorProps;
+
+export default function CodeActionPlugin(props: CodeActionPluginProps) {
     const [editor] = useLexicalComposerContext();
     const [lang, setLang] = useState<string>("");
     const [key, setKey] = useState<NodeKey>();
@@ -80,7 +82,7 @@ export default function CodeActionPlugin(){
         setKey(undefined);
     }, [editor, key]);
 
-    return key ? <Action nodeKey={key} placement={["top", "right"]} open={true}>
+    return <Action nodeKey={key} placement={["top", "right"]} open={true} anchor={props.anchor}>
         <Flex onPointerLeave={handleContainerLeave}>
             <Select size="small" value={lang} onSelect={handleSelect} style={{ minWidth: 100 }}
                 options={Object.keys(LANGUAGES).map(key => ({ value: key, label: LANGUAGES[key] }))} />
@@ -88,5 +90,5 @@ export default function CodeActionPlugin(){
                 onClick={handleCopy} icon={<Clipboard />} />
             {contextholder}
         </Flex>
-    </Action> : null;
+    </Action>;
 }

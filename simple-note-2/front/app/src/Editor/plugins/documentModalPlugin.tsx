@@ -1,16 +1,15 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Button, Modal } from "antd";
 import { $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { mergeRegister } from "@lexical/utils";
-import { Upload } from "react-bootstrap-icons";
 import DocumentNode, { $isDocumentNode, $createDocumentNode } from "../nodes/document";
-import { FilePluginProps, useValidateNodeClasses } from "../utils";
+import { useValidateNodeClasses } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import { RAISE_ERROR } from "./errorPlugin";
 import UploadModal from "../ui/uploadModal";
 import { uuid } from "../../util/secret";
+import { FilePluginProps } from "../types";
 
 export default function DocumentModal(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();

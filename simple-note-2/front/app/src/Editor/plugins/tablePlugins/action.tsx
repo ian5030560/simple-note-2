@@ -5,15 +5,16 @@ import {
     $isTableSelection, $getTableCellNodeFromLexicalNode,
     $insertTableColumn__EXPERIMENTAL, $insertTableRow__EXPERIMENTAL,
     $deleteTableColumn__EXPERIMENTAL, $deleteTableRow__EXPERIMENTAL,
-    TableCellNode, $isTableNode,
+    $isTableNode,
 } from "@lexical/table";
 import { $getSelection, $isRangeSelection, NodeKey, SELECTION_CHANGE_COMMAND } from "lexical";
 import styles from "./action.module.css";
-import Action from "../../ui/action";
+import Action, { WithAnchorProps } from "../../ui/action";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { PencilSquare } from "react-bootstrap-icons";
 
-export default function TableActionPlugin(){
+type TableActionPluginProps = WithAnchorProps;
+export default function TableActionPlugin(props: TableActionPluginProps) {
     const [editor] = useLexicalComposerContext();
     const [open, setOpen] = useState(false);
     const [key, setKey] = useState<NodeKey>();
@@ -91,7 +92,7 @@ export default function TableActionPlugin(){
         ]
     }, [editor]);
 
-    return key ? <Action nodeKey={key} open={open} placement={["top", "right"]}>
+    return <Action nodeKey={key} open={open} placement={["top", "right"]} anchor={props.anchor}>
         <div className="simple-note-2-table-cell-action-button-container">
             <Dropdown menu={{ items }} trigger={["click"]} placement="bottom" autoAdjustOverflow
                 dropdownRender={(node) => cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
@@ -99,5 +100,5 @@ export default function TableActionPlugin(){
                     icon={<PencilSquare size={16} />} />
             </Dropdown>
         </div>
-    </Action> : null;
+    </Action>;
 }

@@ -4,10 +4,9 @@ import { $getSelection, $isRangeSelection, ElementNode, LexicalNode, $createPara
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { useEffect } from "react";
 import ColumnAction from "./action";
-import { APPEND_COLUMNS } from "./command";
 import ColumnLayoutModal from "./modal";
 import ColumnContainerNode, { $isColumnContainerNode } from "../../nodes/column/container";
-import ColumnItemNode, { $createColumnItemNode, $isColumnItemNode } from "../../nodes/column/item";
+import ColumnItemNode, { $isColumnItemNode } from "../../nodes/column/item";
 import { useValidateNodeClasses } from "../../utils";
 
 export default function ColumnPlugin(){
@@ -85,32 +84,29 @@ export default function ColumnPlugin(){
                     node.remove();
                 }
             }),
-            editor.registerCommand(APPEND_COLUMNS, (payload) => {
-                editor.update(() => {
-                    const selection = $getSelection();
-                    if ($isRangeSelection(selection)) {
-                        let node: LexicalNode | null = selection.anchor.getNode();
-                        if (!$isColumnItemNode(node)) {
-                            node = $findMatchingParent(node, $isColumnItemNode);
-                        }
-                        if ($isColumnItemNode(node)) {
-                            const pnode = $findMatchingParent(node, $isColumnContainerNode);
-                            if ($isColumnContainerNode(pnode)) {
-                                pnode.setNumber(pnode.getChildrenSize() + payload);
-                                for (let i = 0; i < payload; i++) {
-                                    node.insertAfter($createColumnItemNode().append($createParagraphNode()));
-                                }
-                            }
-                        }
-                    }
-                })
-                return false;
-            }, 4),
+            // editor.registerCommand(APPEND_COLUMNS, (payload) => {
+            //     editor.update(() => {
+            //         const selection = $getSelection();
+            //         if ($isRangeSelection(selection)) {
+            //             let node: LexicalNode | null = selection.anchor.getNode();
+            //             if (!$isColumnItemNode(node)) {
+            //                 node = $findMatchingParent(node, $isColumnItemNode);
+            //             }
+            //             if ($isColumnItemNode(node)) {
+            //                 const pnode = $findMatchingParent(node, $isColumnContainerNode);
+            //                 if ($isColumnContainerNode(pnode)) {
+            //                     pnode.setNumber(pnode.getChildrenSize() + payload);
+            //                     for (let i = 0; i < payload; i++) {
+            //                         node.insertAfter($createColumnItemNode().append($createParagraphNode()));
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     })
+            //     return false;
+            // }, 4),
         )
     }, [editor, token.colorText]);
 
-    return <>
-        <ColumnLayoutModal />
-        <ColumnAction />
-    </>;
+    return null;
 }

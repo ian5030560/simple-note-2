@@ -4,27 +4,32 @@ import { NodeKey } from "lexical";
 import { useEffect, useMemo, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React from "react";
-import { useAnchor } from "../utils";
 
+export interface WithAnchorProps{
+    anchor: HTMLElement | null;
+}
 type Key = "top" | "bottom" | "left" | "right";
 type Outside = boolean;
 export type Placement = Key[] | Partial<Record<Key, Outside>>;
 interface ActionProps {
-    nodeKey: NodeKey;
+    nodeKey: NodeKey | undefined | null;
     children: React.ReactNode;
     placement?: Placement;
     open: boolean;
     autoWidth?: boolean;
     autoHeight?: boolean;
+    anchor: HTMLElement | null;
 }
 export default function Action(props: ActionProps) {
-    const anchor = useAnchor();
     const [pos, setPos] = useState<{ x: number, y: number }>();
     const [editor] = useLexicalComposerContext();
     const placement = useMemo(() => props.placement || [], [props.placement]);
     const [size, setSize] = useState<{ width?: number, height?: number }>();
+    
+    const { anchor } = props;
 
     useEffect(() => {
+        if (!props.nodeKey) return;
         const element = editor.getElementByKey(props.nodeKey);
         if (!element) return;
 
@@ -113,8 +118,7 @@ export default function Action(props: ActionProps) {
     return createPortal(<div className={styles.actionContainer}
         style={{
             transform: pos ? `translate(calc(${pos.x}px + ${adjustPos.x}%), calc(${pos.y}px + ${adjustPos.y}%))` : undefined,
-            opacity: !props.open ? 0 : 1,
-            display: !props.open ? "none" : undefined,
+            display: !props.open || !props.nodeKey ? "none" : undefined,
             ...size
         }}>
         {props.children}

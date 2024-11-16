@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { Flex, Button, InputNumber } from "antd";
+import { Button, InputNumber } from "antd";
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { $createColumnContainerNode } from "../../nodes/column/container";
 import { $createColumnItemNode } from "../../nodes/column/item";
@@ -7,7 +7,7 @@ import { $createParagraphNode, $insertNodes, COMMAND_PRIORITY_CRITICAL, LexicalN
 import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
 import Modal from "../../ui/modal";
 
-export default function ColumnLayoutModal() {
+export default function ColumnModalPlugin() {
     const [open, setOpen] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const [editor] = useLexicalComposerContext();
@@ -43,10 +43,10 @@ export default function ColumnLayoutModal() {
     }, [editor, node]);
 
     const footer = useMemo(() => {
-        return <Flex gap={"small"} dir="rtl">
+        return <>
             <Button onClick={() => setOpen(false)}>取消</Button>
             <Button type="primary" onClick={handleOk}>確認</Button>
-        </Flex>;
+        </>;
     }, [handleOk]);
 
     return <Modal open={open} title="插入欄位" onCancel={() => setOpen(false)} footer={footer}>

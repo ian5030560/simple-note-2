@@ -2,11 +2,13 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { PlusItem } from "./component";
 import { createPortal } from "react-dom";
 import { DragHandler, DragLine } from "./component";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { inside, useAnchor } from "../../utils";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { inside } from "../../utils";
 import { getBlockFromPoint } from "./getBlockFromPoint";
 import { eventFiles } from "@lexical/rich-text";
 import { $getNodeByKey, NodeKey } from "lexical";
+import { WithAnchorProps } from "../../ui/action";
+import { WithOverlayProps } from "../../types";
 
 const HEIGHT = 5;
 type HandlerState = {
@@ -21,28 +23,32 @@ type LineState = {
     height: number;
 }
 
-function gap(topElement: HTMLElement, bottomElement: HTMLElement){
-    const {y, height} = topElement.getBoundingClientRect();
-    const {top} = bottomElement.getBoundingClientRect();
+function gap(topElement: HTMLElement, bottomElement: HTMLElement) {
+    const { y, height } = topElement.getBoundingClientRect();
+    const { top } = bottomElement.getBoundingClientRect();
 
     return Math.abs(y + height - top);
 }
-export default function DraggablePlugin(props: { items: PlusItem[] }){
+
+interface DraggablePluginProps extends WithAnchorProps, WithOverlayProps {
+    items: PlusItem[];
+}
+export default function DraggablePlugin(props: DraggablePluginProps) {
     const [editor] = useLexicalComposerContext();
-    const anchor = useAnchor();
+    const anchor = props.anchor;
     const scroller = useMemo(() => anchor?.parentElement, [anchor]);
     const [handler, setHandler] = useState<HandlerState>();
     const [line, setLine] = useState<LineState>();
     const [dragging, setDragging] = useState(false);
     const [id, setId] = useState<NodeKey>();
-    const mask = useRef<HTMLDivElement>(null);
+
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         const { clientX, clientY } = e;
         if (!anchor || !scroller || !inside(clientX, clientX, scroller) || !editor.isEditable()) return;
 
         const key = getBlockFromPoint(editor, clientX, clientY, scroller);
-        if(!key) return;
+        if (!key) return;
 
         const element = editor.getElementByKey(key);
         if (!element) return;
@@ -57,19 +63,18 @@ export default function DraggablePlugin(props: { items: PlusItem[] }){
     }, [anchor, editor, scroller]);
 
     const handleMouseLeave = useCallback((e: MouseEvent) => {
-        const {current} = mask;
         const { relatedTarget } = e;
-        if (current === relatedTarget) return;
+        if (props.overlayContainer === relatedTarget) return;
 
         setHandler(undefined);
-    }, []);
+    }, [props.overlayContainer]);
 
     const handleDragOver = useCallback((e: DragEvent) => {
         if (!e.dataTransfer || eventFiles(e)[0] || !dragging || !anchor || !scroller) return false;
         const { clientY: mouseY } = e;
 
         const overKey = getBlockFromPoint(editor, e.clientX, e.clientY, scroller);
-        if(!overKey) return;
+        if (!overKey) return;
 
         const overElement = editor.getElementByKey(overKey);
         if (!overElement) return false;
@@ -105,7 +110,7 @@ export default function DraggablePlugin(props: { items: PlusItem[] }){
         if (!dropKey) return false;
 
         const dropElement = editor.getElementByKey(dropKey);
-        if(!dropElement) return false;
+        if (!dropElement) return false;
 
         e.preventDefault();
 
@@ -166,8 +171,8 @@ export default function DraggablePlugin(props: { items: PlusItem[] }){
     }, []);
 
     return createPortal(<>
-        {handler && id && <DragHandler items={props.items} pos={handler} mask={mask}
-            onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeKey={id}/>}
+        {handler && id && <DragHandler anchor={props.anchor} items={props.items} pos={handler} overlayContainer={props.overlayContainer}
+            onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeKey={id} />}
         {line && <DragLine pos={{ x: line.x, y: line.y }} size={{ width: line.width, height: line.height }} />}
     </>, anchor || document.body);
 }
