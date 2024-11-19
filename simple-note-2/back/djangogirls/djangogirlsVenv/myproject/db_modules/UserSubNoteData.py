@@ -263,4 +263,4 @@ def delete_data(id_input):
         session.close()
 
 
-print(delete_data(3))
+# print(delete_data(3))

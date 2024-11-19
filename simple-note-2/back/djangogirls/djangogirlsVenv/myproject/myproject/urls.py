@@ -39,6 +39,8 @@ sys.path.append("..newCollaborate")
 sys.path.append("..deleteCollaborate")
 sys.path.append("..joinCollaborate")
 sys.path.append("..aiSocket")
+sys.path.append("..getTheme")
+sys.path.append("..deleteTheme")
 
 # new url import here
 from django.urls import path, include, re_path
@@ -63,6 +65,8 @@ from loadNoteTree.views import LoadNoteTreeView
 from newCollaborate.views import NewCollaborateView
 from deleteCollaborate.views import DeleteCollaborateView
 from joinCollaborate.views import JoinCollaborateView
+from getTheme.views import GetThemeView
+from deleteTheme.views import DeleteThemeView
 from aiSocket import views as AISocket
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from rest_framework import permissions
@@ -120,6 +124,8 @@ urlpatterns = [
     path("newCollaborate/", NewCollaborateView.as_view(), name="newCollaborate"),  # newCollaborate
     path("deleteCollaborate/", DeleteCollaborateView.as_view(), name="deleteCollaborate"),  # deleteCollaborate
     path("joinCollaborate/", JoinCollaborateView.as_view(), name="joinCollaborate"),  # joinCollaborate
+    path("getTheme/", GetThemeView.as_view(), name="getTheme"),  # getTheme
+    path("deleteTheme/", DeleteThemeView.as_view(), name="deleteTheme"),  # deleteTheme
     path('aiSocket/', AISocket.aiReturn, name='ai_return'),  # for aiSocket Http server 
     path('api/', include('notes.urls')), # API services, including for url distribution
     path('auth/', include('rest_framework.urls')),

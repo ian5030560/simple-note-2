@@ -5,13 +5,13 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import NewTheme  # 新建檔案改這個
+from .models import GetTheme  # 新建檔案改這個
 from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
@@ -20,48 +20,42 @@ from django.middleware.csrf import get_token
 """@csrf_protect"""
 
 
-class NewThemeView(APIView):
+class GetThemeView(APIView):
     """
-    前端傳來:\n
-        帳號名(name: username, type: str),\n
-        主題(name: theme, type: theme).\n
-    後端回傳:\n
-        Response HTTP_200_OK if success.\n
-        Sqlite error, Response HTTP_400_BAD_REQUEST if failure.\n
+    取得主題: getTheme\n
+        前端傳: \n
+            帳號名(name: username, type: str)\n
+        後端回:
+            主題內容(type: str), HTTP_200_OK\n
+            HTTP_400 if error
 
     其他例外:\n
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
     """
 
-    serializer_class = NewThemeSerializer
+    serializer_class = GetThemeSerializer
 
     def get(self, request, format=None):
-        output = [{"newTheme": output.newTheme} for output in NewTheme.objects.all()]
+        output = [{"getTheme": output.getTheme} for output in GetTheme.objects.all()]
         return Response("get")
 
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
             username = data.get("username")  # 帳號名稱
-            theme = data.get("theme")  # 主題資訊
-            themeName = theme.get("name") #主題名稱
-            themeData = theme.get("data") #主題內容
-            colorLightPrimary = themeData.get("colorLightPrimarya")
-            colorLightNeutral = themeData.get("colorLightNeutral")
-            colorDarkPrimary = themeData.get("colorDarkPrimary")
-            colorDarkNeutral = themeData.get("colorDarkNeutral")
 
-            addTheme = UserPersonalThemeData.insert_themeData_by_usernames(
-                username, theme, colorLightPrimary, colorLightNeutral, colorDarkPrimary, colorDarkNeutral
-            )
-            if addTheme:  # 新增主題成功(資料庫條件)
-                return Response(status=status.HTTP_200_OK)
-            elif addTheme != True:  # error
-                return Response(addTheme, status=status.HTTP_400_BAD_REQUEST)
+            themeContent = UserPersonalThemeData.check_all_theme_data (
+                username
+            )  # 用username取得theme
+
+            if themeContent != False:  # 取得成功
+                return HttpResponse(themeContent, status=status.HTTP_200_OK)
+            elif themeContent == False:  # error
+                return Response(themeContent, status=status.HTTP_400_BAD_REQUEST)
 
             # serializer
-            serializer = NewThemeSerializer(data=data)
+            serializer = GetThemeSerializer(data=data)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
