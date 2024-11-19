@@ -41,7 +41,7 @@ sys.path.append("..joinCollaborate")
 sys.path.append("..aiSocket")
 
 # new url import here
-from django.urls import path
+from django.urls import path, include, re_path
 from django.contrib import admin
 from registerAndLogin.views import RegisterAndLoginView
 from forgetPassword.views import ForgetPasswordView
@@ -64,6 +64,18 @@ from newCollaborate.views import NewCollaborateView
 from deleteCollaborate.views import DeleteCollaborateView
 from joinCollaborate.views import JoinCollaborateView
 from aiSocket import views as AISocket
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+  openapi.Info(
+  title='Notes API',
+  default_version='v1.0.0',
+  description='',
+  )
+)
 
 # urls
 urlpatterns = [
@@ -109,4 +121,8 @@ urlpatterns = [
     path("deleteCollaborate/", DeleteCollaborateView.as_view(), name="deleteCollaborate"),  # deleteCollaborate
     path("joinCollaborate/", JoinCollaborateView.as_view(), name="joinCollaborate"),  # joinCollaborate
     path('aiSocket/', AISocket.aiReturn, name='ai_return'),  # for aiSocket Http server 
+    path('api/', include('notes.urls')), # API services, including for url distribution
+    path('auth/', include('rest_framework.urls')),
+    path('api/jwtauth/', include('jwtauth.urls'), name='jwtauth'),
+    path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]

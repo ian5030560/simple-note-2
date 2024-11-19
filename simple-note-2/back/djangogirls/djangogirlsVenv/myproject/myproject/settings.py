@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    'drf_yasg',
     "corsheaders",
     "deleteFile",
     "deleteNote",
@@ -63,6 +64,8 @@ INSTALLED_APPS = [
     "deleteCollaborate",
     "joinCollaborate",
     "channels",
+    'notes',
+    "jwtauth",
 ]
 
 MIDDLEWARE = [
@@ -78,7 +81,34 @@ MIDDLEWARE = [
 ]
 
 
-REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"]}
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES":
+        ["rest_framework.permissions.IsAuthenticated",], # 修改权限为认证过才能访问 
+    'DEFAULT_PARSER_CLASSES':['rest_framework.parsers.JSONParser',],
+    "DEFAULT_AUTHENTICATION_CLASSES":  #驗證
+    [                               
+        "rest_framework.authentication.SessionAuthentication",        # Session驗證
+        "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT驗證
+    ],
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema", # swagger
+}
+
+SWAGGER_SETTINGS = {
+  'DEFAULT_MODEL_RENDERING': 'example',
+  'SHOW_COMMON_EXTENSIONS': False,
+  'DISPLAY_OPERATION_ID': False,
+  'USE_SESSION_AUTH': True,
+}
+
+from datetime import timedelta
+
+# JWT的access token(1天)與refresh token(預設為24小時)長度
+SIMPLE_JWT = {
+  'ACCESS_TOKEN_LIFETIME': timedelta(days = 1),
+  'REFRESH_TOKEN_LIFETIME': timedelta(days = 1),
+  'SIGNING_KEY': SECRET_KEY,
+  'AUTH_HEADER_TYPES': ('Bearer',),
+}
 
 CORS_ORIGIN_ALLOW_ALL = True
 
