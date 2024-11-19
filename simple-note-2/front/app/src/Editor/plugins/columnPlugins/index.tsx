@@ -3,8 +3,6 @@ import { theme } from "antd";
 import { $getSelection, $isRangeSelection, ElementNode, LexicalNode, $createParagraphNode, KEY_ARROW_DOWN_COMMAND, KEY_ARROW_RIGHT_COMMAND, KEY_ARROW_UP_COMMAND, KEY_ARROW_LEFT_COMMAND } from "lexical";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { useEffect } from "react";
-import ColumnAction from "./action";
-import ColumnLayoutModal from "./modal";
 import ColumnContainerNode, { $isColumnContainerNode } from "../../nodes/column/container";
 import ColumnItemNode, { $isColumnItemNode } from "../../nodes/column/item";
 import { useValidateNodeClasses } from "../../utils";

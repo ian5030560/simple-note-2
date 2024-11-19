@@ -22,15 +22,18 @@ export default function TableActionPlugin(props: TableActionPluginProps) {
     useEffect(() => mergeRegister(
         editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
             const selection = $getSelection();
-            if (!($isRangeSelection(selection) || $isTableSelection(selection))) {
-                setOpen(false);
-                setKey(undefined);
-            }
-            else {
+            if($isRangeSelection(selection) || $isTableSelection(selection)){
                 const node = $getTableCellNodeFromLexicalNode(selection.anchor.getNode());
-                setKey(node?.getKey());
-                setOpen(true);
-            };
+                if(node){
+                    setKey(node.getKey());
+                    setOpen(true);
+                    return false;
+                }
+            }
+
+            setKey(undefined);
+            setOpen(false);
+            
             return false;
         }, 4),
     ), [editor]);
@@ -92,7 +95,7 @@ export default function TableActionPlugin(props: TableActionPluginProps) {
         ]
     }, [editor]);
 
-    return <Action nodeKey={key} open={open} placement={["top", "right"]} anchor={props.anchor}>
+    return <Action nodeKey={key} inner open={open} placement={"top-end"} anchor={props.anchor}>
         <div className="simple-note-2-table-cell-action-button-container">
             <Dropdown menu={{ items }} trigger={["click"]} placement="bottom" autoAdjustOverflow
                 dropdownRender={(node) => cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>

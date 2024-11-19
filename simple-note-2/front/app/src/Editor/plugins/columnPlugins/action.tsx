@@ -1,11 +1,10 @@
 import { Button, Dropdown, MenuProps } from "antd";
 import { $findMatchingParent } from "@lexical/utils";
 import Action, { WithAnchorProps } from "../../ui/action";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { $createParagraphNode, $getNodeByKey } from "lexical";
+import { useEffect, useMemo, useState } from "react";
+import { $cloneWithProperties, $createParagraphNode, $getNodeByKey, $getRoot, $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { inside } from "../../utils";
-import ColumnItemNode, { $createColumnItemNode, $isColumnItemNode } from "../../nodes/column/item";
+import { $createColumnItemNode, $isColumnItemNode } from "../../nodes/column/item";
 import { $isColumnContainerNode } from "../../nodes/column/container";
 import { PencilSquare } from "react-bootstrap-icons";
 
@@ -15,28 +14,22 @@ export default function ColumnActionPlugin(props: ColumnActionPluginProps){
     const [key, setKey] = useState<string | null>(null);
     const [open, setOpen] = useState(false);
 
-    useEffect(() => editor.registerMutationListener(ColumnItemNode, (mutations) => {
-        Array.from(mutations).forEach(([key, tag]) => {
-            if (tag === "updated") return;
-
-            const element = editor.getElementByKey(key);
-            if (!element) return;
-
-            element.addEventListener("mouseenter", () => {
+    useEffect(() => editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+        const selection = $getSelection();
+        if($isRangeSelection(selection)){
+            const node = selection.anchor.getNode();
+            const parent = $isColumnItemNode(node) ? node : $findMatchingParent(node, $isColumnItemNode);
+            if(parent){
+                setKey(parent.getKey());
                 setOpen(true);
-                setKey(key);
-            });
+                return false;
+            }
+        }
+        setKey(null);
+        setOpen(false);
 
-            element.addEventListener("mouseleave", (e) => {
-                const { clientX: x, clientY: y } = e;
-                // const addButton = addButtonRef.current;
-                // const removeButton = removeButtonRef.current;
-                // if (addButton && removeButton && (inside(x, y, addButton) || inside(x, y, removeButton))) return;
-                setOpen(false);
-                setKey(null);
-            });
-        });
-    }), [editor]);
+        return false;
+    }, 4), [editor, open]);
 
     const node = useMemo(() => key ? editor.read(() => $getNodeByKey(key)) : null, [editor, key]);
 
@@ -81,11 +74,23 @@ export default function ColumnActionPlugin(props: ColumnActionPluginProps){
                     if ($isColumnContainerNode(parent)) {
                         node.remove();
                         const size = parent.getChildrenSize();
-                        if(size === 0){
-                            parent.remove();
+                        if(size === 1){
+                            const clones = parent.getChildren().map($cloneWithProperties);
+                            if(parent.isLastChild()){
+                                parent.remove();
+                                $getRoot().append(...clones);
+                            }
+                            else{
+                                if(parent.getPreviousSibling()){
+                                    clones.forEach(clone => parent.getPreviousSibling()?.insertAfter(clone));
+                                }
+                                else{
+                                    clones.forEach(clone => parent.getNextSibling()?.insertBefore(clone));
+                                }
+                            }
                         }
                         else{
-                            parent.setNumber(parent.getChildrenSize() - 1);
+                            parent.setNumber(parent.getChildrenSize());
                         }
                     }
                 }
@@ -106,7 +111,7 @@ export default function ColumnActionPlugin(props: ColumnActionPluginProps){
         },
     ], [editor, node]);
 
-    return <Action placement={["top", "right"]} open={open} nodeKey={key} anchor={props.anchor}>
+    return <Action placement={"top-end"} inner open={open} nodeKey={key} anchor={props.anchor}>
         <Dropdown trigger={["click"]} menu={{ items: items }} placement="bottom" autoAdjustOverflow>
             <Button type="text" icon={<PencilSquare size={16} />} />
         </Dropdown>

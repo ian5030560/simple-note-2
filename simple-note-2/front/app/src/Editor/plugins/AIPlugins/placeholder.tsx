@@ -4,10 +4,7 @@ import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
     $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode,
     SELECTION_CHANGE_COMMAND, KEY_TAB_COMMAND, $isParagraphNode, 
-    COMMAND_PRIORITY_HIGH, NodeKey,COMMAND_PRIORITY_NORMAL,
-    KEY_DOWN_COMMAND,
-    COMMAND_PRIORITY_CRITICAL
-} from "lexical";
+    COMMAND_PRIORITY_HIGH, NodeKey,COMMAND_PRIORITY_NORMAL} from "lexical";
 import { $isHeadingNode } from "@lexical/rich-text";
 import "./placeholder.css";
 import useAPI from "../../../util/api";

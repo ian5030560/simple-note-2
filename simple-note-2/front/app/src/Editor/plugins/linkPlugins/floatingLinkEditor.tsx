@@ -67,7 +67,7 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
         clear();
     }, [clear, editor]);
 
-    return <Action open={show} nodeKey={nodeKey} placement={{ bottom: true, left: false }} anchor={props.anchor}>
+    return <Action open={show} offset={8} nodeKey={nodeKey} placement={"bottom"} anchor={props.anchor}>
         <Flex style={{ backgroundColor: token.colorBgBase }} gap={"small"} className={styles.floatingLinkEditor} align="center">
             <Typography.Link target="_blank" rel="noopener noreferrer" href={url}
                 style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>

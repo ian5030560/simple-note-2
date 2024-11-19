@@ -62,8 +62,8 @@ function sortNodes(data: NoteTreeData[]) {
 export const getCookie = () => new Map(document.cookie.split(";").map((item) => item.trim().split("=")) as [[string, string]]);
 
 export type NoteFetchResult = {
-    one: Array<NoteTreeData>,
-    multiple: Array<{ noteId: string, noteName: string, url: string }>
+    one: Array<NoteTreeData>;
+    multiple: Array<{ noteId: string, noteName: string, url: string }>;
 }
 export async function settingLoader() {
 

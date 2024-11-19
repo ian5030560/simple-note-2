@@ -1,126 +1,58 @@
 import { createPortal } from "react-dom"
-import styles from "./action.module.css";
 import { NodeKey } from "lexical";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React from "react";
+import { autoUpdate, flip, offset, Placement, useFloating, useTransitionStyles } from "@floating-ui/react";
 
-export interface WithAnchorProps{
+export interface WithAnchorProps {
     anchor: HTMLElement | null;
 }
-type Key = "top" | "bottom" | "left" | "right";
-type Outside = boolean;
-export type Placement = Key[] | Partial<Record<Key, Outside>>;
 interface ActionProps {
     nodeKey: NodeKey | undefined | null;
     children: React.ReactNode;
-    placement?: Placement;
+    placement: Placement;
     open: boolean;
-    autoWidth?: boolean;
-    autoHeight?: boolean;
     anchor: HTMLElement | null;
+    inner?: boolean;
+    offset?: number;
 }
 export default function Action(props: ActionProps) {
-    const [pos, setPos] = useState<{ x: number, y: number }>();
     const [editor] = useLexicalComposerContext();
-    const placement = useMemo(() => props.placement || [], [props.placement]);
-    const [size, setSize] = useState<{ width?: number, height?: number }>();
-    
-    const { anchor } = props;
+    const { refs, floatingStyles, context } = useFloating({
+        open: props.open, strategy: "absolute", placement: props.placement,
+        whileElementsMounted: autoUpdate,
+        middleware: [flip(), offset(({ rects }) => {
+            const { placement, inner, offset } = props;
 
-    useEffect(() => {
-        if (!props.nodeKey) return;
-        const element = editor.getElementByKey(props.nodeKey);
-        if (!element) return;
-
-        function update() {
-            if (!anchor) return;
-
-            const { x, y, width, height } = element!.getBoundingClientRect();
-            const { left, top } = anchor.getBoundingClientRect();
-            const { x: rx, y: ry } = { x: x - left, y: y - top };
-            const pos = {
-                x: rx + width / 2,
-                y: ry + height / 2,
+            if (!inner) {
+                return offset ?? 0;
             }
-
-            const _placement = Array.isArray(placement) ? placement : Object.keys(placement);
-            const map: any = {
-                top: () => pos.y -= height / 2,
-                bottom: () => pos.y += height / 2,
-                left: () => pos.x -= width / 2,
-                right: () => pos.x += width / 2
+            else {
+                if (placement.includes("top") || placement.includes("bottom")) {
+                    return -(rects.floating.height + (offset ?? 0));
+                }
+                else {
+                    return -(rects.floating.width + (offset ?? 0));
+                }
             }
-            for (const place of _placement) {
-                map[place]();
-            }
+        }, [props.placement])]
+    });
 
-            setPos({ ...pos });
+    const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {
+        initial: { opacity: 0 }, open: { opacity: 1 }, close: { opacity: 0 }
+    });
 
-            const { autoHeight, autoWidth } = props;
-            const resize: { width?: number, height?: number } = {};
-            if (!element) return resize;
+    const reference = useMemo(() => props.nodeKey ? editor.getElementByKey(props.nodeKey) : null, [editor, props.nodeKey]);
+    useEffect(() => refs.setReference(reference), [reference, refs]);
 
-            if (autoWidth) {
-                resize.width = width;
-            }
-            if (autoHeight) {
-                resize.height = height;
-            }
-
-            setSize({ ...resize });
+    return createPortal(<>
+        {
+            isMounted && <div ref={refs.setFloating} style={floatingStyles}>
+                <div style={transitionStyles}>
+                    {props.children}
+                </div>
+            </div>
         }
-
-        update();
-        const resizer = new ResizeObserver(update);
-        resizer.observe(element);
-
-        const mutation = new MutationObserver(update);
-        const root = editor.getRootElement()!;
-        mutation.observe(root!, { subtree: true, childList: true });
-
-        window.addEventListener("resize", update);
-
-        return () => {
-            resizer.unobserve(element);
-            resizer.disconnect();
-            window.removeEventListener("resize", update);
-            mutation.disconnect();
-        }
-    }, [anchor, editor, placement, props]);
-
-    const adjustPos = useMemo(() => {
-        const offset = { x: 0, y: 0 };
-        if (Array.isArray(placement)) {
-            if (placement.includes("right")) {
-                offset.x = -100;
-            }
-
-            if (placement.includes("bottom")) {
-                offset.y = -100;
-            }
-
-            return offset;
-        }
-
-        Object.keys(placement).forEach(key => {
-            if ((key === "left" && placement.left) || (key === "right" && !placement.right)) {
-                offset.x = -100;
-            }
-            if ((key === "top" && placement.top) || (key === "bottom" && !placement.bottom)) {
-                offset.y = -100;
-            }
-        });
-
-        return offset;
-    }, [placement]);
-
-    return createPortal(<div className={styles.actionContainer}
-        style={{
-            transform: pos ? `translate(calc(${pos.x}px + ${adjustPos.x}%), calc(${pos.y}px + ${adjustPos.y}%))` : undefined,
-            display: !props.open || !props.nodeKey ? "none" : undefined,
-            ...size
-        }}>
-        {props.children}
-    </div>, anchor || document.body);
+    </>, props.anchor || document.body);
 }

@@ -40,8 +40,8 @@ import TableOfContentPlugin from "./plugins/tableOfContentPlugin";
 import MathPlugin from "./plugins/mathPlugin";
 import ErrorPlugin from "./plugins/errorPlugin";
 import ColumnActionPlugin from "./plugins/columnPlugins/action";
-import { mergeRefs } from "./utils";
 import ColumnModalPlugin from "./plugins/columnPlugins/modal";
+import mergeRefs from "merge-refs";
 
 function $createEmptyContent() {
     const root = $getRoot();

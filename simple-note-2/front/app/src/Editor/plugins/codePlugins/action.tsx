@@ -25,7 +25,7 @@ export default function CodeActionPlugin(props: CodeActionPluginProps) {
     const selectElement = useMemo(() => selectRef.current?.nativeElement, []);
 
     const handleEnter = useCallback((key: string) => {
-        editor.update(() => {
+        editor.read(() => {
             const node = $getNodeByKey(key) as CodeNode;
             const lang = node.getLanguage();
             if (lang) setLang(lang);
@@ -39,11 +39,10 @@ export default function CodeActionPlugin(props: CodeActionPluginProps) {
         const element = editor.getElementByKey(key);
 
         if ((element && inside(x, y, element)) || (selectElement && inside(x, y, selectElement))) return;
+        setOpen(false);
         setKey(undefined);
-
     }, [editor, selectElement]);
 
-    console.log(selectRef.current?.nativeElement);
     useEffect(() => editor.registerMutationListener(CodeNode, mutations => {
         Array.from(mutations).forEach(([nodeKey, tag]) => {
             if (tag === "updated") return;
@@ -86,11 +85,11 @@ export default function CodeActionPlugin(props: CodeActionPluginProps) {
         const element = editor.getElementByKey(key);
 
         if ((element && inside(x, y, element)) || (selectElement && inside(x, y, selectElement))) return;
-
+        setOpen(false);
         setKey(undefined);
     }, [editor, key, selectElement]);
 
-    return <Action nodeKey={key} placement={["top", "right"]} open={true} anchor={props.anchor}>
+    return <Action nodeKey={key} inner placement={"top-end"} open={!!key} anchor={props.anchor}>
         <Flex onMouseLeave={handleContainerLeave}>
             <Select ref={selectRef} open={open} size="small" value={lang} onSelect={handleSelect} style={{ minWidth: 100 }}
                 options={Object.keys(LANGUAGES).map(key => ({ value: key, label: LANGUAGES[key] }))}

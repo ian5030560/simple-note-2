@@ -17,7 +17,6 @@
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
     width: fit-content;
-    max-height: 250px;
     overflow-y: auto;
 }
 
@@ -29,13 +28,4 @@
 
 .handleButton:active{
     cursor: grabbing;
-}
-
-.mask{
-    position: absolute;
-    inset: 0;
-}
-
-.listItem:hover{
-    background-color: rgba(0, 0, 0, 0.06);
 }

@@ -8,7 +8,7 @@ import { inside } from "../../utils";
 import { PLUSMENU_SELECTED } from "./command";
 import { WithAnchorProps } from "../../ui/action";
 import { WithOverlayProps } from "../../types";
-import { autoUpdate, flip, FloatingPortal, offset, useFloating } from "@floating-ui/react";
+import { autoUpdate, flip, FloatingPortal, offset, useFloating, useTransitionStyles } from "@floating-ui/react";
 
 export interface PlusItem {
     value: string;
@@ -27,24 +27,29 @@ export const DragHandler = (props: DragHandlerProps) => {
     const [open, setOpen] = useState(false);
     const [editor] = useLexicalComposerContext();
     const { token } = theme.useToken();
-    const { refs, floatingStyles } = useFloating({
-        strategy: "absolute",
+    const { refs, floatingStyles, context } = useFloating({
+        open: open, strategy: "absolute",
         placement: "bottom-start",
         whileElementsMounted: autoUpdate,
         middleware: [flip(), offset(8)],
+    });
+    const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {
+        duration: 100, initial: {maxHeight: 0, opacity: 0}, 
+        open: {maxHeight: 250, opacity: 1}, 
+        close: {maxHeight: 0, opacity: 0}
     });
 
     useEffect(() => refs.setReference(editor.getElementByKey(props.nodeKey)), [editor, props.nodeKey, refs]);
 
     const block = useCallback(() => props.overlayContainer?.style.removeProperty("pointer-events"), [props.overlayContainer?.style]);
     const unblock = useCallback(() => props.overlayContainer?.style.setProperty("pointer-events", "none"), [props.overlayContainer?.style]);
-    
+
     useEffect(() => {
-        if(!open) return;
-        const {body} = document;
-        function handleClickOutside(e: MouseEvent){
-            const {current: floating} = refs.floating;
-            if(!floating || inside(e.clientX, e.clientY, floating)) return;
+        if (!open) return;
+        const { body } = document;
+        function handleClickOutside(e: MouseEvent) {
+            const { current: floating } = refs.floating;
+            if (!floating || inside(e.clientX, e.clientY, floating)) return;
             setOpen(false);
             unblock();
         }
@@ -62,26 +67,28 @@ export const DragHandler = (props: DragHandlerProps) => {
             setOpen(true);
             block();
         }} />
+
         <FloatingPortal root={props.overlayContainer}>
             {
-                <div className={styles.dropDown} ref={refs.setFloating} style={{
+                isMounted && <div className={styles.dropDown} ref={refs.setFloating} style={{
                     ...floatingStyles,
-                    display: !open ? "none" : undefined,
                     backgroundColor: token.colorBgBase
                 }}>
-                    <List dataSource={props.items} renderItem={(item) => <List.Item key={item.value} style={{ width: "100%", padding: 0 }}>
-                        <Button icon={item.icon} block type="text" style={{ justifyContent: "flex-start" }}
-                            onClick={() => {
-                                setOpen(false);
-                                unblock();
-                                const node = editor.getEditorState().read(() => $getNodeByKey(props.nodeKey));
-                                if (!node) return;
+                    <div style={transitionStyles}>
+                        <List dataSource={props.items} renderItem={(item) => <List.Item key={item.value} style={{ width: "100%", padding: 0 }}>
+                            <Button icon={item.icon} block type="text" style={{ justifyContent: "flex-start" }}
+                                onClick={() => {
+                                    setOpen(false);
+                                    unblock();
+                                    const node = editor.getEditorState().read(() => $getNodeByKey(props.nodeKey));
+                                    if (!node) return;
 
-                                editor.dispatchCommand(PLUSMENU_SELECTED, { node: node, value: item.value })
-                            }}>
-                            {item.label}
-                        </Button>
-                    </List.Item>} />
+                                    editor.dispatchCommand(PLUSMENU_SELECTED, { node: node, value: item.value })
+                                }}>
+                                {item.label}
+                            </Button>
+                        </List.Item>} />
+                    </div>
                 </div>
             }
         </FloatingPortal>
