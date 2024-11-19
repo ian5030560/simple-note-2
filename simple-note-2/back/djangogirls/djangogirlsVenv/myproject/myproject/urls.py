@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+'''
 import sys
 
 # new url add path here
@@ -41,6 +42,57 @@ sys.path.append("..joinCollaborate")
 sys.path.append("..aiSocket")
 sys.path.append("..getTheme")
 sys.path.append("..deleteTheme")
+'''
+
+import sys
+from pathlib import Path
+
+# Group related paths
+PATHS = {
+    'note': [
+        'getNote',
+        'newNote',
+        'deleteNote',
+        'saveNote',
+        'loadNoteTree'
+    ],
+    'media': [
+        'newMediaFile',
+        'updateMediaFile',
+        'deleteFile',
+        'viewMediaFile'
+    ],
+    'user': [
+        'registerAndLogin',
+        'forgetPassword',
+        'logout',
+        'getInfo',
+        'updateInfo'
+    ],
+    'collaboration': [
+        'newCollaborate',
+        'deleteCollaborate',
+        'joinCollaborate'
+    ],
+    'theme': [
+        'newTheme',
+        'getTheme',
+        'deleteTheme'
+    ],
+    'ai': [
+        'aiSocket',
+        'breeze'
+    ],
+    'core': [
+        'myapp'
+    ]
+}
+
+# Add paths using list comprehension
+base_dir = Path('..')
+[sys.path.append(str(base_dir / path)) 
+ for category, paths in PATHS.items() 
+ for path in paths]
 
 # new url import here
 from django.urls import path, include, re_path
@@ -68,8 +120,7 @@ from joinCollaborate.views import JoinCollaborateView
 from getTheme.views import GetThemeView
 from deleteTheme.views import DeleteThemeView
 from aiSocket import views as AISocket
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework import permissions
+
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -80,7 +131,7 @@ schema_view = get_schema_view(
   description='',
   )
 )
-
+'''
 # urls
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -131,4 +182,71 @@ urlpatterns = [
     path('auth/', include('rest_framework.urls')),
     path('api/jwtauth/', include('jwtauth.urls'), name='jwtauth'),
     path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+]
+'''
+# Group related URL patterns
+# User note data
+note_patterns = [
+    path('new/', NewNoteView.as_view(), name='note_new'),
+    path('get/', GetNoteView.as_view(), name='note_get'),
+    path('delete/', DeleteNoteView.as_view(), name='note_delete'),
+    path('save/', SaveNoteView.as_view(), name='note_save'),
+    path('tree/', LoadNoteTreeView.as_view(), name='note_tree'),
+]
+
+# Media
+media_patterns = [
+    path('new/', NewMediaFileView.as_view(), name='media_new'),
+    path('update/', UpdateMediaFileView.as_view(), name='media_update'),
+    path('delete/', DeleteFileView.as_view(), name='media_delete'),
+    path('view/', ViewMediaFileView.as_view(), name='media_view'),
+    path('<username>/', ViewMediaFileView.as_view(), name='media_view_user'),
+    path('<username>/<notename>/', ViewMediaFileView.as_view(), name='media_view_note'),
+    path('<username>/<notename>/<filename>/', ViewMediaFileView.as_view(), name='media_view_file'),
+]
+
+# User collaborate
+collaborate_patterns = [
+    path('new/', NewCollaborateView.as_view(), name='collaborate_new'),
+    path('delete/', DeleteCollaborateView.as_view(), name='collaborate_delete'),
+    path('join/', JoinCollaborateView.as_view(), name='collaborate_join'),
+]
+
+# User theme
+theme_patterns = [
+    path('new/', NewThemeView.as_view(), name='theme_new'),
+    path('get/', GetThemeView.as_view(), name='theme_get'),
+    path('delete/', DeleteThemeView.as_view(), name='theme_delete'),
+]
+
+# User info
+info_patterns = [
+    path('get/', GetInfoView.as_view(), name='info_get'),
+    path('update/', UpdateInfoView.as_view(), name='info_update'),
+]
+
+# Main URL patterns
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('auth/', include('rest_framework.urls')),
+    path('api/jwtauth/', include('jwtauth.urls'), name='jwtauth'),
+    path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('api/', include('notes.urls')),
+    
+    # Group related endpoints under their respective prefixes
+    path('note/', include(note_patterns)),
+    path('media/', include(media_patterns)),
+    path('collaborate/', include(collaborate_patterns)),
+    path('theme/', include(theme_patterns)),
+    path('info/', include(info_patterns)),
+    
+    # Authentication and user management
+    path('register/', RegisterAndLoginView.as_view(), name='register'),
+    path('login/', RegisterAndLoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('forget-password/', ForgetPasswordView.as_view(), name='forget_password'),
+    
+    # AI features
+    path('breeze/', BreezeView.as_view(), name='breeze'),
+    path('ai-socket/', AISocket.aiReturn, name='ai_return'),
 ]
