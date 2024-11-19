@@ -1,6 +1,5 @@
 import UserComponent from "./component";
 import { Navigate, Outlet, useLoaderData, useParams } from "react-router-dom";
-import { useMemo } from "react";
 
 
 export default () => {

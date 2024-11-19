@@ -199,25 +199,3 @@ export async function collaborateLoader({ params }: LoaderFunctionArgs<boolean>)
         }).catch(() => { throw collabErr })
     ]).then(reses => reses[1]);
 }
-
-type ThemeConfigContextType = {
-    darken: boolean;
-    setDarken: (value: boolean) => void;
-    themeFn: (dark: boolean) => ThemeConfig;
-    setThemeFn: (fn: ((dark: boolean) => ThemeConfig)) => void;
-}
-const ThemeConfigContext = createContext<ThemeConfigContextType>({
-    themeFn: defaultTheme, darken: false, setDarken: () => { }, setThemeFn: () => { }
-});
-export function ThemeConfigProvider(props: { children: React.ReactNode }) {
-    const [darken, setDarken] = useState(false);
-    const [themeFn, setThemeFn] = useState(() => defaultTheme);
-
-    return <ThemeConfigContext.Provider value={{ darken, setDarken, themeFn, setThemeFn }}>
-        <ConfigProvider theme={themeFn(darken)}>
-            {props.children}
-        </ConfigProvider>
-    </ThemeConfigContext.Provider>;
-}
-
-export const useThemeConfig = () => useContext(ThemeConfigContext);

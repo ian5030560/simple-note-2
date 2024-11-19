@@ -1,21 +1,15 @@
 import React, { useState } from "react";
 import SideBar from "./SideBar";
-import { Row, Col, ConfigProvider, theme } from "antd";
+import { Row, Col, theme } from "antd";
 import Preview from "./Preview";
-import { BulbButton } from "../Welcome";
-import { defaultSeed } from "../util/theme";
-import { ThemeConfigProvider, useThemeConfig } from "../util/loader";
+import { defaultSeed, ThemeSwitchButton } from "../util/theme";
 
 const ThemePage = () => {
-    const {darken, setDarken} = useThemeConfig();
-
-    return <ThemeConfigProvider>
-        <Index />
-        <BulbButton darken={darken} onClick={() => setDarken(!darken)} />
-    </ThemeConfigProvider>
-
+    return <>
+        <Index/>
+        <ThemeSwitchButton/>
+    </>
 }
-
 
 const Index = () => {
     const [darken, setDarken] = useState(false);

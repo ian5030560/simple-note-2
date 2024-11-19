@@ -3,8 +3,10 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const ReactRefreshPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const DefinePlugin = require("webpack").DefinePlugin;
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+// const ReactRefreshTypeScript = require('react-refresh-typescript');
 
 const TEST = /\.(ts|js)x?$/;
 
@@ -38,7 +40,12 @@ module.exports = {
                     {
                         loader: "ts-loader",
                         options: {
-                            happyPackMode: true
+                            happyPackMode: true,
+                            configFile: "tsconfig.json",
+                            // getCustomTransformers: () => ({
+                            //     before: ReactRefreshTypeScript()
+                            // }),
+                            // transpileOnly: true,
                         }
                     }
                 ],
@@ -92,10 +99,11 @@ module.exports = {
         new MiniCssExtractPlugin({
             filename: "css/[file].css"
         }),
-        new ReactRefreshPlugin(),
         new DefinePlugin({
             'process.env': JSON.stringify(process.env)
-        })
+        }),
+        new ReactRefreshWebpackPlugin(),
+        new ForkTsCheckerWebpackPlugin(),
     ],
     devServer: {
         static: path.resolve(__dirname, "dist"),
@@ -112,5 +120,8 @@ module.exports = {
             parallel: true,
             include: "src",
         })],
-    }
+    },
+    watchOptions: {
+        ignored: /node_modules/,
+    },
 };

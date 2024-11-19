@@ -102,7 +102,7 @@ export default function Editor(props: EditorProps) {
             <div id="editor-scroller" className={styles.editorScroller}>
                 <div id="editor-anchor" className={styles.anchor} ref={mergeRefs(containerRef, (node) => setAnchor(node))}>
                     <RichTextPlugin />
-                    <DraggablePlugin items={items} anchor={anchor} overlayContainer={overlayContainer}/>
+                    <DraggablePlugin items={items} anchor={anchor} overlayContainer={overlayContainer} />
                     <AutoFocusPlugin />
                     <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
                     <HistoryPlugin />
@@ -117,7 +117,7 @@ export default function Editor(props: EditorProps) {
                     <AIPlaceholderPlugin />
                     <AIQuestionPlugin />
                     <CodeHighlightPlugin />
-                    <CodeActionPlugin anchor={anchor} />
+                    <CodeActionPlugin anchor={anchor} overlayContainer={overlayContainer} />
                     <ColumnPlugin />
                     <ColumnActionPlugin anchor={anchor} />
                     <ColumnModalPlugin />
@@ -133,8 +133,6 @@ export default function Editor(props: EditorProps) {
                 </div>
             </div>
         </LexicalComposer>
-        <div style={{ pointerEvents: "none", position: "absolute", inset: 0 }} ref={(node) => setOverlayContainer(node)}>
-            <div style={{position: "relative"}}/>
-        </div>
+        <div style={{position: "absolute", inset: 0, pointerEvents: "none" }} ref={(node) => setOverlayContainer(node)} />
     </div>;
 }

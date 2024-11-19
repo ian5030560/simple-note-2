@@ -44,16 +44,3 @@ export function mergeRefs<T>(
     }
   };
 }
-
-export function useOverlayLockState(overlayContainer: HTMLElement | null): [boolean, (value: boolean) => void]{
-  const [open, setOpen] = useState(false);
-  return [open, useCallback((value: boolean) => {
-    setOpen(value);
-    if(value){
-      overlayContainer?.style.removeProperty("pointer-events");
-    }
-    else{
-      overlayContainer?.style.setProperty("pointer-events", "none");
-    }
-  }, [])]
-}

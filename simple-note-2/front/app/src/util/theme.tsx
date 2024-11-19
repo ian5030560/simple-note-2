@@ -1,4 +1,7 @@
-import { ThemeConfig, theme as _theme } from "antd";
+import { AlertFilled, AlertOutlined } from "@ant-design/icons";
+import { ConfigProvider, FloatButton, ThemeConfig, theme as _theme } from "antd";
+import { useContext, useState } from "react";
+import { createContext } from "react";
 
 export type ThemeSeed = {
     colorLightPrimary: string;
@@ -32,3 +35,46 @@ export default function theme(seed: ThemeSeed): (dark: boolean) => ThemeConfig{
 }
 
 export const defaultTheme = theme(defaultSeed);
+
+
+export interface BulbButtonProp {
+    dark?: boolean,
+    onClick?: React.MouseEventHandler<HTMLElement>
+}
+export const BulbButton = (prop: BulbButtonProp) => {
+    return <FloatButton icon={!prop.dark ? <AlertFilled /> : <AlertOutlined />} onClick={prop.onClick} />
+}
+
+type ThemeConfigContextType = {
+    dark: boolean;
+    setDark: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const ThemeConfigContext = createContext<ThemeConfigContextType>({dark: false, setDark: (value: boolean | ((previous: boolean) => boolean)) => {}});
+interface ThemeProviderProps extends React.PropsWithChildren{
+    dark?: boolean;
+    seed: ThemeSeed;
+}
+export function ThemeProvider(props: ThemeProviderProps){
+    const [dark, setDark] = useState(props.dark ?? false);
+
+    return <ConfigProvider theme={theme(props.seed)(dark)}>
+        <ThemeConfigContext.Provider value={{dark, setDark}}>
+            {props.children}
+        </ThemeConfigContext.Provider>
+    </ConfigProvider>
+}
+
+export const useThemeConfig = () => useContext(ThemeConfigContext);
+
+type DefaultThemeProviderProps = Omit<ThemeProviderProps, "seed">;
+export function DefaultThemeProvider(props: DefaultThemeProviderProps){
+    return <ThemeProvider dark={props.dark} seed={defaultSeed}>
+        {props.children}
+    </ThemeProvider>
+}
+
+export function ThemeSwitchButton(){
+    const {dark, setDark} = useThemeConfig();
+
+    return <BulbButton dark={dark} onClick={() => setDark(prev => !prev)}/>
+}

@@ -48,18 +48,18 @@ const API = {
 //   [API.addNote]: { username: string, noteId: string, notename: string, parentId: string | null, silbling_id: string | null },
 //   [API.deleteNote]: { username: string, noteId: string },
 //   [API.saveNote]: { username: string, noteId: string, content: any },
-//   [API.addTheme]: {
-//     username: string,
-//     theme: {
-//       name: string,
-//       data: {
-//         colorLightPrimary: string,
-//         colorLightNeutral: string,
-//         colorDarkPrimary: string,
-//         colorDarkNeutral: string
-//       }
+// [API.addTheme]: {
+//   username: string,
+//   theme: {
+//     name: string,
+//     data: {
+//       colorLightPrimary: string,
+//       colorLightNeutral: string,
+//       colorDarkPrimary: string,
+//       colorDarkNeutral: string
 //     }
-//   },
+//   }
+// },
 //   [API.loadNoteTree]: { username: string },
 //   [API.addCollaborate]: { username: string, noteId: string, url: string },
 //   [API.deleteCollaborate]: { username: string, noteId: string, masterName: string },
@@ -121,7 +121,7 @@ export default function useAPI() {
       join: (username: string, url: string, masterName: string) => fetch(API.Collaborate.join, { ...postSetup, body: JSON.stringify({ username, url, masterName }) }),
 
       // 取得房間人數
-      people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({id: room}), { method: "GET", ...setup })
+      people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({ id: room }), { method: "GET", ...setup })
     },
 
     info: {
@@ -131,6 +131,7 @@ export default function useAPI() {
 
     theme: {
       add: () => { },
+      get: (username: string) => {},
     },
 
     ai: {

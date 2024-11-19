@@ -2,11 +2,9 @@ import { CloseCircleOutlined, ShareAltOutlined, TeamOutlined } from "@ant-design
 import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import { useNodes } from "./NoteTree/store";
 import useAPI from "../../util/api"
 import { encodeBase64, decodeBase64 } from "../../util/secret"
-import { NoteDataNode } from "./NoteTree/store"
-import useNoteManager from "./NoteTree/useNoteManager";
+import useNoteManager, { NoteDataNode } from "./NoteTree/useNoteManager";
 
 interface CollaborateModalProps {
     open?: boolean;

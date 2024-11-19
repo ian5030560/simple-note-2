@@ -42,7 +42,6 @@ export default function DraggablePlugin(props: DraggablePluginProps) {
     const [dragging, setDragging] = useState(false);
     const [id, setId] = useState<NodeKey>();
 
-
     const handleMouseMove = useCallback((e: MouseEvent) => {
         const { clientX, clientY } = e;
         if (!anchor || !scroller || !inside(clientX, clientX, scroller) || !editor.isEditable()) return;
@@ -141,12 +140,15 @@ export default function DraggablePlugin(props: DraggablePluginProps) {
     }, [anchor, dragging, editor, id, line, scroller]);
 
     useEffect(() => {
+        scroller?.addEventListener("mouseenter", handleMouseMove);
         scroller?.addEventListener("mousemove", handleMouseMove);
         scroller?.addEventListener("mouseleave", handleMouseLeave);
+        
         scroller?.addEventListener("dragover", handleDragOver);
         scroller?.addEventListener("drop", handleDrop);
 
         return () => {
+            scroller?.removeEventListener("mouseenter", handleMouseMove);
             scroller?.removeEventListener("mousemove", handleMouseMove);
             scroller?.removeEventListener("mouseleave", handleMouseLeave);
             scroller?.removeEventListener("dragover", handleDragOver);
