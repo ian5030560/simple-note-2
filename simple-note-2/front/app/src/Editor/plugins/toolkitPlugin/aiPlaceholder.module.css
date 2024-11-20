@@ -1,0 +1,23 @@
+.circleWave {
+    z-index: 1;
+}
+
+.circleWave::before {
+    animation: ripple 0.6s ease-out infinite alternate;
+    position: absolute;
+    inset: 0;
+    content: "";
+    background-image: radial-gradient(#FF0000 30%, #FFB5B5 50%, transparent 100%);
+    z-index: -1;
+    border-radius: 50%;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.3);
+    }
+}

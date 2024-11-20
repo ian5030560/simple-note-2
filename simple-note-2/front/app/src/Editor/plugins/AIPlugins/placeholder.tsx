@@ -4,12 +4,13 @@ import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import {
     $getNodeByKey, $getSelection, $isRangeSelection, $isTextNode,
     SELECTION_CHANGE_COMMAND, KEY_TAB_COMMAND, $isParagraphNode, 
-    COMMAND_PRIORITY_HIGH, NodeKey,COMMAND_PRIORITY_NORMAL} from "lexical";
+    COMMAND_PRIORITY_HIGH, NodeKey,COMMAND_PRIORITY_NORMAL,
+    createCommand,
+    LexicalCommand} from "lexical";
 import { $isHeadingNode } from "@lexical/rich-text";
 import "./placeholder.css";
 import useAPI from "../../../util/api";
 import { notification, Typography } from "antd";
-import { SEND_SERVER_AT_AIPLACEHOLDER, SET_AIPLACEHOLDER } from "./command";
 
 type Send = { message: string };
 type Recieve = { result: { message: string } };
@@ -27,6 +28,10 @@ function sliceTextByCommon(s1: string, s2: string) {
     return s2.slice(index, s2.length);
 }
 
+export const SET_PLACEHOLDER: LexicalCommand<boolean> = createCommand();
+export const ON_SEND_PLACEHOLDER: LexicalCommand<void> = createCommand();
+export const ON_FINISH_PLACEHOLDER: LexicalCommand<void> = createCommand();
+
 const AI_PLACEHOLDER = "data-ai-placeholder";
 export default function AIPlaceholderPlugin() {
     const [editor] = useLexicalComposerContext();
@@ -36,7 +41,7 @@ export default function AIPlaceholderPlugin() {
     const [key, setKey] = useState<NodeKey>();
     const [open, setOpen] = useState(false);
 
-    useEffect(() => editor.registerCommand(SET_AIPLACEHOLDER, (value) => {
+    useEffect(() => editor.registerCommand(SET_PLACEHOLDER, (value) => {
         setOpen(value);
         return false;
     }, COMMAND_PRIORITY_HIGH), [editor]);
@@ -85,7 +90,7 @@ export default function AIPlaceholderPlugin() {
         return () => clearInterval(interval);
     }, [ai, api, open]);
 
-    const collectTextWithSilbings = useCallback(() => {
+    const getCurrentParagraph = useCallback(() => {
         return editor.read(() => {
             const node = $getNodeByKey(key!);
             if (!node) return;
@@ -115,20 +120,24 @@ export default function AIPlaceholderPlugin() {
         const { current } = socket;
         function handleMessage({ data }: MessageEvent<string>) {
             const { result: { message } } = JSON.parse(data) as Recieve;
-
+            editor.dispatchCommand(ON_FINISH_PLACEHOLDER, undefined);
+            
             if (!key) return;
             const element = editor.getElementByKey(key);
             if (!element) return;
-            const textContent = collectTextWithSilbings();
+            const textContent = getCurrentParagraph();
 
             if (!textContent) return;
-            console.log(textContent, message);
+            
             element.setAttribute(AI_PLACEHOLDER, sliceTextByCommon(textContent, message));
         }
         current.addEventListener("message", handleMessage);
 
-        return () => current.removeEventListener("message", handleMessage);
-    }, [collectTextWithSilbings, editor, key, open]);
+        return () => {
+            current.removeEventListener("message", handleMessage);
+            current.close();
+        }
+    }, [getCurrentParagraph, editor, key, open]);
 
     useEffect(() => mergeRegister(
         editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
@@ -184,49 +193,72 @@ export default function AIPlaceholderPlugin() {
         if (!element) return;
 
         function sendToServer(){
-            const textContent = collectTextWithSilbings();
+            const textContent = getCurrentParagraph();
             if (!textContent) return;
             const message: Send = { message: textContent };
             current?.send(JSON.stringify(message));
-            editor.dispatchCommand(SEND_SERVER_AT_AIPLACEHOLDER, message.message);
+            editor.dispatchCommand(ON_SEND_PLACEHOLDER, undefined);
         }
 
-        function handleCompositionEnd(){
-            sendToServer();
+        function isFilling(lastChar: string){
+            const placeholder = element?.getAttribute(AI_PLACEHOLDER);
+            if(!placeholder) return false;
+
+            return placeholder.charAt(0) === lastChar;
+        }
+
+        function fillPlaceholder(){
+            const placeholder = element?.getAttribute(AI_PLACEHOLDER);
+            if(!placeholder) return;
+
+            element!.setAttribute(AI_PLACEHOLDER, placeholder.slice(1));
+        }
+
+        function clearPlaceholder(){
+            element?.removeAttribute(AI_PLACEHOLDER);
+        }
+
+        function handleCompositionEnd(e: CompositionEvent){
+            if(e.data && isFilling(e.data)){
+                fillPlaceholder();
+            }
+            else{
+                clearPlaceholder();
+                sendToServer();
+            }
             root?.addEventListener("input", handleInput);
         }
 
         let timer: NodeJS.Timer | undefined = undefined;
         function handleInput(e: Event) {
-            const { isComposing } = e as InputEvent;
+            const { isComposing, data } = e as InputEvent;
+
             if (isComposing) {
                 root?.removeEventListener("input", handleInput);
                 root?.addEventListener("compositionend", handleCompositionEnd, {once: true});
-                return;
             }
             else{
-                if (timer) {
-                    clearTimeout(timer);
-                    timer = undefined;
+                if(data && isFilling(data)){
+                    fillPlaceholder();
                 }
-                timer = setTimeout(sendToServer, 1000);
+                else{
+                    clearPlaceholder();
+                    if (timer) {
+                        clearTimeout(timer);
+                        timer = undefined;
+                    }
+                    timer = setTimeout(sendToServer, 1000);
+                }
             }
 
         }
         root.addEventListener("input", handleInput);
 
-        function handleKeyUp(){
-            if(!key) return;
-            const element = editor.getElementByKey(key);
-            console.log(element?.textContent);
-        }
-        root.addEventListener("keyup", handleKeyUp);
         return () => {
             root.removeEventListener("input", handleInput);
             element.removeAttribute(AI_PLACEHOLDER);
-            root.removeEventListener("keyup", handleKeyUp);
         };
-    }, [collectTextWithSilbings, editor, key, open]);
+    }, [getCurrentParagraph, editor, key, open]);
 
     return contextHolder;
 }
