@@ -1,20 +1,37 @@
-import { useCookies } from "react-cookie";
-import React, { createContext, useContext, useState } from "react";
-import { Navigate, Outlet, LoaderFunctionArgs } from "react-router-dom";
+import { LoaderFunctionArgs } from "react-router-dom";
 import { decodeBase64 } from "./secret";
-import { ConfigProvider, ThemeConfig } from "antd";
-import { defaultTheme } from "./theme";
-import useNoteManager, { NoteDataNode, NoteObject, findNode, getNoteStore, operate } from "../User/SideBar/NoteTree/useNoteManager";
+import useNoteManager, { NoteDataNode, findNode } from "../User/SideBar/NoteTree/useNoteManager";
 import utilizeAPI from "./api";
+import NoteIndexedDB from "../User/SideBar/NoteTree/store";
+import useUser, { Token } from "../User/SideBar/useUser";
+import { Cookies } from "react-cookie";
 
-export function Public() {
-    const [{ username }] = useCookies(["username"]);
-    return username ? <Navigate to={"note"} replace /> : <Outlet />
-}
+type Payload = {exp: number, iat: number};
+export async function validateLoader() {
+    const username = new Cookies().get("username");
+    if (!username) return false;
 
-export function Private() {
-    const [{ username }] = useCookies(["username"]);
-    return !username ? <Navigate to={"/"} replace /> : <Outlet />
+    const token = new Cookies().get("token");
+    if (!token) return false;
+
+    const parsed = JSON.parse(token) as Token;
+    const {access, refresh} = parsed;
+    const {jwt: {refresh: refreshAccess}} = utilizeAPI();
+
+    const refreshPayload = JSON.parse(refresh) as Payload;
+    if(refreshPayload.exp < refreshPayload.iat) return false;
+
+    const accessPayload = JSON.parse(decodeBase64(access)) as Payload;
+    if(accessPayload.exp < accessPayload.iat){
+        return await refreshAccess(refresh).then(async res => {
+            if(!res.ok) return false;
+            new Cookies().set("token", await res.json());
+            return true;
+        });
+    }
+    
+    useUser.setState({ username });
+    return true;
 }
 
 type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, silblingId: string | null };
@@ -32,6 +49,7 @@ function sortNodes(data: NoteTreeData[]) {
         if (!groups[parent]) groups[parent] = []
         groups[parent].push(node);
     }
+
     // 排序分組內的節點根據 siblingId
     for (const key in groups) {
         const nodes = groups[key];
@@ -59,7 +77,6 @@ function sortNodes(data: NoteTreeData[]) {
     return sortedData;
 }
 
-export const getCookie = () => new Map(document.cookie.split(";").map((item) => item.trim().split("=")) as [[string, string]]);
 
 export type NoteFetchResult = {
     one: Array<NoteTreeData>;
@@ -68,8 +85,7 @@ export type NoteFetchResult = {
 export async function settingLoader() {
 
     const { note: { loadTree } } = utilizeAPI();
-    const cookie = getCookie();
-    const username = cookie.get("username")!;
+    const username = new Cookies().get("username");
 
     const notesError = new Response(undefined, { status: 410 });
 
@@ -134,18 +150,14 @@ async function getNote(username: string, id: string) {
 export async function contentLoader({ params }: LoaderFunctionArgs<string | null>, username: string) {
     const { id } = params;
     const { note: { save } } = utilizeAPI();
-    const result = await operate<NoteObject | undefined>(async () => {
-        const Note = await getNoteStore();
-        return Note.get(id!);
-    });
+    const db = new NoteIndexedDB();
+    const result = await db.get(id!);
 
     if (!result) {
         const data = await getNote(username, id!);
 
-        operate(async () => {
-            const Note = await getNoteStore();
-            return Note.add({ id: id, content: data, uploaded: true });
-        });
+        const db = new NoteIndexedDB();
+        db.add({ id: id!, content: data ? JSON.parse(data) : null, uploaded: true });
 
         return data;
     }
@@ -162,10 +174,9 @@ export async function contentLoader({ params }: LoaderFunctionArgs<string | null
                         throw new Response(undefined, { status: 405 });
                     }
                     else {
-                        operate(async () => {
-                            const Note = await getNoteStore();
-                            return Note.put({ id, content, uploaded: true });
-                        }).catch(() => { throw new Response(undefined, { status: 405 }) });
+                        const db = new NoteIndexedDB();
+                        db.update({ id: id!, content, uploaded: true })
+                            .catch(() => { throw new Response(undefined, { status: 405 }) });
                     }
                 }).catch(() => {
                     throw new Response(undefined, { status: 405 });
@@ -177,8 +188,8 @@ export async function contentLoader({ params }: LoaderFunctionArgs<string | null
 
 export async function collaborateLoader({ params }: LoaderFunctionArgs<boolean>) {
     const { collab: { join, people } } = utilizeAPI();
-    const cookie = getCookie();
-    const username = cookie.get("username")!;
+    const username = new Cookies().get("username");
+
     const { id, host } = params;
     const collabErr = new Response(undefined, { status: 403 });
     const master = decodeBase64(host!);

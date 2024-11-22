@@ -2,19 +2,19 @@ import { Tree, Button, Flex, Typography, ButtonProps } from "antd";
 import { useMemo } from "react";
 import useDirective from "./directive";
 import { Link, useParams } from "react-router-dom";
-import useNoteManager, { getNoteStore, NoteObject, operate } from "./useNoteManager";
+import useNoteManager from "./useNoteManager";
 import useAPI from "../../../util/api";
 import { PlusLg, Trash3, XLg } from "react-bootstrap-icons";
+import NoteIndexedDB from "./store";
+import useUser from "../useUser";
 
 const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="default" size="small" tabIndex={-1}
     onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(e) }} {...props} />;
 
-interface NoteTreeProps {
-    username: string;
-}
-const NoteTree = (props: NoteTreeProps) => {
+const NoteTree = () => {
     const { nodes } = useNoteManager();
-    const { add, remove, contextHolder, cancelCollab } = useDirective(props.username);
+    const { username } = useUser();
+    const { add, remove, contextHolder, cancelCollab } = useDirective(username);
     const { id } = useParams();
     const one = useMemo(() => nodes["one"], [nodes]);
     const multiple = useMemo(() => nodes["multiple"], [nodes]);
@@ -33,27 +33,23 @@ const NoteTree = (props: NoteTreeProps) => {
 
                     const to = data.url ? data.url : data.key as string;
                     return <Link to={to} onClick={async () => {
-                        const result = await operate<NoteObject | undefined>(async () => {
-                            const Note = await getNoteStore();
-                            return Note.get(id!)
-                        });
+                        const db = new NoteIndexedDB();
+                        const result = await db.get(id!);
 
                         if (!result || result.uploaded) return;
-                        save(props.username, id!, JSON.stringify(result.content), true).then(res => {
+                        save(username, id!, JSON.stringify(result.content), true).then(res => {
                             if (!res.ok) return;
 
-                            operate(async () => {
-                                const Note = await getNoteStore();
-                                return Note.put({ id, content: result.content, uploaded: true });
-                            })
+                            const db = new NoteIndexedDB();
+                            db.update({ id: id!, content: result.content, uploaded: true });
                         });
 
                     }}>
                         <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3 }}>
                             <Typography.Text>{data.title as string}</Typography.Text>
                             <Flex gap={3}>
-                                {!first && <ToolButton icon={<Trash3 size={16}/>} onClick={() => remove(data)} />}
-                                <ToolButton icon={<PlusLg size={16}/>} onClick={() => add(data)} />
+                                {!first && <ToolButton icon={<Trash3 size={16} />} onClick={() => remove(data)} />}
+                                <ToolButton icon={<PlusLg size={16} />} onClick={() => add(data)} />
                             </Flex>
                         </Flex>
                     </Link>
@@ -73,7 +69,7 @@ const NoteTree = (props: NoteTreeProps) => {
                             <Flex justify="space-between"
                                 style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
                                 <Typography.Text>{data.title as string}</Typography.Text>
-                                <ToolButton icon={<XLg size={16}/>} onClick={() => cancelCollab(data)} />
+                                <ToolButton icon={<XLg size={16} />} onClick={() => cancelCollab(data)} />
                             </Flex>
                         </Link>
                     }} />

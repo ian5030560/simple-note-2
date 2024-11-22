@@ -2,17 +2,21 @@ import React, { useState } from "react";
 import { Button, Form, Result, Modal, Input, notification } from "antd";
 import useAPI from "../../util/api";
 
-interface ForgetProp {
-  open: boolean,
-  onCancel: (e: React.MouseEvent<HTMLButtonElement>) => void
+type ForgetPwdData = {
+  username: string;
+  email: string;
+  password: string;
 }
-
-export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
+interface ForgetPwdModalProps {
+  open: boolean;
+  onCancel: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
+export const ForgetPwdModal = ({ open, onCancel }: ForgetPwdModalProps) => {
   const [api, contextHolder] = notification.useNotification();
   const [loading, setLoading] = useState(false);
   const { auth: { forgetPassword } } = useAPI();
 
-  const handleFinished = (values: any) => {
+  const handleFinished = (values: ForgetPwdData) => {
     setLoading(true);
 
     const { username, email } = values;
@@ -36,75 +40,51 @@ export const ForgetPwdModal: React.FC<ForgetProp> = ({ open, onCancel }) => {
     }).finally(() => setLoading(false));
   };
 
-  return (
-    <>
-      <Modal title="尋找密碼" open={open} footer={null} onCancel={onCancel}>
-        <Form onFinish={handleFinished}>
-          <Form.Item
-            name={"username"}
-            rules={[
-              {
-                required: true,
-                message: "輸入你的帳號",
-              },
-            ]}
-          >
-            <Input type="text" placeholder="輸入你的帳號" />
-          </Form.Item>
-          <Form.Item
-            name={"email"}
-            rules={[
-              {
-                required: true,
-                message: "輸入你的信箱",
-              },
-              {
-                type: "email",
-                message: "輸入的信箱不正確",
-              },
-            ]}
-          >
-            <Input type="email" name="email" placeholder="輸入你的email" />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" style={{ minWidth: "100%" }} loading={loading}>
-              提交
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
-      {contextHolder}
-    </>
-  );
+  return <>
+    <Modal title="尋找密碼" open={open} footer={null} onCancel={onCancel}>
+      <Form onFinish={handleFinished}>
+        <Form.Item name={"username"} rules={[{ required: true, message: "輸入你的帳號" }]}>
+          <Input type="text" placeholder="輸入你的帳號" />
+        </Form.Item>
+        <Form.Item name={"email"}
+          rules={[
+            { required: true, message: "輸入你的信箱" },
+            { type: "email", message: "輸入的信箱不正確" },
+          ]}
+        >
+          <Input type="email" name="email" placeholder="輸入你的email" />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" style={{ minWidth: "100%" }} loading={loading}>
+            提交
+          </Button>
+        </Form.Item>
+      </Form>
+    </Modal>
+    {contextHolder}
+  </>;
 };
 
-interface ResultType {
-  title: string,
-  subtitle: string,
-  open: boolean,
+interface ResultModalProps {
+  title: string;
+  subtitle: string;
+  open: boolean;
+  onClose: () => void;
 }
 
-interface SuccessType extends ResultType {
-  onSuccessClose: () => void,
-};
-
-interface FailureType extends ResultType {
-  onFailureClose: () => void,
-};
-
 interface AuthProp {
-  success: SuccessType,
-  failure: FailureType
+  success: ResultModalProps;
+  failure: ResultModalProps;
 }
 
 export const AuthModal: React.FC<AuthProp> = ({ success, failure }) => {
   return <>
     <Modal title={success.title} open={success.open} closeIcon={null}
-      footer={<Button type="primary" onClick={() => success.onSuccessClose()}>確定</Button>}>
+      footer={<Button type="primary" onClick={() => success.onClose()}>確定</Button>}>
       <Result status="success" title={success.title} subTitle={success.subtitle} />
     </Modal>
     <Modal title={failure.title} open={failure.open} closeIcon={null}
-      footer={<Button type="primary" onClick={() => failure.onFailureClose()}>確定</Button>}>
+      footer={<Button type="primary" onClick={() => failure.onClose()}>確定</Button>}>
       <Result status="error" title={failure.title} subTitle={failure.subtitle} />
     </Modal>
   </>

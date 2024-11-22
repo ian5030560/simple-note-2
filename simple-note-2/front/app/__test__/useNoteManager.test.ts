@@ -1,11 +1,12 @@
 import "@testing-library/jest-dom"
 import { renderHook, act } from '@testing-library/react'
-import useNoteManager, { NoteObject, NoteStorageError, getNoteStore } from "../src/User/SideBar/NoteTree/useNoteManager";
+import useNoteManager, { NoteStorageError } from "../src/User/SideBar/NoteTree/useNoteManager";
 import "core-js/stable/structured-clone";
 import "fake-indexeddb";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $createParagraphNode, $createTextNode, $getRoot, LexicalEditor } from "lexical";
 import { prepareNoteManager, uuid } from "./utils";
+import NoteIndexedDB, { NoteObject } from "../src/User/SideBar/NoteTree/store";
 
 function createNoteManagerHook() {
     const { result } = renderHook(() => useNoteManager());
@@ -29,12 +30,8 @@ describe("測試useNoteManager", () => {
             expect(hook.nodes["one"]).toContainEqual({ ...param, children: [], parent: null });
 
             const note: NoteObject = { id: param.key, content: null, uploaded: true };
-            const Note = await getNoteStore();
-            const result = await new Promise<NoteObject | undefined>((resolve, reject) => {
-                const request = Note.get(note.id);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(note.id);
 
             expect(result).toEqual(note);
         });
@@ -60,12 +57,8 @@ describe("測試useNoteManager", () => {
                 await hook.add(param, key2, "one");
             });
 
-            const Note = await getNoteStore();
-            const result = await new Promise<NoteObject[] | undefined>((resolve, reject) => {
-                const request = Note.get(param.key);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(param.key);
 
             const note: NoteObject = { id: param.key, content: null, uploaded: true };
             expect(result).toEqual(note);
@@ -92,12 +85,8 @@ describe("測試useNoteManager", () => {
                 await hook.add(param, key1, "one");
             });
 
-            const Note = await getNoteStore();
-            const result = await new Promise<NoteObject[] | undefined>((resolve, reject) => {
-                const request = Note.get(param.key);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(param.key);
 
             const note: NoteObject = { id: param.key, content: null, uploaded: true };
             expect(result).toEqual(note);
@@ -174,12 +163,8 @@ describe("測試useNoteManager", () => {
                 await hook.add(param, ids[5], "one");
             });
 
-            const Note = await getNoteStore();
-            const result = await new Promise<NoteObject[] | undefined>((resolve, reject) => {
-                const request = Note.get(param.key);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(param.key);
 
             const note: NoteObject = { id: param.key, content: null, uploaded: true };
             expect(result).toEqual(note);
@@ -192,13 +177,8 @@ describe("測試useNoteManager", () => {
                 await hook.add(param, null, "multiple");
             });
 
-            const Note = await getNoteStore();
-            
-            const result = await new Promise<NoteObject | undefined>((resolve, reject) => {
-                const request = Note.get(param.key);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(param.key);
 
             expect(result).toBeUndefined();
             expect(hook.nodes["multiple"]).toContainEqual({ ...param, parent: null, children: [] });
@@ -212,13 +192,8 @@ describe("測試useNoteManager", () => {
                     await hook.add(param, null, "multiple");
                 });
 
-                const Note = await getNoteStore();
-
-                const result = await new Promise<NoteObject | undefined>((resolve, reject) => {
-                    const request = Note.get(param.key);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
+                const db = new NoteIndexedDB();
+                const result = await db.get(param.key);
 
                 expect(result).toBeUndefined();
                 expect(hook.nodes["multiple"]).toContainEqual({ ...param, parent: null, children: [] });
@@ -240,13 +215,8 @@ describe("測試useNoteManager", () => {
             await act(async () => await hook.remove(id, "one"));
             expect(hook.nodes["one"].length).toEqual(0);
 
-            const Note = await getNoteStore();
-
-            const result = await new Promise<NoteObject | undefined>((resolve, reject) => {
-                const request = Note.get(id);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(id);
 
             expect(result).toBeUndefined();
         });
@@ -274,12 +244,8 @@ describe("測試useNoteManager", () => {
             const nodeFind = await act(() => hook.find(ids[4], "one"));
             expect(nodeFind).toBeUndefined();
 
-            const Note = await getNoteStore();
-            const result = await new Promise<NoteObject | undefined>((resolve, reject) => {
-                const request = Note.get(ids[4]);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(ids[4]);
 
             expect(result).toBeUndefined();
         });
@@ -506,13 +472,10 @@ describe("測試useNoteManager", () => {
             const editorState = editor.getEditorState();
             await act(async () => await hook.save(ids[1], editorState));
             
-            const Note = await getNoteStore();
-            const result = await new Promise((resolve, reject) => {
-                const request = Note.get(ids[1]);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(ids[1]);
             expect(result).toBeDefined();
+
             const {content} = result as NoteObject;
             expect(content).toEqual(editorState.toJSON());
         });

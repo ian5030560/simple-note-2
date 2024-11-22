@@ -1,5 +1,6 @@
 .circleWave {
     z-index: 1;
+    --ai-placeholder-thinking: #FFB5B5;
 }
 
 .circleWave::before {
@@ -7,7 +8,7 @@
     position: absolute;
     inset: 0;
     content: "";
-    background-image: radial-gradient(#FF0000 30%, #FFB5B5 50%, transparent 100%);
+    background-color: var(--ai-placeholder-thinking);
     z-index: -1;
     border-radius: 50%;
 }

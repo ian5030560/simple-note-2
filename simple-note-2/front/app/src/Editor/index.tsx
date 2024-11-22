@@ -2,14 +2,15 @@ import { useLoaderData, useNavigate, useNavigation, useParams } from "react-rout
 import { Button, Flex, notification, Skeleton, Spin } from "antd";
 import styles from "./index.module.css";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
-import { useCookies } from "react-cookie";
 import { EditorState, LexicalNode, SerializedEditorState } from "lexical";
 import { $isImageNode } from "./nodes/image";
 import useAPI from "../util/api";
 import { $isVideoNode } from "./nodes/video";
 import { $isDocumentNode } from "./nodes/document";
 import { Typography } from "antd";
-import useNoteManager, { getNoteStore, NoteObject, operate } from "../User/SideBar/NoteTree/useNoteManager";
+import useNoteManager from "../User/SideBar/NoteTree/useNoteManager";
+import NoteIndexedDB from "../User/SideBar/NoteTree/store";
+import useUser from "../User/SideBar/useUser";
 
 function Loading() {
     return <div className={styles.loading}>
@@ -48,12 +49,12 @@ export default () => {
     const { id, host } = useParams();
     const collab = !!(id && host);
     const navigation = useNavigation();
-    const [{ username }] = useCookies(["username"]);
+    const { username } = useUser();
     const { file, note } = useAPI();
     const { find, save } = useNoteManager();
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
-    
+
     const handleSaveToServer = useCallback((username: string, id: string, content: SerializedEditorState | null, keepAlive?: boolean) => {
         note.save(username, id, JSON.stringify(content), keepAlive).then(res => {
             if (res.ok) return;
@@ -66,20 +67,17 @@ export default () => {
             })
         });
 
-        operate(async () => {
-            const Note = await getNoteStore();
-            return Note.put({id, content, uploaded: true});
-        })
+        const db = new NoteIndexedDB();
+        db.update({ id, content, uploaded: true });
+
     }, [api, note]);
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            
-            const result = await operate<NoteObject | undefined>(async () => {
-                const Note = await getNoteStore();
-                return Note.get(id!);
-            });
-            
+
+            const db = new NoteIndexedDB();
+            const result = await db.get(id!);
+
             if (!result) {
                 return api.warning({
                     message: "儲存異常",
@@ -101,14 +99,12 @@ export default () => {
 
     useEffect(() => {
         async function handleBeforeUnload(e: WindowEventMap["beforeunload"]) {
-            const result = await operate<NoteObject | undefined>(async () => {
-                const Note = await getNoteStore();
-                return Note.get(id!);
-            });
+            const db = new NoteIndexedDB();
+            const result = await db.get(id!);
 
-            if(!result) return;
+            if (!result) return;
 
-            if(!result.uploaded){
+            if (!result.uploaded) {
                 handleSaveToServer(username, id!, result.content, true);
                 e.preventDefault();
                 e.returnValue = true;

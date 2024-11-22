@@ -6,9 +6,9 @@ import {
 
 import { SwitchClickEventHandler } from "antd/es/switch";
 import useAPI from "../../util/api";
-import { useCookies } from "react-cookie";
 import { Color } from "antd/es/color-picker";
 import { CaretLeftFill } from "react-bootstrap-icons";
+import useUser from "../../User/SideBar/useUser";
 
 const { Text, Title } = Typography;
 
@@ -54,7 +54,7 @@ const SideBar: React.FC<SideBarProp> = ({ light, dark, onDarkenClick }) => {
     const [darkNeutral, setDarkNeutral] = useState(dark.neutral ? dark.neutral : token.colorBgBase);
     const [api, contextHolder] = message.useMessage();
     const { theme: { add } } = useAPI();
-    const [{ username }] = useCookies(["username"]);
+    const { username } = useUser();
     const [input, setInput] = useState("");
     const [_export, setExport] = useState(false);
 

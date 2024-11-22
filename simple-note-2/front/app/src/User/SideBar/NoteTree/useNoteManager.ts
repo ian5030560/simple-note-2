@@ -1,6 +1,7 @@
 import { TreeDataNode } from "antd";
-import { EditorState, SerializedEditorState } from "lexical";
+import { EditorState } from "lexical";
 import { create } from "zustand";
+import NoteIndexedDB, { NoteObject } from "./store";
 
 export interface NoteDataNode extends TreeDataNode {
     key: string;
@@ -9,12 +10,6 @@ export interface NoteDataNode extends TreeDataNode {
     url?: string;
     parent: string | null;
 }
-
-export type NoteObject = {
-    id: string;
-    content: SerializedEditorState | null;
-    uploaded: boolean;
-};
 
 export function findNode(nodes: NoteDataNode[], key: string): NoteDataNode | undefined {
     if (nodes.length === 0) {
@@ -45,33 +40,6 @@ type NoteManagerAction = {
     save: (key: string, content: EditorState) => Promise<void>;
 }
 
-
-function openSimpleNote2IndexedDB(): Promise<IDBDatabase> {
-    const request = indexedDB.open("simple-note-2-indexeddb", 1);
-
-    return new Promise((resolve, reject) => {
-        request.onupgradeneeded = () => {
-            const db = request.result;
-            db.createObjectStore("Note", { keyPath: "id" });
-        }
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    })
-}
-
-export async function getNoteStore() {
-    const transaction = await openSimpleNote2IndexedDB().then((db) => db.transaction("Note", "readwrite"));
-    return transaction.objectStore("Note");
-}
-
-export async function operate<T>(requestFn: () => Promise<IDBRequest<T>>){
-    const request = await requestFn();
-    return new Promise<T>((resolve, reject) => {
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
-}
-
 export class NoteStorageError extends Error {
     constructor(message: string) {
         super(message);
@@ -88,11 +56,8 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
                 resolve(data.key);
             }
             else {
-                getNoteStore().then(Note => {
-                    const request = Note.add(note);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(new NoteStorageError("Failed to store in IndexedDB"));
-                });
+                const db = new NoteIndexedDB();
+                db.add(note).then(resolve).catch(() => reject(new NoteStorageError("Failed to store in IndexedDB")));
             }
         });
 
@@ -115,12 +80,8 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
                 resolve(true);
             }
             else {
-                getNoteStore().then(Note => {
-                    const request = Note.delete(key);
-                    console.log(result);
-                    request.onsuccess = () => resolve(request.result === undefined);
-                    request.onerror = () => reject(request.error);
-                });
+                const db = new NoteIndexedDB();
+                db.delete(key).then((req) => resolve(req === undefined)).catch(reject);
             }
         });
 
@@ -152,10 +113,8 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
         const node = findNode(get().nodes["one"], key);
         if(!node) throw new NoteStorageError(`Can't find the Node-${key}`);
         else{
-            operate(async () => {
-                const Note = await getNoteStore();
-                return Note.put({content: content.toJSON(), uploaded: false, id: key});
-            });
+            const db = new NoteIndexedDB();
+            db.update({content: content.toJSON(), uploaded: false, id: key});
         }
     }
 }));

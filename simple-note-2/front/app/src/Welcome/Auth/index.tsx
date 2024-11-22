@@ -11,7 +11,7 @@ enum CURRENT {
 const Auth: React.FC = () => {
   const [current, setCurrent] = useState(CURRENT.SIGNIN);
 
-  return <Flex justify="center">
+  return <Flex justify="center" style={{paddingTop: 125}}>
     {current === CURRENT.SIGNIN && <SignIn onChange={() => setCurrent(CURRENT.SIGNUP)}/>}
     {current === CURRENT.SIGNUP && <SignUp onChange={() => setCurrent(CURRENT.SIGNIN)}/>}
   </Flex>

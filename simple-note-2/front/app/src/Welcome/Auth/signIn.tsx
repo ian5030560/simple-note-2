@@ -3,12 +3,12 @@ import { Form, Input, Typography, Flex, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal, ForgetPwdModal } from "./modal";
 import { STATE, validateMessages, AuthProp } from "./constant";
-import { useCookies } from "react-cookie";
 import useAPI from "../../util/api";
+import useUser from "../../User/SideBar/useUser";
 
 const { Title } = Typography;
 
-type SignInSubmisson = {
+type SignInData = {
     username: string;
     password: string;
 }
@@ -18,7 +18,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
-    const [, setCookie] = useCookies(["username"]);
+    const { signIn: userSignIn } = useUser();
     const values = Form.useWatch([], form);
     const { auth: { signIn } } = useAPI();
 
@@ -30,7 +30,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             );
     }, [form, values]);
 
-    const handleFinished = ({ username, password }: SignInSubmisson) => {
+    const handleFinished = ({ username, password }: SignInData) => {
 
         setState(STATE.LOADING);
 
@@ -38,10 +38,10 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             .then((res) => res.status === 200 || res.status === 201)
             .then(async ok => {
                 if (!ok) {
-                    setState(STATE.FAILURE);
+                    throw new Error();
                 }
                 else {
-                    setCookie("username", values["username"]);
+                    userSignIn(username);
                     setState(STATE.SUCCESS);
                 }
             })
@@ -55,14 +55,10 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
                 <Input autoComplete="username" />
             </Form.Item>
-            <Form.Item label="密碼" name="password"
-                rules={[{ required: true, min: 8, max: 30, }]}
-            >
+            <Form.Item label="密碼" name="password" rules={[{ required: true, min: 8, max: 30, }]}>
                 <Input.Password autoComplete="password" />
             </Form.Item>
-            <Form.Item
-                wrapperCol={{ offset: 2 }}
-            >
+            <Form.Item wrapperCol={{ offset: 2 }}>
                 <Flex justify="space-between">
                     <Space>
                         <Button type="primary" htmlType="submit"
@@ -83,7 +79,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 title: "登入成功",
                 subtitle: "點擊確認跳轉至使用頁面",
                 open: state === STATE.SUCCESS,
-                onSuccessClose: async () => {
+                onClose: async () => {
                     setState(() => null);
                     navigate("note");
                 }
@@ -93,7 +89,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                 title: "登入失敗",
                 subtitle: "帳號或密碼錯誤",
                 open: state === STATE.FAILURE,
-                onFailureClose: () => setState(() => null)
+                onClose: () => setState(() => null)
             }}
         />
         <ForgetPwdModal

@@ -1,15 +1,13 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { Flex, Avatar, Typography, theme, Dropdown, notification, Modal } from "antd";
+import { useCallback, useMemo, useState } from "react";
+import { Flex, Avatar, theme, Dropdown } from "antd";
 import { UserOutlined, EllipsisOutlined, SettingOutlined, TeamOutlined } from "@ant-design/icons";
 import NoteTree from "./NoteTree";
-import { useCookies } from "react-cookie";
 import SettingModal from "./setting";
-import { useNavigate } from "react-router-dom";
-import useAPI from "../../util/api";
-import useInfo from "./info";
 import CollaborateModal from "./collaborate";
 import { ItemType } from "antd/es/menu/interface";
 import { BoxArrowRight } from "react-bootstrap-icons";
+import useUser from "./useUser";
+import SignOutModal from "./signOut";
 
 const UserProfile = () => {
     const { token } = theme.useToken();
@@ -24,11 +22,8 @@ const UserProfile = () => {
         return { ...prev };
     }), []);
 
-    const [api, contextHolder] = notification.useNotification();
-    const [{ username }, , removeCookies] = useCookies(["username"]);
-    const navigate = useNavigate();
-    const { auth: { signOut } } = useAPI();
-    const { picture } = useInfo();
+    const { username } = useUser();
+    const { picture } = useUser();
 
     const items = useMemo(() => {
         const arr: ItemType[] = [];
@@ -44,22 +39,6 @@ const UserProfile = () => {
         updateModal(key as keyof typeof state, true);
     }
 
-    const handleSignOutOk = useCallback(() => {
-        updateModal("signOut", false);
-
-        signOut(username)
-            .then((value) => {
-                if (!value) {
-                    api.error({ message: "登出發生錯誤，請重新登出", placement: "top" })
-                }
-                else {
-                    removeCookies("username");
-                    navigate("/");
-                }
-            })
-    }, [api, navigate, removeCookies, signOut, updateModal, username]);
-
-
     return <Flex justify="center" align="center" gap={"middle"}>
         <Avatar size={"large"} shape="square" icon={<UserOutlined />} src={picture} />
         <h1 style={{ color: token.colorText, textOverflow: "ellipsis", fontWeight: "normal" }}>
@@ -68,29 +47,18 @@ const UserProfile = () => {
         <Dropdown menu={{ items, onClick: handleClick }} trigger={["click"]} placement="bottom">
             <EllipsisOutlined style={{ color: token.colorText }} />
         </Dropdown>
-        <Modal
-            open={state.signOut.open} centered title="登出" okText="是" cancelText="否"
-            okButtonProps={{ danger: true, }} cancelButtonProps={{ type: "default" }}
-            onOk={handleSignOutOk} onCancel={() => updateModal("signOut", false)}
-        >
-            <Text>是否確定登出</Text>
-        </Modal>
+        <SignOutModal open={state.signOut.open} onOk={() => updateModal("signOut", false)}
+            onCancel={() => updateModal("signOut", false)}/>
         <SettingModal open={state.setting.open} onOk={() => updateModal("setting", false)}
             onCancel={() => updateModal("setting", false)} />
         <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} username={username} />
-        {contextHolder}
     </Flex>
 }
 
-
-const { Text } = Typography;
-
 const SideBar = () => {
-    const [{ username }] = useCookies(["username"]);
-
     return <Flex vertical style={{ height: "100%", padding: "24px 12px" }}>
         <UserProfile />
-        <NoteTree username={username} />
+        <NoteTree />
     </Flex>
 }
 

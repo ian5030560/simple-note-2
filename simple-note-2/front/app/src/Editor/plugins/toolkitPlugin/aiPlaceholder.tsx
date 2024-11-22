@@ -31,5 +31,5 @@ export default function AIPlaceholder() {
     }, [editor]);
 
     return <ToolKitButton shape="circle" icon={open ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-        onClick={handleClick} className={thinking ? styles.circleWave : undefined} />
+        onClick={handleClick} className={thinking ? styles.circleWave : undefined}/>
 }

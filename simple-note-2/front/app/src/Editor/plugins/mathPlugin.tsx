@@ -1,6 +1,6 @@
 import { $getRoot, $getSelection, $isRangeSelection, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical"
 import { useCallback, useEffect, useState } from "react";
-import { Button, Checkbox, Flex, Form, Input, Space, Typography } from "antd";
+import { Button, Flex, Form, Input, Space, Typography } from "antd";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import MathNode, { $createMathNode } from "../nodes/math";
 import { MathRender } from "../nodes/math/component";
@@ -8,10 +8,10 @@ import { $contains, useValidateNodeClasses } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import Modal from "../ui/modal";
 
-type MathFormData = { inline: boolean, content: string };
+type MathData = { inline: boolean, content: string };
 export default function MathPlugin() {
     const [open, setOpen] = useState(false);
-    const [form] = Form.useForm<MathFormData>();
+    const [form] = Form.useForm<MathData>();
     const [editor] = useLexicalComposerContext();
     const [preview, setPreview] = useState("");
     const [node, setNode] = useState<LexicalNode>();
@@ -33,7 +33,7 @@ export default function MathPlugin() {
         form.resetFields();
     }, [form]);
 
-    const handleFinish = useCallback((values: MathFormData) => {
+    const handleFinish = useCallback((values: MathData) => {
         if (values.content?.trim().length > 0) {
             editor.update(() => {
                 const math = $createMathNode(values.content, values.inline);

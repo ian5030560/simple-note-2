@@ -17,7 +17,6 @@ export default function CollaborateModal(props: CollaborateModalProps) {
     const [api, context] = message.useMessage();
     const { collab } = useAPI();
     const { find, update, add, remove } = useNoteManager();
-    // const { find, update, add, remove } = useNodes();
     const { token } = theme.useToken();
     const [deleteOpen, setDeleteOpen] = useState(false);
     const navigate = useNavigate();
@@ -35,10 +34,10 @@ export default function CollaborateModal(props: CollaborateModalProps) {
 
         collab.add(username, id!, url)
             .then(res => {
-                if (!res.ok) return api.error("發起失敗");
+                if (!res.ok) throw new Error();
                 const node = find(id as string);
                 if (!node) {
-                    api.error("發起失敗");
+                    throw new Error();
                 }
                 else {
                     update(node.key as string, { url: url });
@@ -76,12 +75,12 @@ export default function CollaborateModal(props: CollaborateModalProps) {
 
         collab.delete(username, id!, master).then(res => {
             if (!res.ok) {
-                api.error("取消失敗");
+                throw new Error();
             }
             else {
                 const node = find(id!);
                 if (!node) {
-                    api.success("取消失敗");
+                    throw new Error();
                 }
                 else {
                     update(node.key as string, { url: undefined });
@@ -90,6 +89,8 @@ export default function CollaborateModal(props: CollaborateModalProps) {
                     api.success("取消成功");
                 }
             }
+        }).catch(() => {
+            api.error("取消失敗");
         });
 
         setDeleteOpen(false);

@@ -36,7 +36,6 @@ export default function theme(seed: ThemeSeed): (dark: boolean) => ThemeConfig{
 
 export const defaultTheme = theme(defaultSeed);
 
-
 export interface BulbButtonProp {
     dark?: boolean,
     onClick?: React.MouseEventHandler<HTMLElement>
@@ -49,7 +48,7 @@ type ThemeConfigContextType = {
     dark: boolean;
     setDark: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const ThemeConfigContext = createContext<ThemeConfigContextType>({dark: false, setDark: (value: boolean | ((previous: boolean) => boolean)) => {}});
+const ThemeConfigContext = createContext<ThemeConfigContextType>({dark: false, setDark: () => {}});
 interface ThemeProviderProps extends React.PropsWithChildren{
     dark?: boolean;
     seed: ThemeSeed;
