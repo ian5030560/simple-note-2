@@ -12,15 +12,14 @@ type SignInData = {
     username: string;
     password: string;
 }
-type SignInProp = AuthProp
-const SignIn: React.FC<SignInProp> = ({ onChange }) => {
+export default function SignIn({ onChange }: AuthProp){
     const [form] = Form.useForm();
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
     const { signIn: _signIn } = useUser();
     const values = Form.useWatch([], form);
-    const { auth: { signIn } } = useAPI();
+    const { auth: { signIn }, jwt: { getToken } } = useAPI();
 
     useEffect(() => {
         form.validateFields({ validateOnly: true })
@@ -34,19 +33,19 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
 
         setState(STATE.LOADING);
 
-        signIn(username, password)
-            .then((res) => res.status === 200 || res.status === 201)
-            .then(async ok => {
-                if (!ok) {
-                    throw new Error();
-                }
+        getToken(username, password).then(res => {
+            if (!res.ok) new Error();
+            signIn(username, password).then(async res => {
+                if (!res.ok) throw new Error();
                 else {
-                    _signIn(username);
+                    _signIn(username, await res.json());
                     setState(STATE.SUCCESS);
                 }
-            })
-            .catch(() => setState(STATE.FAILURE));
-    }, [_signIn, signIn]);
+            });
+
+        }).catch(() => setState(STATE.FAILURE));
+
+    }, [_signIn, getToken, signIn]);
 
     return <>
         <Form form={form} size="large" validateMessages={validateMessages}
@@ -97,8 +96,4 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             onCancel={() => setState(() => null)}
         />
     </>
-
 };
-
-
-export default SignIn;

@@ -9,24 +9,25 @@ type Theme = {
 }
 
 type UserState = { 
-    username: string;
+    username?: string;
     picture?: string;
     themes: Theme[];
-};
-type UserAction = {
-    signIn: (username: string) => void;
-    signOut: () => Promise<undefined>;
-    signUp: (token: {access: string, refresh: string}) => void;
 };
 
 export type Token = {access: string, refresh: string};
 
+type UserAction = {
+    signIn: (username: string, token: Token) => void;
+    signOut: () => Promise<undefined>;
+    signUp: (token: {access: string, refresh: string}) => void;
+};
+
 const store = create<UserAction & UserState>(() => ({
-    username: "",
     themes: [],
-    signIn: (username) => {
-        new Cookies().set("username", username);
-        
+    signIn: (username, token) => {
+        const cookies = new Cookies();
+        cookies.set("username", username);
+        cookies.set("token", token);
     },
     signOut: () => {
         const cookies = new Cookies();

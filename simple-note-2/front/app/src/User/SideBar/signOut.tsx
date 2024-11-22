@@ -18,7 +18,7 @@ export default function SignOutModal(props: SignOutModalProps) {
 
     const handleOk = useCallback(() => {
         props.onOk();
-        signOut(username).then((res) => {
+        signOut(username!).then((res) => {
             if (!res) {
                 throw new Error();
             }

@@ -10,12 +10,12 @@ export enum STATE {
 
 export const validateMessages: ValidateMessages = {
     
-    required: "Please enter the ${label}",
+    required: "請輸入 ${label}",
     types: {
-        email: "${label} is not correct",
+        email: "${label} 的格式錯誤",
     },
     number: {
-        range: "${label} must be between ${min} and ${max}",
+        range: "${label} 必須在 ${min} 和 ${max} 之間",
     },
 };
 

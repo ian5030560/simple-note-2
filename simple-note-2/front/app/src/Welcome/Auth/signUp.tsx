@@ -22,8 +22,7 @@ class SignUpError extends Error {
     }
 };
 
-type SignUpProps = AuthProp;
-const SignUp = ({ onChange }: SignUpProps) => {
+export default function SignUp({ onChange }: AuthProp){
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [cause, setCause] = useState("");
@@ -123,5 +122,3 @@ const SignUp = ({ onChange }: SignUpProps) => {
             }} />
     </>
 };
-
-export default SignUp;

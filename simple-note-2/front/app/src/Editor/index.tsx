@@ -89,7 +89,7 @@ export default () => {
             }
 
             if (!result.uploaded) {
-                handleSaveToServer(username, id!, result.content);
+                handleSaveToServer(username!, id!, result.content);
                 console.log("saved");
             }
         }, 2500);
@@ -105,7 +105,7 @@ export default () => {
             if (!result) return;
 
             if (!result.uploaded) {
-                handleSaveToServer(username, id!, result.content, true);
+                handleSaveToServer(username!, id!, result.content, true);
                 e.preventDefault();
                 e.returnValue = true;
             }
@@ -119,7 +119,7 @@ export default () => {
     const insertFile = useCallback((f: File) => {
         const node = find(id!);
 
-        return file.add(username, f, node!.title).then(res => {
+        return file.add(username!, f, node!.title).then(res => {
             if (!res.ok) throw new Error(`${f.name} is not uploaded successfully`);
             return res.text();
         }).catch(() => { throw new Error(`${f.name} is not uploaded successfully`); });
@@ -135,7 +135,7 @@ export default () => {
             throw new Error(`${node.__type} is not supported by deleteFile`);
         }
 
-        file.delete(username, url, id!)
+        file.delete(username!, url, id!)
             .then(res => { if (!res.ok) throw new Error(`Your file: ${url} failed to be deleted`); })
             .catch(() => { throw new Error(`Your file: ${url} failed to be deleted`); });
 

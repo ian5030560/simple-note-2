@@ -14,7 +14,7 @@ const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex"
 const NoteTree = () => {
     const { nodes } = useNoteManager();
     const { username } = useUser();
-    const { add, remove, contextHolder, cancelCollab } = useDirective(username);
+    const { add, remove, contextHolder, cancelCollab } = useDirective(username!);
     const { id } = useParams();
     const one = useMemo(() => nodes["one"], [nodes]);
     const multiple = useMemo(() => nodes["multiple"], [nodes]);
@@ -37,7 +37,7 @@ const NoteTree = () => {
                         const result = await db.get(id!);
 
                         if (!result || result.uploaded) return;
-                        save(username, id!, JSON.stringify(result.content), true).then(res => {
+                        save(username!, id!, JSON.stringify(result.content), true).then(res => {
                             if (!res.ok) return;
 
                             const db = new NoteIndexedDB();
