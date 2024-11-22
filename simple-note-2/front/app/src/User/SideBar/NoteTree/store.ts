@@ -6,13 +6,13 @@ export type NoteObject = {
     uploaded: boolean;
 };
 
-export default class NoteIndexedDB{
+export default class NoteIndexedDB {
 
     dbName = "simple-note-2-indexeddb";
     storeName = "Note";
     private request: Promise<IDBDatabase>;
 
-    constructor(){
+    constructor() {
         const request = indexedDB.open(this.dbName, 1);
 
         this.request = new Promise((resolve, reject) => {
@@ -25,47 +25,37 @@ export default class NoteIndexedDB{
         });
     }
 
-    private async getStore(){
+    private async getStore() {
         return (await this.request).transaction(this.storeName, "readwrite").objectStore(this.storeName);
     }
-    
-    update(note: NoteObject){
-        return new Promise<IDBValidKey>((resolve, reject) => {
-            this.getStore().then(store => {
-                const request = store.put(note);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            })
-        });
+
+    update(note: NoteObject) {
+        return this.promise(store => store.put(note));
     }
 
-    get(id: string){
-        return new Promise<NoteObject | undefined>((resolve, reject) => {
-            this.getStore().then(store => {
-                const request = store.get(id);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            })
-        });
+    get(id: string) {
+        return this.promise(store => store.get(id));
     }
 
-    add(note: NoteObject){
-        return new Promise<IDBValidKey>((resolve, reject) => {
-            this.getStore().then(store => {
-                const request = store.add(note);
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            })
-        });
+    add(note: NoteObject) {
+        return this.promise(store => store.add(note));
     }
 
-    delete(id: string){
-        return new Promise<undefined>((resolve, reject) => {
+    delete(id: string) {
+        return this.promise(store => store.delete(id));
+    }
+
+    deleteAll() {
+        return this.promise(store => store.clear());
+    }
+
+    private promise<T>(callback: (store: IDBObjectStore) => IDBRequest<T>) {
+        return new Promise<T>((resolve, reject) => {
             this.getStore().then(store => {
-                const request = store.delete(id);
+                const request = callback(store);
                 request.onsuccess = () => resolve(request.result);
                 request.onerror = () => reject(request.error);
             })
-        });
+        })
     }
 }

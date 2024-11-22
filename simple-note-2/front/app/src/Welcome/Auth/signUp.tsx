@@ -31,7 +31,7 @@ const SignUp = ({ onChange }: SignUpProps) => {
     const [state, setState] = useState<STATE | null>();
     const values = Form.useWatch([], form);
     const { auth: { signUp }, note, jwt: { register }, theme } = useAPI();
-    const { signUp: userSignUp } = useUser();
+    const { signUp: _signUp } = useUser();
 
     useEffect(() => {
         form.validateFields({ validateOnly: true })
@@ -65,7 +65,7 @@ const SignUp = ({ onChange }: SignUpProps) => {
 
                     if (!result) {
                         setState(STATE.SUCCESS);
-                        userSignUp(tokens);
+                        _signUp(tokens);
                     }
                     else {
                         throw new SignUpError("發生重大錯誤，請重新提交");

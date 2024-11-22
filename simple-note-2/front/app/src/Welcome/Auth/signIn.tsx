@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Form, Input, Typography, Flex, Button, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal, ForgetPwdModal } from "./modal";
@@ -18,7 +18,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
-    const { signIn: userSignIn } = useUser();
+    const { signIn: _signIn } = useUser();
     const values = Form.useWatch([], form);
     const { auth: { signIn } } = useAPI();
 
@@ -30,7 +30,7 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
             );
     }, [form, values]);
 
-    const handleFinished = ({ username, password }: SignInData) => {
+    const handleFinished = useCallback(({ username, password }: SignInData) => {
 
         setState(STATE.LOADING);
 
@@ -41,12 +41,12 @@ const SignIn: React.FC<SignInProp> = ({ onChange }) => {
                     throw new Error();
                 }
                 else {
-                    userSignIn(username);
+                    _signIn(username);
                     setState(STATE.SUCCESS);
                 }
             })
             .catch(() => setState(STATE.FAILURE));
-    };
+    }, [_signIn, signIn]);
 
     return <>
         <Form form={form} size="large" validateMessages={validateMessages}

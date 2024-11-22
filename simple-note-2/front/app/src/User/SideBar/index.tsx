@@ -22,8 +22,7 @@ const UserProfile = () => {
         return { ...prev };
     }), []);
 
-    const { username } = useUser();
-    const { picture } = useUser();
+    const { username, picture } = useUser();
 
     const items = useMemo(() => {
         const arr: ItemType[] = [];

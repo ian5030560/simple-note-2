@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { ThemeSeed } from "../../util/theme";
 import { Cookies } from "react-cookie";
+import NoteIndexedDB from "./NoteTree/store";
 
 type Theme = {
     name: string;
@@ -14,7 +15,7 @@ type UserState = {
 };
 type UserAction = {
     signIn: (username: string) => void;
-    signOut: () => void;
+    signOut: () => Promise<undefined>;
     signUp: (token: {access: string, refresh: string}) => void;
 };
 
@@ -27,7 +28,12 @@ const store = create<UserAction & UserState>(() => ({
         new Cookies().set("username", username);
         
     },
-    signOut: () => {},
+    signOut: () => {
+        const cookies = new Cookies();
+        cookies.remove("username");
+        cookies.remove("token");
+        return new NoteIndexedDB().deleteAll();
+    },
     signUp: (token: Token) => {
         new Cookies().set("token", token);
     },

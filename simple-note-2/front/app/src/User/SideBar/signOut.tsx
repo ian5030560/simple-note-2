@@ -11,7 +11,7 @@ interface SignOutModalProps {
 }
 export default function SignOutModal(props: SignOutModalProps) {
 
-    const { username, signOut: userSignOut } = useUser();
+    const { username, signOut: _signOut } = useUser();
     const [api, contextholder] = notification.useNotification();
     const navigate = useNavigate();
     const { auth: { signOut } } = useAPI();
@@ -23,14 +23,16 @@ export default function SignOutModal(props: SignOutModalProps) {
                 throw new Error();
             }
             else {
-                userSignOut();
-                navigate("/");
+                _signOut().then(res => {
+                    if(res === undefined) return navigate("/");
+                    throw new Error();
+                });
             }
         }).catch(() => {
             api.error({ message: "登出發生錯誤，請重新登出", placement: "top" });
         });
 
-    }, [api, navigate, props, signOut, userSignOut, username]);
+    }, [_signOut, api, navigate, props, signOut, username]);
 
     return <Modal open={props.open} centered title="登出" okText="是" cancelText="否"
         okButtonProps={{ danger: true, }} cancelButtonProps={{ type: "default" }}
