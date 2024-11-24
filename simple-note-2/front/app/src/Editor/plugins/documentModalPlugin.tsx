@@ -8,7 +8,7 @@ import { useValidateNodeClasses } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import { RAISE_ERROR } from "./errorPlugin";
 import UploadModal from "../ui/uploadModal";
-import { uuid } from "../../util/secret";
+import { uuid } from "../../util/uuid";
 import { FilePluginProps } from "../types";
 
 export default function DocumentModal(props: FilePluginProps) {

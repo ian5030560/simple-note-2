@@ -1,12 +1,11 @@
 import { LoaderFunctionArgs } from "react-router-dom";
-import { decodeBase64 } from "./secret";
-import useNoteManager, { NoteDataNode, findNode } from "../User/SideBar/NoteTree/useNoteManager";
-import utilizeAPI from "./api";
+import useNoteManager, { NoteDataNode } from "../User/SideBar/NoteTree/useNoteManager";
+import utilizeAPI, { LoadTreeResult, NoteTreeData, Token } from "./api";
 import NoteIndexedDB from "../User/SideBar/NoteTree/store";
-import useUser, { Token } from "../User/SideBar/useUser";
+import useUser from "../User/SideBar/useUser";
 import { Cookies } from "react-cookie";
 
-type Payload = {exp: number, iat: number};
+type Payload = { exp: number, iat: number };
 export async function validateLoader() {
     const username = new Cookies().get("username");
     if (!username) return false;
@@ -15,108 +14,85 @@ export async function validateLoader() {
     if (!token) return false;
 
     const parsed = JSON.parse(token) as Token;
-    const {access, refresh} = parsed;
-    const {jwt: {refresh: refreshAccess}} = utilizeAPI();
+    const { access, refresh } = parsed;
+    const { jwt: { refresh: refreshAccess } } = utilizeAPI();
 
     const refreshPayload = JSON.parse(refresh) as Payload;
-    if(refreshPayload.exp < refreshPayload.iat) return false;
+    if (refreshPayload.exp < refreshPayload.iat) return false;
 
-    const accessPayload = JSON.parse(decodeBase64(access)) as Payload;
-    if(accessPayload.exp < accessPayload.iat){
-        return await refreshAccess(refresh).then(async res => {
-            if(!res.ok) return false;
-            new Cookies().set("token", await res.json());
+    const accessPayload = JSON.parse(atob(access)) as Payload;
+    if (accessPayload.exp < accessPayload.iat) {
+        return await refreshAccess(refresh).then((data) => {
+            if (!data) return false;
+            new Cookies().set("token", { refresh, access: data.access });
             return true;
         });
     }
-    
+
     useUser.setState({ username });
     return true;
 }
 
-type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, silblingId: string | null };
+function buildNoteDataTree(noteTreeData: NoteTreeData[], parentId: string | null): NoteDataNode[] {
+    const nodes: NoteDataNode[] = [];
+    const filtered: NoteTreeData[] = [];
+    const rest: NoteTreeData[] = [];
+    noteTreeData.forEach(it => {
+        if (it.parentId === parentId) filtered.push(it);
+        else rest.push(it);
+    });
 
-function sortNodes(data: NoteTreeData[]) {
+    const head = filtered.findIndex(it => it.siblingId === null);
+    if (head === -1) return nodes;
 
-    // 分組節點根據 parentId
-    const groups = { "root": [] } as { [key: string]: NoteTreeData[] }
-    for (const node of data) {
-        const parent = node.parentId;
-        if (!parent) {
-            groups["root"].push(node);
-            continue;
-        }
-        if (!groups[parent]) groups[parent] = []
-        groups[parent].push(node);
+    let start = head;
+    while (start >= 0) {
+        const item = filtered[start];
+        nodes.push({
+            key: item.noteId, title: item.noteName,
+            children: buildNoteDataTree(rest, item.noteId), parent: item.parentId
+        });
+        start = filtered.findIndex(it => it.siblingId === item.noteId);
     }
 
-    // 排序分組內的節點根據 siblingId
-    for (const key in groups) {
-        const nodes = groups[key];
-        const sorted: NoteTreeData[] = [];
-
-        let target: string | null = null;
-        let i = 0;
-        while (i < nodes.length) {
-            const node = nodes[i];
-            if (node.silblingId === target) {
-                sorted.push(node);
-                target = node.noteId;
-                i = -1;
-            }
-            i++;
-        }
-        groups[key] = sorted;
-    }
-
-    // 合併排序後的結果
-    let sortedData: NoteTreeData[] = [];
-    for (const key in groups) {
-        sortedData = sortedData.concat(groups[key]);
-    }
-    return sortedData;
+    return nodes;
+}
+export function generateNoteForest(data: NoteTreeData[]) {
+    return buildNoteDataTree(data, null);
 }
 
-
-export type NoteFetchResult = {
-    one: Array<NoteTreeData>;
-    multiple: Array<{ noteId: string, noteName: string, url: string }>;
+function bindURL(nodes: NoteDataNode[], multiple: LoadTreeResult["multiple"], username: string) {
+    for (let node of nodes) {
+        bindURL(node.children, multiple, username);
+        node.url = multiple.find(mul => mul.noteId === (node.key + username))?.url;
+    }
 }
+
 export async function settingLoader() {
 
-    const { note: { loadTree } } = utilizeAPI();
+    const { note: { loadTree }, info, theme } = utilizeAPI();
     const username = new Cookies().get("username");
 
-    const notesError = new Response(undefined, { status: 410 });
+    return Promise.all([
+        theme.getAll(username).then(async (themes) => {
+            const { image, themeId } = await info.get(username);
+            const dark = !!localStorage.getItem("theme-dark");
 
-    return await loadTree(username).then(res => {
-        if (!res.ok) throw notesError;
-        return res.json();
-    }).then((data: NoteFetchResult) => {
-        try {
-            const oneSorted = sortNodes(data["one"]);
-            const oneMapped = oneSorted.map((it) => (
-                {
-                    key: it.noteId, title: it.noteName, children: [],
-                    parentKey: it.parentId, siblingKey: it.silblingId,
-                    url: data["multiple"].find(mul => mul.noteId === it.noteId)?.url
-                }
-            ));
+            useUser.setState({
+                picture: image ?? undefined, dark,
+                themes: themes.map(it => ({
+                    ...it, using: it.id === themeId,
+                }))
+            });
 
-            const ones: NoteDataNode[] = [];
-            for (const node of oneMapped) {
-                let children = ones;
-                if (node.parentKey) children = findNode(ones, node.parentKey)!.children;
-                const index = node.siblingKey ? oneMapped.findIndex(it => it.key === node.siblingKey) + 1 : oneMapped.length;
-                children.splice(index, 0, {
-                    key: node.key, title: node.title,
-                    children: [], url: node.url, parent: node.parentKey
-                });
-            }
+        }),
+        loadTree(username).then(data => {
+            const ones = generateNoteForest(data.one);
+            bindURL(ones, data.multiple, encodeURI(username));
 
-            const multiples: NoteDataNode[] = data["multiple"].map(it => {
+            const multiples: NoteDataNode[] = data.multiple.map(it => {
                 const [id, host] = it.url.split("/");
-                const title = `${decodeBase64(host)}-${it.noteName}`;
+                const title = `${decodeURI(host)}-${it.noteName}`;
                 return {
                     title: title, key: id + host, children: [],
                     url: it.url, parent: null
@@ -128,23 +104,15 @@ export async function settingLoader() {
                 return { ...rest, nodes };
             });
             return ones[0].key;
-        }
-        catch (e) {
-            console.log(e);
-            throw notesError;
-        }
-    }).catch(() => { throw notesError });
+        })
+    ]).then(res => res[1]).catch(() => {
+        throw new Response(undefined, { status: 410 });
+    });
 }
 
 async function getNote(username: string, id: string) {
     const { note: { get } } = utilizeAPI();
-
-    return await get(username, id).then(async res => {
-        if (res.ok) return res.status === 204 ? null : await res.text();
-        throw new Response(undefined, { status: 404 });
-    }).catch(() => {
-        throw new Response(undefined, { status: 404 })
-    })
+    return await get(username, id);
 };
 
 export async function contentLoader({ params }: LoaderFunctionArgs<string | null>, username: string) {
@@ -168,20 +136,21 @@ export async function contentLoader({ params }: LoaderFunctionArgs<string | null
         }
         else {
             return await Promise.all([
-                getNote(username, id!),
-                save(username, id!, JSON.stringify(content)).then(async res => {
-                    if (!res.ok) {
-                        throw new Response(undefined, { status: 405 });
+                getNote(username, id!).catch(() => { throw new Error("404") }),
+                save(username, id!, JSON.stringify(content)).then(ok => {
+                    if (!ok) {
+                        throw new Error();
                     }
                     else {
                         const db = new NoteIndexedDB();
-                        db.update({ id: id!, content, uploaded: true })
-                            .catch(() => { throw new Response(undefined, { status: 405 }) });
+                        db.update({ id: id!, content, uploaded: true });
                     }
-                }).catch(() => {
-                    throw new Response(undefined, { status: 405 });
-                })
-            ]).then((reses) => reses[0]);
+                }).catch(() => { throw new Error("405"); })
+            ]).then((res) => res[0]).catch((e: Error) => {
+                if (Number.isInteger(e.message)) {
+                    throw new Response(undefined, { status: parseInt(e.message) });
+                }
+            })
         }
     }
 }
@@ -191,22 +160,15 @@ export async function collaborateLoader({ params }: LoaderFunctionArgs<boolean>)
     const username = new Cookies().get("username");
 
     const { id, host } = params;
-    const collabErr = new Response(undefined, { status: 403 });
-    const master = decodeBase64(host!);
+    const master = decodeURI(host!);
 
     return await Promise.all([
-        join(username, `${id}/${host}`, master)
-            .then(res => {
-                if (!(res.ok || res.status == 401)) throw collabErr;
-            })
-            .catch(() => {
-                throw collabErr
-            }),
-
-        people(`${id}/${host}`).then(async res => {
-            if (!res.ok) throw collabErr;
-            const { count } = await res.json() as { count: number };
+        join(username, `${id}/${host}`, master).then(ok => { if (!ok) throw new Error(); }),
+        people(`${id}/${host}`).then(async data => {
+            const { count } = data;
             return count === 0;
-        }).catch(() => { throw collabErr })
-    ]).then(reses => reses[1]);
+        })
+    ]).then(reses => reses[1]).catch(() => {
+        throw new Response(undefined, { status: 403 });
+    });
 }

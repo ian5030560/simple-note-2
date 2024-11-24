@@ -8,11 +8,11 @@ import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/Intro";
 import Auth from "./Welcome/Auth";
 import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
-import { decodeBase64 } from "./util/secret";
 import UserLayout from "./User";
-import { DefaultThemeProvider, ThemeSwitchButton } from "./util/theme";
+import { ThemeProvider, ThemeSwitchButton } from "./util/theme";
 import Editor from "./Editor";
 import { Public, Private } from "./util/route";
+import UserComponent from "./User/component";
 
 function editorLoader(args: LoaderFunctionArgs<any>) {
   const { params } = args;
@@ -23,7 +23,7 @@ function editorLoader(args: LoaderFunctionArgs<any>) {
 
   return !collab ? contentLoader(args, username!) : collaborateLoader(args)
     .then(async (only) => {
-      if (only) return await contentLoader(args, decodeBase64(host));
+      if (only) return await contentLoader(args, decodeURI(host));
       return false;
     })
     .catch(() => {
@@ -62,6 +62,7 @@ const router = createBrowserRouter(
       </Route>
       
       <Route path="theme" element={<ThemePage />} />
+      <Route path="user" element={<><UserComponent/><ThemeSwitchButton/></>}/>
     </>
   )
 )
@@ -69,8 +70,8 @@ const router = createBrowserRouter(
 
 export default function App(): React.JSX.Element {
   return <CookiesProvider defaultSetOptions={{ path: "/" }}>
-    <DefaultThemeProvider>
+    <ThemeProvider>
       <RouterProvider router={router} />
-    </DefaultThemeProvider>
+    </ThemeProvider>
   </CookiesProvider>
 }

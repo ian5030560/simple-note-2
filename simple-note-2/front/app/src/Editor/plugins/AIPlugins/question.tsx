@@ -3,7 +3,7 @@ import { LexicalCommand, createCommand } from "lexical";
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Button, Drawer, Flex, Input, Skeleton, theme, Typography } from "antd";
 import { RobotOutlined, SendOutlined, UserOutlined } from "@ant-design/icons";
-import { uuid } from "../../../util/secret";
+import { uuid } from "../../../util/uuid";
 import useGemini from "./useGemini";
 
 interface MessageProps {

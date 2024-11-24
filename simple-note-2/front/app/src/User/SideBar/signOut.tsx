@@ -2,7 +2,6 @@ import { Modal, notification, Typography } from "antd";
 import useUser from "./useUser";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import useAPI from "../../util/api";
 
 interface SignOutModalProps {
     open: boolean;
@@ -11,28 +10,20 @@ interface SignOutModalProps {
 }
 export default function SignOutModal(props: SignOutModalProps) {
 
-    const { username, signOut: _signOut } = useUser();
+    const { signOut: _signOut } = useUser();
     const [api, contextholder] = notification.useNotification();
     const navigate = useNavigate();
-    const { auth: { signOut } } = useAPI();
 
     const handleOk = useCallback(() => {
         props.onOk();
-        signOut(username!).then((res) => {
-            if (!res) {
-                throw new Error();
-            }
-            else {
-                _signOut().then(res => {
-                    if(res === undefined) return navigate("/");
-                    throw new Error();
-                });
-            }
+        _signOut().then(res => {
+            if(res !== undefined) throw new Error();
+            return navigate("/");
         }).catch(() => {
             api.error({ message: "登出發生錯誤，請重新登出", placement: "top" });
         });
 
-    }, [_signOut, api, navigate, props, signOut, username]);
+    }, [_signOut, api, navigate, props]);
 
     return <Modal open={props.open} centered title="登出" okText="是" cancelText="否"
         okButtonProps={{ danger: true, }} cancelButtonProps={{ type: "default" }}

@@ -1,15 +1,26 @@
+import { ThemeProvider } from "../util/theme";
 import UserComponent from "./component";
 import { Navigate, Outlet, useLoaderData, useParams } from "react-router-dom";
-
+import useUser from "./SideBar/useUser";
+import { useMemo } from "react";
 
 export default () => {
     const first = useLoaderData() as string;
     const { id } = useParams();
-    
-    return <UserComponent>
-        {!id && <Navigate to={first} replace/>}
-        <Outlet />
-    </UserComponent>;
+    const {themes} = useUser();
+
+    const seed = useMemo(() => {
+        const current = themes.find(it => it.using);
+        if(!current) return undefined;
+        return current.data;
+    }, [themes]);
+
+    return <ThemeProvider seed={seed}>
+            <UserComponent>
+            {!id && <Navigate to={first} replace/>}
+            <Outlet />
+        </UserComponent>
+    </ThemeProvider>;
 }
 
 // export const Switch = (props: React.PropsWithChildren) => {

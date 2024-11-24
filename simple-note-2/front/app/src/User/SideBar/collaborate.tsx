@@ -3,16 +3,16 @@ import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import useAPI from "../../util/api"
-import { encodeBase64, decodeBase64 } from "../../util/secret"
 import useNoteManager, { NoteDataNode } from "./NoteTree/useNoteManager";
+import useUser from "./useUser"
 
 interface CollaborateModalProps {
     open?: boolean;
     onCancel: () => void;
-    username: string;
 }
 export default function CollaborateModal(props: CollaborateModalProps) {
     const { id, host } = useParams();
+    const { username } = useUser();
     const [url, setUrl] = useState<string>();
     const [api, context] = message.useMessage();
     const { collab } = useAPI();
@@ -28,27 +28,26 @@ export default function CollaborateModal(props: CollaborateModalProps) {
     }, [find, host, id, navigate]);
 
     const requestCollaborate = useCallback(() => {
-        const { username } = props;
-        const host = encodeBase64(username);
+        if (!username) return;
+
+        const host = encodeURI(username);
         const url = `${id}/${host}`;
 
-        collab.add(username, id!, url)
-            .then(res => {
-                if (!res.ok) throw new Error();
-                const node = find(id as string);
-                if (!node) {
-                    throw new Error();
-                }
-                else {
-                    update(node.key as string, { url: url });
-                    add({ key: node.key + host, title: node.title, url: url }, null, "multiple");
-                    navigate(url, { replace: true });
-                    api.success("發起成功");
-                }
-            })
-            .catch(() => api.error("發起失敗"));
+        collab.add(username, id!, url).then(ok => {
+            if (!ok) throw new Error();
+            const node = find(id as string);
+            if (!node) {
+                throw new Error();
+            }
+            else {
+                update(node.key as string, { url: url });
+                add({ key: node.key + host, title: node.title, url: url }, null, "multiple");
+                navigate(url, { replace: true });
+                api.success("發起成功");
+            }
+        }).catch(() => api.error("發起失敗"));
 
-    }, [add, api, collab, find, id, navigate, props, update]);
+    }, [add, api, collab, find, id, navigate, update, username]);
 
     const handleCollab = useCallback(() => {
         if (!url) {
@@ -70,11 +69,12 @@ export default function CollaborateModal(props: CollaborateModalProps) {
     </>, [handleCollab, host, id, url]);
 
     const handleDelete = useCallback(() => {
-        const { username } = props;
-        const master = decodeBase64(host!);
+        if (!username) return;
 
-        collab.delete(username, id!, master).then(res => {
-            if (!res.ok) {
+        const master = decodeURI(host!);
+
+        collab.delete(username, id!, master).then(ok => {
+            if (!ok) {
                 throw new Error();
             }
             else {
@@ -94,7 +94,7 @@ export default function CollaborateModal(props: CollaborateModalProps) {
         });
 
         setDeleteOpen(false);
-    }, [api, collab, find, host, id, navigate, props, remove, update]);
+    }, [api, collab, find, host, id, navigate, remove, update, username]);
 
     return <>
         <Modal open={props.open} footer={footer} title="協作" onCancel={props.onCancel}>

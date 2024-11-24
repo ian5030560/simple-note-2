@@ -51,12 +51,12 @@ type ThemeConfigContextType = {
 const ThemeConfigContext = createContext<ThemeConfigContextType>({dark: false, setDark: () => {}});
 interface ThemeProviderProps extends React.PropsWithChildren{
     dark?: boolean;
-    seed: ThemeSeed;
+    seed?: ThemeSeed;
 }
 export function ThemeProvider(props: ThemeProviderProps){
     const [dark, setDark] = useState(props.dark ?? false);
 
-    return <ConfigProvider theme={theme(props.seed)(dark)}>
+    return <ConfigProvider theme={theme(props.seed ?? defaultSeed)(dark)}>
         <ThemeConfigContext.Provider value={{dark, setDark}}>
             {props.children}
         </ThemeConfigContext.Provider>
@@ -64,13 +64,6 @@ export function ThemeProvider(props: ThemeProviderProps){
 }
 
 export const useThemeConfig = () => useContext(ThemeConfigContext);
-
-type DefaultThemeProviderProps = Omit<ThemeProviderProps, "seed">;
-export function DefaultThemeProvider(props: DefaultThemeProviderProps){
-    return <ThemeProvider dark={props.dark} seed={defaultSeed}>
-        {props.children}
-    </ThemeProvider>
-}
 
 export function ThemeSwitchButton(){
     const {dark, setDark} = useThemeConfig();

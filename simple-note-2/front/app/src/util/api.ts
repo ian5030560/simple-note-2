@@ -1,6 +1,5 @@
 import { Cookies } from "react-cookie";
 import { ThemeSeed } from "./theme";
-import { Token } from "../User/SideBar/useUser";
 
 const BASE_URL = `http://localhost:8000`;
 
@@ -10,7 +9,7 @@ const API = {
     signUp: `${BASE_URL}/register/`,
     signIn: `${BASE_URL}/login/`,
     forgetPassword: `${BASE_URL}/forgetPassword/`,
-    signOut: `${BASE_URL}/logout/`,
+    // signOut: `${BASE_URL}/logout/`,
   },
 
   File: {
@@ -33,7 +32,7 @@ const API = {
 
   Theme: {
     add: `${BASE_URL}/theme/new`,
-    get: `${BASE_URL}/theme/get`,
+    getAll: `${BASE_URL}/theme/get`,
     delete: `${BASE_URL}/theme/delete`
   },
 
@@ -116,87 +115,143 @@ function createFormData(data: Record<string, any>) {
   return formData;
 }
 
-export default function useAPI() {
+function getAccessToken() {
+  return atob(new Cookies().get("token").access);
+}
 
+type UpdateInfoOptions = {
+  image?: string;
+  password?: string;
+  themeId?: string;
+}
+
+export type Token = { access: string, refresh: string };
+
+export type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, siblingId: string | null };
+
+export type LoadTreeResult = {
+  one: Array<NoteTreeData>;
+  multiple: Array<{ noteId: string, noteName: string, url: string }>;
+}
+
+export default function useAPI() {
   return {
     auth: {
-      signIn: (username: string, password: string) => authFn(username, password, undefined, "sign-in"),
-      signUp: (username: string, password: string, email: string) => authFn(username, password, email, "register"),
-      signOut: (username: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Auth.signOut, { ...postSetup(access), body: JSON.stringify({ username }) });
-      },
-      forgetPassword: (username: string, email: string) => fetch(API.Auth.forgetPassword, { ...postSetup, body: JSON.stringify({ username, email }) })
+      signIn: (username: string, password: string) => authFn(username, password, undefined, "sign-in").then(res => res.ok),
+      signUp: (username: string, password: string, email: string) => authFn(username, password, email, "register").then(res => res.status),
+      // signOut: (username: string) => {
+      //   const access = getAccessToken();
+      //   return fetch(API.Auth.signOut, { ...postSetup(access), body: JSON.stringify({ username }) });
+      // },
+      forgetPassword: (username: string, email: string) => fetch(API.Auth.forgetPassword, { ...postSetup, body: JSON.stringify({ username, email }) }).then(res => res.ok)
     },
 
     file: {
-      delete: (username: string, url: string, noteId: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.File.delete, { ...postSetup(access), body: JSON.stringify({ username, url, note_title_id: noteId }) })
+      delete: async (username: string, url: string, noteId: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.File.delete, { ...postSetup(access), body: JSON.stringify({ username, url, note_title_id: noteId }) });
+        return res.ok;
       },
-      add: (username: string, file: File, noteName: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.File.add, {
+      add: async (username: string, file: File, noteName: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.File.add, {
           ...postSetup(access),
           headers: { "user-agent": headers["user-agent"] },
           body: createFormData({ username, filename: file.name, notename: noteName, content: file })
-        })
+        });
+        if (!res.ok) throw new Error();
+        return await res.text();
       },
     },
 
     note: {
-      get: (username: string, noteId: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Note.get, { ...postSetup(access), body: JSON.stringify({ username, noteId }) });
+      get: async (username: string, noteId: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Note.get, { ...postSetup(access), body: JSON.stringify({ username, noteId }) });
+        if (!res.ok) throw new Error();
+        return res.status === 204 ? null : res.text();
       },
-      add: (username: string, noteId: string, notename: string, parentId: string | null, silblingId: string | null) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Note.add, { ...postSetup(access), body: JSON.stringify({ username, noteId, notename, parentId, silblingId }) })
+      add: async (username: string, noteId: string, notename: string, parentId: string | null, silblingId: string | null) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Note.add, { ...postSetup(access), body: JSON.stringify({ username, noteId, notename, parentId, silblingId }) });
+        return res.ok;
       },
-      delete: (username: string, noteId: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Note.delete, { ...postSetup(access), body: JSON.stringify({ username, noteId }) });
+      delete: async (username: string, noteId: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Note.delete, { ...postSetup(access), body: JSON.stringify({ username, noteId }) });
+        return res.ok;
       },
-      save: (username: string, noteId: string, content: string, keepAlive?: boolean) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Note.save, { ...postSetup(access), body: JSON.stringify({ username, noteId, content }), keepalive: keepAlive });
+      save: async (username: string, noteId: string, content: string, keepAlive?: boolean) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Note.save, { ...postSetup(access), body: JSON.stringify({ username, noteId, content }), keepalive: keepAlive });
+        return res.ok;
       },
-      loadTree: (username: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Note.loadTree, { ...postSetup(access), body: JSON.stringify({ username }) });
+      loadTree: async (username: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Note.loadTree, { ...postSetup(access), body: JSON.stringify({ username }) });
+        if (!res.ok) throw new Error();
+        return await res.json() as LoadTreeResult;
       },
     },
 
     collab: {
-      add: (username: string, noteId: string, url: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Collaborate.add, { ...postSetup(access), body: JSON.stringify({ username, noteId, url }) });
+      add: async (username: string, noteId: string, url: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Collaborate.add, { ...postSetup(access), body: JSON.stringify({ username, noteId, url }) });
+        return res.ok;
       },
-      delete: (username: string, noteId: string, masterName: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Collaborate.delete, { ...postSetup(access), body: JSON.stringify({ username, noteId, masterName }) });
+      delete: async (username: string, noteId: string, masterName: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Collaborate.delete, { ...postSetup(access), body: JSON.stringify({ username, noteId, masterName }) });
+        return res.ok;
       },
-      join: (username: string, url: string, masterName: string) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Collaborate.join, { ...postSetup(access), body: JSON.stringify({ username, url, masterName }) })
+      join: async (username: string, url: string, masterName: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Collaborate.join, { ...postSetup(access), body: JSON.stringify({ username, url, masterName }) });
+        return res.ok || res.status === 401;
       },
 
       // 取得房間人數
-      people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({ id: room }), { method: "GET", headers })
+      people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({ id: room }), { method: "GET", headers }).then(async res => {
+        if (!res.ok) throw new Error();
+        return await res.json() as { count: number };
+      })
     },
 
     info: {
-      get: () => { },
-      update: () => { },
+      get: async (username: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Info.get, { ...postSetup(access), body: JSON.stringify({ username }) });
+        if (!res.ok) throw new Error();
+        return await res.json() as { image: string | null; themeId: string; };
+      },
+      update: (username: string, options: UpdateInfoOptions) => {
+        const access = getAccessToken();
+        return fetch(API.Info.update, {
+          ...postSetup(access), body: JSON.stringify({
+            username,
+            data: { image: options.image ?? null, password: options.password ?? null, themeId: options.themeId ?? null }
+          })
+        })
+      },
     },
 
     theme: {
-      add: (username: string, theme: { name: string, data: ThemeSeed }) => {
-        const { access } = new Cookies().get("token");
-        return fetch(API.Theme.add, {...postSetup(access), body: JSON.stringify({ username, theme })})
+      add: async (username: string, theme: { name: string, data: ThemeSeed }) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Theme.add, { ...postSetup(access), body: JSON.stringify({ username, theme }) });
+        return res.ok;
       },
-      get: () => { },
-      delete: () => { }
+      getAll: async (username: string) => {
+        const access = getAccessToken();
+        const res = await fetch(API.Theme.getAll, { ...postSetup(access), body: JSON.stringify({ username }) });
+        if (!res.ok) throw new Error();
+        return await res.json() as { id: string; name: string; data: ThemeSeed; }[];
+      },
+      delete: (username: string, id: string) => {
+        const access = getAccessToken();
+        return fetch(API.Theme.delete, { ...postSetup(access), body: JSON.stringify({ username, themeId: id }) });
+      }
     },
 
     ai: {
@@ -207,14 +262,20 @@ export default function useAPI() {
       register: (username: string, password: string, email: string) => fetch(API.JWT.register, {
         ...postSetup(), headers: jwtHeaders,
         body: JSON.stringify({ username, password, email, password2: password })
+      }).then(async res => {
+        if (!res.ok) throw new Error();
+        return await res.json() as Token;
       }),
       getToken: (username: string, password: string) => fetch(API.JWT.token, {
         ...postSetup(), headers: jwtHeaders,
         body: JSON.stringify({ username, password })
+      }).then(async res => {
+        if (!res.ok) throw new Error();
+        return await res.json() as Token;
       }),
       refresh: (refresh: string) => fetch(API.JWT.refresh, {
         ...postSetup(), headers: jwtHeaders, body: JSON.stringify({ refresh })
-      }),
+      }).then(async res => !res.ok ? null : await res.json() as Omit<Token, "refresh">),
     }
   }
 }

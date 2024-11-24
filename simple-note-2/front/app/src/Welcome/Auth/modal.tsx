@@ -20,15 +20,12 @@ export const ForgetPwdModal = ({ open, onCancel }: ForgetPwdModalProps) => {
     setLoading(true);
 
     const { username, email } = values;
-    forgetPassword(username, email).then((res) => {
-      if (res.status === 200) {
+    forgetPassword(username, email).then(ok => {
+      if (!ok) {
+        throw new Error();
+      } else {
         api.success({
           message: "已傳送密碼至您的email",
-          placement: "top",
-        });
-      } else {
-        api.error({
-          message: "密碼傳送失敗，請重新提交",
           placement: "top",
         });
       }

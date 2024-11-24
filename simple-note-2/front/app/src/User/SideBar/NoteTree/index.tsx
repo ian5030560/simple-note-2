@@ -37,9 +37,8 @@ const NoteTree = () => {
                         const result = await db.get(id!);
 
                         if (!result || result.uploaded) return;
-                        save(username!, id!, JSON.stringify(result.content), true).then(res => {
-                            if (!res.ok) return;
-
+                        save(username!, id!, JSON.stringify(result.content), true).then(ok => {
+                            if (!ok) return;
                             const db = new NoteIndexedDB();
                             db.update({ id: id!, content: result.content, uploaded: true });
                         });

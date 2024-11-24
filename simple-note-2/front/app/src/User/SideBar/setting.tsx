@@ -1,33 +1,24 @@
-import { Modal, Flex, Image, Button, Select, Typography, SelectProps, theme } from "antd"
-import { useCallback, useRef, useState } from "react";
+import { Modal, Flex, Image, Button, Select, Typography, SelectProps, theme, Empty, Skeleton } from "antd"
+import { useCallback, useMemo, useRef, useState } from "react";
 import styles from "./setting.module.css";
-import { SyncOutlined, UploadOutlined } from "@ant-design/icons";
-import { ButtonProps } from "antd";
 import useAPI from "../../util/api";
 import useUser from "./useUser";
+import { Upload as BsUpload } from "react-bootstrap-icons";
+import { SyncOutlined } from "@ant-design/icons";
 
-type UploadProps = Omit<ButtonProps, "type"> & { onUpload: (src: string) => void };
-const Upload = ({ onUpload, ...prop }: UploadProps) => {
-    const [enter, setEnter] = useState(false);
+interface UploadProps { onUpload: (src: string) => void };
+const Upload = ({ onUpload }: UploadProps) => {
     const ref = useRef<HTMLInputElement>(null);
     const { picture } = useUser();
 
     return <>
-        <Flex vertical gap={5} flex={1} justify="center">
-            {
-                picture ?
-                    <>
-                        <Image src={picture} />
-                        <Button type="dashed" icon={<SyncOutlined />} onClick={() => ref.current?.click()}>更換</Button>
-                    </> :
-                    <Button icon={<UploadOutlined />} type={enter ? "primary" : "default"}
-                        style={{ alignSelf: "center", height: 64, width: 64 }}
-                        onMouseEnter={() => setEnter(true)} onMouseLeave={() => setEnter(false)}
-                        onClick={() => ref.current?.click()} {...prop}
-                    />
-            }
-        </Flex>
-
+        {
+            picture ? <Flex vertical gap={3}>
+                <Image src={picture} width={100} height={100} placeholder={<Skeleton.Image />} alt="載入圖片錯誤" />
+                <Button type="dashed" icon={<SyncOutlined />} block onClick={() => ref.current?.click()}>更換</Button>
+            </Flex> : <Empty imageStyle={{ width: 100, height: 100 }} description={<Button icon={<BsUpload />}
+                block type="dashed" onClick={() => ref.current?.click()}>上傳</Button>} />
+        }
         <input aria-label="file" type="file" style={{ display: "none" }} ref={ref}
             onChange={() => {
                 const files = ref.current?.files;
@@ -46,16 +37,10 @@ interface SettingModalProp {
 }
 const SettingModal = (prop: SettingModalProp) => {
     const { info } = useAPI();
-    const { username } = useUser();
-    const { themes } = useUser();
+    const { username, themes } = useUser();
     const { token } = theme.useToken();
-    const update = useRef<{ theme: number, picture: string }>({
-        theme: -1,
-        picture: "",
-    });
 
     const handleOk = useCallback(async () => {
-        const { theme, picture } = update.current;
 
         // info.update({
         //     username: username, image: picture,
@@ -83,49 +68,47 @@ const SettingModal = (prop: SettingModalProp) => {
         prop.onOk();
     }, [prop]);
 
-    const options: SelectProps["options"] = themes?.map((item, index) => ({
-        value: index,
-        label: `${item.name}`,
-        item: item.data,
+    const options: SelectProps["options"] = themes.map(theme => ({
+        label: theme.name, value: theme.id, ...theme.data
     }));
 
-    return <Modal open={prop.open} onCancel={prop.onCancel} centered title="設定"
-        footer={<>
-            <Button onClick={prop.onCancel}>取消</Button>
-            <Button type="primary" onClick={handleOk}>儲存</Button>
-        </>}>
 
-        <Flex gap={10} style={{ width: "100%" }}>
-            <Upload onUpload={(src) => { update.current.picture = src }} />
-            <Flex vertical flex={2}>
-                <Typography.Title level={3} color={token.colorText}
-                    style={{ textAlign: "center", marginBottom: 10, flex: 1 }}>
-                    {username}
-                </Typography.Title>
-                <Flex flex={3}>
-                    <Flex style={{ width: "100%", height: "fit-content" }} align="center" gap={5} flex={0}>
-                        <Typography.Text>主題</Typography.Text>
-                        <Select style={{ flex: 1 }} options={options} variant="filled"
-                            defaultValue={options?.find(opt => opt.item.isUsing)?.value}
-                            optionRender={(prop) => {
-                                return <Flex justify="space-between" key={prop.key}>
-                                    <Typography.Text>{prop.label}</Typography.Text>
-                                    <Flex justify="space-evenly">
-                                        {
-                                            Object.keys(prop.data.item).map((key, index) => {
-                                                return <div key={index} className={styles.color}
-                                                    style={{ backgroundColor: prop.data.item[key] }}
-                                                ></div>
-                                            })
-                                        }
-                                    </Flex>
+    return <Modal open={prop.open} onCancel={prop.onCancel} centered title="設定" footer={<>
+        <Button onClick={prop.onCancel}>取消</Button>
+        <Button type="primary" onClick={handleOk}>儲存</Button>
+    </>}>
+        <Flex vertical gap={10}>
+            <Flex align="center" gap={16}>
+                <Upload onUpload={() => { }} />
+                <Flex vertical gap={8}>
+                    <Typography.Text strong>使用者名稱</Typography.Text>
+                    <Typography.Text type='secondary'>{username}</Typography.Text>
+                </Flex>
+            </Flex>
+
+            <Flex vertical>
+                <Flex vertical>
+                    <Typography.Text strong>主題</Typography.Text>
+                    <Select options={options} variant="filled"
+                        value={themes.find(it => it.using)?.id}
+                        optionRender={(prop) => {
+                            return <Flex justify="space-between" key={prop.key}>
+                                <Typography.Text>{prop.label}</Typography.Text>
+                                <Flex justify="space-evenly">
+                                    {
+                                        Object.keys(prop.data).map((key, index) => {
+                                            return <div key={prop.data[key] + index} className={styles.color}
+                                                style={{ backgroundColor: prop.data[key] }}
+                                            ></div>
+                                        })
+                                    }
                                 </Flex>
-                            }}
-                            onChange={(val) => {
-                                if (!options) return;
-                                update.current.theme = val as number;
-                            }} />
-                    </Flex>
+                            </Flex>
+                        }}
+                        onChange={(val) => {
+                            if (!options) return;
+
+                        }} />
                 </Flex>
             </Flex>
         </Flex>

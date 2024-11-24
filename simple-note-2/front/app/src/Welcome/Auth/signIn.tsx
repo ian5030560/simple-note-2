@@ -12,7 +12,7 @@ type SignInData = {
     username: string;
     password: string;
 }
-export default function SignIn({ onChange }: AuthProp){
+export default function SignIn({ onChange }: AuthProp) {
     const [form] = Form.useForm();
     const [state, setState] = useState<STATE | null>();
     const navigate = useNavigate();
@@ -33,12 +33,13 @@ export default function SignIn({ onChange }: AuthProp){
 
         setState(STATE.LOADING);
 
-        getToken(username, password).then(res => {
-            if (!res.ok) new Error();
-            signIn(username, password).then(async res => {
-                if (!res.ok) throw new Error();
-                else {
-                    _signIn(username, await res.json());
+        getToken(username, password).then(token => {
+            signIn(username, password).then(ok => {
+                if(!ok){
+                    throw new Error();
+                }
+                else{
+                    _signIn(username, token);
                     setState(STATE.SUCCESS);
                 }
             });

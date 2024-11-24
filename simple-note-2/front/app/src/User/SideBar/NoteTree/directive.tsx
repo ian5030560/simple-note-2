@@ -2,7 +2,7 @@ import { Input, message, Modal, Typography } from "antd";
 import { useCallback, useMemo, useState } from "react"
 import useAPI from "../../../util/api";
 import { useNavigate } from "react-router-dom";
-import { decodeBase64, uuid } from "../../../util/secret";
+import { uuid } from "../../../util/uuid";
 import useNoteManager, { NoteDataNode } from "./useNoteManager";
 
 type AddState = {
@@ -21,9 +21,7 @@ type CancelCollabState = DeleteState;
 export default function useDirective(username: string) {
     const [add, setAdd] = useState<AddState>({ open: false, input: "", error: false, node: null });
     const [_delete, setDelete] = useState<DeleteState>({ open: false, node: null });
-    const [cancelCollab, setCancelCollab] = useState<CancelCollabState>({ open: false, node: null });
-    // const { nodes, find, update, add: _add, remove } = useNodes();
-    const { nodes, find, update, add: _add, remove } = useNoteManager();
+    const [cancelCollab, setCancelCollab] = useState<CancelCollabState>({ open: false, node: null });    const { nodes, find, update, add: _add, remove } = useNoteManager();
     const [api, contextHolder] = message.useMessage();
     const navigate = useNavigate();
     const { note, collab } = useAPI();
@@ -40,13 +38,15 @@ export default function useDirective(username: string) {
         note.add(username, key, input, current, previous)
             .then(ok => {
                 if (!ok) {
-                    api.error(`${input} 創建失敗`);
+                    throw new Error();
                 }
                 else {
                     api.success(`${input} 創建成功`);
                     _add({ key, title: input }, current);
                     navigate(key);
                 }
+            }).catch(() => {
+                api.error(`${input} 創建失敗`);
             });
 
         clearAdd();
@@ -73,9 +73,9 @@ export default function useDirective(username: string) {
         if (!node?.title) return;
         const { title } = node;
 
-        note.delete(username, node.key).then(res => {
-            if (!res.ok) {
-                api.error(`${title} 刪除失敗`);
+        note.delete(username, node.key).then(ok => {
+            if (!ok) {
+                throw new Error();
             }
             else {
                 api.success(`${title} 刪除成功`);
@@ -85,8 +85,7 @@ export default function useDirective(username: string) {
                 const prev = children[index]?.key;
                 navigate(prev ? prev : node.parent!, {replace: true});
             }
-        }).catch((e) => {
-            console.log(e);
+        }).catch(() => {
             api.error(`${title} 刪除失敗`);
         });
 
@@ -100,10 +99,10 @@ export default function useDirective(username: string) {
         const { title, url } = node;
         const [id, host] = url.split("/");
 
-        const master = decodeBase64(host);
-        collab.delete(username, id, master).then(res => {
-            if (!res.ok) {
-                api.error(`${title} 取消失敗`);
+        const master = decodeURI(host);
+        collab.delete(username, id, master).then(ok => {
+            if (!ok) {
+                throw new Error();
             }
             else {
                 remove(id + host, "multiple");

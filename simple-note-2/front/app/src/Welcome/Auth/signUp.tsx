@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthModal } from "./modal";
 import { AuthProp, STATE, validateMessages } from "./constant";
 import useAPI from "../../util/api";
-import { uuid } from "../../util/secret";
+import { uuid } from "../../util/uuid";
 import { defaultSeed } from "../../util/theme";
 import useUser from "../../User/SideBar/useUser";
 
@@ -22,7 +22,7 @@ class SignUpError extends Error {
     }
 };
 
-export default function SignUp({ onChange }: AuthProp){
+export default function SignUp({ onChange }: AuthProp) {
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [cause, setCause] = useState("");
@@ -43,36 +43,33 @@ export default function SignUp({ onChange }: AuthProp){
     const handleFinished = ({ username, email, password }: SignUpData) => {
         setState(STATE.LOADING);
 
-        register(username, password, email).then(res => {
-            if (!res.ok) throw new SignUpError("註冊錯誤，請重新輸入");
-            return res.json();
-        }).then(tokens => {
-            signUp(username, password, email).then(async res => {
-                if (!res.ok) {
+        register(username, password, email).then(tokens => {
+            signUp(username, password, email).then(async status => {
+                if (status > 300) {
                     const map: { [key: number]: string } = {
                         401: "username 重複",
                         402: "email 重複",
                         400: "註冊錯誤，請重新輸入",
                     }
-                    throw new SignUpError(map[res.status] ?? "發生重大錯誤，請重新提交");
+                    throw new SignUpError(map[status] ?? "發生重大錯誤");
                 }
                 else {
                     const result = await Promise.all([
                         note.add(username, uuid(), "我的筆記", null, null),
                         theme.add(username, { name: "預設", data: defaultSeed })
-                    ]).then(res => res.findIndex(it => !it.ok) === -1);
+                    ]).then(res => res.findIndex(it => it === false) === -1);
 
                     if (!result) {
-                        setState(STATE.SUCCESS);
-                        _signUp(tokens);
+                        throw new SignUpError("發生重大錯誤");
                     }
                     else {
-                        throw new SignUpError("發生重大錯誤，請重新提交");
+                        setState(STATE.SUCCESS);
+                        _signUp(tokens);
                     }
                 }
             })
         }).catch((e: Error) => {
-            setCause(() => e instanceof SignUpError ? e.message : "發生重大錯誤，請重新提交");
+            setCause(() => e instanceof SignUpError ? e.message : "發生重大錯誤");
             setState(() => STATE.FAILURE);
         });
 

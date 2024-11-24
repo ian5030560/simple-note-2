@@ -50,7 +50,7 @@ const UserProfile = () => {
             onCancel={() => updateModal("signOut", false)}/>
         <SettingModal open={state.setting.open} onOk={() => updateModal("setting", false)}
             onCancel={() => updateModal("setting", false)} />
-        <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} username={username!} />
+        <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} />
     </Flex>
 }
 

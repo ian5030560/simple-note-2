@@ -56,16 +56,17 @@ export default () => {
     const navigate = useNavigate();
 
     const handleSaveToServer = useCallback((username: string, id: string, content: SerializedEditorState | null, keepAlive?: boolean) => {
-        note.save(username, id, JSON.stringify(content), keepAlive).then(res => {
-            if (res.ok) return;
-            api.error({
-                message: "儲存錯誤",
-                description: <Flex vertical gap={5}>
-                    <Typography.Text>無法發送內容至伺服器，請勿繼續更新目前內容，請嘗試手動發送</Typography.Text>
-                    <Button type="primary" block onClick={() => handleSaveToServer(username, id, content, keepAlive)}>重新發送</Button>
-                </Flex>
-            })
-        });
+        note.save(username, id, JSON.stringify(content), keepAlive)
+            .then(ok => { if (!ok) throw new Error(); })
+            .catch(() => {
+                api.error({
+                    message: "儲存錯誤",
+                    description: <Flex vertical gap={5}>
+                        <Typography.Text>無法發送內容至伺服器，請勿繼續更新目前內容，請嘗試手動發送</Typography.Text>
+                        <Button type="primary" block onClick={() => handleSaveToServer(username, id, content, keepAlive)}>重新發送</Button>
+                    </Flex>
+                })
+            });
 
         const db = new NoteIndexedDB();
         db.update({ id, content, uploaded: true });
@@ -119,10 +120,8 @@ export default () => {
     const insertFile = useCallback((f: File) => {
         const node = find(id!);
 
-        return file.add(username!, f, node!.title).then(res => {
-            if (!res.ok) throw new Error(`${f.name} is not uploaded successfully`);
-            return res.text();
-        }).catch(() => { throw new Error(`${f.name} is not uploaded successfully`); });
+        return file.add(username!, f, node!.title)
+            .catch(() => { throw new Error(`${f.name} is not uploaded successfully`); });
 
     }, [file, find, id, username]);
 
@@ -135,8 +134,7 @@ export default () => {
             throw new Error(`${node.__type} is not supported by deleteFile`);
         }
 
-        file.delete(username!, url, id!)
-            .then(res => { if (!res.ok) throw new Error(`Your file: ${url} failed to be deleted`); })
+        file.delete(username!, url, id!).then(ok => { if (!ok) throw new Error(); })
             .catch(() => { throw new Error(`Your file: ${url} failed to be deleted`); });
 
     }, [file, id, username]);
