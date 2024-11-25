@@ -6,7 +6,7 @@ import { AuthProp, STATE, validateMessages } from "./constant";
 import useAPI from "../../util/api";
 import { uuid } from "../../util/uuid";
 import { defaultSeed } from "../../util/theme";
-import useUser from "../../User/SideBar/useUser";
+import useUser from "../../util/useUser";
 
 const { Title } = Typography;
 

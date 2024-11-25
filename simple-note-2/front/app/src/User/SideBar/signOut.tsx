@@ -1,12 +1,11 @@
 import { Modal, notification, Typography } from "antd";
-import useUser from "./useUser";
+import useUser from "../../util/useUser";
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface SignOutModalProps {
     open: boolean;
-    onOk: () => void;
-    onCancel: () => void;
+    onClose: () => void;
 }
 export default function SignOutModal(props: SignOutModalProps) {
 
@@ -15,7 +14,7 @@ export default function SignOutModal(props: SignOutModalProps) {
     const navigate = useNavigate();
 
     const handleOk = useCallback(() => {
-        props.onOk();
+        props.onClose();
         _signOut().then(res => {
             if(res !== undefined) throw new Error();
             return navigate("/");
@@ -27,7 +26,7 @@ export default function SignOutModal(props: SignOutModalProps) {
 
     return <Modal open={props.open} centered title="登出" okText="是" cancelText="否"
         okButtonProps={{ danger: true, }} cancelButtonProps={{ type: "default" }}
-        onOk={handleOk} onCancel={() => props.onCancel}>
+        onOk={handleOk} onCancel={props.onClose}>
         <Typography.Text>是否確定登出</Typography.Text>
         {contextholder}
     </Modal>

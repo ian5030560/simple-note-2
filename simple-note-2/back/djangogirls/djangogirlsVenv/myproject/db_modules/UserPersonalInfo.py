@@ -144,7 +144,7 @@ def check_user_personal_info(usernames):
                 "themeId": user.theme_id,
                 # "username": user.usernames,
                 # "user_email": user.user_email,
-                # "password": user.user_password,
+                "password": user.user_password,
                 # "login_status": user.login_status
             }
         else:

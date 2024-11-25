@@ -1,8 +1,8 @@
 import { LoaderFunctionArgs } from "react-router-dom";
-import useNoteManager, { NoteDataNode } from "../User/SideBar/NoteTree/useNoteManager";
+import useNoteManager, { NoteDataNode } from "./useNoteManager";
 import utilizeAPI, { LoadTreeResult, NoteTreeData, Token } from "./api";
-import NoteIndexedDB from "../User/SideBar/NoteTree/store";
-import useUser from "../User/SideBar/useUser";
+import { NoteIndexedDB, ThemeLocalStorage } from "./store";
+import useUser, { Password } from "./useUser";
 import { Cookies } from "react-cookie";
 
 type Payload = { exp: number, iat: number };
@@ -75,14 +75,19 @@ export async function settingLoader() {
 
     return Promise.all([
         theme.getAll(username).then(async (themes) => {
-            const { image, themeId } = await info.get(username);
-            const dark = !!localStorage.getItem("theme-dark");
+            const { image, themeId, password } = await info.get(username);
+            const store = new ThemeLocalStorage();
+            const dark = store.getUserDark();
 
-            useUser.setState({
-                picture: image ?? undefined, dark,
-                themes: themes.map(it => ({
-                    ...it, using: it.id === themeId,
-                }))
+            useUser.setState(prev => {
+                prev.password.content = password;
+
+                return {
+                    picture: image ?? undefined, dark,
+                    themes: themes.map(it => ({
+                        ...it, using: it.id === themeId,
+                    })), password: prev.password,
+                }
             });
 
         }),

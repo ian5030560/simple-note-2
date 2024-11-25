@@ -4,10 +4,13 @@ import ReactFlow, { Controls, Background, BackgroundVariant, useNodesState } fro
 import User from "../../User/component";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { Node } from "@reactflow/core/dist/esm/types/nodes"
+import Editor from "../../Editor/editor";
 
 const PreviewComponent = ({ data }: { data: ThemeConfig }) => {
     return <ConfigProvider theme={data}>
-        <User style={{ width: 1200, height: 600 }} />;
+        <User style={{ width: 1200, height: 600 }}>
+            <Editor editable={false}/>
+        </User>;
     </ConfigProvider>
 }
 

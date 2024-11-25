@@ -8,7 +8,7 @@ import { SwitchClickEventHandler } from "antd/es/switch";
 import useAPI from "../../util/api";
 import { Color } from "antd/es/color-picker";
 import { CaretLeftFill } from "react-bootstrap-icons";
-import useUser from "../../User/SideBar/useUser";
+import useUser from "../../util/useUser";
 
 const { Text, Title } = Typography;
 

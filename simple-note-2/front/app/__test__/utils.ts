@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import useNoteManager, { NoteDataNode } from "../src/User/SideBar/NoteTree/useNoteManager";
-import NoteIndexedDB, { NoteObject } from "../src/User/SideBar/NoteTree/store";
+import useNoteManager, { NoteDataNode } from "../src/util/useNoteManager";
+import { NoteObject, NoteIndexedDB } from "../src/util/store";
 
 export const uuid = () => randomUUID().split("-").join("-");
 

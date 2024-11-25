@@ -1,7 +1,7 @@
 import { TreeDataNode } from "antd";
 import { EditorState } from "lexical";
 import { create } from "zustand";
-import NoteIndexedDB, { NoteObject } from "./store";
+import { NoteObject, NoteIndexedDB } from "./store";
 
 export interface NoteDataNode extends TreeDataNode {
     key: string;

@@ -5,15 +5,12 @@ import NoteTree from "./NoteTree";
 import SettingModal from "./setting";
 import CollaborateModal from "./collaborate";
 import { ItemType } from "antd/es/menu/interface";
-import { BoxArrowRight } from "react-bootstrap-icons";
-import useUser from "./useUser";
-import SignOutModal from "./signOut";
+import useUser from "../../util/useUser";
 
 const UserProfile = () => {
     const { token } = theme.useToken();
     const [state, setState] = useState({
         setting: { open: false, label: "設定", icon: <SettingOutlined /> },
-        signOut: { open: false, label: "登出", icon: <BoxArrowRight /> },
         collab: { open: false, label: "協作", icon: <TeamOutlined /> },
     });
 
@@ -46,11 +43,8 @@ const UserProfile = () => {
         <Dropdown menu={{ items, onClick: handleClick }} trigger={["click"]} placement="bottom">
             <EllipsisOutlined style={{ color: token.colorText }} />
         </Dropdown>
-        <SignOutModal open={state.signOut.open} onOk={() => updateModal("signOut", false)}
-            onCancel={() => updateModal("signOut", false)}/>
-        <SettingModal open={state.setting.open} onOk={() => updateModal("setting", false)}
-            onCancel={() => updateModal("setting", false)} />
-        <CollaborateModal open={state.collab.open} onCancel={() => updateModal("collab", false)} />
+        <SettingModal open={state.setting.open} onClose={() => updateModal("setting", false)} />
+        <CollaborateModal open={state.collab.open} onClose={() => updateModal("collab", false)} />
     </Flex>
 }
 

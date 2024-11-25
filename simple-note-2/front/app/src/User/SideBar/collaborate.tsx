@@ -3,12 +3,12 @@ import { Button, Input, Modal, message, Typography, theme } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import useAPI from "../../util/api"
-import useNoteManager, { NoteDataNode } from "./NoteTree/useNoteManager";
-import useUser from "./useUser"
+import useNoteManager, { NoteDataNode } from "../../util/useNoteManager";
+import useUser from "../../util/useUser"
 
 interface CollaborateModalProps {
     open?: boolean;
-    onCancel: () => void;
+    onClose: () => void;
 }
 export default function CollaborateModal(props: CollaborateModalProps) {
     const { id, host } = useParams();
@@ -97,7 +97,7 @@ export default function CollaborateModal(props: CollaborateModalProps) {
     }, [api, collab, find, host, id, navigate, remove, update, username]);
 
     return <>
-        <Modal open={props.open} footer={footer} title="協作" onCancel={props.onCancel}>
+        <Modal open={props.open} footer={footer} title="協作" onCancel={props.onClose}>
             <Input disabled value={url} styles={{ input: { color: token.colorText } }} />
         </Modal>
         <Modal open={deleteOpen} title="取消協作" okText="是" cancelText="否" okButtonProps={{ danger: true }}
