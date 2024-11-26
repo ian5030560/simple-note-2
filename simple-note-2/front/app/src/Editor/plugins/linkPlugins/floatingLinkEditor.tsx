@@ -1,13 +1,14 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { InputRef, theme, Flex, Typography, Input, Button } from "antd";
-import { RangeSelection, TextNode, ElementNode, NodeKey, $getSelection, $isRangeSelection } from "lexical";
+import { RangeSelection, TextNode, ElementNode, $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_EDITOR, NodeKey, $getNodeByKey } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
-import Action, { WithAnchorProps } from "../../ui/action";
+import { WithAnchorProps } from "../../ui/action";
 import { $isAtNodeEnd } from "@lexical/selection";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import styles from "./floatingLinkEditor.module.css";
 import { PencilSquare, Trash3Fill } from "react-bootstrap-icons";
+import { autoUpdate, flip, FloatingPortal, offset, useFloating, useTransitionStyles } from "@floating-ui/react";
 
 function getSelectedNode(selection: RangeSelection): TextNode | ElementNode {
     const anchor = selection.anchor;
@@ -34,6 +35,15 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
     const inputRef = useRef<InputRef>(null);
     const [editor] = useLexicalComposerContext();
     const { token } = theme.useToken();
+    const { refs, floatingStyles, context } = useFloating({
+        open: show, placement: "bottom", strategy: "absolute",
+        whileElementsMounted: autoUpdate,
+        middleware: [flip(), offset(8)],
+    });
+
+    const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {
+        initial: { opacity: 0 }, open: { opacity: 1 }, close: { opacity: 0 }
+    });
 
     const clear = useCallback(() => {
         setUrl(undefined);
@@ -41,19 +51,48 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
         setEditable(false);
     }, []);
 
-    const $updateLinkEditor = useCallback(() => {
+    const updatePosition = useCallback(() => {
+        const selection = window.getSelection();
+        if (!selection?.rangeCount) return;
+
+        const range = selection.getRangeAt(0);
+        refs.setReference({
+            getBoundingClientRect: () => range.getBoundingClientRect(),
+            getClientRects: () => range.getClientRects()
+        });
+    }, [refs]);
+
+    const $updateEditor = useCallback(() => {
         const selection = $getSelection();
-        if (!$isRangeSelection(selection)) return clear();
+        if (!$isRangeSelection(selection) || selection.isCollapsed()) return clear();
         const node = getSelectedNode(selection);
         const linkNode = $isLinkNode(node) ? node : $findMatchingParent(node, p => $isLinkNode(p));
         if (!$isLinkNode(linkNode)) return clear();
-        setUrl(linkNode.getURL());
-        setShow(true);
         setNodeKey(linkNode.getKey());
     }, [clear]);
 
+    useEffect(() => {
+        if(!nodeKey) return;
+        const element = editor.getElementByKey(nodeKey);
+        if(!element) return;
+        
+        function handleMouseUp(){
+            updatePosition();
+            setShow(true);
+            setUrl(editor.read(() => {
+                const node = $getNodeByKey(nodeKey!);
+                return $isLinkNode(node) ? node.getURL() : undefined;
+            }));
+        }
+        element.addEventListener("mouseup", handleMouseUp);
 
-    useEffect(() => editor.registerUpdateListener(({ editorState }) => editorState.read($updateLinkEditor)), [$updateLinkEditor, editor]);
+        return () => element.removeEventListener("mouseup", handleMouseUp);
+    }, [editor, nodeKey, updatePosition]);
+
+    useEffect(() => editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+        $updateEditor();
+        return false;
+    }, COMMAND_PRIORITY_EDITOR), [$updateEditor, editor]);
 
     const handleEdit = useCallback((e: React.MouseEvent) => {
         e.preventDefault();
@@ -67,15 +106,20 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
         clear();
     }, [clear, editor]);
 
-    return <Action open={show} offset={8} nodeKey={nodeKey} placement={"bottom"} anchor={props.anchor}>
-        <Flex style={{ backgroundColor: token.colorBgBase }} gap={"small"} className={styles.floatingLinkEditor} align="center">
-            <Typography.Link target="_blank" rel="noopener noreferrer" href={url}
-                style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>
-            <Input type="url" ref={inputRef} style={{ display: editable ? undefined : "none" }} />
-            <Flex gap={"small"}>
-                <Button type={editable ? "primary" : "default"} icon={<PencilSquare size={16} />} onClick={handleEdit} />
-                <Button icon={<Trash3Fill size={16} />} onClick={handleDiscard} />
-            </Flex>
-        </Flex>
-    </Action>
+    return <FloatingPortal root={props.anchor}>
+        {
+            isMounted && <div ref={refs.setFloating} style={floatingStyles}>
+                <Flex style={{ ...transitionStyles, backgroundColor: token.colorBgBase }}
+                    className={styles.floatingLinkEditor} align="center" gap={"small"}>
+                    <Typography.Link target="_blank" rel="noopener noreferrer" href={url}
+                        style={{ display: !editable ? undefined : "none" }}>{url}</Typography.Link>
+                    <Input type="url" ref={inputRef} style={{ display: editable ? undefined : "none" }} />
+                    <Flex gap={"small"}>
+                        <Button type={editable ? "primary" : "default"} icon={<PencilSquare size={16} />} onClick={handleEdit} />
+                        <Button icon={<Trash3Fill size={16} />} onClick={handleDiscard} />
+                    </Flex>
+                </Flex>
+            </div>
+        }
+    </FloatingPortal>
 }
