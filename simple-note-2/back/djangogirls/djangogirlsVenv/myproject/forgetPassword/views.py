@@ -10,7 +10,7 @@ from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
-from rest_framework import status
+from rest_framework import status, permissions
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -35,7 +35,7 @@ class ForgetPasswordView(APIView):
         Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
         JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
     """
-
+    permission_classes = [permissions.AllowAny]
     serializer_class = ForgetPasswordSerializer
 
     def get(self, request, format=None):

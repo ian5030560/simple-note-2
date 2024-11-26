@@ -32,3 +32,10 @@ params = {
 BASE_PREFIX = "http://localhost:8000"
 req = requests.post(f"{BASE_PREFIX}/info/update/", headers=header, json=params)
 print(req.status_code)
+
+params = {
+  'username': 'user1',
+  'theme': {'id': 1, 'name': "dark"}
+}
+req = requests.post(f"{BASE_PREFIX}/info/update/", headers=header, json=params)
+print(req.status_code)

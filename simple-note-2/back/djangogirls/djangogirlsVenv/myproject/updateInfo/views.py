@@ -70,11 +70,11 @@ class UpdateInfoView(APIView):
         
         if("password" in data.keys()):
             password = data["password"]
-            checkPassword = UserPersonalInfo.check_username_password(username, password)
-            if not checkPassword: return Response(status=status.HTTP_400_BAD_REQUEST)
+            info = UserPersonalInfo.check_user_personal_info(username)
+            if(info == False): return Response(status=status.HTTP_400_BAD_REQUEST)
             UserPersonalInfo.update_user_password_by_usernames(username, password)
                 
-        if("theme" in data["theme"]):
+        if("theme" in data.keys()):
             theme = data["theme"]
             isDefaultTheme = not theme["id"] and not theme["name"]
             if(isDefaultTheme):
