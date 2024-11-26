@@ -8,8 +8,7 @@ from .UserNoteData import User_Note_Data, check_id
 from .Common import engine
 
 Base = declarative_base()
-
-
+        
 class User_Collaborate_Note(Base):
     __tablename__ = "User_Collaborate_Note"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -43,6 +42,16 @@ def create_session():
     Session = scoped_session(sessionmaker(bind=engine))
     return Session
 
+
+# def errorBoudary(callback):
+#     session = create_session()
+#     try:
+#         callback(session)
+#     except SQLAlchemyError as e:
+#         session.rollback()
+#         return False
+#     finally:
+#         session.close()
 
 # Insert new data by master_name, note_title_id, guest_name, url
 def insert_newData(note_master_input: str, note_title_id_input: str, note_guest_input: str, url_input: str) -> bool:
@@ -207,8 +216,7 @@ def delete_one_data(note_master_input, note_title_id_input, note_guest_input):
         return str(e)
     finally:
         session.close()
-
-
+        
 # Delete all row by note_master_input,note_title_id_input
 def delete_all_data(note_master_input, note_title_id_input):
     session = create_session()

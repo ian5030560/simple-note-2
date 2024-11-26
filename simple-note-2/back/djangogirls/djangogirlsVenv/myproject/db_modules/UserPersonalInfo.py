@@ -278,7 +278,26 @@ def update_user_password_by_usernames(usernames_input, user_password_input):
         session.rollback()
         return str(e)
     finally:
-        session.close()   
+        session.close()
+
+# 給username更新theme_id
+def update_user_theme_id_by_usernames(usernames_input:str, theme_id_input :str | None) -> bool:
+    session = create_session()
+    stmt = (
+        update(User_Personal_Info)
+        .where(User_Personal_Info.usernames == usernames_input)
+        .values(theme_id=theme_id_input)
+    )
+    try:
+        session.execute(stmt)
+        session.commit()
+        return True
+    except SQLAlchemyError as e:
+        # 回朔防止資料庫損壞
+        session.rollback()
+        return str(e)
+    finally:
+        session.close()           
 
 # 給username更新login_status
 def update_user_login_status_by_usernames(usernames_input, login_status_input):
