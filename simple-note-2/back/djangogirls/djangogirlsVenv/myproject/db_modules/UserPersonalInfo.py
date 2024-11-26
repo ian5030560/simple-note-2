@@ -139,12 +139,12 @@ def check_user_personal_info(usernames):
     try:
         if user:
             return {
-                # "id": user.id,
+                "id": user.id,
                 "image": user.profile_photo,
                 "themeId": user.theme_id,
-                # "username": user.usernames,
-                # "user_email": user.user_email,
-                # "password": user.user_password,
+                "username": user.usernames,
+                "user_email": user.user_email,
+                "password": user.user_password,
                 # "login_status": user.login_status
             }
         else:

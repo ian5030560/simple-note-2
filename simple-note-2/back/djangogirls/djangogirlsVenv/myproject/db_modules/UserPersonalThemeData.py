@@ -62,7 +62,7 @@ def check_theme_name(
 
 
 # Return all theme data by username
-def check_all_theme_data(usernames_input):
+def check_all_theme_data(usernames_input) -> list[tuple[int, str, str, str, str, str, str]]:
     session = create_session()
     try:
         # 查詢 user_id
