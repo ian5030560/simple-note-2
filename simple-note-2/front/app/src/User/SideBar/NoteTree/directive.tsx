@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from "react"
 import useAPI from "../../../util/api";
 import { useNavigate } from "react-router-dom";
 import { uuid } from "../../../util/uuid";
-import useNoteManager, { NoteDataNode } from "./useNoteManager";
+import useNoteManager, { NoteDataNode } from "../../../util/useNoteManager";
 
 type AddState = {
     open: boolean;

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthModal, ForgetPwdModal } from "./modal";
 import { STATE, validateMessages, AuthProp } from "./constant";
 import useAPI from "../../util/api";
-import useUser from "../../User/SideBar/useUser";
+import useUser from "../../util/useUser";
 
 const { Title } = Typography;
 

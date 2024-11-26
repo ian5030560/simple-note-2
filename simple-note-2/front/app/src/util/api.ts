@@ -223,7 +223,7 @@ export default function useAPI() {
         const access = getAccessToken();
         const res = await fetch(API.Info.get, { ...postSetup(access), body: JSON.stringify({ username }) });
         if (!res.ok) throw new Error();
-        return await res.json() as { image: string | null; themeId: string; };
+        return await res.json() as { image: string | null; themeId: string; password: string };
       },
       update: (username: string, options: UpdateInfoOptions) => {
         const access = getAccessToken();
@@ -232,7 +232,7 @@ export default function useAPI() {
             username,
             data: { image: options.image ?? null, password: options.password ?? null, themeId: options.themeId ?? null }
           })
-        })
+        }).then(res => res.ok);
       },
     },
 

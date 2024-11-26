@@ -145,7 +145,6 @@ def check_user_personal_info(usernames):
                 "username": user.usernames,
                 "user_email": user.user_email,
                 "password": user.user_password,
-                # "login_status": user.login_status
             }
         else:
             return False

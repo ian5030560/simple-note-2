@@ -5,7 +5,7 @@ import { Cookies, CookiesProvider } from "react-cookie";
 import "./App.css";
 import { contentLoader, settingLoader, collaborateLoader, validateLoader } from "./util/loader";
 import WelcomeLayout from "./Welcome";
-import Intro from "./Welcome/Intro";
+import Intro from "./Welcome/intro";
 import Auth from "./Welcome/Auth";
 import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
 import UserLayout from "./User";

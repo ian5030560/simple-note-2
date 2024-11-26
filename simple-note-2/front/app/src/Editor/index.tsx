@@ -8,9 +8,9 @@ import useAPI from "../util/api";
 import { $isVideoNode } from "./nodes/video";
 import { $isDocumentNode } from "./nodes/document";
 import { Typography } from "antd";
-import useNoteManager from "../User/SideBar/NoteTree/useNoteManager";
-import NoteIndexedDB from "../User/SideBar/NoteTree/store";
-import useUser from "../User/SideBar/useUser";
+import useNoteManager from "../util/useNoteManager";
+import { NoteIndexedDB } from "../util/store";
+import useUser from "../util/useUser";
 
 function Loading() {
     return <div className={styles.loading}>

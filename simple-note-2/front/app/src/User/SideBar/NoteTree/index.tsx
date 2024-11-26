@@ -2,13 +2,13 @@ import { Tree, Button, Flex, Typography, ButtonProps } from "antd";
 import { useMemo } from "react";
 import useDirective from "./directive";
 import { Link, useParams } from "react-router-dom";
-import useNoteManager from "./useNoteManager";
+import useNoteManager from "../../../util/useNoteManager";
 import useAPI from "../../../util/api";
 import { PlusLg, Trash3, XLg } from "react-bootstrap-icons";
-import NoteIndexedDB from "./store";
-import useUser from "../useUser";
+import { NoteIndexedDB } from "../../../util/store";
+import useUser from "../../../util/useUser";
 
-const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="default" size="small" tabIndex={-1}
+const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="text" size="small" tabIndex={-1}
     onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(e) }} {...props} />;
 
 const NoteTree = () => {

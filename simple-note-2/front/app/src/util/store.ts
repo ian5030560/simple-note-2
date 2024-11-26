@@ -1,4 +1,5 @@
 import { SerializedEditorState } from "lexical";
+import { useCookies } from "react-cookie";
 
 export type NoteObject = {
     id: string;
@@ -6,7 +7,7 @@ export type NoteObject = {
     uploaded: boolean;
 };
 
-export default class NoteIndexedDB {
+export class NoteIndexedDB {
 
     dbName = "simple-note-2-indexeddb";
     storeName = "Note";
@@ -57,5 +58,30 @@ export default class NoteIndexedDB {
                 request.onerror = () => reject(request.error);
             })
         })
+    }
+}
+
+export class ThemeLocalStorage{
+    private user = "theme-user-dark";
+    private official = "theme-official-dark";
+
+    getUserDark(){
+        return !!localStorage.getItem(this.user);
+    }
+
+    setUserDark(value: boolean){
+        localStorage.setItem(this.user, value + "");
+    }
+
+    removeUserDark(){
+        localStorage.removeItem(this.user);
+    }
+
+    getOfficialDark(){
+        return !!localStorage.getItem(this.official);
+    }
+
+    setOfficialDark(value: boolean){
+        localStorage.setItem(this.official, value + "");
     }
 }

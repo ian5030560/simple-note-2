@@ -1,13 +1,6 @@
-.button{
-    min-width: 30px;
-}
-
-.select{
-    flex: 1;
-}
-
 .color{
     border: none;
-    width: 25px;
-    height: 25px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
 }

@@ -1,7 +1,7 @@
 import { Breadcrumb, Typography } from "antd";
 import { useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import useNoteManager from "../../../User/SideBar/NoteTree/useNoteManager";
+import useNoteManager from "../../../util/useNoteManager";
 
 type NoteRelationItem = {
     title: string,

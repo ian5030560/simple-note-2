@@ -73,6 +73,7 @@ interface EditorProps {
     destroyFile?: (node: LexicalNode) => void;
     onSave?: (editorState: EditorState) => void;
     whenRaiseError?: (err: Error, editor: LexicalEditor) => void;
+    editable?: boolean;
 }
 export default function Editor(props: EditorProps) {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -83,7 +84,8 @@ export default function Editor(props: EditorProps) {
     return <div className={styles.editorFrame} style={{ backgroundColor: token.colorBgLayout }}>
         <LexicalComposer
             initialConfig={{
-                namespace: 'Editor', theme: themes, onError: props.whenRaiseError || dummyFn, nodes: nodes,
+                namespace: 'Editor', theme: themes, nodes: nodes, editable: props.editable,
+                onError: props.whenRaiseError || dummyFn,
                 /** @see https://lexical.dev/docs/collaboration/react */
                 editorState: props.collab ? null : !props.test ? !props.initialEditorState ? $createEmptyContent : props.initialEditorState : undefined,
             }}>

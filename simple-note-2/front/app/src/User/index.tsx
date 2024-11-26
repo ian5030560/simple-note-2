@@ -1,13 +1,13 @@
 import { ThemeProvider } from "../util/theme";
 import UserComponent from "./component";
 import { Navigate, Outlet, useLoaderData, useParams } from "react-router-dom";
-import useUser from "./SideBar/useUser";
+import useUser from "../util/useUser";
 import { useMemo } from "react";
 
 export default () => {
     const first = useLoaderData() as string;
     const { id } = useParams();
-    const {themes} = useUser();
+    const {themes, dark} = useUser();
 
     const seed = useMemo(() => {
         const current = themes.find(it => it.using);
@@ -15,7 +15,7 @@ export default () => {
         return current.data;
     }, [themes]);
 
-    return <ThemeProvider seed={seed}>
+    return <ThemeProvider seed={seed} dark={dark}>
             <UserComponent>
             {!id && <Navigate to={first} replace/>}
             <Outlet />

@@ -1,12 +1,12 @@
 import "@testing-library/jest-dom"
 import { renderHook, act } from '@testing-library/react'
-import useNoteManager, { NoteStorageError } from "../src/User/SideBar/NoteTree/useNoteManager";
+import useNoteManager, { NoteStorageError } from "../src/util/useNoteManager";
 import "core-js/stable/structured-clone";
 import "fake-indexeddb";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $createParagraphNode, $createTextNode, $getRoot, LexicalEditor } from "lexical";
 import { prepareNoteManager, uuid } from "./utils";
-import NoteIndexedDB, { NoteObject } from "../src/User/SideBar/NoteTree/store";
+import { NoteObject, NoteIndexedDB } from "../src/util/store";
 
 function createNoteManagerHook() {
     const { result } = renderHook(() => useNoteManager());
