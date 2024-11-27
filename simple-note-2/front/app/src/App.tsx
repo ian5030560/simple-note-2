@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Outlet, Route, RouterProvider, ShouldRevalidateFunctionArgs } from "react-router-dom";
 import ThemePage from "./ThemeEdit";
 import { Cookies, CookiesProvider } from "react-cookie";
@@ -36,7 +36,7 @@ function shouldRevalidateFn({ currentParams: { id: oid }, nextParams: { id: nid 
   return oid !== nid;
 }
 
-const PlayGroundLayout = () => <><Outlet/><ThemeSwitchButton/></>;
+const PlayGroundLayout = () => <Suspense><Outlet/><ThemeSwitchButton/></Suspense>;
 
 const router = createBrowserRouter(
   createRoutesFromElements(

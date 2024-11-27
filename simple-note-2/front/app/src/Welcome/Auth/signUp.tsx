@@ -29,7 +29,7 @@ export default function SignUp({ onChange }: AuthProp) {
     const [submittable, setSubmittable] = useState<boolean>(false);
     const [state, setState] = useState<STATE | null>();
     const values = Form.useWatch([], form);
-    const { auth: { signUp }, note, jwt: { register }, theme } = useAPI();
+    const { auth: { signUp }, note, jwt: { register } } = useAPI();
     const { signUp: _signUp } = useUser();
 
     useEffect(() => {
@@ -54,11 +54,7 @@ export default function SignUp({ onChange }: AuthProp) {
                     throw new SignUpError(map[status] ?? "發生重大錯誤");
                 }
                 else {
-                    const result = await Promise.all([
-                        note.add(username, uuid(), "我的筆記", null, null),
-                        theme.add(username, { name: "預設", data: defaultSeed })
-                    ]).then(res => res.findIndex(it => it === false) === -1);
-
+                    const result = note.add(username, uuid(), "我的筆記", null, null);
                     if (!result) {
                         throw new SignUpError("發生重大錯誤");
                     }

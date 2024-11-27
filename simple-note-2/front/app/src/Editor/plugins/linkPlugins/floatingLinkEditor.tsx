@@ -1,7 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { InputRef, theme, Flex, Typography, Input, Button } from "antd";
 import { RangeSelection, TextNode, ElementNode, $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_EDITOR, NodeKey, $getNodeByKey } from "lexical";
-import { $findMatchingParent } from "@lexical/utils";
+import { $findMatchingParent, mergeRegister } from "@lexical/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { WithAnchorProps } from "../../ui/action";
 import { $isAtNodeEnd } from "@lexical/selection";
@@ -89,10 +89,13 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
         return () => element.removeEventListener("mouseup", handleMouseUp);
     }, [editor, nodeKey, updatePosition]);
 
-    useEffect(() => editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
-        $updateEditor();
-        return false;
-    }, COMMAND_PRIORITY_EDITOR), [$updateEditor, editor]);
+    useEffect(() => mergeRegister(
+        editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
+            $updateEditor();
+            return false;
+        }, COMMAND_PRIORITY_EDITOR),
+        editor.registerUpdateListener(() => editor.read($updateEditor))
+    ), [$updateEditor, editor]);
 
     const handleEdit = useCallback((e: React.MouseEvent) => {
         e.preventDefault();

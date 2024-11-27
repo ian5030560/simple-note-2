@@ -1,0 +1,40 @@
+.navMenu{
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+    align-items: end;
+}
+
+.navItem, .navButton{
+    padding: 0.5em 1em;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    transition: all 250ms ease-in-out;
+    position: relative;
+    flex: 1;
+    text-align: center;
+    --navItem-underline-background-color: black;
+}
+
+.navItem::before{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    content: " ";
+    transition: background-color 250ms ease-in-out;
+}
+
+.navItem:hover::before, .navItemSelected::before{
+    width: 100%;
+    background-color: var(--navItem-underline-background-color);
+}
+
+.navText{
+    font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
