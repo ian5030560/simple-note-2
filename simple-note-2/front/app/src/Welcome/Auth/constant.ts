@@ -14,8 +14,8 @@ export const validateMessages: ValidateMessages = {
     types: {
         email: "${label} 的格式錯誤",
     },
-    number: {
-        range: "${label} 必須在 ${min} 和 ${max} 之間",
+    string: {
+        range: "${label} 必須在 ${min} 和 ${max} 字元之間",
     },
 };
 

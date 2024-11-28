@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Flex, Form, Input, Typography, Button, Space } from "antd";
+import React, { useState, useEffect, useCallback } from "react";
+import { Flex, Form, Input, Typography, Button } from "antd";
 import { useNavigate } from "react-router-dom";
 import { AuthModal } from "./modal";
 import { AuthProp, STATE, validateMessages } from "./constant";
 import useAPI from "../../util/api";
 import { uuid } from "../../util/uuid";
-import { defaultSeed } from "../../util/theme";
 import useUser from "../../util/useUser";
+import { Rule } from "antd/es/form";
 
 const { Title } = Typography;
 
@@ -28,6 +28,7 @@ export default function SignUp({ onChange }: AuthProp) {
     const [cause, setCause] = useState("");
     const [submittable, setSubmittable] = useState<boolean>(false);
     const [state, setState] = useState<STATE | null>();
+    const [confirm, setConfirm] = useState(false);
     const values = Form.useWatch([], form);
     const { auth: { signUp }, note, jwt: { register } } = useAPI();
     const { signUp: _signUp } = useUser();
@@ -71,29 +72,43 @@ export default function SignUp({ onChange }: AuthProp) {
 
     };
 
+    const disabledConfirmRule: Rule = useCallback(() => ({
+        validator: async (_: any, value: string) => Promise.resolve(setConfirm(value.length !== 0))
+    }), []);
+
+    const matchRule: Rule = useCallback(({ getFieldValue }) => ({
+        validator: (_: any, value: string) => {
+            if (!value || getFieldValue("password") === value) return Promise.resolve();
+            return Promise.reject(new Error("未符合密碼"));
+        }
+    }), []);
+
     return <>
-        <Form form={form} size="large" validateMessages={validateMessages}
-            labelWrap style={{ width: "40%" }} autoComplete="on" onFinish={handleFinished}>
-            <Title>註冊</Title>
+        <Form form={form} size="large" validateMessages={validateMessages} onFinish={handleFinished}
+            labelWrap autoComplete="on" style={{ padding: "8px 16px" }}>
+            <Title style={{ textAlign: "center" }}>註冊</Title>
             <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
-                <Input />
+                <Input placeholder="輸入你的帳號" />
             </Form.Item>
             <Form.Item label="信箱" name="email" rules={[{ type: "email", required: true }]}>
-                <Input type="email" />
+                <Input type="email" placeholder="輸入你的信箱" />
             </Form.Item>
-            <Form.Item label="密碼" name="password" rules={[{ required: true, min: 8, max: 30, }]}>
-                <Input.Password />
+            <Form.Item label="密碼" name="password" rules={[{ required: true, min: 8, max: 30, type: "string" }, disabledConfirmRule]}>
+                <Input.Password placeholder="輸入你的密碼" autoComplete="password"/>
             </Form.Item>
-            <Form.Item wrapperCol={{ offset: 2 }}>
-                <Flex justify="space-between">
-                    <Space>
-                        <Button type="primary" htmlType="submit" disabled={!submittable}
-                            loading={state === STATE.SUCCESS}>提交</Button>
-                        <Button type="primary" htmlType="reset">清除</Button>
-                    </Space>
-                    <Space>
-                        <Button type="link" onClick={() => onChange?.()}>登入</Button>
-                    </Space>
+            <Form.Item label="確認密碼" name="confirm" dependencies={["password"]} rules={[{ required: true }, matchRule]}>
+                <Input.Password disabled={!confirm} autoComplete="confirm" placeholder="確認你的密碼" />
+            </Form.Item>
+            <Form.Item>
+                <Flex gap={"middle"}>
+                    <Button type="primary" block htmlType="submit" disabled={!submittable}
+                        loading={state === STATE.SUCCESS}>提交</Button>
+                    <Button type="primary" block htmlType="reset">清除</Button>
+                </Flex>
+            </Form.Item>
+            <Form.Item noStyle>
+                <Flex justify="end">
+                    <Button type="link" onClick={onChange}>登入</Button>
                 </Flex>
             </Form.Item>
         </Form>

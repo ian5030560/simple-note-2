@@ -3,31 +3,34 @@ import { Outlet } from "react-router-dom";
 import { ThemeSwitchButton } from "../util/theme";
 import Note from "../../public/notesbook.png";
 import NavigateMenu from "./navigateMenu";
+import styles from "./index.module.css";
 
-const { useBreakpoint } = Grid;
 
 const NoteImage: React.FC = () => <Image src={Note} alt="" width={64} height={64} preview={false} />
 
 const Brand = () => {
-    const { lg } = useBreakpoint();
-
-    return <Flex justify={lg ? "center" : "start"} align="center" gap="small">
+    return <Flex align="center" gap="small">
         <NoteImage />
         <Typography.Title level={2} ellipsis>Simple-Note-2</Typography.Title>
     </Flex>
 }
 
+const Container = (props: React.PropsWithChildren) => <Flex justify="center">
+    <div className={styles.container}>{props.children}</div>
+</Flex>;
+
 export default function WelcomeLayout() {
     const { token } = theme.useToken();
-    const { xxl } = useBreakpoint();
 
-    return <Flex vertical style={{ height: "100%" }}>
-        <Row align={"middle"} style={{ backgroundColor: token.colorBgBase, padding: "2em 1em" }}>
-            <Col xs={20} sm={12}><Brand /></Col>
-            <Col xs={4} sm={12}>
-                <Flex justify={xxl ? "center" : "end"}><NavigateMenu /></Flex>
-            </Col>
-        </Row>
+    return <Flex vertical style={{ height: "100%", backgroundColor: token.colorBgBase }}>
+        <Container>
+            <Row align={"middle"} justify="center">
+                <Col sm={20} md={12}><Brand /></Col>
+                <Col sm={4} md={12}>
+                    <Flex justify={"end"}><NavigateMenu /></Flex>
+                </Col>
+            </Row>
+        </Container>
         <div style={{ backgroundColor: token.colorBgBase, flexGrow: 1 }}>
             <Outlet />
         </div>

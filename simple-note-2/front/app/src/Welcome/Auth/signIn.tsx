@@ -35,10 +35,10 @@ export default function SignIn({ onChange }: AuthProp) {
 
         getToken(username, password).then(token => {
             signIn(username, password).then(ok => {
-                if(!ok){
+                if (!ok) {
                     throw new Error();
                 }
-                else{
+                else {
                     _signIn(username, token);
                     setState(STATE.SUCCESS);
                 }
@@ -49,28 +49,28 @@ export default function SignIn({ onChange }: AuthProp) {
     }, [_signIn, getToken, signIn]);
 
     return <>
-        <Form form={form} size="large" validateMessages={validateMessages}
-            labelWrap style={{ width: "40%" }} autoComplete="on" onFinish={handleFinished}>
-            <Title>登入</Title>
+        <Form form={form} size="large" validateMessages={validateMessages} labelWrap autoComplete="on"
+            onFinish={handleFinished} style={{ padding: "8px 16px" }}>
+            <Title style={{ textAlign: "center" }}>登入</Title>
             <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
-                <Input autoComplete="username" />
+                <Input autoComplete="username" placeholder="輸入你的帳號"/>
             </Form.Item>
             <Form.Item label="密碼" name="password" rules={[{ required: true, min: 8, max: 30, }]}>
-                <Input.Password autoComplete="password" />
+                <Input.Password autoComplete="password" placeholder="輸入你的密碼"/>
             </Form.Item>
-            <Form.Item wrapperCol={{ offset: 2 }}>
-                <Flex justify="space-between">
-                    <Space>
-                        <Button type="primary" htmlType="submit"
-                            disabled={!submittable} loading={state === STATE.SUCCESS}>
-                            提交
-                        </Button>
-                        <Button type="primary" htmlType="reset">清除</Button>
-                    </Space>
-                    <Space>
-                        <Button type="link" onClick={() => onChange?.()}>註冊</Button>
-                        <Button type="link" onClick={() => setState(STATE.FORGET)}>忘記密碼</Button>
-                    </Space>
+            <Form.Item>
+                <Flex gap={"middle"}>
+                    <Button type="primary" htmlType="submit" block
+                        disabled={!submittable} loading={state === STATE.SUCCESS}>
+                        提交
+                    </Button>
+                    <Button type="primary" htmlType="reset" block>清除</Button>
+                </Flex>
+            </Form.Item>
+            <Form.Item noStyle>
+                <Flex justify="end">
+                    <Button type="link" onClick={onChange}>註冊</Button>
+                    <Button type="link" onClick={() => setState(STATE.FORGET)}>忘記密碼</Button>
                 </Flex>
             </Form.Item>
         </Form>

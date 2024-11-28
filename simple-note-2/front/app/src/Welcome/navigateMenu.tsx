@@ -5,7 +5,7 @@ import { HouseDoorFill, List, PeopleFill, PersonCircle, PersonFill, PersonSquare
 import { FormOutlined, GithubOutlined } from "@ant-design/icons";
 import React, { forwardRef, useEffect, useRef } from "react";
 
-const NavigateWrapper = (props: React.PropsWithChildren) => {
+const Navigate = (props: React.PropsWithChildren) => {
     return <nav className={styles.navMenu}>{props.children}</nav>;
 }
 
@@ -63,7 +63,7 @@ const dropDownItemStyle: React.CSSProperties = {
 }
 export default function NavigateMenu() {
     const { pathname } = useLocation();
-    const { xl, lg, md, sm } = useBreakpoint();
+    const { xl, lg, md } = useBreakpoint();
 
     const members: MenuProps["items"] = [
         {
@@ -93,14 +93,14 @@ export default function NavigateMenu() {
             label: <Link to="/">
                 <Content label="介紹" icon={<HouseDoorFill />} />
             </Link>,
-            hidden: !sm,
+            hidden: !md,
         },
         {
             key: "team",
             label: <Dropdown menu={{ items: members }} trigger={["click"]} placement="bottom">
                 <Content label="團隊" icon={<PeopleFill />} />
             </Dropdown>,
-            hidden: !sm,
+            hidden: !md,
         },
         {
             key: "github",
@@ -125,13 +125,14 @@ export default function NavigateMenu() {
         }
     ]
 
-    return <NavigateWrapper>
+    return <Navigate>
         {
             items.filter(it => it.hidden === false)
                 .map(it => <NavigateItem key={it.key} active={it.active}>
                     {it.label}
                 </NavigateItem>)
         }
-        {!xl && <NavigateMenuButton items={items.filter(it => it.hidden)} />}
-    </NavigateWrapper>
+        {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
+        {!xl && <NavigateMenuButton items={items.map(({active, ...rest}) => rest).filter(it => it.hidden)} />}
+    </Navigate>
 }

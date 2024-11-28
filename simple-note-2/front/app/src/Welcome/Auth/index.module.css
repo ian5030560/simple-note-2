@@ -1,0 +1,18 @@
+.authContainer{
+    width: 400px;
+    height: fit-content;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    margin: 128px 8px 8px 8px;
+}
+
+@media (max-width: 400px) {
+    .authContainer{
+        width: 100%;
+    }
+}
+
+@media (max-height: 800px) {
+    .authContainer{
+        margin: auto;
+    }
+}

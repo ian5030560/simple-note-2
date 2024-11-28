@@ -45,13 +45,15 @@ function horizontalFlip(canvas: HTMLCanvasElement) {
 }
 
 export const OPEN_IMAGE_TO_TEXT_MODAL: LexicalCommand<void> = createCommand();
+const worker = createWorker(codes, Tesseract.OEM.DEFAULT);
+
 export default function ImageToTextPlugin() {
   const [editor] = useLexicalComposerContext();
   const [open, setOpen] = useState(false);
   const camRef = useRef<Webcam>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
-  const worker = useRef<Tesseract.Worker>();
+  // const worker = useRef<Tesseract.Worker>();
   const [loading, setLoading] = useState(false);
   const [node, setNode] = useState<LexicalNode>();
 
@@ -63,13 +65,13 @@ export default function ImageToTextPlugin() {
     return false;
   }, COMMAND_PRIORITY_CRITICAL), [editor]);
 
-  useEffect(() => {
-    if (worker.current) return;
-    async function work() {
-      worker.current = await createWorker(codes, Tesseract.OEM.DEFAULT);
-    }
-    work();
-  }, []);
+  // useEffect(() => {
+  //   if (worker.current) return;
+  //   async function work() {
+  //     worker.current = await createWorker(codes, Tesseract.OEM.DEFAULT);
+  //   }
+  //   work();
+  // }, []);
 
   useEffect(() => {
     if (!camRef.current) return;
@@ -111,8 +113,12 @@ export default function ImageToTextPlugin() {
     })
   }, [editor, node]);
 
+  const recognize = useCallback(async (url: string) => {
+    const instance = await worker;
+    return await instance.recognize(url);
+  }, []);
+
   const prcoessImage = useCallback((src: string) => {
-    if (!worker.current) return;
     setLoading(true);
     document.body.style.pointerEvents = "none";
     const img = new Image();
@@ -126,7 +132,7 @@ export default function ImageToTextPlugin() {
       grayscale(imageData);
       context.putImageData(imageData, 0, 0);
       const url = canvas.toDataURL();
-      const { data: { text } } = await worker.current!.recognize(url);
+      const { data: { text } } = await recognize(url);
       document.body.style.removeProperty("pointer-events");
       setLoading(false);
       insertText(text);
@@ -135,7 +141,7 @@ export default function ImageToTextPlugin() {
 
     img.src = src;
 
-  }, [insertText]);
+  }, [insertText, recognize]);
 
   const handleClick = useCallback(async () => {
     const canvas = camRef.current?.getCanvas();

@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import '../../../node_modules/reactflow/dist/style.css';
+import "reactflow/dist/style.css";
 import ReactFlow, { Controls, Background, BackgroundVariant, useNodesState } from "reactflow";
-import User from "../../User/component";
 import { ConfigProvider, ThemeConfig } from "antd";
 import { Node } from "@reactflow/core/dist/esm/types/nodes"
-import Editor from "../../Editor/editor";
+import Editor from "../Editor/editor";
+import User from "../User/component";
 
 const PreviewComponent = ({ data }: { data: ThemeConfig }) => {
     return <ConfigProvider theme={data}>
@@ -29,7 +29,7 @@ const nodeTypes = {
     preview: PreviewComponent,
 }
 
-const Preview = ({ theme }: { theme: ThemeConfig }) => {
+export default function Preview({ theme }: { theme: ThemeConfig }){
 
     const [nodes, setNodes, onNodeChange] = useNodesState(initNodes);
 
@@ -49,5 +49,3 @@ const Preview = ({ theme }: { theme: ThemeConfig }) => {
         <Background variant={BackgroundVariant.Dots} size={3} />
     </ReactFlow>
 }
-
-export default Preview
