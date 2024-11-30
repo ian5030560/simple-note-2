@@ -1,4 +1,4 @@
-import { Flex, theme, Image, Typography, Row, Col, Grid } from "antd";
+import { Flex, theme, Image, Typography, Row, Col } from "antd";
 import { Outlet } from "react-router-dom";
 import { ThemeSwitchButton } from "../util/theme";
 import Note from "../../public/notesbook.png";
@@ -22,9 +22,9 @@ const Container = (props: React.PropsWithChildren) => <Flex justify="center">
 export default function WelcomeLayout() {
     const { token } = theme.useToken();
 
-    return <Flex vertical style={{ height: "100%", backgroundColor: token.colorBgBase }}>
+    return <Flex vertical style={{ minHeight: "100%", backgroundColor: token.colorBgBase, padding: "0px 8px" }}>
         <Container>
-            <Row align={"middle"} justify="center">
+            <Row align="middle" justify="space-between">
                 <Col sm={20} md={12}><Brand /></Col>
                 <Col sm={4} md={12}>
                     <Flex justify={"end"}><NavigateMenu /></Flex>

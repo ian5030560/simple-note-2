@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import SideBar, { ExportValues } from "./SideBar";
+import SideBar, { ExportValues } from "./sideBar";
 import { Row, Col, theme, notification, Grid, Flex } from "antd";
 import Preview from "./preview";
 import { defaultSeed, ThemeSwitchButton } from "../util/theme";
@@ -60,10 +60,6 @@ const Index = () => {
     const { md } = useBreakpoint();
     const [tabKey, setTabKey] = useState<"edit" | "preview">("edit");
 
-    const handleColor = (color: string, setColor: React.Dispatch<React.SetStateAction<string>>) => {
-        setColor(() => color);
-    }
-
     const handleExport = useCallback((name: string, values: ExportValues) => {
         if (!username) return;
         add(username, {
@@ -106,6 +102,7 @@ const Index = () => {
         algorithm: darken ? theme.darkAlgorithm : theme.defaultAlgorithm,
     }} />, [darkNeutral, darkPrimary, darken, lightNeutral, lightPrimary]);
 
+
     return <Flex vertical style={{ minHeight: "100%", backgroundColor: token.colorBgBase }}>
         {
             !md && <Tab>
@@ -118,14 +115,14 @@ const Index = () => {
                     light={{
                         primary: lightPrimary,
                         neutral: lightNeutral,
-                        onPrimaryChange: (color) => handleColor(color, setLightPrimary),
-                        onNeutralChange: (color) => handleColor(color, setLightNeutral)
+                        onPrimaryChange: (color) => setLightPrimary(color),
+                        onNeutralChange: (color) => setLightNeutral(color)
                     }}
                     dark={{
                         primary: darkPrimary,
                         neutral: darkNeutral,
-                        onPrimaryChange: (color) => handleColor(color, setDarkPrimary),
-                        onNeutralChange: (color) => handleColor(color, setDarkNeutral)
+                        onPrimaryChange: (color) => setDarkPrimary(color),
+                        onNeutralChange: (color) => setDarkNeutral(color)
                     }}
                     onDarken={() => setDarken(prev => !prev)}
                     onExport={handleExport}

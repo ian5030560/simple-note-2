@@ -3,7 +3,7 @@ import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Outl
 import ThemePage from "./ThemeEdit";
 import { Cookies, CookiesProvider } from "react-cookie";
 import "./App.css";
-import { contentLoader, settingLoader, collaborateLoader, validateLoader } from "./util/loader";
+import { contentLoader, settingLoader, collaborateLoader, validateLoader } from "./loader";
 import WelcomeLayout from "./Welcome";
 import Intro from "./Welcome/intro";
 import Auth from "./Welcome/Auth";
@@ -11,8 +11,9 @@ import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
 import UserLayout from "./User";
 import { ThemeProvider, ThemeSwitchButton } from "./util/theme";
 import Editor from "./Editor";
-import { Public, Private } from "./util/route";
+import { Public, Private } from "./route";
 import UserComponent from "./User/component";
+import withPageTitle from "./util/withPageTitle";
 
 function editorLoader(args: LoaderFunctionArgs<any>) {
   const { params } = args;
@@ -36,7 +37,7 @@ function shouldRevalidateFn({ currentParams: { id: oid }, nextParams: { id: nid 
   return oid !== nid;
 }
 
-const PlayGroundLayout = () => <Suspense><Outlet/><ThemeSwitchButton/></Suspense>;
+const PlayGroundLayout = withPageTitle(() => <Suspense><Outlet/><ThemeSwitchButton/></Suspense>, "playground");
 
 const router = createBrowserRouter(
   createRoutesFromElements(

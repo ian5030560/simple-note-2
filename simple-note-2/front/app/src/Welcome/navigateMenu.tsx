@@ -1,4 +1,4 @@
-import { Button, Dropdown, Flex, Grid, MenuProps, theme } from "antd";
+import { Dropdown, Flex, Grid, MenuProps, theme } from "antd";
 import styles from "./navigateMenu.module.css";
 import { Link, useLocation } from "react-router-dom";
 import { HouseDoorFill, List, PeopleFill, PersonCircle, PersonFill, PersonSquare } from "react-bootstrap-icons";
@@ -36,10 +36,11 @@ interface NavigateMenuButtonProps {
     items?: MenuProps["items"];
 }
 const NavigateMenuButton = (props: NavigateMenuButtonProps) => {
+    const { token } = theme.useToken();
 
-    return <div className={styles.navButton}>
+    return <div>
         <Dropdown menu={{ items: props.items }} trigger={["click"]} placement="bottom">
-            <Button type="primary" icon={<List size={18} />} size="large" />
+            <button type="button" style={{color: token.colorText}} className={styles.navMenuButton}><List size={18} /></button>
         </Dropdown>
     </div>
 }
@@ -105,7 +106,7 @@ export default function NavigateMenu() {
         {
             key: "github",
             label: <Link to="https://github.com/ian5030560/simple-note-2" target="_blank" rel="noreferrer">
-                <Content label="GIthub" icon={<GithubOutlined />} />
+                <Content label="GitHub" icon={<GithubOutlined />} />
             </Link>,
             hidden: !md,
         },
@@ -133,6 +134,6 @@ export default function NavigateMenu() {
                 </NavigateItem>)
         }
         {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
-        {!xl && <NavigateMenuButton items={items.map(({active, ...rest}) => rest).filter(it => it.hidden)} />}
+        {!xl && <NavigateMenuButton items={items.map(({ active, ...rest }) => rest).filter(it => it.hidden)} />}
     </Navigate>
 }

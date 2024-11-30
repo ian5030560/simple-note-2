@@ -25,7 +25,7 @@ export const ForgetPwdModal = ({ open, onCancel }: ForgetPwdModalProps) => {
         throw new Error();
       } else {
         api.success({
-          message: "已傳送密碼至您的email",
+          message: "已傳送密碼至您的信箱",
           placement: "top",
         });
       }
@@ -49,7 +49,7 @@ export const ForgetPwdModal = ({ open, onCancel }: ForgetPwdModalProps) => {
             { type: "email", message: "輸入的信箱不正確" },
           ]}
         >
-          <Input type="email" name="email" placeholder="輸入你的email" />
+          <Input type="email" name="email" placeholder="輸入你的信箱" />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" style={{ minWidth: "100%" }} loading={loading}>

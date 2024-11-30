@@ -45,7 +45,7 @@ export default function DraggablePlugin(props: DraggablePluginProps) {
     const handleMouseMove = useCallback((e: MouseEvent) => {
         const { clientX, clientY } = e;
         if (!anchor || !scroller || !inside(clientX, clientX, scroller) || !editor.isEditable()) return;
-
+        
         const key = getBlockFromPoint(editor, clientX, clientY, scroller);
         if (!key) return;
 

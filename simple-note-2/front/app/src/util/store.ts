@@ -1,5 +1,4 @@
 import { SerializedEditorState } from "lexical";
-import { useCookies } from "react-cookie";
 
 export type NoteObject = {
     id: string;

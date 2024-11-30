@@ -12,7 +12,7 @@ export type ThemeSeed = {
 
 export const defaultSeed: ThemeSeed = {
     colorLightPrimary: "#8696A7",
-    colorLightNeutral: "#FFFCEC",
+    colorLightNeutral: "#FFFFFF",
     colorDarkPrimary: "#8696A7",
     colorDarkNeutral: "#3C3C3C",
 }

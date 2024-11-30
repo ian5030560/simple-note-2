@@ -51,36 +51,6 @@ const API = {
   }
 }
 
-// type APIMap = {
-//   [API.registerOrLogin]: { id: `sign-in` | `register`, username: string, password: string, email?: string },
-//   [API.forgetPassword]: { username: string, email: string },
-//   [API.signOut]: { username: string },
-//   [API.deleteFile]: { username: string, url: string, note_title_id: string },
-//   [API.getInfo]: { username: string },
-//   [API.updateInfo]: { username: string, image: string, data: any },
-//   [API.getNote]: { username: string, noteId: string },
-//   [API.addNote]: { username: string, noteId: string, notename: string, parentId: string | null, silbling_id: string | null },
-//   [API.deleteNote]: { username: string, noteId: string },
-//   [API.saveNote]: { username: string, noteId: string, content: any },
-// [API.addTheme]: {
-//   username: string,
-//   theme: {
-//     name: string,
-//     data: {
-//       colorLightPrimary: string,
-//       colorLightNeutral: string,
-//       colorDarkPrimary: string,
-//       colorDarkNeutral: string
-//     }
-//   }
-// },
-//   [API.loadNoteTree]: { username: string },
-//   [API.addCollaborate]: { username: string, noteId: string, url: string },
-//   [API.deleteCollaborate]: { username: string, noteId: string, masterName: string },
-//   [API.joinCollaborate]: { username: string, url: string },
-//   [API.getNumber]: { room: string },
-// }
-
 const headers = {
   "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
   "content-type": "application/json",
@@ -259,9 +229,9 @@ export default function useAPI() {
     },
 
     jwt: {
-      register: (username: string, password: string, email: string) => fetch(API.JWT.register, {
+      register: () => fetch(API.JWT.register, {
         ...postSetup(), headers: jwtHeaders,
-        body: JSON.stringify({ username, password, email, password2: password })
+        body: JSON.stringify({ username: "user1", email: "user1@gmail.com", password: "testuser", password2: "testuser" })
       }).then(async res => {
         if (!res.ok) throw new Error();
         return await res.json() as Token;

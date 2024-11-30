@@ -44,7 +44,7 @@ export default function SignUp({ onChange }: AuthProp) {
     const handleFinished = ({ username, email, password }: SignUpData) => {
         setState(STATE.LOADING);
 
-        register(username, password, email).then(tokens => {
+        register().then(tokens => {
             signUp(username, password, email).then(async status => {
                 if (status > 300) {
                     const map: { [key: number]: string } = {

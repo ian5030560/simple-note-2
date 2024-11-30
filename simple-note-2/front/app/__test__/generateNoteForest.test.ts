@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom"
 import "core-js/stable/structured-clone";
-import { generateNoteForest } from "../src/util/loader";
+import { generateNoteForest } from "../src/loader";
 
 type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, siblingId: string | null };
 

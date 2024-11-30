@@ -8,7 +8,7 @@ import { $isAtNodeEnd } from "@lexical/selection";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import styles from "./floatingLinkEditor.module.css";
 import { PencilSquare, Trash3Fill } from "react-bootstrap-icons";
-import { autoUpdate, flip, FloatingPortal, offset, useFloating, useTransitionStyles } from "@floating-ui/react";
+import { autoUpdate, flip, FloatingPortal, inline, offset, shift, useDismiss, useFloating, useInteractions, useTransitionStyles } from "@floating-ui/react";
 
 function getSelectedNode(selection: RangeSelection): TextNode | ElementNode {
     const anchor = selection.anchor;
@@ -38,29 +38,21 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
     const { refs, floatingStyles, context } = useFloating({
         open: show, placement: "bottom", strategy: "absolute",
         whileElementsMounted: autoUpdate,
-        middleware: [flip(), offset(8)],
+        middleware: [flip(), offset(8), inline(), shift()],
     });
 
     const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {
         initial: { opacity: 0 }, open: { opacity: 1 }, close: { opacity: 0 }
     });
 
+    const dismiss = useDismiss(context);
+    const { getFloatingProps } = useInteractions([dismiss]);
+
     const clear = useCallback(() => {
         setUrl(undefined);
         setShow(false);
         setEditable(false);
     }, []);
-
-    const updatePosition = useCallback(() => {
-        const selection = window.getSelection();
-        if (!selection?.rangeCount) return;
-
-        const range = selection.getRangeAt(0);
-        refs.setReference({
-            getBoundingClientRect: () => range.getBoundingClientRect(),
-            getClientRects: () => range.getClientRects()
-        });
-    }, [refs]);
 
     const $updateEditor = useCallback(() => {
         const selection = $getSelection();
@@ -72,12 +64,19 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
     }, [clear]);
 
     useEffect(() => {
-        if(!nodeKey) return;
+        if (!nodeKey) return;
         const element = editor.getElementByKey(nodeKey);
-        if(!element) return;
-        
-        function handleMouseUp(){
-            updatePosition();
+        if (!element) return;
+
+        function handleMouseUp() {
+            const selection = window.getSelection();
+            if (!selection?.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            refs.setReference({
+                getBoundingClientRect: () => range.getBoundingClientRect(),
+                getClientRects: () => range.getClientRects()
+            });
             setShow(true);
             setUrl(editor.read(() => {
                 const node = $getNodeByKey(nodeKey!);
@@ -87,7 +86,7 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
         element.addEventListener("mouseup", handleMouseUp);
 
         return () => element.removeEventListener("mouseup", handleMouseUp);
-    }, [editor, nodeKey, updatePosition]);
+    }, [editor, nodeKey, refs]);
 
     useEffect(() => mergeRegister(
         editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
@@ -111,7 +110,7 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
 
     return <FloatingPortal root={props.anchor}>
         {
-            isMounted && <div ref={refs.setFloating} style={floatingStyles}>
+            isMounted && <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
                 <Flex style={{ ...transitionStyles, backgroundColor: token.colorBgBase }}
                     className={styles.floatingLinkEditor} align="center" gap={"small"}>
                     <Typography.Link target="_blank" rel="noopener noreferrer" href={url}

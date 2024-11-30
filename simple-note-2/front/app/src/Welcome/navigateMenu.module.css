@@ -5,7 +5,7 @@
     align-items: end;
 }
 
-.navItem, .navButton{
+.navItem{
     padding: 0.5em 1em;
     cursor: pointer;
     -webkit-user-select: none;
@@ -37,4 +37,16 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+
+.navMenuButton{
+    display: inline-flex;
+    place-content: center;
+    padding: 8px;
+    border-radius: 8px;
+    outline: none;
+    border: none;
+    background-color: inherit;
+    cursor: pointer;
 }
