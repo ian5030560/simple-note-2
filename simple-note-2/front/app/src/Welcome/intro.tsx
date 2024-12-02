@@ -2,6 +2,7 @@ import { Flex, Grid, Typography } from "antd";
 import styles from "./index.module.css";
 import VideoFile from "../resource/mai_desktop_video.mp4";
 import { useMemo } from "react";
+import withPageTitle from "../util/pageTitle";
 
 interface IntroItemProps {
     title: string;
@@ -34,7 +35,7 @@ const IntroItem = (props: IntroItemProps) => {
 }
 
 type IntroItemData = { key: React.Key } & IntroItemProps;
-export default function Intro() {
+export default withPageTitle(function Intro() {
     const items: IntroItemData[] = [
         { key: "edit-note", title: "筆記編輯", description: "使用我們的筆記工具，呈現多樣貌的內容，盡情揮灑並記錄你的想法，編輯出你的專屬筆記", src: VideoFile },
         { key: "ai-support", title: "AI輔助", description: "我們有AI可以提供預測文字，並且讓詢問你想知道的資訊，來幫助你更快更方便寫出你要的筆記", src: VideoFile },
@@ -44,4 +45,4 @@ export default function Intro() {
     return <Flex vertical align="center">
         {items.map(({ key, ...item }) => <IntroItem key={key} {...item} />)}
     </Flex>;
-};
+}, "介紹");

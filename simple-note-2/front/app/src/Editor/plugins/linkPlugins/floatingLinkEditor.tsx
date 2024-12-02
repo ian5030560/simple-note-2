@@ -1,7 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { InputRef, theme, Flex, Typography, Input, Button } from "antd";
-import { RangeSelection, TextNode, ElementNode, $getSelection, $isRangeSelection, SELECTION_CHANGE_COMMAND, COMMAND_PRIORITY_EDITOR, NodeKey, $getNodeByKey } from "lexical";
-import { $findMatchingParent, mergeRegister } from "@lexical/utils";
+import { RangeSelection, TextNode, ElementNode, $getSelection, $isRangeSelection } from "lexical";
+import { $findMatchingParent } from "@lexical/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { WithAnchorProps } from "../../ui/action";
 import { $isAtNodeEnd } from "@lexical/selection";
@@ -30,7 +30,6 @@ type FloatingEditorLinkPluginProps = WithAnchorProps;
 export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPluginProps) {
     const [url, setUrl] = useState<string>();
     const [show, setShow] = useState(false);
-    const [nodeKey, setNodeKey] = useState<NodeKey>();
     const [editable, setEditable] = useState(false);
     const inputRef = useRef<InputRef>(null);
     const [editor] = useLexicalComposerContext();
@@ -54,47 +53,45 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
         setEditable(false);
     }, []);
 
-    const $updateEditor = useCallback(() => {
-        const selection = $getSelection();
-        if (!$isRangeSelection(selection) || selection.isCollapsed()) return clear();
-        const node = getSelectedNode(selection);
-        const linkNode = $isLinkNode(node) ? node : $findMatchingParent(node, p => $isLinkNode(p));
-        if (!$isLinkNode(linkNode)) return clear();
-        setNodeKey(linkNode.getKey());
-    }, [clear]);
-
     useEffect(() => {
-        if (!nodeKey) return;
-        const element = editor.getElementByKey(nodeKey);
-        if (!element) return;
+        function handleMouseUp(e: MouseEvent) {
+            if(refs.floating.current?.contains(e.target as Element | null)) return;
 
-        function handleMouseUp() {
-            const selection = window.getSelection();
-            if (!selection?.rangeCount) return;
-
-            const range = selection.getRangeAt(0);
-            refs.setReference({
-                getBoundingClientRect: () => range.getBoundingClientRect(),
-                getClientRects: () => range.getClientRects()
-            });
-            setShow(true);
-            setUrl(editor.read(() => {
-                const node = $getNodeByKey(nodeKey!);
-                return $isLinkNode(node) ? node.getURL() : undefined;
-            }));
+            setTimeout(() => {
+                editor.read(() => {
+                    const selection = $getSelection();
+                    if (!$isRangeSelection(selection) || selection.isCollapsed()) return clear();
+                    const node = getSelectedNode(selection);
+                    const linkNode = $isLinkNode(node) ? node : $findMatchingParent(node, p => $isLinkNode(p));
+                    if (!$isLinkNode(linkNode)) return clear();
+                    const nativeSelection = window.getSelection();
+                    if (!nativeSelection?.rangeCount) return clear();
+            
+                    setShow(true);
+                    setUrl(linkNode.getURL());
+                    const range = nativeSelection.getRangeAt(0);
+                    refs.setReference({
+                        getBoundingClientRect: () => range.getBoundingClientRect(),
+                        getClientRects: () => range.getClientRects()
+                    });
+                });
+            }, 1);
         }
-        element.addEventListener("mouseup", handleMouseUp);
 
-        return () => element.removeEventListener("mouseup", handleMouseUp);
-    }, [editor, nodeKey, refs]);
+        function handleMouseDown(e: MouseEvent){
+            if(refs.floating.current?.contains(e.target as Element | null)) return;
+            const isCollapsed = editor.read(() => !!$getSelection()?.isCollapsed());
+            if(isCollapsed) clear();
+        }
 
-    useEffect(() => mergeRegister(
-        editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
-            $updateEditor();
-            return false;
-        }, COMMAND_PRIORITY_EDITOR),
-        editor.registerUpdateListener(() => editor.read($updateEditor))
-    ), [$updateEditor, editor]);
+        window.addEventListener("mousedown", handleMouseDown);
+        window.addEventListener("mouseup", handleMouseUp);
+
+        return () => {
+            window.removeEventListener("mousedown", handleMouseDown);
+            window.removeEventListener("mouseup", handleMouseUp);
+        }
+    }, [clear, editor, refs]);
 
     const handleEdit = useCallback((e: React.MouseEvent) => {
         e.preventDefault();

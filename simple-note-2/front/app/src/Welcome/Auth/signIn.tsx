@@ -5,6 +5,8 @@ import { AuthModal, ForgetPwdModal } from "./modal";
 import { STATE, validateMessages, AuthProp } from "./constant";
 import useAPI from "../../util/api";
 import useUser from "../../util/useUser";
+import withPageTitle from "../../util/pageTitle";
+import { Cookies } from "react-cookie";
 
 const { Title } = Typography;
 
@@ -12,9 +14,9 @@ type SignInData = {
     username: string;
     password: string;
 }
-export default function SignIn({ onChange }: AuthProp) {
+export default withPageTitle(function SignIn({ onChange }: AuthProp) {
     const [form] = Form.useForm();
-    const [state, setState] = useState<STATE | null>();
+    const [state, setState] = useState<STATE>();
     const navigate = useNavigate();
     const [submittable, setSubmittable] = useState(false);
     const { signIn: _signIn } = useUser();
@@ -33,18 +35,21 @@ export default function SignIn({ onChange }: AuthProp) {
 
         setState(STATE.LOADING);
 
-        getToken(username, password).then(token => {
+        getToken().then(token => {
+            new Cookies().set("token", token);
             signIn(username, password).then(ok => {
                 if (!ok) {
                     throw new Error();
                 }
                 else {
-                    _signIn(username, token);
+                    _signIn(username);
                     setState(STATE.SUCCESS);
                 }
             });
-
-        }).catch(() => setState(STATE.FAILURE));
+        }).catch(() => {
+            new Cookies().remove("token", {path: "/"});
+            setState(STATE.FAILURE);
+        });
 
     }, [_signIn, getToken, signIn]);
 
@@ -61,7 +66,7 @@ export default function SignIn({ onChange }: AuthProp) {
             <Form.Item>
                 <Flex gap={"middle"}>
                     <Button type="primary" htmlType="submit" block
-                        disabled={!submittable} loading={state === STATE.SUCCESS}>
+                        disabled={!submittable} loading={state === STATE.LOADING}>
                         提交
                     </Button>
                     <Button type="primary" htmlType="reset" block>清除</Button>
@@ -80,8 +85,8 @@ export default function SignIn({ onChange }: AuthProp) {
                 subtitle: "點擊確認跳轉至使用頁面",
                 open: state === STATE.SUCCESS,
                 onClose: async () => {
-                    setState(() => null);
-                    navigate("note");
+                    setState(undefined);
+                    navigate("/note");
                 }
             }}
 
@@ -89,12 +94,12 @@ export default function SignIn({ onChange }: AuthProp) {
                 title: "登入失敗",
                 subtitle: "帳號或密碼錯誤",
                 open: state === STATE.FAILURE,
-                onClose: () => setState(() => null)
+                onClose: () => setState(undefined)
             }}
         />
         <ForgetPwdModal
             open={state === STATE.FORGET}
-            onCancel={() => setState(() => null)}
+            onCancel={() => setState(undefined)}
         />
     </>
-};
+}, "登入");

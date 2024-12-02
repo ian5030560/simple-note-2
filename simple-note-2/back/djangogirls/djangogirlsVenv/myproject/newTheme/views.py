@@ -47,13 +47,13 @@ class NewThemeView(APIView):
             theme = data.get("theme")  # 主題資訊
             themeName = theme.get("name") #主題名稱
             themeData = theme.get("data") #主題內容
-            colorLightPrimary = themeData.get("colorLightPrimarya")
+            colorLightPrimary = themeData.get("colorLightPrimary")
             colorLightNeutral = themeData.get("colorLightNeutral")
             colorDarkPrimary = themeData.get("colorDarkPrimary")
             colorDarkNeutral = themeData.get("colorDarkNeutral")
 
             addTheme = UserPersonalThemeData.insert_themeData_by_usernames(
-                username, theme, colorLightPrimary, colorLightNeutral, colorDarkPrimary, colorDarkNeutral
+                username, themeName, colorLightPrimary, colorLightNeutral, colorDarkPrimary, colorDarkNeutral
             )
             if addTheme:  # 新增主題成功(資料庫條件)
                 return Response(status=status.HTTP_200_OK)

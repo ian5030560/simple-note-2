@@ -58,29 +58,32 @@ const SettingModal = (prop: SettingModalProp) => {
     const { info, theme } = useAPI();
     const { username, themes, applyTheme, deleteTheme, password } = useUser();
     const [loading, setLoading] = useState(false);
-    const [notifyAPI, notifyContextHolder] = notification.useNotification({ placement: "top" });
+    const [notifyAPI, notifyContextHolder] = notification.useNotification({ placement: "topRight" });
     const [changePassword, setChangePassword] = useState(false);
     const [signOut, setSignOut] = useState(false);
 
     const handleDelete = useCallback((value: string, name: string) => {
         if (!username) return;
 
-        theme.delete(username, value).then(ok => {
+        const [, id] = value.split("-");
+        theme.delete(username, id).then(ok => {
             if (!ok) throw new Error();
             notifyAPI.success({ message: "刪除成功", description: `主題 ${name} 刪除成功` });
-            deleteTheme(value);
+            deleteTheme(id);
         }).catch(() => {
             notifyAPI.error({ message: "刪除失敗", description: `主題 ${name} 刪除失敗` });
         });
     }, [deleteTheme, notifyAPI, theme, username]);
 
     const optionRender: SelectProps["optionRender"] = (props) => {
-
         const { label, value, ...rest } = props.data;
-        return <Flex justify="space-between" align="center" flex={1} key={props.key}>
-            <Flex gap={8} flex={1} style={{ flexGrow: 1 }}>
-                <Typography.Text ellipsis style={{ flex: 1 }}>{props.label}</Typography.Text>
-                <Flex style={{ flex: 1 }} gap={4}>
+
+        const [, id] = (value as string).split("-");
+
+        return <Flex justify="space-between" align="center" gap={8} key={props.key}>
+            <Flex gap={8} style={{ flexGrow: 1 }}>
+                <Typography.Text ellipsis>{props.label}</Typography.Text>
+                <Flex gap={4}>
                     {
                         Object.keys(rest).map((key, index) => <div key={props.data[key] + index} className={styles.color}
                             style={{ backgroundColor: props.data[key] }} />)
@@ -88,7 +91,7 @@ const SettingModal = (prop: SettingModalProp) => {
                 </Flex>
             </Flex>
             {
-                value !== DEFAULT_THEME_ID && <Button type="text" icon={<XLg />} onClick={(e) => {
+                id !== DEFAULT_THEME_ID && <Button type="text" icon={<XLg />} onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(value as string, label as string)
                 }} />
@@ -100,14 +103,23 @@ const SettingModal = (prop: SettingModalProp) => {
         if (!username) return;
         setLoading(true);
 
-        info.update(username!, { themeId: value }).then(ok => {
+        const [name, id] = value.split("-");
+
+        const theme = {
+            id: DEFAULT_THEME_ID ? null : id,
+            name: DEFAULT_THEME_ID ? null : name,
+        }
+        info.update(username!, { theme }).then(ok => {
             if (!ok) throw new Error();
             notifyAPI.success({ message: "更新成功", description: "主題更新成功" });
-            applyTheme(value);
-        }).catch(() => notifyAPI.error({
-            message: "更新失敗",
-            description: "主題更新失敗"
-        })).finally(() => setLoading(false));
+            applyTheme(id);
+        }).catch((e) => {
+            console.log(e);
+            notifyAPI.error({
+                message: "更新失敗",
+                description: "主題更新失敗"
+            })
+        }).finally(() => setLoading(false));
 
     }, [applyTheme, info, notifyAPI, username]);
 
@@ -131,8 +143,15 @@ const SettingModal = (prop: SettingModalProp) => {
         });
     }, [info, notifyAPI, password, username]);
 
+    const dropDownRender: SelectProps["dropdownRender"] = useCallback((menu: React.ReactElement) => <>
+        {menu}
+        <Link to={"/theme"}>
+            <Button type="dashed" icon={<PlusLg size={24} />} block style={{ marginTop: 12 }} />
+        </Link>
+    </>, []);
+
     const options: SelectProps["options"] = themes.map(theme => ({
-        label: theme.name, value: theme.id, ...theme.data
+        label: theme.name, value: `${theme.name}-${theme.id}`, ...theme.data
     }));
 
     return <Modal open={prop.open} onCancel={prop.onClose} centered title="設定" footer={null}>
@@ -147,18 +166,12 @@ const SettingModal = (prop: SettingModalProp) => {
 
             <Flex vertical gap={8}>
                 <SettingItem title="主題" description="選擇並變更你的主題">
-                    <Select options={options} variant="filled" value={themes.find(it => it.using)?.id}
-                        optionRender={optionRender} onChange={handleChangeTheme}
-                        dropdownStyle={{ width: "fit-content" }} dropdownAlign={{ offset: ["-25%", 0] }}
-                        dropdownRender={(menu) => <>
-                            {menu}
-                            <Link to={"/theme"}>
-                                <Button type="dashed" icon={<PlusLg size={24} />} block style={{ marginTop: 12 }} />
-                            </Link>
-                        </>} />
+                    <Select options={options} variant="filled" value={themes.find(it => it.using)?.name}
+                        optionRender={optionRender} onChange={handleChangeTheme} dropdownRender={dropDownRender}
+                        dropdownStyle={{ width: "fit-content" }} placement="bottomRight" />
                 </SettingItem>
                 <SettingItem title="帳號" description="登出你的帳戶">
-                    <Button type="default" icon={<BoxArrowInRight/>} onClick={() => setSignOut(true)}>登出</Button>
+                    <Button type="default" icon={<BoxArrowInRight />} onClick={() => setSignOut(true)}>登出</Button>
                     <SignOutModal open={signOut} onClose={() => setSignOut(false)} />
                 </SettingItem>
                 <SettingItem title="密碼" description="更換你的密碼確保帳號安全性">

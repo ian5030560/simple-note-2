@@ -19,26 +19,26 @@ const API = {
 
   Info: {
     get: `${BASE_URL}/info/get/`,
-    update: `${BASE_URL}/info/update`,
+    update: `${BASE_URL}/info/update/`,
   },
 
   Note: {
-    get: `${BASE_URL}/note/get`,
-    add: `${BASE_URL}/note/new`,
+    get: `${BASE_URL}/note/get/`,
+    add: `${BASE_URL}/note/new/`,
     delete: `${BASE_URL}/note/delete/`,
     save: `${BASE_URL}/note/save/`,
-    loadTree: `${BASE_URL}/note/tree`,
+    loadTree: `${BASE_URL}/note/tree/`,
   },
 
   Theme: {
-    add: `${BASE_URL}/theme/new`,
-    getAll: `${BASE_URL}/theme/get`,
-    delete: `${BASE_URL}/theme/delete`
+    add: `${BASE_URL}/theme/new/`,
+    getAll: `${BASE_URL}/theme/get/`,
+    delete: `${BASE_URL}/theme/delete/`
   },
 
   Collaborate: {
-    add: `${BASE_URL}/collaborate/new`,
-    delete: `${BASE_URL}/collaborate/delete`,
+    add: `${BASE_URL}/collaborate/new/`,
+    delete: `${BASE_URL}/collaborate/delete/`,
     join: `${BASE_URL}/collaborate/join/`,
     people: `http://localhost:4000/room?`,
   },
@@ -86,18 +86,18 @@ function createFormData(data: Record<string, any>) {
 }
 
 function getAccessToken() {
-  return atob(new Cookies().get("token").access);
+  return new Cookies().get("token").access;
 }
 
 type UpdateInfoOptions = {
   image?: string;
   password?: string;
-  themeId?: string;
+  theme?: { id: string | null; name: string | null; };
 }
 
 export type Token = { access: string, refresh: string };
 
-export type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, siblingId: string | null };
+export type NoteTreeData = { noteId: string, noteName: string, parentId: string | null, silblingId: string | null };
 
 export type LoadTreeResult = {
   one: Array<NoteTreeData>;
@@ -195,14 +195,15 @@ export default function useAPI() {
         if (!res.ok) throw new Error();
         return await res.json() as { image: string | null; themeId: string; password: string };
       },
-      update: (username: string, options: UpdateInfoOptions) => {
+      update: async (username: string, options: UpdateInfoOptions) => {
         const access = getAccessToken();
-        return fetch(API.Info.update, {
+        const res = await fetch(API.Info.update, {
           ...postSetup(access), body: JSON.stringify({
             username,
-            data: { image: options.image ?? null, password: options.password ?? null, themeId: options.themeId ?? null }
+            data: { image: options.image ?? null, password: options.password ?? null, theme: options.theme ?? null }
           })
-        }).then(res => res.ok);
+        });
+        return res.ok;
       },
     },
 
@@ -218,9 +219,10 @@ export default function useAPI() {
         if (!res.ok) throw new Error();
         return await res.json() as { id: string; name: string; data: ThemeSeed; }[];
       },
-      delete: (username: string, id: string) => {
+      delete: async (username: string, id: string) => {
         const access = getAccessToken();
-        return fetch(API.Theme.delete, { ...postSetup(access), body: JSON.stringify({ username, themeId: id }) });
+        const res = await fetch(API.Theme.delete, { ...postSetup(access), body: JSON.stringify({ username, themeId: id }) });
+        return res.ok;
       }
     },
 
@@ -229,16 +231,16 @@ export default function useAPI() {
     },
 
     jwt: {
-      register: () => fetch(API.JWT.register, {
+      // register: () => fetch(API.JWT.register, {
+      //   ...postSetup(), headers: jwtHeaders,
+      //   body: JSON.stringify({ username: "user1", email: "user1@gmail.com", password: "testUser", password2: "testUser" })
+      // }).then(async res => {
+      //   if (!res.ok) throw new Error();
+      //   return await res.json() as Token;
+      // }),
+      getToken: () => fetch(API.JWT.token, {
         ...postSetup(), headers: jwtHeaders,
-        body: JSON.stringify({ username: "user1", email: "user1@gmail.com", password: "testuser", password2: "testuser" })
-      }).then(async res => {
-        if (!res.ok) throw new Error();
-        return await res.json() as Token;
-      }),
-      getToken: (username: string, password: string) => fetch(API.JWT.token, {
-        ...postSetup(), headers: jwtHeaders,
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username: "user1", password: "testuser" })
       }).then(async res => {
         if (!res.ok) throw new Error();
         return await res.json() as Token;

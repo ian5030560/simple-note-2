@@ -103,7 +103,7 @@ const SideBar = ({ light, dark, onDarken, onExport }: SideBarProps) => {
 
     return <Flex vertical justify="center" style={{ padding: "1em" }}>
         <div style={{fontSize: "1.5em"}}>
-            <Link to={"/"} replace style={{display: "flex", gap: 8, alignItems: "center"}}>
+            <Link to={"/note"} replace style={{display: "flex", gap: 8, alignItems: "center"}}>
                 <span><Arrow90degLeft /></span>
                 <span>返回</span>
             </Link>

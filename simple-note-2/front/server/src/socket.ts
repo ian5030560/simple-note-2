@@ -19,15 +19,15 @@ export default class Socket {
             const docName = (req.url || '').slice(1).split('?')[0];
             console.log(docName);
 
-            this.aiMode(ws, req);
+            // this.aiMode(ws, req);
             this.testMode(ws, req);
-            this.normalMode(ws, req);
+            // this.normalMode(ws, req);
         });
     }
 
     private testMode(ws: WebSocket, req: IncomingMessage) {
         const docName = (req.url || '').slice(1).split('?')[0];
-        if (docName !== "test") return;
+        if (docName !== "playground/collab") return;
 
         const user = randomUUID();
         setupWSConnection(ws, req);

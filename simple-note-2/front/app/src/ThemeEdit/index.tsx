@@ -7,6 +7,7 @@ import useAPI from "../util/api";
 import useUser from "../util/useUser";
 import { EyeFill, PencilSquare } from "react-bootstrap-icons";
 import styles from "../Welcome/navigateMenu.module.css";
+import classNames from "../util/classNames";
 
 const ThemePage = () => {
     return <>
@@ -15,7 +16,7 @@ const ThemePage = () => {
     </>
 }
 
-const Tab = (props: React.PropsWithChildren) => <Flex className={styles.navMenu}>{props.children}</Flex>
+const Tab = (props: React.PropsWithChildren) => <Flex role="tablist" className={styles.navMenu}>{props.children}</Flex>
 
 interface TabItemProps {
     icon: React.ReactNode;
@@ -33,7 +34,8 @@ const TabItem = (props: TabItemProps) => {
         current.style.setProperty("--navItem-underline-background-color", token.colorPrimary);
     }, [token.colorPrimary]);
 
-    return <div ref={ref} className={[styles.navItem, props.active && styles.navItemSelected].join(" ")} onClick={props.onClick}>
+    return <div role="tab" style={{ padding: "0.5em 1em" }} ref={ref} onClick={props.onClick}
+        className={classNames(styles.navItem, props.active ? styles.navItemSelected : "")}>
         <Flex align="center" justify="center" gap={8} style={{ color: token.colorText }}>
             <span className={styles.navText}>{props.icon}</span>
             <span className={styles.navText}>{props.label}</span>
@@ -62,6 +64,7 @@ const Index = () => {
 
     const handleExport = useCallback((name: string, values: ExportValues) => {
         if (!username) return;
+        console.log(username);
         add(username, {
             name: name,
             data: {

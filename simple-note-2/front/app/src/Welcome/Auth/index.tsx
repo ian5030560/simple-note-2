@@ -9,15 +9,16 @@ enum CURRENT {
   SIGNUP = 1,
 }
 
-const Auth: React.FC = () => {
+export default function Auth() {
   const [current, setCurrent] = useState(CURRENT.SIGNIN);
 
-  return <Flex justify="center">
+  return <Flex justify="center" align="center" style={{height: "100%"}}>
     <div className={styles.authContainer}>
-      {current === CURRENT.SIGNIN && <SignIn onChange={() => setCurrent(CURRENT.SIGNUP)} />}
-      {current === CURRENT.SIGNUP && <SignUp onChange={() => setCurrent(CURRENT.SIGNIN)} />}
+      {
+        current === CURRENT.SIGNIN ?
+          <SignIn onChange={() => setCurrent(CURRENT.SIGNUP)} /> :
+          <SignUp onChange={() => setCurrent(CURRENT.SIGNIN)} />
+      }
     </div>
   </Flex>
 };
-
-export default Auth;

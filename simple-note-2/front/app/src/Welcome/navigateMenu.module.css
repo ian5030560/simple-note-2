@@ -1,12 +1,12 @@
-.navMenu{
+.navMenu {
     display: flex;
     gap: 8px;
     flex-wrap: nowrap;
     align-items: end;
+    list-style: none;
 }
 
-.navItem{
-    padding: 0.5em 1em;
+.navItem {
     cursor: pointer;
     -webkit-user-select: none;
     -ms-user-select: none;
@@ -18,7 +18,7 @@
     --navItem-underline-background-color: black;
 }
 
-.navItem::before{
+.navItem::before {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -27,12 +27,13 @@
     transition: background-color 250ms ease-in-out;
 }
 
-.navItem:hover::before, .navItemSelected::before{
+.navItem:hover::before,
+.navItemSelected::before {
     width: 100%;
     background-color: var(--navItem-underline-background-color);
 }
 
-.navText{
+.navText {
     font-size: 18px;
     overflow: hidden;
     white-space: nowrap;
@@ -40,7 +41,7 @@
 }
 
 
-.navMenuButton{
+.navMenuButton {
     display: inline-flex;
     place-content: center;
     padding: 8px;

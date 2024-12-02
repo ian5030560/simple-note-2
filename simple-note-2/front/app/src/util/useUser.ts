@@ -9,7 +9,7 @@ export class Password{
     private _content = "";
 
     set content(value: string){
-        this.content = value;
+        this._content = value;
     }
 
     async compare(target: string){
@@ -42,7 +42,7 @@ type UserState = {
 };
 
 type UserAction = {
-    signIn: (username: string, token: Token) => void;
+    signIn: (username: string) => void;
     signOut: () => Promise<undefined>;
     signUp: (token: { access: string, refresh: string }) => void;
     applyTheme: (id: string) => void;
@@ -50,23 +50,23 @@ type UserAction = {
     deleteTheme: (id: string) => void;
 };
 
-export const DEFAULT_THEME_ID = "default-theme";
+export const DEFAULT_THEME_ID = "defaultTheme";
+export const defaultThemeData = {
+    id: DEFAULT_THEME_ID, name: "預設",
+    data: defaultSeed, using: true,
+}
 const store = create<UserAction & UserState>((set) => ({
     dark: false,
     password: new Password(),
-    themes: [{
-        id: DEFAULT_THEME_ID, name: "預設",
-        data: defaultSeed, using: true,
-    }],
-    signIn: (username, token) => {
+    themes: [],
+    signIn: (username) => {
         const cookies = new Cookies();
         cookies.set("username", username);
-        cookies.set("token", token);
     },
     signOut: () => {
         const cookies = new Cookies();
-        cookies.remove("username");
-        cookies.remove("token");
+        cookies.remove("username", {path: "/"});
+        cookies.remove("token", {path: "/"});
         return new NoteIndexedDB().deleteAll();
     },
     signUp: (token: Token) => {
@@ -75,7 +75,7 @@ const store = create<UserAction & UserState>((set) => ({
     applyTheme: (id) => set(({ themes }) => {
         themes.forEach((_, index) => {
             const { id: themeId } = themes[index];
-            themes[index].using = id === themeId;
+            themes[index].using = id === (themeId + "");
         });
         return { themes: [...themes] };
     }),
@@ -86,12 +86,12 @@ const store = create<UserAction & UserState>((set) => ({
         set({ dark: !prev });
     },
     deleteTheme: (id) => set(({ themes }) => {
-        const deleted = themes.filter(it => it.id !== id);
+        const deleted = themes.filter(it => (it.id + "") !== id);
 
         const index = deleted.findIndex(it => it.using);
         if (index === -1) deleted.map(it => ({ ...it, using: it.id === DEFAULT_THEME_ID }));
 
-        return { themes: deleted };
+        return { themes: [...deleted] };
     })
 }));
 

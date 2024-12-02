@@ -3,11 +3,14 @@ import UserComponent from "./component";
 import { Navigate, Outlet, useLoaderData, useParams } from "react-router-dom";
 import useUser from "../util/useUser";
 import { useMemo } from "react";
+import { usePageTitle } from "../util/pageTitle";
 
-export default () => {
+export default function User(){
     const first = useLoaderData() as string;
     const { id } = useParams();
-    const {themes, dark} = useUser();
+    const {themes, dark, username} = useUser();
+
+    usePageTitle(username!);
 
     const seed = useMemo(() => {
         const current = themes.find(it => it.using);

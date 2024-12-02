@@ -1,6 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { Klass, LexicalNode } from "lexical";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export function inside(x: number, y: number, element: HTMLElement) {
   const { x: ex, y: ey, width, height } = element.getBoundingClientRect();

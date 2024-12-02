@@ -4,26 +4,29 @@ import { Link, useLocation } from "react-router-dom";
 import { HouseDoorFill, List, PeopleFill, PersonCircle, PersonFill, PersonSquare } from "react-bootstrap-icons";
 import { FormOutlined, GithubOutlined } from "@ant-design/icons";
 import React, { forwardRef, useEffect, useRef } from "react";
+import classNames from "../util/classNames";
 
 const Navigate = (props: React.PropsWithChildren) => {
-    return <nav className={styles.navMenu}>{props.children}</nav>;
+    return <ul className={styles.navMenu} tabIndex={0} role="menu">{props.children}</ul>;
 }
 
 interface NavigateItemProps extends React.PropsWithChildren {
     active?: boolean;
 }
+
 const NavigateItem = (props: NavigateItemProps) => {
     const { token } = theme.useToken();
-    const ref = useRef<HTMLDivElement>(null);
+    const ref = useRef<HTMLLIElement>(null);
 
     useEffect(() => {
         const { current } = ref;
         current?.style.setProperty("--navItem-underline-background-color", token.colorPrimary);
     }, [token.colorPrimary]);
 
-    return <div ref={ref} className={[styles.navItem, props.active && styles.navItemSelected].join(" ")}>
+    return <li ref={ref} role="menuitem" tabIndex={-1}
+        className={classNames(styles.navItem, props.active ? styles.navItemSelected : "")}>
         {props.children}
-    </div>
+    </li>
 }
 
 type NavigateItemData = {
@@ -38,11 +41,11 @@ interface NavigateMenuButtonProps {
 const NavigateMenuButton = (props: NavigateMenuButtonProps) => {
     const { token } = theme.useToken();
 
-    return <div>
-        <Dropdown menu={{ items: props.items }} trigger={["click"]} placement="bottom">
-            <button type="button" style={{color: token.colorText}} className={styles.navMenuButton}><List size={18} /></button>
+    return <li>
+        <Dropdown menu={{ items: props.items }} trigger={["click"]} placement="bottomLeft">
+            <button type="button" style={{ color: token.colorText }} className={styles.navMenuButton}><List size={18} /></button>
         </Dropdown>
-    </div>
+    </li>
 }
 
 interface ContentProps extends React.RefAttributes<HTMLElement> {
@@ -52,7 +55,7 @@ interface ContentProps extends React.RefAttributes<HTMLElement> {
 const Content = forwardRef(({ label, icon, ...props }: ContentProps, ref: React.ForwardedRef<HTMLElement>) => {
     const { token } = theme.useToken();
 
-    return <Flex gap={8} ref={ref} align="center" {...props}>
+    return <Flex gap={8} ref={ref} align="center" style={{ padding: "0.5em 1em" }} {...props}>
         <span className={styles.navText} style={{ color: token.colorText }}>{icon}</span>
         <span className={styles.navText} style={{ color: token.colorText }}>{label}</span>
     </Flex>

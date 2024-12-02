@@ -43,7 +43,7 @@ class DeleteThemeView(APIView):
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            themeID = data.get("themeID")  # 帳號名稱
+            themeID = data.get("themeId")  # 帳號名稱
 
             isThemeDelete = UserPersonalThemeData.delete_one_theme_data (
                 themeID

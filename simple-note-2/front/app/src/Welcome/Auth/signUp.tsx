@@ -7,6 +7,8 @@ import useAPI from "../../util/api";
 import { uuid } from "../../util/uuid";
 import useUser from "../../util/useUser";
 import { Rule } from "antd/es/form";
+import withPageTitle from "../../util/pageTitle";
+import { Cookies } from "react-cookie";
 
 const { Title } = Typography;
 
@@ -22,7 +24,7 @@ class SignUpError extends Error {
     }
 };
 
-export default function SignUp({ onChange }: AuthProp) {
+export default withPageTitle(function SignUp({ onChange }: AuthProp) {
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [cause, setCause] = useState("");
@@ -30,7 +32,7 @@ export default function SignUp({ onChange }: AuthProp) {
     const [state, setState] = useState<STATE | null>();
     const [confirm, setConfirm] = useState(false);
     const values = Form.useWatch([], form);
-    const { auth: { signUp }, note, jwt: { register } } = useAPI();
+    const { auth: { signUp }, note, jwt: { getToken } } = useAPI();
     const { signUp: _signUp } = useUser();
 
     useEffect(() => {
@@ -44,7 +46,8 @@ export default function SignUp({ onChange }: AuthProp) {
     const handleFinished = ({ username, email, password }: SignUpData) => {
         setState(STATE.LOADING);
 
-        register().then(tokens => {
+        getToken().then(tokens => {
+            new Cookies().set("token", tokens);
             signUp(username, password, email).then(async status => {
                 if (status > 300) {
                     const map: { [key: number]: string } = {
@@ -55,7 +58,7 @@ export default function SignUp({ onChange }: AuthProp) {
                     throw new SignUpError(map[status] ?? "發生重大錯誤");
                 }
                 else {
-                    const result = note.add(username, uuid(), "我的筆記", null, null);
+                    const result = await note.add(username, uuid(), "我的筆記", null, null);
                     if (!result) {
                         throw new SignUpError("發生重大錯誤");
                     }
@@ -66,6 +69,7 @@ export default function SignUp({ onChange }: AuthProp) {
                 }
             })
         }).catch((e: Error) => {
+            new Cookies().remove("token", {path: "/"});
             setCause(() => e instanceof SignUpError ? e.message : "發生重大錯誤");
             setState(() => STATE.FAILURE);
         });
@@ -102,7 +106,7 @@ export default function SignUp({ onChange }: AuthProp) {
             <Form.Item>
                 <Flex gap={"middle"}>
                     <Button type="primary" block htmlType="submit" disabled={!submittable}
-                        loading={state === STATE.SUCCESS}>提交</Button>
+                        loading={state === STATE.LOADING}>提交</Button>
                     <Button type="primary" block htmlType="reset">清除</Button>
                 </Flex>
             </Form.Item>
@@ -129,4 +133,4 @@ export default function SignUp({ onChange }: AuthProp) {
                 onClose: () => setState(() => null)
             }} />
     </>
-};
+}, "註冊");

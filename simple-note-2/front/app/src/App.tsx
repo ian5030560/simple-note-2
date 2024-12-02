@@ -13,7 +13,7 @@ import { ThemeProvider, ThemeSwitchButton } from "./util/theme";
 import Editor from "./Editor";
 import { Public, Private } from "./route";
 import UserComponent from "./User/component";
-import withPageTitle from "./util/withPageTitle";
+import withPageTitle from "./util/pageTitle";
 
 function editorLoader(args: LoaderFunctionArgs<any>) {
   const { params } = args;
@@ -37,7 +37,7 @@ function shouldRevalidateFn({ currentParams: { id: oid }, nextParams: { id: nid 
   return oid !== nid;
 }
 
-const PlayGroundLayout = withPageTitle(() => <Suspense><Outlet/><ThemeSwitchButton/></Suspense>, "playground");
+const PlayGroundLayout = withPageTitle(() => <Suspense><Outlet /><ThemeSwitchButton /></Suspense>, "playground");
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -55,15 +55,18 @@ const router = createBrowserRouter(
           <Route path=":id/:host?" element={<Editor />} errorElement={<EditorErrorBoundary />}
             loader={editorLoader} shouldRevalidate={shouldRevalidateFn} />
         </Route>
+        <Route path="theme" element={<ThemePage />} />
       </Route>
 
-      <Route path="playground" element={<PlayGroundLayout/>}>
+      <Route path="playground" element={<PlayGroundLayout />}>
         <Route index element={<EditorComponent test />} />
         <Route path="collab" element={<EditorComponent test collab />} />
       </Route>
-      
-      <Route path="theme" element={<ThemePage />} />
-      <Route path="user" element={<><UserComponent/><ThemeSwitchButton/></>}/>
+
+      <Route path="user" element={<UserComponent>
+        <EditorComponent />
+        <ThemeSwitchButton />
+      </UserComponent>} />
     </>
   )
 )

@@ -2,8 +2,9 @@ import { LoaderFunctionArgs } from "react-router-dom";
 import useNoteManager, { NoteDataNode } from "./util/useNoteManager";
 import utilizeAPI, { LoadTreeResult, NoteTreeData, Token } from "./util/api";
 import { NoteIndexedDB, ThemeLocalStorage } from "./util/store";
-import useUser from "./util/useUser";
+import useUser, { defaultThemeData } from "./util/useUser";
 import { Cookies } from "react-cookie";
+import { jwtDecode } from "jwt-decode";
 
 type Payload = { exp: number, iat: number };
 export async function validateLoader() {
@@ -13,14 +14,14 @@ export async function validateLoader() {
     const token = new Cookies().get("token");
     if (!token) return false;
 
-    const parsed = JSON.parse(token) as Token;
+    const parsed = token as Token;
     const { access, refresh } = parsed;
     const { jwt: { refresh: refreshAccess } } = utilizeAPI();
 
-    const refreshPayload = JSON.parse(refresh) as Payload;
+    const refreshPayload = jwtDecode(refresh) as Payload;
     if (refreshPayload.exp < refreshPayload.iat) return false;
 
-    const accessPayload = JSON.parse(atob(access)) as Payload;
+    const accessPayload = jwtDecode(access) as Payload;
     if (accessPayload.exp < accessPayload.iat) {
         return await refreshAccess(refresh).then((data) => {
             if (!data) return false;
@@ -42,7 +43,7 @@ function buildNoteDataTree(noteTreeData: NoteTreeData[], parentId: string | null
         else rest.push(it);
     });
 
-    const head = filtered.findIndex(it => it.siblingId === null);
+    const head = filtered.findIndex(it => it.silblingId === null);
     if (head === -1) return nodes;
 
     let start = head;
@@ -52,7 +53,7 @@ function buildNoteDataTree(noteTreeData: NoteTreeData[], parentId: string | null
             key: item.noteId, title: item.noteName,
             children: buildNoteDataTree(rest, item.noteId), parent: item.parentId
         });
-        start = filtered.findIndex(it => it.siblingId === item.noteId);
+        start = filtered.findIndex(it => it.silblingId === item.noteId);
     }
 
     return nodes;
@@ -69,7 +70,6 @@ function bindURL(nodes: NoteDataNode[], multiple: LoadTreeResult["multiple"], us
 }
 
 export async function settingLoader() {
-
     const { note: { loadTree }, info, theme } = utilizeAPI();
     const username = new Cookies().get("username");
 
@@ -81,12 +81,14 @@ export async function settingLoader() {
 
             useUser.setState(prev => {
                 prev.password.content = password;
-
                 return {
                     picture: image ?? undefined, dark,
-                    themes: themes.map(it => ({
-                        ...it, using: it.id === themeId,
-                    })), password: prev.password,
+                    themes: [
+                        ...[defaultThemeData].map(it => ({ ...it, using: themeId === null })),
+                        ...themes.map(({ id, name, data }) => ({
+                            id, name, data, using: id === themeId
+                        }))
+                    ], password: prev.password
                 }
             });
 
@@ -94,7 +96,6 @@ export async function settingLoader() {
         loadTree(username).then(data => {
             const ones = generateNoteForest(data.one);
             bindURL(ones, data.multiple, encodeURI(username));
-
             const multiples: NoteDataNode[] = data.multiple.map(it => {
                 const [id, host] = it.url.split("/");
                 const title = `${decodeURI(host)}-${it.noteName}`;
@@ -163,7 +164,7 @@ export async function contentLoader({ params }: LoaderFunctionArgs<string | null
 export async function collaborateLoader({ params }: LoaderFunctionArgs<boolean>) {
     const { collab: { join, people } } = utilizeAPI();
     const username = new Cookies().get("username");
-    
+
     const { id, host } = params;
     const master = decodeURI(host!);
 

@@ -20,14 +20,17 @@ import typing
 """@csrf_exempt"""
 """@csrf_protect"""
 
-class GetThemeReturnData(typing.TypedDict):
-    id: int
-    name: str
+class ThemeData(typing.TypedDict):
     colorLightPrimary: str
     colorLightNeutral: str
     colorDarkPrimary: str
     colorDarkNeutral: str
     
+class GetThemeReturnData(typing.TypedDict):
+    id: int
+    name: str
+    data: ThemeData
+
 class GetThemeView(APIView):
     """
     取得主題: getTheme\n
@@ -63,10 +66,12 @@ class GetThemeView(APIView):
                 return {
                     "id": theme[0],
                     "name": theme[1],
-                    "colorLightPrimary": theme[2],
-                    "colorLightNeutral": theme[3],
-                    "colorDarkPrimary": theme[4],
-                    "colorLightNeutral": theme[5]
+                    "data": {
+                        "colorLightPrimary": theme[2],
+                        "colorLightNeutral": theme[3],
+                        "colorDarkPrimary": theme[4],
+                        "colorDarkNeutral": theme[5]
+                    }
                 }
             
             converted = list(map(convert, themes))

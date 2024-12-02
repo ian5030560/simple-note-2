@@ -18,10 +18,10 @@ export const defaultSeed: ThemeSeed = {
 }
 
 export const testSeed: ThemeSeed = {
-    colorLightPrimary: "red",
-    colorLightNeutral: "white",
-    colorDarkPrimary: "red",
-    colorDarkNeutral: "black",
+    colorLightPrimary: "#EA0000	",
+    colorLightNeutral: "#FCFCFC",
+    colorDarkPrimary: "#FF7575",
+    colorDarkNeutral: "#272727",
 }
 
 export default function theme(seed: ThemeSeed): (dark: boolean) => ThemeConfig{

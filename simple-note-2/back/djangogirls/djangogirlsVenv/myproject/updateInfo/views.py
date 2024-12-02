@@ -23,10 +23,14 @@ import typing
 class ThemeDict(typing.TypedDict):
     id: str
     name: str
-class UpdateInfoBody(typing.TypedDict):
-    username: str
+
+class UpdateInfoData(typing.TypedDict):
     password: str | None
     theme: ThemeDict | None
+    
+class UpdateInfoBody(typing.TypedDict):
+    username: str
+    data: UpdateInfoData
     
 class UpdateInfoView(APIView):
     """
@@ -64,25 +68,28 @@ class UpdateInfoView(APIView):
 
     def post(self, request: HttpRequest, format=None):
         data: UpdateInfoBody = json.loads(request.body)
-                
+        print(data)
+        print("---------------------------------------")
         username = data["username"]
         if(not username or not UserPersonalInfo.check_username(username)): return Response(status=status.HTTP_403_FORBIDDEN)
-        
-        if("password" in data.keys()):
-            password = data["password"]
+        innerData = data["data"]
+        if("password" in innerData.keys()):
+            password = innerData["password"]
             info = UserPersonalInfo.check_user_personal_info(username)
             if(info == False): return Response(status=status.HTTP_400_BAD_REQUEST)
             UserPersonalInfo.update_user_password_by_usernames(username, password)
                 
-        if("theme" in data.keys()):
-            theme = data["theme"]
+        if("theme" in innerData.keys()):
+            theme = innerData["theme"]
             isDefaultTheme = not theme["id"] and not theme["name"]
             if(isDefaultTheme):
                 UserPersonalInfo.update_user_theme_id_by_usernames(username, theme["id"])
             else:
                 checkThemeExist = UserPersonalThemeData.check_theme_name(username, theme["name"])
                 if(not checkThemeExist): return Response(status=status.HTTP_400_BAD_REQUEST)
-                UserPersonalInfo.update_user_theme_id_by_usernames(username, theme["id"])
+                sccuess = UserPersonalInfo.update_user_theme_id_by_usernames(username, theme["id"])
+                print(sccuess)
+                if(not sccuess): return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 
         return Response(status=status.HTTP_200_OK)
         # try:

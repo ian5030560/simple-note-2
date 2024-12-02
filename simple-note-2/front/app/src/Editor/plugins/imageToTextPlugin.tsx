@@ -8,7 +8,7 @@ import Tesseract, { createWorker } from "tesseract.js";
 import { $contains } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import Modal from "../ui/modal";
-import { Fullscreen } from "react-bootstrap-icons";
+import { Fullscreen, Upload } from "react-bootstrap-icons";
 
 // const codes = require("../../../resource/tesseract.json").map((lang: { code: string, name: string }) => lang.code) as string[];
 const codes = ["eng", "chi_sim", "chi_tra", "jpn", "kor"];
@@ -58,7 +58,7 @@ export default function ImageToTextPlugin() {
   const [node, setNode] = useState<LexicalNode>();
 
   useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
-    if (value === "imageToText"){
+    if (value === "imageToText") {
       setNode(node);
       setOpen(true);
     };
@@ -168,11 +168,9 @@ export default function ImageToTextPlugin() {
         key: "camera",
         label: "照相",
         children: <Flex justify="center" align="center" style={{ position: "relative" }}>
-          {
-            open && <Webcam audio={false} width={500} height={400} ref={camRef}
+            <Webcam audio={false} width={500} height={400} ref={camRef}
               style={{ transform: "scaleX(-1)" }} videoConstraints={contraints}
               screenshotFormat="image/png" mirrored />
-          }
           <div className={styles.cameraMask} ref={maskRef} />
           <button title="trigger" className={styles.cameraButton} onClick={handleClick}>
             <Fullscreen size={40} />
@@ -183,14 +181,15 @@ export default function ImageToTextPlugin() {
         key: "file",
         label: "上傳文件",
         children: <>
-          <Button type="primary" block onClick={() => fileRef.current?.click()}>上傳</Button>
+          <Button type="primary" block icon={<Upload/>}
+            onClick={() => fileRef.current?.click()}>上傳</Button>
           <input aria-label="file" type="file" accept="image/*" style={{ display: "none" }} ref={fileRef} onChange={handleUpload} />
         </>
       }
     ]
-  }, [handleClick, handleUpload, open]);
+  }, [handleClick, handleUpload]);
 
-  return <Modal title="圖文辨識" open={open} onCancel={() => setOpen(false)}
+  return <Modal title="圖文辨識" destroyOnClose open={open} onCancel={() => setOpen(false)}
     styles={{ header: { pointerEvents: loading ? "none" : undefined } }} footer={null}>
     <Tabs items={items} defaultActiveKey="camera" destroyInactiveTabPane />
     <Spin tip="辨識中" spinning={loading} size="large" fullscreen />
