@@ -5,8 +5,8 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import NewTheme  # 新建檔案改這個
-from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from .models import NewTheme
+from db_modules import UserPersonalThemeData
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -18,13 +18,14 @@ class NewThemeView(APIView):
     前端傳來:\n
         帳號名(name: username, type: str),\n
         主題(name: theme, type: theme).\n
+
     後端回傳:\n
-        Response HTTP_200_OK if success.\n
-        Sqlite error, Response HTTP_400_BAD_REQUEST if failure.\n
+        200 if success.\n
+        Sqlite error, 400 if failure.\n
 
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        Serializer的raise_exception=False: 404.\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = NewThemeSerializer

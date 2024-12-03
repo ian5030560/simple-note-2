@@ -5,7 +5,7 @@ import requests
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import Breeze  # 新建檔案改這個
+from .models import Breeze
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -15,35 +15,34 @@ from django.middleware.csrf import get_token
 class BreezeView(APIView):
     """
     前端傳:\n
-        指令.\n
+        text.\n
+
     後端回傳:\n
-        Response HTTP_200_OK if success.\n
+        OK: 200.\n
 
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        Serializer的raise_exception=False: 404.\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = BreezeSerializer
 
+    # 連接AI的API
     def ai(self, text):
         try:
             url = "http://192.168.196.106:8091"  # ZeroTier IP for AI API
-            # url = "https://85a3-140-127-74-150.ngrok-free.app/"
             post_text = {
                 "title": "",
                 "content": text
             }
             headers = {
                 "Content-Type": "application/json",
-                # "Accept": "*/*",
-                # "Accept-Encoding": "gzip, deflate, br",
-                # "Connection": "keep-alive"
             }
 
             # 發送 POST 請求
             response = requests.post(url, json=post_text, headers=headers)
             response.close()
+
             # Debug print to see the response status and content
             print(f"Response status: {response.status_code}")
             print(f"Response content: {response.text}")
@@ -66,9 +65,6 @@ class BreezeView(APIView):
             # 捕獲 requests 的例外情況並打印具體的錯誤訊息
             print(f"Request exception occurred: {str(e)}")
             return f"ai post error: {str(e)}"
-
-        
-        
 
     def get(self, request, format=None):
         output = [{"breeze": obj.breeze} for obj in Breeze.objects.all()]

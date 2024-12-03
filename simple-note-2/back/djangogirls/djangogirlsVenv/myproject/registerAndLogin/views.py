@@ -6,7 +6,7 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import RegisterAndLogin
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from db_modules import UserPersonalInfo
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -16,19 +16,19 @@ from django.middleware.csrf import get_token
 class RegisterAndLoginView(APIView):
     """
     登入:\n
-       若登入成功: Response HTTP_200_OK,\n
-       若登入失敗: Response HTTP_400_BAD_REQUEST,\n
+       若登入成功: Response 200,\n
+       若登入失敗: Response 400,\n
 
     註冊:\n
         比較username:\n
-            若username重複, 不能註冊: Response HTTP_401_UNAUTHORIZED\n
+            若username重複, 不能註冊: 401\n
             若username不重複:\n
-                若email重複, 不能註冊: Response HTTP_402_PAYMENT_REQUIRED\n
-                若email不重複, 可以註冊: ResponseHTTP_201_CREATED\n
+                若email重複, 不能註冊: 402\n
+                若email不重複, 可以註冊: 201\n
     其他例外:\n
-        登入註冊例外: Response HTTP_403_FORBIDDEN\n
-        Serializer raise_exception=False: Response HTTP_404_NOT_FOUND\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        登入註冊例外: 403.\n
+        Serializer raise_exception=False: 404.\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = RegisterAndLoginSerializer

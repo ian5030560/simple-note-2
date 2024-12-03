@@ -5,8 +5,8 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import ForgetPassword  # 新建檔案改這個
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from .models import ForgetPassword
+from db_modules import UserPersonalInfo
 from rest_framework import status, permissions
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -21,12 +21,12 @@ from django.template.loader import render_to_string
 class ForgetPasswordView(APIView):
     """
     email:\n
-       Email成功寄出: Response HTTP_200_OK.\n
-       Error: Response HTTP_400.\n
+       Email成功寄出: 200.\n
+       Error: 4000.\n
 
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
+        Serializer的raise_exception=False: 404.\n
+        JSONDecodeError: 405.\n
     """
     permission_classes = [permissions.AllowAny]
     serializer_class = ForgetPasswordSerializer

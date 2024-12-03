@@ -5,9 +5,9 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import UpdateInfo  # 新建檔案改這個
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
-from db_modules import UserPersonalThemeData  # 資料庫來的檔案
+from .models import UpdateInfo
+from db_modules import UserPersonalInfo
+from db_modules import UserPersonalThemeData
 from rest_framework import status
 from django.http import JsonResponse, HttpRequest
 from rest_framework.views import APIView
@@ -31,6 +31,7 @@ class UpdateInfoBody(typing.TypedDict):
 class UpdateInfoView(APIView):
     """
     更新個人資訊:update_info\n
+
     前端傳:\n
         帳號名(username, type: str),\n
         更新的資料(name: data, type: Info, 若Info中的項目為null, ignore it).\n
@@ -38,20 +39,22 @@ class UpdateInfoView(APIView):
             頭像(name: image): 文件網址(string),
             主題(name: theme): Theme,
             密碼(name: password): string
-            }
+            }\n
+
     後端回傳:\n
-        if image != "":
-            Response HTTP_200_OK if success.\n
-            Response HTTP_400_BAD_REQUEST if failure.\n
-        if theme != "":
-            Response HTTP_201_CREATED if success.\n
-            Response HTTP_401_UNAUTHORIZED if failure.\n
-        if password !=:
-            Response HTTP_202_ACCEPTED if success.\n
-            Response HTTP_402_PAYMENT_REQUIRED if failure.\n
+        if image != "":\n
+            Response 200 if success.\n
+            Response 400 if failure.\n
+        if theme != "":\n
+            Response 201 if success.\n
+            Response 401 if failure.\n
+        if password !=:\n
+            Response 202 if success.\n
+            Response 402 if failure.\n
+
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
+        Serializer的raise_exception=False: 404,\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = UpdateInfoSerializer

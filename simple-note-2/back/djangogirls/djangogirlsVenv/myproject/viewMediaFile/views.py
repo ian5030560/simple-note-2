@@ -1,35 +1,31 @@
 # views.py
 import sys
 import json
+import os
 
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import ViewMediaFile  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
+from .models import ViewMediaFile
+from db_modules import UserFileData
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import FileResponse
 from django.conf import settings
 import mimetypes
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 
-import base64
-import os
-"""@csrf_exempt"""
-"""@csrf_protect"""
-
-
 class ViewMediaFileView(APIView):
     """
     Method: get.\n
+
     其他例外:\n
-        serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
+        serializer的raise_exception=False: 404,\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = ViewMediaFileSerializer

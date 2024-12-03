@@ -5,9 +5,9 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import DeleteNote  # 新建檔案改這個
-from db_modules import UserNoteData  # 資料庫來的檔案
-from db_modules import UserSubNoteData  # 資料庫來的檔案
+from .models import DeleteNote
+from db_modules import UserNoteData
+from db_modules import UserSubNoteData
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -17,16 +17,18 @@ from django.middleware.csrf import get_token
 class DeleteNoteView(APIView):
     """
     刪除筆記: deleteNote\n
+
         前端傳:\n
             帳號名(name: username, type: str)\n
             筆記id(name: noteId, type: str)\n
-        後端回:
-            status code 200 if success\n
-            status code 400 if error\n
 
-    其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        後端回:\n
+            200 if success.\n
+            400 if error.\n
+
+        其他例外:\n
+            Serializer的raise_exception=False: 404.\n
+            JSONDecodeError: 405.\n
     """
 
     serializer_class = DeleteNoteSerializer

@@ -5,9 +5,9 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import NewMediaFile  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
-from db_modules.SaveFile import SaveFile  # 資料庫來的檔案
+from .models import NewMediaFile
+from db_modules import UserFileData
+from db_modules.SaveFile import SaveFile
 from rest_framework import status
 from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
@@ -21,13 +21,14 @@ class NewMediaFileView(APIView):
         文件名(name: filename, type: str),\n
         文件內容(name: content, type: blob),\n
         mimetype(name: mimetype, type: string).\n
+
     後端回傳:\n
-        Str: localhost:8000/view_file/"filename", Response HTTP_200_OK.\n
-        Str: insert error: HTTP_400_BAD_REQUEST.\n
+        Str: localhost:8000/view_file/"filename", 200.\n
+        Str: insert error, 400.\n
 
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        Serializer的raise_exception=False: 404.\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = NewMediaFileSerializer

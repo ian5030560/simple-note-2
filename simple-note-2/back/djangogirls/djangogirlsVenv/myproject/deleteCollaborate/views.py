@@ -5,8 +5,8 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import DeleteCollaborate  # 新建檔案改這個
-from db_modules import UserCollaborateNote  # 資料庫來的檔案
+from .models import DeleteCollaborate
+from db_modules import UserCollaborateNote
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -18,15 +18,16 @@ class DeleteCollaborateView(APIView):
     取消協作: 將協作網址刪除(deleteCollaborate)\n
     
     前端傳:\n
-        帳號名(username, type: str),\n
+        帳號名(username, type: str)\n
         筆記id(noteId, type: str)\n
         
     後端傳:\n
-        status code(200: 成功, 400: 失敗)\n
+        200: 成功.\n
+        400: 失敗.\n
         
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        Serializer的raise_exception=False: 404.\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = DeleteCollaborateSerializer
@@ -40,11 +41,9 @@ class DeleteCollaborateView(APIView):
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            guestName = data.get("username")  # guest帳號名稱
             masterName = data.get("masterName") # master帳號名稱
             noteId = data.get("noteId") # noteTitleId
 
-            # isDelete = UserCollaborateNote.delete_one_data(masterName, noteId, guestName)
             isDelete = UserCollaborateNote.delete_all_data(masterName, noteId)
             
             if isDelete:  # 若刪除成功

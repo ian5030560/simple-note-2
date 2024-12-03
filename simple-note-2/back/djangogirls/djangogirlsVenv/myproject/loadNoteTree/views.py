@@ -5,10 +5,10 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import LoadNoteTree  # 新建檔案改這個
-from db_modules import UserNoteData  # 資料庫來的檔案
-from db_modules import UserSubNoteData  # 資料庫來的檔案
-from db_modules import UserCollaborateNote  # 資料庫來的檔案
+from .models import LoadNoteTree
+from db_modules import UserNoteData
+from db_modules import UserSubNoteData
+from db_modules import UserCollaborateNote
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -19,16 +19,18 @@ import json
 class LoadNoteTreeView(APIView):
     """
     取得筆記: LoadNoteTree\n
+
         前端傳: \n
             帳號名(name: username, type: str)\n
             筆記id(name: noteId, type: str)\n
-        後端回:
-            筆記內容(type: str), HTTP_200_OK\n
-            HTTP_400 if error
 
-    其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        後端回:
+            筆記內容(type: str), 200.\n
+            400 if error.\n
+
+        其他例外:\n
+            Serializer的raise_exception=False: 404.\n
+            JSONDecodeError: 405.\n
     """
 
     serializer_class = LoadNoteTreeSerializer

@@ -5,8 +5,8 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import JoinCollaborate  # 新建檔案改這個
-from db_modules import UserCollaborateNote  # 資料庫來的檔案
+from .models import JoinCollaborate
+from db_modules import UserCollaborateNote
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -22,12 +22,12 @@ class JoinCollaborateView(APIView):
         協作網址(url, type: str),\n
         
     後端傳:\n
-        筆記內容(type: str), status code: 200: 成功,\n
-        status code: 400: 失敗\n
+        筆記內容(type: str), 200: 成功.\n
+        400: 失敗.\n
 
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        Serializer的raise_exception=False: 404.\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = JoinCollaborateSerializer

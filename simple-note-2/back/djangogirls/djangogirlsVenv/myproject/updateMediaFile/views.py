@@ -5,8 +5,8 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import UpdateMediaFile  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
+from .models import UpdateMediaFile
+from db_modules import UserFileData
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -16,15 +16,18 @@ from django.middleware.csrf import get_token
 class UpdateMediaFileView(APIView):
     """
     前端傳:\n
+
         帳號名(username, type: str),\n
         文件網址(新增文件所提供的網址, type: str),\n
         文件內容(content, type: blob).\n
+
     後端回傳:\n
-        Response HTTP_200_OK if success if true.\n
-        Response HTTP_400_BAD_REQUEST if false.\n
+        Response 200 if success.\n
+        Response 400 if false.\n
+
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
+        Serializer的raise_exception=False: 404,\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = UpdateMediaFileSerializer

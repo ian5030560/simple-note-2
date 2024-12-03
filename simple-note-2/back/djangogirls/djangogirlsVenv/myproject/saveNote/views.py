@@ -5,8 +5,8 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import SaveNote  # 新建檔案改這個
-from db_modules import UserNoteData  # 資料庫來的檔案
+from .models import SaveNote
+from db_modules import UserNoteData
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -16,15 +16,18 @@ from django.middleware.csrf import get_token
 class SaveNoteView(APIView):
     """
     儲存筆記: saveNote\n
+
         前端傳:\n
             帳號名(name: username, type: str)\n
             筆記id(name: noteId, type: str)\n
             筆記內容(name: content, type: str)\n
-        後端回: status code 200 if success\n
+
+        後端回: \n
+            200 if OK.\n
 
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED\n
+        Serializer的raise_exception=False: 404,\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = SaveNoteSerializer

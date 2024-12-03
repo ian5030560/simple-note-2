@@ -5,8 +5,8 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import Logout  # 新建檔案改這個
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
+from .models import Logout
+from db_modules import UserPersonalInfo
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -16,11 +16,11 @@ from django.middleware.csrf import get_token
 class LogoutView(APIView):
     """
     忘記密碼:\n
-       \tLogout成功: Response HTTP_200_OK.\n
+       \tLogout成功:200.\n
 
     其他例外:\n
-        Serializer的raise_exception=False: Response HTTP_404_NOT_FOUND,\n
-        JSONDecodeError: Response HTTP_405_METHOD_NOT_ALLOWED.\n
+        Serializer的raise_exception=False: 404.\n
+        JSONDecodeError: 405.\n
     """
 
     serializer_class = LogoutSerializer
