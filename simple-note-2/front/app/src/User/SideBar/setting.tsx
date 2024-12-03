@@ -17,7 +17,7 @@ const Upload = ({ onUpload }: UploadProps) => {
     return <>
         {
             picture ? <Flex vertical gap={3}>
-                <Image src={picture} width={100} height={100} placeholder={<Skeleton.Image />} alt="載入圖片錯誤" />
+                <Image src={picture} placeholder={<Skeleton.Image />} alt="載入圖片錯誤" style={{ maxWidth: 100, maxHeight: 100 }} />
                 <Button type="dashed" icon={<SyncOutlined />} block onClick={() => ref.current?.click()}>更換</Button>
             </Flex> : <Empty imageStyle={{ width: 100, height: 100 }} description={<Button icon={<BsUpload />}
                 block type="dashed" onClick={() => ref.current?.click()}>上傳</Button>} />
@@ -56,7 +56,7 @@ interface SettingModalProp {
 }
 const SettingModal = (prop: SettingModalProp) => {
     const { info, theme } = useAPI();
-    const { username, themes, applyTheme, deleteTheme, password } = useUser();
+    const { username, themes, applyTheme, deleteTheme, password, changePicture } = useUser();
     const [loading, setLoading] = useState(false);
     const [notifyAPI, notifyContextHolder] = notification.useNotification({ placement: "topRight" });
     const [changePassword, setChangePassword] = useState(false);
@@ -106,10 +106,11 @@ const SettingModal = (prop: SettingModalProp) => {
         const [name, id] = value.split("-");
 
         const theme = {
-            id: DEFAULT_THEME_ID ? null : id,
-            name: DEFAULT_THEME_ID ? null : name,
+            id: id === DEFAULT_THEME_ID ? null : id,
+            name: id === DEFAULT_THEME_ID ? null : name,
         }
-        info.update(username!, { theme }).then(ok => {
+        console.log(theme);
+        info.update(username, { theme }).then(ok => {
             if (!ok) throw new Error();
             notifyAPI.success({ message: "更新成功", description: "主題更新成功" });
             applyTheme(id);
@@ -133,7 +134,7 @@ const SettingModal = (prop: SettingModalProp) => {
             notifyAPI.success({
                 message: "更換成功",
                 description: "密碼更換成功"
-            })
+            });
         }).catch(() => notifyAPI.error({
             message: "更換失敗",
             description: "密碼更換失敗"
@@ -142,6 +143,24 @@ const SettingModal = (prop: SettingModalProp) => {
             setLoading(false);
         });
     }, [info, notifyAPI, password, username]);
+
+    const handleChangePicture = useCallback((src: string) => {
+        if (!username) return;
+
+        setLoading(true);
+        info.update(username, { image: src }).then(ok => {
+            if (!ok) throw new Error();
+            changePicture(src);
+            notifyAPI.success({
+                message: "更換成功",
+                description: "照片更換成功"
+            });
+        }).catch(() => notifyAPI.error({
+            message: "更換失敗",
+            description: "照片更換失敗"
+        })).finally(() => setLoading(false));
+
+    }, [changePicture, info, notifyAPI, username]);
 
     const dropDownRender: SelectProps["dropdownRender"] = useCallback((menu: React.ReactElement) => <>
         {menu}
@@ -157,7 +176,7 @@ const SettingModal = (prop: SettingModalProp) => {
     return <Modal open={prop.open} onCancel={prop.onClose} centered title="設定" footer={null}>
         <Flex vertical gap={10}>
             <Flex align="center" gap={16}>
-                <Upload onUpload={() => { }} />
+                <Upload onUpload={handleChangePicture} />
                 <Flex vertical gap={8}>
                     <Typography.Text strong>使用者名稱</Typography.Text>
                     <Typography.Text>{username}</Typography.Text>

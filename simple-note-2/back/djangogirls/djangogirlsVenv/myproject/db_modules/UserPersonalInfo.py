@@ -237,7 +237,7 @@ def update_profile_photo_by_username(usernames_input, profile_photo_input):
         print(e)
         # 回朔防止資料庫損壞
         session.rollback()
-        return str(e)
+        return False
     finally:
         session.close()   
 
