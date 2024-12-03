@@ -47,11 +47,9 @@ class NewMediaFileView(APIView):
             username = data.get("username")  # 帳號名稱
             filename = data.get("filename")  # 文件名稱
             content = request.FILES.get("content")  # 文件內容
-            # mimetype = request.POST.get("mimetype")  # 媒體種類
             notename = data.get("notename")
 
             print(username, filename, content, notename)
-            # content = content.encode('utf-8')
             content = content.read()
 
             # db check if exist
