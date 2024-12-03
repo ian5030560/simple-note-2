@@ -30,7 +30,7 @@ def create_session():
 
 
 # give file_name check file_name
-def check_file_name(usernames_input, note_name_input, file_name_input):
+def check_file_name(usernames_input, note_title_id_input, file_name_input):
     session = create_session()
     try:
         user_id_query = (
@@ -43,7 +43,7 @@ def check_file_name(usernames_input, note_name_input, file_name_input):
             .filter(
                 and_(
                     User_Note_Data.user_id == user_id_query[0],
-                    User_Note_Data.note_name == note_name_input,
+                    User_Note_Data.note_title_id == note_title_id_input,
                 )
             )
             .first()
@@ -75,10 +75,10 @@ def check_file_name(usernames_input, note_name_input, file_name_input):
         session.close()
 
 
-# 給username, note_name 插入file_name
+# 給username, note_title_id 插入file_name
 def insert_file_name(
     usernames_input,
-    note_name_input,
+    note_title_id_input,
     file_name_input,
 ):
     session = create_session()
@@ -93,13 +93,13 @@ def insert_file_name(
         .filter(
             and_(
                 User_Note_Data.user_id == user_id_query[0],
-                User_Note_Data.note_name == note_name_input,
+                User_Note_Data.note_title_id == note_title_id_input,
             )
         )
         .first()
     )
     if not note_id_query:
-        print(f"Note {note_name_input} for user {usernames_input} not found.")
+        print(f"Note {note_title_id_input} for user {usernames_input} not found.")
         return False
     stmt = insert(User_File_Data).values(
         note_id=note_id_query[0],
@@ -118,8 +118,8 @@ def insert_file_name(
         session.close()
 
 
-# Give username note_name file_name update file_name
-def update_file_name(usernames_input, note_name_input, file_name_input):
+# Give username note_title_id file_name update file_name
+def update_file_name(usernames_input, note_title_id_input, file_name_input):
     session = create_session()
     user_id_query = (
         session.query(User_Personal_Info.id)
@@ -131,7 +131,7 @@ def update_file_name(usernames_input, note_name_input, file_name_input):
         .filter(
             and_(
                 User_Note_Data.user_id == user_id_query[0],
-                User_Note_Data.note_name == note_name_input,
+                User_Note_Data.note_title_id == note_title_id_input,
             )
         )
         .first()
