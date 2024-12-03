@@ -30,7 +30,7 @@ class ViewMediaFileView(APIView):
 
     serializer_class = ViewMediaFileSerializer
 
-    def get(self, request, username, notename, filename, format=None):
+    def get(self, request, username, noteId, filename, format=None):
         # 构建文件路径
         file_path = os.path.join(settings.BASE_DIR, 'db_modules', 'fileTemp', filename)
         
@@ -43,7 +43,7 @@ class ViewMediaFileView(APIView):
         if not mime_type:
             mime_type = 'application/octet-stream'
         
-        checkExistValue = UserFileData.check_file_name(username, notename, filename)
+        checkExistValue = UserFileData.check_file_name(username, noteId, filename)
         # if exist, change name
         if checkExistValue == True:
             # 打开并读取文件

@@ -49,19 +49,19 @@ class NewMediaFileView(APIView):
             filename = data.get("filename")  # 文件名稱
             print(request.FILES)
             content = request.FILES.get("content")  # 文件內容
-            notename = data.get("notename")
+            noteId = data.get("noteId")
 
-            print(username, filename, content, notename)
+            print(username, filename, content, noteId)
             content = content.read()
 
             # db check if exist
-            checkExistValue = UserFileData.check_file_name(username, notename, filename)
+            checkExistValue = UserFileData.check_file_name(username, noteId, filename)
             # if exist, change name
             if checkExistValue == True:
                 filename += "(1)"
             
             # db save info
-            dbSaved = UserFileData.insert_file_name(username, notename, filename)
+            dbSaved = UserFileData.insert_file_name(username, noteId, filename)
             
             # 创建一个 SaveFile 实例，并指定保存文件的文件夹路径
             saver = SaveFile('db_modules/fileTemp')
@@ -70,14 +70,7 @@ class NewMediaFileView(APIView):
             folderSaved = saver.saveNewFile(filename, content)
             print(folderSaved)
             if dbSaved and folderSaved == True:
-                url = (
-                    "http://localhost:8000/viewMediaFile/"
-                    + str(username)
-                    + "/"
-                    + str(notename)
-                    + "/"
-                    + str(filename)
-                )
+                url = f"http://localhost:8000/media/{username}/{noteId}/{filename}"
                 return HttpResponse(url, status=200)
 
             elif dbSaved or folderSaved != True:

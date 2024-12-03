@@ -10,7 +10,7 @@ export default function User(){
     const { id } = useParams();
     const {themes, dark, username} = useUser();
 
-    usePageTitle(username!);
+    usePageTitle(`${username}的筆記`);
 
     const seed = useMemo(() => {
         const current = themes.find(it => it.using);

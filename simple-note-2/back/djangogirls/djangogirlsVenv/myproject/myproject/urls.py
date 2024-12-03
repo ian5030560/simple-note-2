@@ -120,8 +120,8 @@ media_patterns = [
     path('delete/', DeleteFileView.as_view(), name='media_delete'),
     path('view/', ViewMediaFileView.as_view(), name='media_view'),
     path('<username>/', ViewMediaFileView.as_view(), name='media_view_user'),
-    path('<username>/<notename>/', ViewMediaFileView.as_view(), name='media_view_note'),
-    path('<username>/<notename>/<filename>/', ViewMediaFileView.as_view(), name='media_view_file'),
+    path('<username>/<noteId>/', ViewMediaFileView.as_view(), name='media_view_note'),
+    path('<username>/<noteId>/<filename>/', ViewMediaFileView.as_view(), name='media_view_file'),
 ]
 
 # User collaborate

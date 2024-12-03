@@ -14,7 +14,7 @@ const API = {
 
   File: {
     add: `${BASE_URL}/media/new/`,
-    delete: `${BASE_URL}/media/delete`,
+    delete: `${BASE_URL}/media/delete/`,
   },
 
   Info: {
@@ -122,12 +122,10 @@ export default function useAPI() {
         const res = await fetch(API.File.delete, { ...postSetup(access), body: JSON.stringify({ username, url, note_title_id: noteId }) });
         return res.ok;
       },
-      add: async (username: string, file: File, noteName: string) => {
-        const access = getAccessToken();
+      add: async (username: string, file: File, noteId: string) => {
         const res = await fetch(API.File.add, {
-          method: "POST",
-          headers: { "user-agent": headers["user-agent"] },
-          body: createFormData({ username, filename: file.name, notename: noteName, content: file })
+          method: "POST", headers: {"user-agent": headers["user-agent"]},
+          body: createFormData({ username, filename: file.name, noteId, content: file })
         });
         if (!res.ok) throw new Error();
         return await res.text();

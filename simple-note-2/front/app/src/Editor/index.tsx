@@ -120,7 +120,7 @@ export default () => {
     const insertFile = useCallback((f: File) => {
         const node = find(id!);
 
-        return file.add(username!, f, node!.title)
+        return file.add(username!, f, node!.key)
             .catch(() => { throw new Error(`${f.name} is not uploaded successfully`); });
 
     }, [file, find, id, username]);

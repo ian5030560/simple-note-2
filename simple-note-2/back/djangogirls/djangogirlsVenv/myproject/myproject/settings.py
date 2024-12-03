@@ -85,8 +85,12 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES":
-        ["rest_framework.permissions.IsAuthenticated",], # 修改权限为认证过才能访问 
-    'DEFAULT_PARSER_CLASSES':['rest_framework.parsers.JSONParser',],
+        ["rest_framework.permissions.IsAuthenticated"], # 修改权限为认证过才能访问 
+    'DEFAULT_PARSER_CLASSES':[
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ],
     "DEFAULT_AUTHENTICATION_CLASSES":  #驗證
     [                               
         "rest_framework.authentication.SessionAuthentication",        # Session驗證

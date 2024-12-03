@@ -1,5 +1,5 @@
 import { $createParagraphNode, $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $insertNodeToNearestRoot, mergeRegister } from "@lexical/utils";
 import ImageNode, { $isImageNode, $createImageNode } from "../nodes/image";
@@ -11,7 +11,6 @@ import { FilePluginProps } from "../types";
 
 export default function ImageModalPlugin(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();
-    const fileRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
     const [node, setNode] = useState<LexicalNode>();
     
@@ -73,11 +72,10 @@ export default function ImageModalPlugin(props: FilePluginProps) {
         try{
             const src = await props.insertFile(image);
             editor.update(() => $insertImage(src));
-
-            fileRef.current!.value = "";
         }
         catch(err){
             if(err instanceof Error){
+                console.log(err);
                 editor.dispatchCommand(RAISE_ERROR, err);
             }
         }

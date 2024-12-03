@@ -22,21 +22,21 @@
 .resizeBottomLeft{
     bottom: 0;
     left: 0;
-    transform: translate(-50%, 50%);
+    transform: translateX(-50%);
     cursor: sw-resize;
 }
 
 .resizeBottom{
     bottom: 0;
     left: 50%;
-    transform: translate(-50%, 50%);
+    transform: translateX(-50%);
     cursor: s-resize;
 }
 
 .resizeBottomRight{
     bottom: 0;
     right: 0;
-    transform: translate(50%, 50%);
+    transform: translateX(50%);
     cursor: se-resize;
 }
 
@@ -44,14 +44,14 @@
     top: 50%;
     left: 0;
     cursor: w-resize;
-    transform: translateX(-50%);
+    transform: translate(-75%, -50%);
 }
 
 .resizeRight{
     top: 50%;
     right: 0;
     cursor: e-resize;
-    transform: translateX(50%);
+    transform: translate(75%, -50%);
 }
 
 .handlePin{
