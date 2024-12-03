@@ -14,6 +14,7 @@ export class Password{
 
     async compare(target: string){
         const encoded = await this.encode(target);
+        console.log(encoded, this._content);
         return encoded === this._content;
     }
 
@@ -48,6 +49,7 @@ type UserAction = {
     applyTheme: (id: string) => void;
     toggleDark: () => void;
     deleteTheme: (id: string) => void;
+    changePicture: (src: string) => void;
 };
 
 export const DEFAULT_THEME_ID = "defaultTheme";
@@ -92,7 +94,8 @@ const store = create<UserAction & UserState>((set) => ({
         if (index === -1) deleted.map(it => ({ ...it, using: it.id === DEFAULT_THEME_ID }));
 
         return { themes: [...deleted] };
-    })
+    }),
+    changePicture: (src) => set(() => ({picture: src})),
 }));
 
 const useUser = store;

@@ -25,6 +25,7 @@ class ThemeDict(typing.TypedDict):
     name: str
 
 class UpdateInfoData(typing.TypedDict):
+    image: str | None
     password: str | None
     theme: ThemeDict | None
     
@@ -68,27 +69,43 @@ class UpdateInfoView(APIView):
 
     def post(self, request: HttpRequest, format=None):
         data: UpdateInfoBody = json.loads(request.body)
-        print(data)
-        print("---------------------------------------")
+
         username = data["username"]
         if(not username or not UserPersonalInfo.check_username(username)): return Response(status=status.HTTP_403_FORBIDDEN)
         innerData = data["data"]
-        if("password" in innerData.keys()):
+        
+        if(innerData["image"]):
+            image = innerData["image"]
+            checkImageExist = UserPersonalInfo.check_profile_photo_by_username(username)
+            insertImageValue: bool
+            if(checkImageExist == False):
+                insertImageValue = UserPersonalInfo.insert_profile_photo_by_username(username, image)
+            else:
+                insertImageValue = UserPersonalInfo.update_profile_photo_by_username(username, image)
+            if(not insertImageValue): return Response(status=status.HTTP_417_EXPECTATION_FAILED)
+            
+        if(innerData["password"]):
             password = innerData["password"]
             info = UserPersonalInfo.check_user_personal_info(username)
             if(info == False): return Response(status=status.HTTP_400_BAD_REQUEST)
-            UserPersonalInfo.update_user_password_by_usernames(username, password)
-                
-        if("theme" in innerData.keys()):
+            
+            import hashlib
+            addr = hashlib.sha256()
+            b_password = bytes(password, encoding='utf-8')
+            addr.update(b_password)
+            hash_hexdigest = addr.hexdigest()
+            
+            UserPersonalInfo.update_user_password_by_usernames(username, hash_hexdigest)
+            
+        if(innerData["theme"]):
             theme = innerData["theme"]
-            isDefaultTheme = not theme["id"] and not theme["name"]
+            isDefaultTheme = not ("id" in theme) and not ("name" in theme)
             if(isDefaultTheme):
                 UserPersonalInfo.update_user_theme_id_by_usernames(username, theme["id"])
             else:
                 checkThemeExist = UserPersonalThemeData.check_theme_name(username, theme["name"])
                 if(not checkThemeExist): return Response(status=status.HTTP_400_BAD_REQUEST)
                 sccuess = UserPersonalInfo.update_user_theme_id_by_usernames(username, theme["id"])
-                print(sccuess)
                 if(not sccuess): return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 
         return Response(status=status.HTTP_200_OK)
