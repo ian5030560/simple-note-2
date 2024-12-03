@@ -6,8 +6,6 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import UpdateInfo  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
-from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
@@ -16,9 +14,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 import typing
-
-"""@csrf_exempt"""
-"""@csrf_protect"""
 
 class ThemeDict(typing.TypedDict):
     id: str
@@ -109,104 +104,6 @@ class UpdateInfoView(APIView):
                 if(not sccuess): return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 
         return Response(status=status.HTTP_200_OK)
-        # try:
-        #     data = json.loads(request.body)
-        #     username = data.get("username")  # 帳號名稱
-        #     image = ""  # 預設頭像 = null
-        #     theme = ""  # 預設name = null
-        #     themeOldName = ""
-        #     themeNewName = ""
-        #     themeData = "" # 預設data = null
-        #     password = ""  # 預設密碼 = null
-        #     image = data.get("image")  # 更新的頭像
-            
-        #     theme = data.get('theme["data"]')  # 更新的主題
-        #     if theme:         
-        #         themeOldName = theme["oldName"]
-        #         themeNewName = theme["newName"]
-        #         themeData = theme["data"]
-        #         if themeData:
-        #             colorLightPrimary = themeData["colorLightPrimary"]
-        #             colorLightNeutral = themeData["colorLightNeutral"]
-        #             colorDarkPrimary = themeData["colorDarkPrimary"]
-        #             colorDarkNeutral = themeData["colorDarkNeutral"]
-        #     password = data.get("password")  # 更新的密碼
-
-        #     # theme: {
-        #     #    name: ,
-        #     #    data 
-        #     # }
-            
-        #     # 2024/5/7 缺check isNull
-        #     if image != "":
-        #         checkImageExist = UserPersonalInfo.check_profile_photo_by_username(username)
-        #         if checkImageExist != False:
-        #             print(1)
-        #             insertImageValue = UserPersonalInfo.update_profile_photo_by_username(username, image)
-        #         else:
-        #             print(2)
-        #             insertImageValue = UserPersonalInfo.insert_profile_photo_by_username(
-        #                 username, image
-        #             )
-        #         if insertImageValue == True:
-        #             return Response(status=status.HTTP_200_OK)
-        #         else:
-        #             return Response(
-        #                 insertImageValue, status=status.HTTP_400_BAD_REQUEST
-        #             )
-
-        #     # 2024/5/14 缺check theme method
-        #     # 2024/5/16 缺update theme name and data
-        #     if theme != "":
-        #         # 2024/5/21 不管
-        #         # checkThemeExist = UserPersonalThemeData.check_theme_name(username, themeName)
-        #         # if checkThemeExist == True: # theme exist
-        #         #     insertThemeNameValue = UserPersonalThemeData.insert_theme_name_by_username(username, themeName)
-        #         #     insertThemeDataValue = UserPersonalThemeData.insert_themeData_by_usernames(username, themeData)
-        #         # else:s
-        #         insertThemeValue = UserPersonalThemeData.insert_themeData_by_usernames(
-        #             colorLightPrimary, colorLightNeutral, colorDarkPrimary, colorDarkNeutral
-        #         )
-        #         if insertThemeValue == 1:
-        #             return Response(status=status.HTTP_201_CREATED)
-        #         else:
-        #             return Response(
-        #                 insertThemeValue, status=status.HTTP_401_UNAUTHORIZED
-        #             )
-
-        #     if password != "":
-        #         checkPasswordeExist = UserPersonalInfo.check_username_password(
-        #             username, password
-        #         )
-        #         if checkPasswordeExist == 1:
-        #             updatePassword = UserPersonalInfo.update_user_password_by_usernames(
-        #             username, password
-        #         )
-        #             if updatePassword == True:
-        #                 return Response(status=status.HTTP_202_ACCEPTED)
-        #             else:
-        #                 return Response(
-        #                      status=status.HTTP_402_PAYMENT_REQUIRED
-        #                 )
-                    
-        #     # serializer
-        #     serializer = UpdateInfoSerializer(data=data)
-
-        #     if serializer.is_valid(raise_exception=True):
-        #         serializer.save()
-        #         print("serializer is valid")
-        #         return Response(serializer.data)
-
-        #     elif serializer.is_valid(raise_exception=False):
-        #         print("serializer is not valid", end="")
-        #         print(serializer.errors)
-        #         return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-        # # Handle JSON decoding error
-        # except json.JSONDecodeError:
-        #     username = None
-        #     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
 def csrf(self, request):
     return JsonResponse({"csrfToken": get_token(request)})

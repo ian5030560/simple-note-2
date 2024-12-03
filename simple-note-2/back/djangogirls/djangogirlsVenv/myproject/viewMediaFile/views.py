@@ -7,9 +7,6 @@ sys.path.append("..db_modules")
 from .serializers import *
 from .models import ViewMediaFile  # 新建檔案改這個
 from db_modules import UserFileData  # 資料庫來的檔案
-from db_modules import UserNoteData  # 資料庫來的檔案
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
-from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response

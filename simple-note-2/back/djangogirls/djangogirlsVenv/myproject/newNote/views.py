@@ -6,20 +6,13 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import NewNote  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
-from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from db_modules import UserSubNoteData  # 資料庫來的檔案
 from rest_framework import status
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
-
-"""@csrf_exempt"""
-"""@csrf_protect"""
-
 
 class NewNoteView(APIView):
     """

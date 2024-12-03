@@ -6,10 +6,7 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import LoadNoteTree  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules import UserNoteData  # 資料庫來的檔案
-from db_modules import UserPersonalInfo  # 資料庫來的檔案
-from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from db_modules import UserSubNoteData  # 資料庫來的檔案
 from db_modules import UserCollaborateNote  # 資料庫來的檔案
 from rest_framework import status
@@ -18,10 +15,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 import json
-
-"""@csrf_exempt"""
-"""@csrf_protect"""
-
 
 class LoadNoteTreeView(APIView):
     """
@@ -55,8 +48,7 @@ class LoadNoteTreeView(APIView):
             if notesData:  # 取得成功
                 singleNoteDataArray = [] # list of single note
                 multipleNoteDataArray = [] # list of multiple note
-                isCollaborativeNoteExist = 0 # check is Collaborative Note Exist? 0: no, 1: yes
-                
+
                 # single note
                 for i in range(len(notesData)):
                     notesDataID = notesData[i][1]
@@ -87,13 +79,7 @@ class LoadNoteTreeView(APIView):
                         multipleNoteData = {"noteId": noteTitleID, "noteName": noteName, "url": collaborateUrlList[i]}
                         multipleNoteDataArray.append(multipleNoteData)
 
-                # else: # url == null(False) 
-                #     multipleNoteData = []
-                #     multipleNoteDataArray.append(multipleNoteData)
-                    
                 respDict = {"one": singleNoteDataArray, "multiple": multipleNoteDataArray}
-                print(respDict)
-                print("------------------------------------------------------------")
                 return JsonResponse(respDict)
             
             elif notesData == False:  # SQL error
