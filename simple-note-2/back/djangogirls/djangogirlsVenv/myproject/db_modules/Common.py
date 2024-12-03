@@ -5,4 +5,4 @@ from sqlalchemy.ext.declarative import declarative_base
 # engine_url = "mysql+pymysql://root:ucdw6eak@localhost:3306/simplenote2"
 engine_url = "mysql+pymysql://root@localhost:3306/simplenote2db"
 # engine_url = "mysql+pymysql://root:root@localhost:3306/simplenote2db"
-engine = create_engine(engine_url, echo=True) 
+engine = create_engine(engine_url, echo=False) 

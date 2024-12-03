@@ -125,7 +125,7 @@ export default function useAPI() {
       add: async (username: string, file: File, noteName: string) => {
         const access = getAccessToken();
         const res = await fetch(API.File.add, {
-          ...postSetup(access),
+          method: "POST",
           headers: { "user-agent": headers["user-agent"] },
           body: createFormData({ username, filename: file.name, notename: noteName, content: file })
         });

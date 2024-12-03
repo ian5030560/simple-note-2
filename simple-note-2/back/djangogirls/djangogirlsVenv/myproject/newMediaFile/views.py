@@ -5,10 +5,10 @@ import json
 sys.path.append("..db_modules")
 
 from .serializers import *
-from .models import NewMediaFile
-from db_modules import UserFileData
-from db_modules.SaveFile import SaveFile
-from rest_framework import status
+from .models import NewMediaFile  # 新建檔案改這個
+from db_modules import UserFileData  # 資料庫來的檔案
+from db_modules.SaveFile import SaveFile  # 資料庫來的檔案
+from rest_framework import status, permissions
 from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -30,7 +30,7 @@ class NewMediaFileView(APIView):
         Serializer的raise_exception=False: 404.\n
         JSONDecodeError: 405.\n
     """
-
+    permission_classes = [permissions.AllowAny]
     serializer_class = NewMediaFileSerializer
 
     def get(self, request, format=None):
@@ -47,6 +47,7 @@ class NewMediaFileView(APIView):
 
             username = data.get("username")  # 帳號名稱
             filename = data.get("filename")  # 文件名稱
+            print(request.FILES)
             content = request.FILES.get("content")  # 文件內容
             notename = data.get("notename")
 

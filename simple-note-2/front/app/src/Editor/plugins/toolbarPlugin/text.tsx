@@ -3,7 +3,7 @@ import { Select } from "antd";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import useSelectionListener from "./useSelectionListener";
 import { $setBlocksType } from "@lexical/selection";
-import { $getSelection, $isRangeSelection, $createParagraphNode, $isElementNode, ElementNode, $isParagraphNode, LexicalNode } from "lexical";
+import { $getSelection, $isRangeSelection, $createParagraphNode, $isElementNode, ElementNode, $isParagraphNode } from "lexical";
 import { $createHeadingNode, $isHeadingNode } from "@lexical/rich-text";
 import { $findMatchingParent } from "@lexical/utils";
 
