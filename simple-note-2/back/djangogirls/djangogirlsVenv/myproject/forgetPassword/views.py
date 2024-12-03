@@ -6,10 +6,7 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import ForgetPassword  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
-from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
-from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status, permissions
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -20,10 +17,6 @@ from django.middleware.csrf import get_token
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
-
-"""@csrf_exempt"""
-"""@csrf_protect"""
-
 
 class ForgetPasswordView(APIView):
     """

@@ -6,8 +6,6 @@ sys.path.append("..db_modules")
 
 from .serializers import *
 from .models import GetTheme  # 新建檔案改這個
-from db_modules import UserFileData  # 資料庫來的檔案
-from db_modules import UserNoteData  # 資料庫來的檔案
 from db_modules import UserPersonalInfo  # 資料庫來的檔案
 from db_modules import UserPersonalThemeData  # 資料庫來的檔案
 from rest_framework import status
@@ -16,9 +14,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 import typing
-
-"""@csrf_exempt"""
-"""@csrf_protect"""
 
 class ThemeData(typing.TypedDict):
     colorLightPrimary: str
@@ -54,9 +49,6 @@ class GetThemeView(APIView):
     def post(self, request, format=None):
         try:
             data = json.loads(request.body)
-            print("------------------------------------------")
-            print(data)
-            print("------------------------------------------")
             username = data.get("username")  # 帳號名稱
             if(not username or not UserPersonalInfo.check_username(username)): return Response(status=status.HTTP_403_FORBIDDEN)
             
@@ -76,28 +68,7 @@ class GetThemeView(APIView):
             
             converted = list(map(convert, themes))
             return JsonResponse(converted, safe=False)
-            # themeContent = UserPersonalThemeData.check_all_theme_data (
-            #     username
-            # )  # 用username取得theme
-
-            # if themeContent != False:  # 取得成功
-            #     return HttpResponse(themeContent, status=status.HTTP_200_OK)
-            # elif themeContent == False:  # error
-            #     return Response(themeContent, status=status.HTTP_400_BAD_REQUEST)
-
-            # # serializer
-            # serializer = GetThemeSerializer(data=data)
-
-            # if serializer.is_valid(raise_exception=True):
-            #     serializer.save()
-            #     print("serializer is valid")
-            #     return Response(serializer.data)
-
-            # elif serializer.is_valid(raise_exception=False):
-            #     print("serializer is not valid", end="")
-            #     print(serializer.errors)
-            #     return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
+        
         # Handle JSON decoding error
         except json.JSONDecodeError:
             username = None
