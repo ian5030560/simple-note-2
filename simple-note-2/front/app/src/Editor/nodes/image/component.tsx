@@ -5,6 +5,7 @@ import { $getNodeByKey, CLICK_COMMAND } from "lexical";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import Resizer from "../../ui/resizer";
 import noImage from "../../../resource/no_image.png";
+import { Image } from "antd";
 
 type ImageProp = ImageNodeProp;
 const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) => {
@@ -50,11 +51,10 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
     }, [editor, handleClick]);
 
     return <>
-        {error ? <div><img src={noImage} alt={alt} width={width} height={height}/></div> :
-            <Resizer onResize={handleResize} showHandle={isSelected}>
-                <img src={src} alt={alt} ref={imageRef}
-                    width={width} height={height} />
-            </Resizer>}
+        {error ? <Image draggable={false} src={noImage} preview={false} alt={alt}
+            width={width} height={height} /> : <Resizer onResize={handleResize} showHandle={isSelected}>
+            <img src={src} alt={alt} ref={imageRef} width={width} height={height} />
+        </Resizer>}
     </>;
 }
 

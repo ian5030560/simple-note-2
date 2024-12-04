@@ -1,7 +1,7 @@
-import { $createParagraphNode, $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
+import { $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $insertNodeToNearestRoot, mergeRegister } from "@lexical/utils";
+import { mergeRegister } from "@lexical/utils";
 import ImageNode, { $isImageNode, $createImageNode } from "../nodes/image";
 import UploadModal from "../ui/uploadModal";
 import { useValidateNodeClasses } from "../utils";
@@ -48,14 +48,7 @@ export default function ImageModalPlugin(props: FilePluginProps) {
 
     const $insertImage = useCallback((src: string) => {
         const image = $createImageNode(src, "");
-        if (!node) {
-            $insertNodeToNearestRoot(image);
-        }
-        else {
-            const p = $createParagraphNode();
-            node.insertAfter(p);
-            p.selectStart().insertNodes([image]);
-        }
+        node?.insertAfter(image);
     }, [node]);
 
     const handleURL = useCallback((url?: string) => {

@@ -6,7 +6,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $isMathNode } from ".";
 import "katex/dist/katex.css";
 import { TextAreaRef } from "antd/es/input/TextArea";
-  
+
 interface MathEditorProps {
     value: string;
     onValueChange: (value: string) => void;
@@ -99,8 +99,19 @@ export default function MathView(props: MathViewProps) {
         });
     }, [editor, props.nodeKey]);
 
-    return <Popover placement="bottom" arrow={false}
-        onOpenChange={handleOpenChange} open={open} trigger="click"
+    useEffect(() => {
+        const {body} = document;
+        function handleEscape(e: KeyboardEvent){
+            if(e.key === "Escape"){
+                setOpen(false);
+            }
+        }
+        body.addEventListener("keydown", handleEscape);
+
+        return () => body.removeEventListener("keydown", handleEscape);
+    }, []);
+
+    return <Popover placement="bottom" open={open} trigger="click" onOpenChange={handleOpenChange} 
         content={<MathEditor inputRef={ref} value={value} onValueChange={handleValueChange} />}>
         <MathRender content={props.content} inline={props.inline} />
     </Popover>

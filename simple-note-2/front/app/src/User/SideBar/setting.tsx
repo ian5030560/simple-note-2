@@ -14,6 +14,15 @@ const Upload = ({ onUpload }: UploadProps) => {
     const ref = useRef<HTMLInputElement>(null);
     const { picture } = useUser();
 
+    const handleChange = useCallback(() => {
+        const files = ref.current?.files;
+        if (files && files[0]) {
+            const reader = new FileReader();
+            reader.onload = () => onUpload(reader.result as string);
+            reader.readAsDataURL(files[0]);
+        }
+    }, [onUpload]);
+
     return <>
         {
             picture ? <Flex vertical gap={3}>
@@ -22,15 +31,7 @@ const Upload = ({ onUpload }: UploadProps) => {
             </Flex> : <Empty imageStyle={{ width: 100, height: 100 }} description={<Button icon={<BsUpload />}
                 block type="dashed" onClick={() => ref.current?.click()}>上傳</Button>} />
         }
-        <input aria-label="file" type="file" style={{ display: "none" }} ref={ref}
-            onChange={() => {
-                const files = ref.current?.files;
-                if (files && files[0]) {
-                    const reader = new FileReader();
-                    reader.onload = () => onUpload(reader.result as string);
-                    reader.readAsDataURL(files[0]);
-                }
-            }} />
+        <input aria-label="file" type="file" accept="image/*" style={{ display: "none" }} ref={ref} onChange={handleChange} />
     </>
 }
 

@@ -12,12 +12,12 @@ enum Direction {
     TOP = styles.resizeTop,
 }
 
-interface HandlePinProp {
+interface HandlePinprops {
     className: string | undefined;
     direction: Direction;
     onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => void;
 }
-const HandlePin = ({ className, direction, onPointerDown }: HandlePinProp) => <div className={`${className} ${direction}`} onPointerDown={onPointerDown}/>
+const HandlePin = ({ className, direction, onPointerDown }: HandlePinprops) => <div className={`${className} ${direction}`} onPointerDown={onPointerDown}/>
 
 type ResizeData = {
     element: {
@@ -29,14 +29,13 @@ type ResizeData = {
         y: number;
     }
 }
-interface ResizerProp {
+interface Resizerpropss {
     children: React.JSX.Element;
     showHandle?: boolean
-    onResizeStart?: () => void;
-    onResize?: (offsetWidth: number, offsetHeight: number) => void;
-    onResizeEnd?: () => void;
+    onResize: (width: number, height: number) => void;
 }
-const Resizer: React.FC<ResizerProp> = (prop) => {
+
+export default function Resizer(props: Resizerpropss){
 
     const directionRef = useRef<Direction>();
     const resizeData = useRef<ResizeData>({ element: { w: 0, h: 0 }, mouse: { x: 0, y: 0 } });
@@ -50,35 +49,53 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
 
         let offsetX = clientX - mouse.x;
         let offsetY = clientY - mouse.y;
+        
+        let offset: {x: number, y: number};
+        const ratio = element.w / element.h;
+        if(offsetX > offsetY){
+            offset = {x: offsetX, y: offsetX * (1 / ratio)};
+        }
+        else{
+            offset = {x: offsetY * ratio, y: offsetY};
+        }
+        switch(directionRef.current){
+            case Direction.TOPLEFT:
+                props.onResize(element.w - offset.x, element.h - offset.y);
+                break;
+            case Direction.TOP:
+                props.onResize(element.w, element.h - offsetY);
+                break;
+            case Direction.TOPRIGHT:
+                props.onResize(element.w - offset.x, element.h - offset.y);
+                break;
+            case Direction.BOTTOMLEFT:
+                props.onResize(element.w + offset.x, element.h + offset.y);
+                break;
+            case Direction.BOTTOM:
+                props.onResize(element.w, element.h + offsetY);
+                break;
+            case Direction.BOTTOMRIGHT:
+                props.onResize(element.w + offset.x, element.h + offset.y);
+                break;
+            case Direction.LEFT:
+                props.onResize(element.w - offsetX, element.h);
+                break;
+            default:
+                props.onResize(element.w + offsetX, element.h);
+        }
 
-        const isHorizontal = directionRef.current === Direction.LEFT || directionRef.current === Direction.RIGHT;
-        const isVertical = directionRef.current === Direction.TOP || directionRef.current === Direction.BOTTOM;
-
-        const invertX = [Direction.LEFT, Direction.TOPLEFT, Direction.BOTTOMLEFT];
-        const isInvertX = directionRef.current ? invertX.includes(directionRef.current) : false;
-
-        const invertY = [Direction.TOP, Direction.TOPLEFT, Direction.TOPRIGHT];
-        const isInvertY = directionRef.current ? invertY.includes(directionRef.current) : false;
-
-        offsetX = isVertical ? 0 : isInvertX ? -offsetX : offsetX;
-        offsetY = isHorizontal ? 0 : isInvertY ? -offsetY : offsetY;
-
-        prop.onResize?.(element.w + offsetX, element.h + offsetY);
-
-    }, [prop]);
+    }, [props]);
 
     const handlePointerUp = useCallback(() => {
         document.removeEventListener("pointermove", handlePointerMove);
         document.removeEventListener("pointerup", handlePointerUp);
         document.body.style.removeProperty("user-select");
-        prop.onResizeEnd?.();
-    }, [handlePointerMove, prop]);
+    }, [handlePointerMove]);
 
     const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>, direction: Direction) => {
         e.preventDefault();
         if (!ref.current) return;
 
-        prop.onResizeStart?.();
         directionRef.current = direction;
         const { width, height } = ref.current.getBoundingClientRect();
         resizeData.current = {
@@ -89,11 +106,11 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
         document.addEventListener("pointerup", handlePointerUp);
         document.body.style.userSelect = "none";
 
-    }, [handlePointerMove, handlePointerUp, prop]);
+    }, [handlePointerMove, handlePointerUp]);
 
     return <div ref={ref}>
-        {React.cloneElement(prop.children, { style: { outline: prop.showHandle ? "2px solid rgb(60,132,244)" : undefined } })}
-        {prop.showHandle &&
+        {React.cloneElement(props.children, { style: { outline: props.showHandle ? "2px solid rgb(60,132,244)" : undefined } })}
+        {props.showHandle &&
             <>
                 <HandlePin className={styles.handlePin} direction={Direction.BOTTOM} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOM)} />
                 <HandlePin className={styles.handlePin} direction={Direction.BOTTOMLEFT} onPointerDown={(e) => handlePointerDown(e, Direction.BOTTOMLEFT)} />
@@ -107,5 +124,3 @@ const Resizer: React.FC<ResizerProp> = (prop) => {
         }
     </div>
 };
-
-export default Resizer;

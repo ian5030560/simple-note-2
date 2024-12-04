@@ -4,7 +4,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { $patchStyleText, $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { $getSelection, $isRangeSelection } from "lexical";
 import useSelectionListener from "./useSelectionListener";
-import { BrushFill } from "react-bootstrap-icons";
+import { BgColorsOutlined } from "@ant-design/icons";
 
 export default function Background() {
 
@@ -25,7 +25,7 @@ export default function Background() {
         $patchStyleText(selection, { "background-color": color });
     }, []);
 
-    return <ColorPickerButton icon={<BrushFill size={16} />} value={color ?? undefined}
+    return <ColorPickerButton icon={<BgColorsOutlined />} value={color ?? undefined}
         onRemove={() => editor.update(() => $updateColor(null))}
         onChange={(hex) => editor.update(() => $updateColor(hex === color ? null : hex))} />
 }

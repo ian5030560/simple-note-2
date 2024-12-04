@@ -1,13 +1,13 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useCallback, useEffect } from "react";
-import { $getNodeByKey, $getSelection, $isRangeSelection, COMMAND_PRIORITY_CRITICAL, INDENT_CONTENT_COMMAND, LexicalNode } from "lexical";
+import { $getSelection, $isRangeSelection, COMMAND_PRIORITY_CRITICAL, INDENT_CONTENT_COMMAND } from "lexical";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
-import { $isListNode, $getListDepth, ListNode, ListItemNode, $isListItemNode } from "@lexical/list";
+import { $isListNode, $getListDepth, ListNode } from "@lexical/list";
 
 export default function ListMaxLevelPlugin({ maxLevel }: { maxLevel: number }){
     const [editor] = useLexicalComposerContext();
 
-    const isPermitted = useCallback(() => {
+    const $isPermitted = useCallback(() => {
         const selection = $getSelection();
 
         if (!$isRangeSelection(selection)) return false;
@@ -31,7 +31,7 @@ export default function ListMaxLevelPlugin({ maxLevel }: { maxLevel: number }){
         // }
 
         mergeRegister(
-            editor.registerCommand(INDENT_CONTENT_COMMAND, () => !isPermitted(), COMMAND_PRIORITY_CRITICAL),
+            editor.registerCommand(INDENT_CONTENT_COMMAND, () => !$isPermitted(), COMMAND_PRIORITY_CRITICAL),
             // editor.registerMutationListener(ListItemNode, (mutations) => {
             //     Array.from(mutations).forEach(([key, tag]) => {
             //         let element = editor.getElementByKey(key);
@@ -52,7 +52,7 @@ export default function ListMaxLevelPlugin({ maxLevel }: { maxLevel: number }){
             //     });
             // }),
         )
-    }, [editor, isPermitted]);
+    }, [editor, $isPermitted]);
 
     return null;
 }

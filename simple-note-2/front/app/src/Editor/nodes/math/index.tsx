@@ -1,6 +1,6 @@
 import { Skeleton } from "antd";
 import katex from "katex";
-import { $applyNodeReplacement, DecoratorNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput, EditorConfig, LexicalEditor, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
+import { $applyNodeReplacement, DecoratorNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput, EditorConfig, LexicalNode, NodeKey, SerializedLexicalNode, Spread } from "lexical";
 import React from "react";
 import { Suspense } from "react";
 
@@ -27,7 +27,7 @@ export default class MathNode extends DecoratorNode<React.ReactNode> {
     constructor(content: string, inline?: boolean, key?: NodeKey) {
         super(key);
         this.__content = content;
-        this.__inline = !inline ? false : inline;
+        this.__inline = inline || false;
     }
 
     setContent(content: string) {
@@ -58,7 +58,7 @@ export default class MathNode extends DecoratorNode<React.ReactNode> {
         );
     }
 
-    createDOM(_config: EditorConfig, _editor: LexicalEditor): HTMLElement {
+    createDOM(_config: EditorConfig): HTMLElement {
         const element = document.createElement(this.__inline ? "span" : "div");
         element.classList.add(_config.theme.math);
         return element;
@@ -108,7 +108,7 @@ export default class MathNode extends DecoratorNode<React.ReactNode> {
 
     static importDOM(): DOMConversionMap | null {
         return {
-            math: (_: Node) => ({
+            math: () => ({
                 conversion: $convertMathElement,
                 priority: 1,
             })
@@ -117,7 +117,7 @@ export default class MathNode extends DecoratorNode<React.ReactNode> {
 }
 
 export function $createMathNode(content: string, inline?: boolean) {
-    return $applyNodeReplacement(new MathNode(content, inline)) as MathNode;
+    return new MathNode(content, inline);
 }
 
 export function $isMathNode(node: LexicalNode | null | undefined): node is MathNode {

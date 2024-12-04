@@ -7,8 +7,9 @@ import { WithAnchorProps } from "../../ui/action";
 import { $isAtNodeEnd } from "@lexical/selection";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import styles from "./floatingLinkEditor.module.css";
-import { PencilSquare, Trash3Fill } from "react-bootstrap-icons";
+import { PencilSquare } from "react-bootstrap-icons";
 import { autoUpdate, flip, FloatingPortal, inline, offset, shift, useDismiss, useFloating, useInteractions, useTransitionStyles } from "@floating-ui/react";
+import { DeleteOutlined } from "@ant-design/icons";
 
 function getSelectedNode(selection: RangeSelection): TextNode | ElementNode {
     const anchor = selection.anchor;
@@ -115,7 +116,7 @@ export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPlugin
                     <Input type="url" ref={inputRef} style={{ display: editable ? undefined : "none" }} />
                     <Flex gap={"small"}>
                         <Button type={editable ? "primary" : "default"} icon={<PencilSquare size={16} />} onClick={handleEdit} />
-                        <Button icon={<Trash3Fill size={16} />} onClick={handleDiscard} />
+                        <Button icon={<DeleteOutlined />} onClick={handleDiscard} />
                     </Flex>
                 </Flex>
             </div>

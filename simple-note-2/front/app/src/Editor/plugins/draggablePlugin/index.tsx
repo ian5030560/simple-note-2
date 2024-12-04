@@ -8,7 +8,6 @@ import { getBlockFromPoint } from "./getBlockFromPoint";
 import { eventFiles } from "@lexical/rich-text";
 import { $getNodeByKey, NodeKey } from "lexical";
 import { WithAnchorProps } from "../../ui/action";
-import { WithOverlayProps } from "../../types";
 
 const HEIGHT = 5;
 type HandlerState = {
@@ -30,8 +29,9 @@ function gap(topElement: HTMLElement, bottomElement: HTMLElement) {
     return Math.abs(y + height - top);
 }
 
-interface DraggablePluginProps extends WithAnchorProps, WithOverlayProps {
+interface DraggablePluginProps extends WithAnchorProps {
     items: PlusItem[];
+    overlayContainer: HTMLElement | null;
 }
 export default function DraggablePlugin(props: DraggablePluginProps) {
     const [editor] = useLexicalComposerContext();
@@ -44,8 +44,8 @@ export default function DraggablePlugin(props: DraggablePluginProps) {
 
     const handleMouseMove = useCallback((e: MouseEvent) => {
         const { clientX, clientY } = e;
-        if (!anchor || !scroller || !inside(clientX, clientX, scroller) || !editor.isEditable()) return;
-        
+        if (!anchor || !scroller || !inside(clientX, clientY, scroller) || !editor.isEditable()) return;
+
         const key = getBlockFromPoint(editor, clientX, clientY, scroller);
         if (!key) return;
 
@@ -143,7 +143,7 @@ export default function DraggablePlugin(props: DraggablePluginProps) {
         scroller?.addEventListener("mouseenter", handleMouseMove);
         scroller?.addEventListener("mousemove", handleMouseMove);
         scroller?.addEventListener("mouseleave", handleMouseLeave);
-        
+
         scroller?.addEventListener("dragover", handleDragOver);
         scroller?.addEventListener("drop", handleDrop);
 
@@ -156,6 +156,19 @@ export default function DraggablePlugin(props: DraggablePluginProps) {
         }
     }, [anchor, handleDragOver, handleDrop, handleMouseLeave, handleMouseMove, scroller]);
 
+    const clear = useCallback(() => {
+        setDragging(false);
+        setHandler(undefined);
+        setLine(undefined);
+        setId(undefined);
+    }, []);
+
+    useEffect(() => editor.registerUpdateListener(() => {
+        if(!id) return;
+        const node = editor.read(() => $getNodeByKey(id));
+        if(!node) clear();
+    }), [clear, editor, id]);
+
     const handleDragStart = useCallback((e: React.DragEvent) => {
         if (eventFiles(e.nativeEvent)[0] || !e.dataTransfer || !id) return;
         const element = editor.getElementByKey(id);
@@ -165,16 +178,9 @@ export default function DraggablePlugin(props: DraggablePluginProps) {
         setDragging(true);
     }, [editor, id]);
 
-    const handleDragEnd = useCallback(() => {
-        setDragging(false);
-        setHandler(undefined);
-        setLine(undefined);
-        setId(undefined);
-    }, []);
-
     return createPortal(<>
-        {handler && id && <DragHandler anchor={props.anchor} items={props.items} pos={handler} overlayContainer={props.overlayContainer}
-            onDragStart={handleDragStart} onDragEnd={handleDragEnd} nodeKey={id} />}
+        {handler && id && <DragHandler anchor={props.anchor} items={props.items} pos={handler}
+            overlayContainer={props.overlayContainer} onDragStart={handleDragStart} onDragEnd={clear} nodeKey={id} />}
         {line && <DragLine pos={{ x: line.x, y: line.y }} size={{ width: line.width, height: line.height }} />}
     </>, anchor || document.body);
 }

@@ -6,7 +6,7 @@ import { $getSelection, $isRangeSelection, $isTextNode } from "lexical";
 import { $patchStyleText, $getSelectionStyleValueForProperty } from "@lexical/selection";
 import { InputNumber, Select } from "antd";
 import FONT_FAMILY, { DEFAULT } from "./fontFamily";
-import { Highlighter } from "react-bootstrap-icons";
+import { FontColorsOutlined } from "@ant-design/icons";
 
 export const FontColor: React.FC = () => {
 
@@ -27,7 +27,7 @@ export const FontColor: React.FC = () => {
         $patchStyleText(selection, { "color": color });
     }, []);
     
-    return <ColorPickerButton icon={<Highlighter size={16} />} value={value ?? undefined}
+    return <ColorPickerButton icon={<FontColorsOutlined />} value={value ?? undefined}
         onRemove={() => editor.update(() => $updateColor(null))}
         onChange={(hex) => editor.update(() => $updateColor(hex === value ? null : hex))} />
 }

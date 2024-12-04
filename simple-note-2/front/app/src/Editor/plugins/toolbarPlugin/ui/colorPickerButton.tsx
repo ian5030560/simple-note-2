@@ -18,8 +18,8 @@ export default function ColorPickerButton(props: ColorPickerButtonProps){
     const panelRender: ColorPickerProps["panelRender"] = (_, {components: {Picker, Presets}}) => <Space direction="vertical">
         <div><Picker/></div>
         <Space direction="vertical">
-            <Button icon={<X size={16}/>} type="primary" onClick={props.onRemove}>移除</Button>
             <Presets/>
+            <Button icon={<X size={16}/>} block onClick={props.onRemove}>移除</Button>
         </Space>
     </Space>
 

@@ -1,90 +1,67 @@
+import { FunctionOutlined } from "@ant-design/icons";
 import { PlusItem } from "./plugins/draggablePlugin/component";
-import { Camera, CardImage, CodeSlash, FileText, LayoutThreeColumns, PaletteFill, Paragraph, PersonVideo, PlusSlashMinus, Table, TypeH1, TypeH2, TypeH3, TypeH4, TypeH5, TypeH6 } from "react-bootstrap-icons";
-
-const ICON_SIZE = 24;
-const heading = [
-    {
-        value: "h1",
-        label: "標題一",
-        icon: <TypeH1 size={ICON_SIZE} />,
-    },
-    {
-        value: "h2",
-        label: "標題二",
-        icon: <TypeH2 size={ICON_SIZE} />,
-    },
-    {
-        value: "h3",
-        label: "標題三",
-        icon: <TypeH3 size={ICON_SIZE} />,
-    },
-    {
-        value: "h4",
-        label: "標題四",
-        icon: <TypeH4 size={ICON_SIZE} />,
-    },
-    {
-        value: "h5",
-        label: "標題五",
-        icon: <TypeH5 size={ICON_SIZE} />,
-    },
-    {
-        value: "h6",
-        label: "標題六",
-        icon: <TypeH6 size={ICON_SIZE} />,
-    },
-]
+import { Camera, CardImage, CodeSquare, FileText, LayoutThreeColumns, PaletteFill, Paragraph, Percent, PersonVideo, PlusSlashMinus, Table, Type, TypeH1, TypeH2, TypeH3, TypeH4, TypeH5, TypeH6 } from "react-bootstrap-icons";
 
 export default [
     {
-        value: "paragraph",
+        key: "paragraph",
         label: "段落",
-        icon: <Paragraph size={ICON_SIZE} />,
-    },
-    ...heading,
-    {
-        value: "code",
-        label: "程式碼",
-        icon: <CodeSlash size={ICON_SIZE}/>
+        icon: <Paragraph />,
     },
     {
-        value: "math",
-        label: "數學公式",
-        icon: <PlusSlashMinus size={ICON_SIZE} />,
+        key: "heading",
+        label: "標題",
+        icon: <Type />,
+        children: [
+            { key: "h1", label: "標題一", icon: <TypeH1 /> },
+            { key: "h2", label: "標題二", icon: <TypeH2 /> },
+            { key: "h3", label: "標題三", icon: <TypeH3 /> },
+            { key: "h4", label: "標題四", icon: <TypeH4 /> },
+            { key: "h5", label: "標題五", icon: <TypeH5 /> },
+            { key: "h6", label: "標題六", icon: <TypeH6 /> },
+        ],
+    },
+    { key: "code", label: "程式碼", icon: <CodeSquare /> },
+    {
+        key: "math", label: "數學公式", icon: <FunctionOutlined />,
+        children: [
+            { key: "block-math", label: "區塊", icon: <PlusSlashMinus /> },
+            { key: "inline-math", label: "行內", icon: <Percent /> }
+        ]
     },
     {
-        value: "image",
+        key: "image",
         label: "圖片",
-        icon: <CardImage size={ICON_SIZE} />
+        icon: <CardImage />
     },
     {
-        value: "table",
+        key: "table",
         label: "表格",
-        icon: <Table size={ICON_SIZE} />
+        icon: <Table />
     },
     {
-        value: "column",
+        key: "column",
         label: "欄",
-        icon: <LayoutThreeColumns size={ICON_SIZE} />
+        icon: <LayoutThreeColumns />
     },
     {
-        value: "canvas",
+        key: "canvas",
         label: "畫布",
-        icon: <PaletteFill size={ICON_SIZE} />
+        icon: <PaletteFill />
     },
     {
-        value: "video",
+        key: "video",
         label: "影片",
-        icon: <PersonVideo size={ICON_SIZE} />
+        icon: <PersonVideo />
     },
     {
-        value: "document",
+        key: "document",
         label: "文件",
-        icon: <FileText size={ICON_SIZE} />
+        icon: <FileText />
     },
     {
-        value: "imageToText",
+        key: "imageToText",
         label: "圖文識別",
-        icon: <Camera size={ICON_SIZE} />
+        icon: <Camera />
     },
 ] as PlusItem[];

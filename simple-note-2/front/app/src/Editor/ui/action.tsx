@@ -3,13 +3,13 @@ import { NodeKey } from "lexical";
 import { useEffect, useMemo } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React from "react";
-import { autoUpdate, flip, offset, Placement, useFloating, useTransitionStyles } from "@floating-ui/react";
+import { autoUpdate, offset, Placement, useFloating, useTransitionStyles } from "@floating-ui/react";
 
 export interface WithAnchorProps {
     anchor: HTMLElement | null;
 }
 interface ActionProps {
-    nodeKey: NodeKey | undefined | null;
+    nodeKey?: NodeKey | null;
     children: React.ReactNode;
     placement: Placement;
     open: boolean;
@@ -22,7 +22,7 @@ export default function Action(props: ActionProps) {
     const { refs, floatingStyles, context } = useFloating({
         open: props.open, strategy: "absolute", placement: props.placement,
         whileElementsMounted: autoUpdate,
-        middleware: [flip(), offset(({ rects }) => {
+        middleware: [offset(({ rects }) => {
             const { placement, inner, offset } = props;
 
             if (!inner) {
@@ -43,8 +43,10 @@ export default function Action(props: ActionProps) {
         initial: { opacity: 0 }, open: { opacity: 1 }, close: { opacity: 0 }
     });
 
-    const reference = useMemo(() => props.nodeKey ? editor.getElementByKey(props.nodeKey) : null, [editor, props.nodeKey]);
-    useEffect(() => refs.setReference(reference), [reference, refs]);
+    useEffect(() => {
+        const reference = props.nodeKey ? editor.getElementByKey(props.nodeKey) : null;
+        refs.setReference(reference);
+    }, [editor, props.nodeKey, refs]);
 
     return createPortal(<>
         {

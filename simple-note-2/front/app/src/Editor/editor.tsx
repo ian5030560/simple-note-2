@@ -37,7 +37,8 @@ import ImageToTextPlugin from "./plugins/imageToTextPlugin";
 import VideoModalPlugin from "./plugins/videoModalPlugin";
 import items from "./items";
 import TableOfContentPlugin from "./plugins/tableOfContentPlugin";
-import MathPlugin from "./plugins/mathPlugin";
+import MathModalPlugin from "./plugins/mathPlugins/modal";
+import MathActionPlugin from "./plugins/mathPlugins/action";
 import ErrorPlugin from "./plugins/errorPlugin";
 import ColumnActionPlugin from "./plugins/columnPlugins/action";
 import ColumnModalPlugin from "./plugins/columnPlugins/modal";
@@ -119,7 +120,7 @@ export default function Editor(props: EditorProps) {
                     <AIPlaceholderPlugin />
                     <AIQuestionPlugin />
                     <CodeHighlightPlugin />
-                    <CodeActionPlugin anchor={anchor} overlayContainer={overlayContainer} />
+                    <CodeActionPlugin anchor={anchor} />
                     <ColumnPlugin />
                     <ColumnActionPlugin anchor={anchor} />
                     <ColumnModalPlugin />
@@ -131,7 +132,8 @@ export default function Editor(props: EditorProps) {
                     <ImageToTextPlugin />
                     <TableOfContentPlugin />
                     <VideoModalPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
-                    <MathPlugin />
+                    <MathModalPlugin />
+                    <MathActionPlugin anchor={anchor}/>
                 </div>
             </div>
         </LexicalComposer>

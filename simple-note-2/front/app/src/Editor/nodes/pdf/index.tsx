@@ -4,7 +4,7 @@ import PDF from "./component";
 
 export type SerializedPDFNode = Spread<{width: number, height: number, src: string, index?:number}, SerializedDecoratorBlockNode>
 
-function convertPDFElement(dom: HTMLElement){
+function $convertPDFElement(dom: HTMLElement){
     const src = dom.getAttribute("src");
     const width = dom.getAttribute("width");
     const height = dom.getAttribute("height");
@@ -128,7 +128,7 @@ export default class PDFNode extends DecoratorBlockNode {
     static importDOM (): DOMConversionMap | null{
         return {
             pdf: () => ({
-                conversion: convertPDFElement,
+                conversion: $convertPDFElement,
                 priority: 1,
             })
         }

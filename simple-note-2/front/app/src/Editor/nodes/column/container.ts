@@ -17,7 +17,7 @@ export type SerializedLayoutContainerNode = Spread<
     SerializedElementNode
 >;
 
-function convertLayoutContainerElement(
+function $convertLayoutContainerElement(
     domNode: HTMLElement,
 ): DOMConversionOutput | null {
     const number = domNode.getAttribute("data-column-number");
@@ -80,7 +80,7 @@ export default class ColumnContainerNode extends ElementNode {
                     return null;
                 }
                 return {
-                    conversion: convertLayoutContainerElement,
+                    conversion: $convertLayoutContainerElement,
                     priority: 2,
                 };
             },

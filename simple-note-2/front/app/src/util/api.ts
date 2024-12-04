@@ -5,7 +5,6 @@ const BASE_URL = `http://localhost:8000`;
 
 const API = {
   Auth: {
-    // registerOrLogin: `${BASE_URL}/registerAndLogin/`,
     signUp: `${BASE_URL}/register/`,
     signIn: `${BASE_URL}/login/`,
     forgetPassword: `${BASE_URL}/forgetPassword/`,

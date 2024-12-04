@@ -7,12 +7,11 @@ import { CODE_LANGUAGE_FRIENDLY_NAME_MAP } from "@lexical/code";
 import Action, { WithAnchorProps } from "../../ui/action";
 import { inside } from "../../utils";
 import { Clipboard } from "react-bootstrap-icons";
-import { WithOverlayProps } from "../../types";
 import { BaseSelectRef } from "rc-select/lib/BaseSelect";
 
 const LANGUAGES = CODE_LANGUAGE_FRIENDLY_NAME_MAP;
 
-type CodeActionPluginProps = WithAnchorProps & WithOverlayProps;
+type CodeActionPluginProps = WithAnchorProps;
 
 export default function CodeActionPlugin(props: CodeActionPluginProps) {
     const [editor] = useLexicalComposerContext();

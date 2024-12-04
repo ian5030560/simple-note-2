@@ -4,9 +4,10 @@ import useDirective from "./directive";
 import { Link, useParams } from "react-router-dom";
 import useNoteManager from "../../../util/useNoteManager";
 import useAPI from "../../../util/api";
-import { PlusLg, Trash3, XLg } from "react-bootstrap-icons";
+import { PlusLg, XLg } from "react-bootstrap-icons";
 import { NoteIndexedDB } from "../../../util/store";
 import useUser from "../../../util/useUser";
+import { DeleteOutlined } from "@ant-design/icons";
 
 const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="text" size="small" tabIndex={-1}
     onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(e) }} {...props} />;
@@ -47,7 +48,7 @@ const NoteTree = () => {
                         <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3 }}>
                             <Typography.Text>{data.title as string}</Typography.Text>
                             <Flex gap={3}>
-                                {!first && <ToolButton icon={<Trash3 size={16} />} onClick={() => remove(data)} />}
+                                {!first && <ToolButton icon={<DeleteOutlined />} onClick={() => remove(data)} />}
                                 <ToolButton icon={<PlusLg size={16} />} onClick={() => add(data)} />
                             </Flex>
                         </Flex>

@@ -1,5 +1,5 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getSelection, SELECTION_CHANGE_COMMAND, CommandListenerPriority, TextNode, BaseSelection } from "lexical";
+import { $getSelection, SELECTION_CHANGE_COMMAND, CommandListenerPriority, BaseSelection } from "lexical";
 import { useEffect } from "react";
 import { mergeRegister } from "@lexical/utils";
 
