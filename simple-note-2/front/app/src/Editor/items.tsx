@@ -1,6 +1,6 @@
 import { FunctionOutlined } from "@ant-design/icons";
 import { PlusItem } from "./plugins/draggablePlugin/component";
-import { Camera, CardImage, CodeSquare, FileText, LayoutThreeColumns, PaletteFill, Paragraph, Percent, PersonVideo, PlusSlashMinus, Table, Type, TypeH1, TypeH2, TypeH3, TypeH4, TypeH5, TypeH6 } from "react-bootstrap-icons";
+import { Camera, CodeSquare, FileText, Image, ImageAlt, ImageFill, LayoutThreeColumns, PaletteFill, Paragraph, Percent, PersonVideo, PlusSlashMinus, Table, Type, TypeH1, TypeH2, TypeH3, TypeH4, TypeH5, TypeH6 } from "react-bootstrap-icons";
 
 export default [
     {
@@ -30,9 +30,11 @@ export default [
         ]
     },
     {
-        key: "image",
-        label: "圖片",
-        icon: <CardImage />
+        key: "image", label: "圖片", icon: <Image />,
+        children: [
+            { key: "block-image", label: "區塊", icon: <ImageFill /> },
+            { key: "inline-image", label: "行內", icon: <ImageAlt /> }
+        ]
     },
     {
         key: "table",

@@ -18,3 +18,8 @@
     flex-direction: column;
     height: 100%;
 }
+
+.editorRoot{
+    outline: none;
+    cursor: text;
+}

@@ -6,8 +6,8 @@ import { Button, Flex, message, Select } from "antd";
 import { CODE_LANGUAGE_FRIENDLY_NAME_MAP } from "@lexical/code";
 import Action, { WithAnchorProps } from "../../ui/action";
 import { inside } from "../../utils";
-import { Clipboard } from "react-bootstrap-icons";
 import { BaseSelectRef } from "rc-select/lib/BaseSelect";
+import { CopyOutlined } from "@ant-design/icons";
 
 const LANGUAGES = CODE_LANGUAGE_FRIENDLY_NAME_MAP;
 
@@ -94,7 +94,7 @@ export default function CodeActionPlugin(props: CodeActionPluginProps) {
                 options={Object.keys(LANGUAGES).map(key => ({ value: key, label: LANGUAGES[key] }))}
                 onDropdownVisibleChange={setOpen} />
             <Button type="primary" ghost style={{ marginLeft: 5 }} size="small"
-                onClick={handleCopy} icon={<Clipboard />} />
+                onClick={handleCopy} icon={<CopyOutlined/>} />
             {contextholder}
         </Flex>
     </Action>;

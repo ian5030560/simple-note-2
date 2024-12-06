@@ -17,7 +17,7 @@ import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 import ListMaxLevelPlugin from "./plugins/listMaxLevel";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-import LinkPlugin from "./plugins/linkPlugins/link";
+import LinkPlugin from "./plugins/linkPlugins";
 import FloatingEditorLinkPlugin from "./plugins/linkPlugins/floatingLinkEditor";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import { ClearEditorPlugin } from "@lexical/react/LexicalClearEditorPlugin";
@@ -38,10 +38,10 @@ import VideoModalPlugin from "./plugins/videoModalPlugin";
 import items from "./items";
 import TableOfContentPlugin from "./plugins/tableOfContentPlugin";
 import MathModalPlugin from "./plugins/mathPlugins/modal";
-import MathActionPlugin from "./plugins/mathPlugins/action";
 import ErrorPlugin from "./plugins/errorPlugin";
 import ColumnActionPlugin from "./plugins/columnPlugins/action";
 import ColumnModalPlugin from "./plugins/columnPlugins/modal";
+import MathPlugin from "./plugins/mathPlugins";
 import mergeRefs from "merge-refs";
 
 function $createEmptyContent() {
@@ -104,7 +104,7 @@ export default function Editor(props: EditorProps) {
             }
             <div id="editor-scroller" className={styles.editorScroller}>
                 <div id="editor-anchor" className={styles.anchor} ref={mergeRefs(containerRef, (node) => setAnchor(node))}>
-                    <RichTextPlugin />
+                    <RichTextPlugin rootClassName={styles.editorRoot} />
                     <DraggablePlugin items={items} anchor={anchor} overlayContainer={overlayContainer} />
                     <AutoFocusPlugin />
                     <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
@@ -132,11 +132,11 @@ export default function Editor(props: EditorProps) {
                     <ImageToTextPlugin />
                     <TableOfContentPlugin />
                     <VideoModalPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
+                    <MathPlugin />
                     <MathModalPlugin />
-                    <MathActionPlugin anchor={anchor}/>
                 </div>
             </div>
         </LexicalComposer>
-        <div style={{position: "absolute", inset: 0, pointerEvents: "none" }} ref={(node) => setOverlayContainer(node)} />
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }} ref={(node) => setOverlayContainer(node)} />
     </div>;
 }

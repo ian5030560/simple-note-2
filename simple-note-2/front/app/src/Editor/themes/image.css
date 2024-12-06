@@ -1,0 +1,37 @@
+.simple-note-2-image{
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+.simple-note-2-block-image{
+    display: flex;
+}
+
+.simple-note-2-block-image[data-block-image-format="left"]{
+    justify-content: flex-start;
+}
+
+.simple-note-2-block-image[data-block-image-format="center"]{
+    justify-content: center;
+}
+
+.simple-note-2-block-image[data-block-image-format="right"]{
+    justify-content: flex-end;
+}
+
+.simple-note-2-inline-image{
+    display: inline;
+    position: relative;
+    z-index: 1;
+}
+
+.simple-note-2-inline-image[data-inline-image-float="left"]{
+    float: left;
+    margin-right: 1em;
+}
+
+.simple-note-2-inline-image[data-inline-image-float="right"]{
+    float: right;
+    margin-left: 1em;
+}

@@ -10,7 +10,10 @@ import { $createHeadingNode, HeadingTagType } from "@lexical/rich-text";
 import { $createParagraphNode } from "lexical";
 import { $createCodeNode } from "@lexical/code";
 
-export default function RichTextPlugin() {
+interface RichTextPluginProps{
+    rootClassName: string;
+}
+export default function RichTextPlugin(props: RichTextPluginProps) {
     const { token } = theme.useToken();
     const [editor] = useLexicalComposerContext();
 
@@ -37,5 +40,5 @@ export default function RichTextPlugin() {
     }, COMMAND_PRIORITY_CRITICAL), [editor]);
 
     return <LexicalRichTextPlugin placeholder={<></>} ErrorBoundary={LexicalErrorBoundary}
-        contentEditable={<ContentEditable style={{ color: token.colorText, outline: "none", cursor: "text" }} />} />
+        contentEditable={<ContentEditable className={props.rootClassName} style={{ color: token.colorText }} />} />
 }

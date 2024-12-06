@@ -3,16 +3,18 @@ import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import ColumnContainerNode from "./column/container";
 import ColumnItemNode from "./column/item";
 import DocumentNode from "./document";
-import ImageNode from "./image";
+import ImageNode from "./image/block";
+import InlineImageNode from "./image/inline";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import VideoNode from "./video";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { MarkNode } from "@lexical/mark";
-import MathNode from "./math";
+import BlockMathNode from "./math/block";
+import InlineMathNode from "./math/inline";
 
-export default [
+const nodes = [
     HeadingNode,
     MarkNode,
     QuoteNode,
@@ -27,10 +29,14 @@ export default [
     ColumnItemNode,
     DocumentNode,
     ImageNode,
+    InlineImageNode,
     TableCellNode,
     TableRowNode,
     TableNode,
     VideoNode,
-    MathNode,
+    BlockMathNode,
+    InlineMathNode,
     // PDFNode,
 ];
+
+export default nodes;

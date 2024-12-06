@@ -3,7 +3,7 @@ import "./index.css";
 import code from "./code";
 import table from "./table";
 
-export default {
+const themes: EditorThemeClasses = {
     ltr: "simple-note-2-ltr",
     rtl: "simple-note-2-ltr",
     paragraph: "simple-note-2-paragraph",
@@ -52,6 +52,13 @@ export default {
     },
     document: "simple-note-2-document",
     image: "simple-note-2-image",
-    math: "simple-note-2-math",
+    blockImage: "simple-note-2-block-image",
+    inlineImage: "simple-note-2-inline-image",
+    math: {
+        block: "simple-note-2-block-math",
+        inline: "simple-note-2-inline-math"
+    },
     ...table,
-} as EditorThemeClasses
+};
+
+export default themes;

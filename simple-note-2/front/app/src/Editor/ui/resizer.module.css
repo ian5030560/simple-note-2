@@ -61,3 +61,8 @@
     position: absolute;
     z-index: 1000;
 }
+
+.resizeContainer{
+    position: relative;
+    display: inline-block;
+}

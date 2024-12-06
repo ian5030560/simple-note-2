@@ -1,25 +1,32 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import ImageNode, { ImageNodeProp } from ".";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $getNodeByKey, CLICK_COMMAND } from "lexical";
+import { $getNodeByKey, CLICK_COMMAND, NodeKey } from "lexical";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
-import Resizer from "../../ui/resizer";
-import noImage from "../../../resource/no_image.png";
+import noImage from "../../../../resource/no_image.png";
 import { Image } from "antd";
+import Resizer from "../../../ui/resizer";
+import { $isImageNode } from "..";
 
-type ImageProp = ImageNodeProp;
-const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) => {
+export interface ImageViewProps {
+    src: string;
+    alt: string;
+    width: number | "inherit";
+    height: number | "inherit";
+    nodeKey?: NodeKey;
+}
+export default function ImageView({ src, alt, height, width, nodeKey }: ImageViewProps) {
     const [editor] = useLexicalComposerContext();
-
-    const imageRef = useRef<HTMLImageElement>(null);
+    const imageRef = useRef<HTMLSpanElement>(null);
     const [isSelected, setSelected] = useLexicalNodeSelection(nodeKey!);
     const [error, setError] = useState(false);
 
     const handleResize = useCallback((width: number, height: number) => {
         editor.update(() => {
-            const node = $getNodeByKey(nodeKey!)! as ImageNode;
-            node.setWidth(width);
-            node.setHeight(height);
+            const node = $getNodeByKey(nodeKey!);
+            if ($isImageNode(node)) {
+                node.setWidth(width);
+                node.setHeight(height);
+            }
         })
     }, [editor, nodeKey]);
 
@@ -51,11 +58,14 @@ const ImageView: React.FC<ImageProp> = ({ src, alt, height, width, nodeKey }) =>
     }, [editor, handleClick]);
 
     return <>
-        {error ? <Image draggable={false} src={noImage} preview={false} alt={alt}
-            width={width} height={height} /> : <Resizer onResize={handleResize} showHandle={isSelected}>
-            <img src={src} alt={alt} ref={imageRef} width={width} height={height} />
-        </Resizer>}
+        {
+            error ? <Image draggable={false} src={noImage} preview={false} alt={alt}
+                width={width} height={height} /> :
+                <Resizer onResize={handleResize} showHandle={isSelected}>
+                    <span ref={imageRef}>
+                        <Image preview={false} src={src} alt={alt} width={width} height={height} draggable={false} />
+                    </span>
+                </Resizer>
+        }
     </>;
 }
-
-export default ImageView;

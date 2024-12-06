@@ -101,7 +101,7 @@ export default function NavigateMenu() {
         },
         {
             key: "team",
-            label: <Dropdown menu={{ items: members }} trigger={["click"]} placement="bottom">
+            label: <Dropdown menu={{ items: members }} trigger={["click", "hover"]} placement="bottom">
                 <Content label="團隊" icon={<PeopleFill />} />
             </Dropdown>,
             hidden: !md,

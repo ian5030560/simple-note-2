@@ -2,6 +2,7 @@
 @import "./column.css";
 @import "./table.css";
 @import "./document.css";
+@import "./image.css";
 
 .simple-note-2-paragraph,
 [class^="simple-note-2-heading-"] {
@@ -142,15 +143,8 @@
     outline: 2px solid skyblue;
 }
 
-.simple-note-2-math{
+.simple-note-2-block-math, .simple-note-2-inline-math{
     cursor: default;
-    -webkit-user-select: none;
-    user-select: none;
-}
-
-.simple-note-2-image{
-    display: inline-block;
-    position: relative;
     -webkit-user-select: none;
     user-select: none;
 }

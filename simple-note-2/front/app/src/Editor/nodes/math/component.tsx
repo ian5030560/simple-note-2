@@ -3,9 +3,9 @@ import katex from "katex";
 import { Input, Popover } from "antd";
 import { $getNodeByKey, NodeKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isMathNode } from ".";
 import "katex/dist/katex.css";
 import { TextAreaRef } from "antd/es/input/TextArea";
+import { $isMathNode } from ".";
 
 interface MathEditorProps {
     value: string;
@@ -49,7 +49,7 @@ export const MathRender = forwardRef((props: MathRenderProps, bindRef: React.For
     </span>
 })
 
-interface MathViewProps extends MathRenderProps {
+export interface MathViewProps extends MathRenderProps {
     nodeKey: NodeKey,
 }
 export default function MathView(props: MathViewProps) {
@@ -82,7 +82,7 @@ export default function MathView(props: MathViewProps) {
         else {
             editor.update(() => {
                 const node = $getNodeByKey(props.nodeKey);
-                if ($isMathNode(node)) {
+                if($isMathNode(node)){
                     setValue(node.getContent());
                 }
             })

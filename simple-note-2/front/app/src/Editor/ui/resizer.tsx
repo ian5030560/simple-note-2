@@ -108,7 +108,7 @@ export default function Resizer(props: Resizerpropss){
 
     }, [handlePointerMove, handlePointerUp]);
 
-    return <div ref={ref}>
+    return <div className={styles.resizeContainer} ref={ref}>
         {React.cloneElement(props.children, { style: { outline: props.showHandle ? "2px solid rgb(60,132,244)" : undefined } })}
         {props.showHandle &&
             <>

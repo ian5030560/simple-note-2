@@ -3,11 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Flex, Input, Typography } from "antd";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { SendOutlined } from "@ant-design/icons";
-import MathNode, { $createMathNode } from "../../nodes/math";
 import { MathRender } from "../../nodes/math/component";
 import { useValidateNodeClasses, $contains } from "../../utils";
 import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
 import Modal from "../../ui/modal";
+import BlockMathNode, { $createBlockMathNode } from "../../nodes/math/block";
+import InlineMathNode, { $createInlineMathNode } from "../../nodes/math/inline";
 
 export default function MathModalPlugin() {
     const [open, setOpen] = useState(false);
@@ -16,7 +17,7 @@ export default function MathModalPlugin() {
     const [input, setInput] = useState<string>();
     const [inline, setInline] = useState(false);
 
-    useValidateNodeClasses([MathNode]);
+    useValidateNodeClasses([BlockMathNode, InlineMathNode]);
 
     useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
         if (value === "block-math" || value === "inline-math") {
@@ -34,7 +35,7 @@ export default function MathModalPlugin() {
     }, []);
 
     const $insertInlineMath = useCallback(() => {
-        const math = $createMathNode(input!, true);
+        const math = $createInlineMathNode(input!);
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) {
             $getRoot().selectEnd().insertParagraph()?.selectStart().insertNodes([math]);
@@ -53,7 +54,7 @@ export default function MathModalPlugin() {
     }, [input, node]);
 
     const $insertBlockMath = useCallback(() => {
-        const math = $createMathNode(input!, false);
+        const math = $createBlockMathNode(input!);
         const selection = $getSelection();
         if(!$isRangeSelection(selection)){
             $getRoot().selectEnd().insertNodes([math]);
