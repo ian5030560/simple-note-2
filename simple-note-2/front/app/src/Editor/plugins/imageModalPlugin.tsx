@@ -39,11 +39,11 @@ export default function ImageModalPlugin(props: FilePluginProps) {
             })
         }
         return mergeRegister(
-            editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
-                if (value === "block-image" || value === "inline-image") {
+            editor.registerCommand(PLUSMENU_SELECTED, ({ node, keyPath }) => {
+                if (keyPath[0] === "file" && keyPath[1] === "image") {
                     setOpen(true);
                     setNode(node);
-                    setInline(value === "inline-image");
+                    setInline(keyPath[2] === "inline");
                 }
                 return false;
             }, COMMAND_PRIORITY_CRITICAL),
@@ -70,9 +70,11 @@ export default function ImageModalPlugin(props: FilePluginProps) {
             const focus = selection.focus.getNode();
 
             if (!node || $contains(node, focus)) {
+                console.log(0);
                 focus.select(offset).insertNodes([image]);
             }
             else {
+                console.log(1);
                 node.selectEnd().insertNodes([image]);
             }
         }

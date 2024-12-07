@@ -1,6 +1,6 @@
 import { createPortal } from "react-dom"
 import { NodeKey } from "lexical";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React from "react";
 import { autoUpdate, offset, Placement, useFloating, useTransitionStyles } from "@floating-ui/react";

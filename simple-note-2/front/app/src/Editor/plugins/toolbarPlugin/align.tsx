@@ -4,21 +4,21 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { FORMAT_ELEMENT_COMMAND, ElementFormatType, $isElementNode, $isRangeSelection, $isNodeSelection, ElementNode } from "lexical";
 import { $isDecoratorBlockNode, DecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import { $findMatchingParent } from "@lexical/utils";
-import { TextCenter, TextLeft, TextRight } from "react-bootstrap-icons";
 import useSelectionListener from "./useSelectionListener";
+import { TextLeft, TextCenter, TextRight } from "../../../util/icons";
 
 const options: Option[] = [
     {
         key: "left",
-        icon: <TextLeft size={16} />
+        icon: <TextLeft />
     },
     {
         key: "center",
-        icon: <TextCenter size={16} />
+        icon: <TextCenter />
     },
     {
         key: "right",
-        icon: <TextRight size={16} />
+        icon: <TextRight />
     }
 ]
 

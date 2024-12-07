@@ -8,7 +8,8 @@ import Tesseract, { createWorker } from "tesseract.js";
 import { $contains } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import Modal from "../ui/modal";
-import { Fullscreen, Upload } from "react-bootstrap-icons";
+import { UploadOutlined } from "@ant-design/icons";
+import { Fullscreen } from "../../util/icons";
 
 // const codes = require("../../../resource/tesseract.json").map((lang: { code: string, name: string }) => lang.code) as string[];
 const codes = ["eng", "chi_sim", "chi_tra", "jpn", "kor"];
@@ -53,25 +54,16 @@ export default function ImageToTextPlugin() {
   const camRef = useRef<Webcam>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
-  // const worker = useRef<Tesseract.Worker>();
   const [loading, setLoading] = useState(false);
   const [node, setNode] = useState<LexicalNode>();
 
-  useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
-    if (value === "imageToText") {
+  useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, keyPath }) => {
+    if (keyPath[0] === "imageToText") {
       setNode(node);
       setOpen(true);
     };
     return false;
   }, COMMAND_PRIORITY_CRITICAL), [editor]);
-
-  // useEffect(() => {
-  //   if (worker.current) return;
-  //   async function work() {
-  //     worker.current = await createWorker(codes, Tesseract.OEM.DEFAULT);
-  //   }
-  //   work();
-  // }, []);
 
   useEffect(() => {
     if (!camRef.current) return;
@@ -173,7 +165,7 @@ export default function ImageToTextPlugin() {
               screenshotFormat="image/png" mirrored />
           <div className={styles.cameraMask} ref={maskRef} />
           <button title="trigger" className={styles.cameraButton} onClick={handleClick}>
-            <Fullscreen size={40} />
+            <Fullscreen />
           </button>
         </Flex>
       },
@@ -181,7 +173,7 @@ export default function ImageToTextPlugin() {
         key: "file",
         label: "上傳文件",
         children: <>
-          <Button type="primary" block icon={<Upload/>}
+          <Button type="primary" block icon={<UploadOutlined />}
             onClick={() => fileRef.current?.click()}>上傳</Button>
           <input aria-label="file" type="file" accept="image/*" style={{ display: "none" }} ref={fileRef} onChange={handleUpload} />
         </>

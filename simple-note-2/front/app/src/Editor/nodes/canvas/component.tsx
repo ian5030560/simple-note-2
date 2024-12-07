@@ -8,7 +8,7 @@ import { Button } from "antd";
 import { $isCanvasNode } from ".";
 import Resizer from "../../ui/resizer";
 import CanvasModal from "./modal";
-import { PencilFill } from "react-bootstrap-icons";
+import { PencilFill } from "../../../util/icons";
 
 const removeStyleFromSvg_HACK = (svg: SVGElement) => {
     const styleTag = svg?.firstElementChild?.firstElementChild;

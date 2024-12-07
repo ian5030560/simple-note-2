@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Excalidraw } from "@excalidraw/excalidraw";
 import { ExcalidrawImperativeAPI, ExcalidrawInitialDataState } from "@excalidraw/excalidraw/types/types";
 import { Button, Flex, Modal } from "antd";
-import { FloppyFill } from "react-bootstrap-icons";
 import { DeleteOutlined } from "@ant-design/icons";
+import { FloppyFill } from "../../../util/icons";
 
 interface CanvasModalProps {
     initData: ExcalidrawInitialDataState;

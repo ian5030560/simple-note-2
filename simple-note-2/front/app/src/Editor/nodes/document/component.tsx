@@ -1,10 +1,10 @@
-import { Button, Flex, Typography } from "antd";
+import { Flex, Typography } from "antd";
 import { filesize } from "filesize";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey } from "lexical";
-import { CloseOutlined } from "@ant-design/icons";
-import { FileEarmarkArrowUpFill } from "react-bootstrap-icons";
+import { CloseButton } from "../../ui/button";
+import { FileEarmarkArrowUpFill } from "../../../util/icons";
 
 const { Text } = Typography;
 interface DocumentProps {
@@ -31,12 +31,12 @@ export default function Document(prop: DocumentProps) {
             node.remove();
         })
     }, [editor, prop.nodeKey]);
-    
-    return <Flex gap={5} onClick={() => window.open(prop.src, "_blank", "noreferrer")} style={{padding: 5}}>
-        <FileEarmarkArrowUpFill size={24} />
+
+    return <Flex gap={8} align="center" style={{ padding: 8 }}
+        onClick={() => window.open(prop.src, "_blank", "noreferrer")}>
+        <FileEarmarkArrowUpFill />
         <Text strong style={{ marginRight: 8 }}>{prop.name}</Text>
         <Text>{filesize(size)}</Text>
-        <Button icon={<CloseOutlined />} type="default"
-            onClick={handleDelete} style={{ top: 0, right: 0, position: "absolute" }} />
+        <CloseButton onClick={handleDelete} style={{ top: 3, right: 3, position: "absolute" }} />
     </Flex>
 }

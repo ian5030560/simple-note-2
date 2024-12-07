@@ -1,7 +1,7 @@
 import React from "react";
 import { Button, ColorPicker, ColorPickerProps, Space } from "antd";
-import { X } from "react-bootstrap-icons";
 import {red, yellow, green, blue, presetPalettes} from "@ant-design/colors";
+import { CloseOutlined } from "@ant-design/icons";
 
 type Presets = Required<ColorPickerProps>['presets'][number];
 
@@ -19,7 +19,7 @@ export default function ColorPickerButton(props: ColorPickerButtonProps){
         <div><Picker/></div>
         <Space direction="vertical">
             <Presets/>
-            <Button icon={<X size={16}/>} block onClick={props.onRemove}>移除</Button>
+            <Button icon={<CloseOutlined />} block onClick={props.onRemove}>移除</Button>
         </Space>
     </Space>
 

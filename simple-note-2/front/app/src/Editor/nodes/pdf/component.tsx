@@ -10,7 +10,7 @@ import PDFNode from '.';
 import 'react-pdf/dist/Page/TextLayer.css';
 import FloatBoard from '../../ui/floatBoard';
 import AlignableBlock from '../../ui/alignable';
-import { ArrowClockwise, CaretLeftFill, CaretRightFill } from 'react-bootstrap-icons';
+import { CaretLeftFill, CaretRightFill, ArrowClockwise } from '../../../util/icons';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.mjs',
@@ -54,7 +54,7 @@ const PDF = ({ url, width, index, height, ...prop }: PDFprop) => {
         } placement="bottom" onEnter={() => setShow(true)} onLeave={() => setShow(false)}>
             <div className={styles.pageActionMask} style={{ width: width, height: height }}>
                 <Document file={url} noData={<p className={styles.dangerText}>此PDF檔案沒有內容</p>} error={<p className={styles.dangerText}>讀取發生錯誤</p>}
-                    loading={<Flex justify='center' align='center'><Spin indicator={<ArrowClockwise size={24} />} spinning /></Flex>}
+                    loading={<Flex justify='center' align='center'><Spin indicator={<ArrowClockwise />} spinning /></Flex>}
                     onLoadSuccess={({ numPages }) => { pagesRef.current = numPages }}>
                     <Page pageNumber={index} />
                 </Document>

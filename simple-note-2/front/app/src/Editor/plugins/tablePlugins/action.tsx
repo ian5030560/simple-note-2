@@ -11,7 +11,7 @@ import { $getSelection, $isRangeSelection, NodeKey, SELECTION_CHANGE_COMMAND } f
 import styles from "./action.module.css";
 import Action, { WithAnchorProps } from "../../ui/action";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
-import { PencilSquare } from "react-bootstrap-icons";
+import { PencilSquare } from "../../../util/icons";
 
 type TableActionPluginProps = WithAnchorProps;
 export default function TableActionPlugin(props: TableActionPluginProps) {
@@ -100,7 +100,7 @@ export default function TableActionPlugin(props: TableActionPluginProps) {
             <Dropdown menu={{ items }} trigger={["click"]} placement="bottom" autoAdjustOverflow
                 dropdownRender={(node) => cloneElement(node as React.JSX.Element, { className: styles.dropDown })}>
                 <Button type="text" className="simple-note-2-table-cell-action-button"
-                    icon={<PencilSquare size={16} />} />
+                    icon={<PencilSquare />} />
             </Dropdown>
         </div>
     </Action>;

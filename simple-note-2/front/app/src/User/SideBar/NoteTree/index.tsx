@@ -4,10 +4,9 @@ import useDirective from "./directive";
 import { Link, useParams } from "react-router-dom";
 import useNoteManager from "../../../util/useNoteManager";
 import useAPI from "../../../util/api";
-import { PlusLg, XLg } from "react-bootstrap-icons";
 import { NoteIndexedDB } from "../../../util/store";
 import useUser from "../../../util/useUser";
-import { DeleteOutlined } from "@ant-design/icons";
+import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
 const ToolButton = ({ onClick, ...props }: Omit<ButtonProps, "type" | "tabIndex" | "size">) => <Button type="text" size="small" tabIndex={-1}
     onClick={(e) => { e.stopPropagation(); e.preventDefault(); onClick?.(e) }} {...props} />;
@@ -25,7 +24,7 @@ const NoteTree = () => {
         <div>
             <Flex justify="space-between" align="center" style={{ padding: 8, paddingRight: 4 }}>
                 <Typography.Text type="secondary">個人筆記</Typography.Text>
-                <ToolButton icon={<PlusLg />} onClick={() => add(null)} />
+                <ToolButton icon={<PlusOutlined />} onClick={() => add(null)} />
             </Flex>
             <Tree treeData={one} blockNode selectable={false}
                 rootStyle={{ overflowY: "auto" }} defaultExpandAll
@@ -49,7 +48,7 @@ const NoteTree = () => {
                             <Typography.Text>{data.title as string}</Typography.Text>
                             <Flex gap={3}>
                                 {!first && <ToolButton icon={<DeleteOutlined />} onClick={() => remove(data)} />}
-                                <ToolButton icon={<PlusLg size={16} />} onClick={() => add(data)} />
+                                <ToolButton icon={<PlusOutlined />} onClick={() => add(data)} />
                             </Flex>
                         </Flex>
                     </Link>
@@ -69,7 +68,7 @@ const NoteTree = () => {
                             <Flex justify="space-between"
                                 style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
                                 <Typography.Text>{data.title as string}</Typography.Text>
-                                <ToolButton icon={<XLg size={16} />} onClick={() => cancelCollab(data)} />
+                                <ToolButton icon={<CloseOutlined />} onClick={() => cancelCollab(data)} />
                             </Flex>
                         </Link>
                     }} />

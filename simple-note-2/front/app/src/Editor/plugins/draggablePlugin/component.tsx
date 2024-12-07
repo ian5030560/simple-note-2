@@ -17,10 +17,16 @@ const Label = (props: LabelProps) => <Flex align="center" gap={"middle"}>
     <Typography.Text>{props.name}</Typography.Text>
 </Flex>;
 
+function convertChildren(items: PlusItem[], parent: PlusItem["key"]){
+    return items.map(({ label, icon, children, key, ...item }) => ({
+        ...item, key: [parent, key].join("-"), label: <Label name={label} icon={icon} />,
+        children: children ? convertChildren(children, [parent, key].join("-")) : undefined
+    }));
+}
 function convert(items: PlusItem[]) {
     return items.map(({ label, icon, children, ...item }) => ({
         ...item, label: <Label name={label} icon={icon} />,
-        children: children ? convert(children) : undefined
+        children: children ? convertChildren(children, item.key) : undefined
     }));
 }
 
@@ -58,7 +64,7 @@ export const DragHandler = forwardRef((props: DragHandlerProps, ref: React.Forwa
     const handleSelect = useCallback((info: MenuInfo) => {
         const node = editor.read(() => $getNodeByKey(props.nodeKey));
         if (!node) return;
-        editor.dispatchCommand(PLUSMENU_SELECTED, { node, value: info.key });
+        editor.dispatchCommand(PLUSMENU_SELECTED, { node, keyPath: info.key.split("-") });
     }, [editor, props.nodeKey]);
 
     return <div className={styles.draggable} draggable={true} tabIndex={-1}

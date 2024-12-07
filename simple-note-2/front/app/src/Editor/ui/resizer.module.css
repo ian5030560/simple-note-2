@@ -22,21 +22,21 @@
 .resizeBottomLeft{
     bottom: 0;
     left: 0;
-    transform: translateX(-50%);
+    transform: translate(-50%, 50%);
     cursor: sw-resize;
 }
 
 .resizeBottom{
     bottom: 0;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, 50%);
     cursor: s-resize;
 }
 
 .resizeBottomRight{
     bottom: 0;
     right: 0;
-    transform: translateX(50%);
+    transform: translate(50%, 50%);
     cursor: se-resize;
 }
 
@@ -44,20 +44,20 @@
     top: 50%;
     left: 0;
     cursor: w-resize;
-    transform: translate(-75%, -50%);
+    transform: translate(-50%, -50%);
 }
 
 .resizeRight{
     top: 50%;
     right: 0;
     cursor: e-resize;
-    transform: translate(75%, -50%);
+    transform: translate(50%, -50%);
 }
 
 .handlePin{
     background-color: rgb(60,132,244);
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     position: absolute;
     z-index: 1000;
 }

@@ -6,7 +6,7 @@ import { $cloneWithProperties, $createParagraphNode, $getNodeByKey, $getRoot, $g
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createColumnItemNode, $isColumnItemNode } from "../../nodes/column/item";
 import { $isColumnContainerNode } from "../../nodes/column/container";
-import { PencilSquare } from "react-bootstrap-icons";
+import { PencilSquare } from "../../../util/icons";
 
 type ColumnActionPluginProps = WithAnchorProps;
 export default function ColumnActionPlugin(props: ColumnActionPluginProps){
@@ -113,7 +113,7 @@ export default function ColumnActionPlugin(props: ColumnActionPluginProps){
 
     return <Action placement={"top-end"} inner open={open} nodeKey={key} anchor={props.anchor}>
         <Dropdown trigger={["click"]} menu={{ items: items }} placement="bottom" autoAdjustOverflow>
-            <Button type="text" icon={<PencilSquare size={16} />} />
+            <Button type="text" icon={<PencilSquare />} />
         </Dropdown>
     </Action>
 }

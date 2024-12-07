@@ -3,12 +3,12 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Flex, Input, Typography } from "antd";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { SendOutlined } from "@ant-design/icons";
-import { MathRender } from "../../nodes/math/component";
-import { useValidateNodeClasses, $contains } from "../../utils";
-import { PLUSMENU_SELECTED } from "../draggablePlugin/command";
-import Modal from "../../ui/modal";
-import BlockMathNode, { $createBlockMathNode } from "../../nodes/math/block";
-import InlineMathNode, { $createInlineMathNode } from "../../nodes/math/inline";
+import BlockMathNode, { $createBlockMathNode } from "../nodes/math/block";
+import { MathRender } from "../nodes/math/component";
+import InlineMathNode, { $createInlineMathNode } from "../nodes/math/inline";
+import { useValidateNodeClasses, $contains } from "../utils";
+import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
+import Modal from "../ui/modal";
 
 export default function MathModalPlugin() {
     const [open, setOpen] = useState(false);
@@ -19,11 +19,11 @@ export default function MathModalPlugin() {
 
     useValidateNodeClasses([BlockMathNode, InlineMathNode]);
 
-    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
-        if (value === "block-math" || value === "inline-math") {
+    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, keyPath }) => {
+        if (keyPath[0] === "math") {
             setNode(node);
             setOpen(true);
-            setInline(value === "inline-math");
+            setInline(keyPath[1] === "inline");
         }
         return false;
     }, COMMAND_PRIORITY_CRITICAL), [editor]);
@@ -34,7 +34,7 @@ export default function MathModalPlugin() {
         setInline(false);
     }, []);
 
-    const $insertInlineMath = useCallback(() => {
+    const $insertInline = useCallback(() => {
         const math = $createInlineMathNode(input!);
         const selection = $getSelection();
         if (!$isRangeSelection(selection)) {
@@ -53,7 +53,7 @@ export default function MathModalPlugin() {
         }
     }, [input, node]);
 
-    const $insertBlockMath = useCallback(() => {
+    const $insertBlock = useCallback(() => {
         const math = $createBlockMathNode(input!);
         const selection = $getSelection();
         if(!$isRangeSelection(selection)){
@@ -69,15 +69,15 @@ export default function MathModalPlugin() {
         if (input && input.trim().length > 0) {
             editor.update(() => {
                 if (!inline) {
-                    $insertBlockMath();
+                    $insertBlock();
                 }
                 else {
-                    $insertInlineMath();
+                    $insertInline();
                 }
             });
         }
         clear();
-    }, [$insertBlockMath, $insertInlineMath, clear, editor, inline, input]);
+    }, [$insertBlock, $insertInline, clear, editor, inline, input]);
 
     return <Modal title="輸入數學" open={open} onCancel={clear}>
         <Flex vertical gap={8}>

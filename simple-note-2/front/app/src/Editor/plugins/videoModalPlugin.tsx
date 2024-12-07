@@ -18,8 +18,8 @@ export default function VideoModalPlugin(props: FilePluginProps) {
     useValidateNodeClasses([VideoNode]);
 
     useEffect(() => mergeRegister(
-        editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
-            if (value === "video") {
+        editor.registerCommand(PLUSMENU_SELECTED, ({ node, keyPath }) => {
+            if (keyPath[0] === "file" && keyPath[1] === "video") {
                 setNode(node);
                 setOpen(true);
             }

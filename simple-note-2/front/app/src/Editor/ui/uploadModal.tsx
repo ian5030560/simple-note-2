@@ -1,7 +1,8 @@
 import { Button, Input, Space, Tabs, TabsProps } from "antd";
 import Modal from "./modal";
 import { useMemo, useRef, useState } from "react";
-import { FileEarmarkImageFill, PencilSquare, Upload } from "react-bootstrap-icons";
+import { FileAddFilled, GlobalOutlined } from "@ant-design/icons";
+import { Upload } from "../../util/icons";
 
 interface UploadModalProps {
     open?: boolean;
@@ -18,7 +19,7 @@ export default function UploadModal(props: UploadModalProps) {
     const items: TabsProps["items"] = useMemo(() => [
         {
             key: "file", label: "上傳文件",
-            icon: <FileEarmarkImageFill />,
+            icon: <FileAddFilled />,
             children: <>
                 <Button type="primary" block icon={<Upload />} onClick={() => { fileRef.current!.click() }}>上傳</Button>
                 <input type="file" accept={props.accept} style={{ display: "none" }} ref={fileRef} onChange={props.onUploadFile} />
@@ -26,7 +27,7 @@ export default function UploadModal(props: UploadModalProps) {
         },
         {
             key: "url", label: "上傳網址",
-            icon: <PencilSquare />,
+            icon: <GlobalOutlined />,
             children: <Space.Compact style={{ width: "100%" }}>
                 <Input placeholder="https://" autoFocus value={url} onChange={(e) => setUrl(e.target.value)} />
                 <Button type="primary" icon={<Upload />} onClick={() => props.onUploadURL(url)}>上傳</Button>

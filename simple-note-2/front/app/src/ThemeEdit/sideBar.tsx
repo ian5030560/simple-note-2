@@ -6,8 +6,9 @@ import {
 import styles from "./sideBar.module.css";
 import { SwitchClickEventHandler } from "antd/es/switch";
 import { Color } from "antd/es/color-picker";
-import { Arrow90degLeft, BoxArrowUp } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
+import { UploadOutlined } from "@ant-design/icons";
+import { Arrow90degLeft } from "../util/icons";
 
 const { Text, Title } = Typography;
 
@@ -109,7 +110,7 @@ const SideBar = ({ light, dark, onDarken, onExport }: SideBarProps) => {
             </Link>
         </div>
         <Flex justify="end" align="center" style={{ padding: token.padding, paddingBottom: "0px" }}>
-            <Button type="primary" icon={<BoxArrowUp />} style={{ marginRight: 8 }} onClick={() => setExport(true)}>輸出</Button>
+            <Button type="primary" icon={<UploadOutlined />} style={{ marginRight: 8 }} onClick={() => setExport(true)}>輸出</Button>
             <Switch unCheckedChildren="亮" checkedChildren="暗" onClick={onDarken} />
         </Flex>
 

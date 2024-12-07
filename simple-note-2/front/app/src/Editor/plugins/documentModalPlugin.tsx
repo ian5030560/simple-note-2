@@ -19,10 +19,11 @@ export default function DocumentModal(props: FilePluginProps) {
     useValidateNodeClasses([DocumentNode]);
 
     useEffect(() => mergeRegister(
-        editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
-            if (value !== "document") return false;
-            setNode(node);
-            setOpen(true);
+        editor.registerCommand(PLUSMENU_SELECTED, ({ node, keyPath }) => {
+            if (keyPath[0] === "file" && keyPath[1] === "document"){
+                setNode(node);
+                setOpen(true);
+            }
             return false;
         }, COMMAND_PRIORITY_CRITICAL),
         editor.registerMutationListener(DocumentNode, (mutations, { prevEditorState }) => {

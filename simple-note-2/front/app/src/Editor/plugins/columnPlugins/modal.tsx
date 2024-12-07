@@ -13,11 +13,12 @@ export default function ColumnModalPlugin() {
     const [editor] = useLexicalComposerContext();
     const [node, setNode] = useState<LexicalNode>();
 
-    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({node, value}) => {
-        if(value !== "column") return false;
-        setNode(node);
-        setOpen(true);
-        return true;
+    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({node, keyPath}) => {
+        if(keyPath[0] === "column"){
+            setNode(node);
+            setOpen(true);
+        }
+        return false;
     }, COMMAND_PRIORITY_CRITICAL), [editor]);
 
     const handleOk = useCallback(() => {

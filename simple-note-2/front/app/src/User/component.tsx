@@ -2,7 +2,7 @@ import { Layout, Grid, theme } from "antd";
 import { useState, useCallback, useEffect } from "react";
 import SideBar from "./SideBar";
 import styles from "./component.module.css";
-import { ChevronDoubleLeft } from "react-bootstrap-icons";
+import { DoubleLeftOutlined } from "@ant-design/icons";
 
 const { Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
@@ -49,7 +49,7 @@ export default (props: UserProps) => {
 
     return <Layout style={{ height: "100%", ...props.style }}>
         <Sider collapsible collapsedWidth={0} theme="light" width={resizer.width}
-            trigger={<ChevronDoubleLeft style={{ transform: collpase ? "rotate(180deg)" : undefined, transition: "transform 300ms ease" }} />}
+            trigger={<DoubleLeftOutlined rotate={collpase ? 180 : undefined} />}
             onCollapse={handleCollapse}>
             <SideBar />
         </Sider>

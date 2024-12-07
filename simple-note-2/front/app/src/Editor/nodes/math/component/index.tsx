@@ -5,7 +5,7 @@ import { $getNodeByKey, NodeKey } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import "katex/dist/katex.css";
 import { TextAreaRef } from "antd/es/input/TextArea";
-import { $isMathNode } from ".";
+import { $isMathNode } from "..";
 
 interface MathEditorProps {
     value: string;
@@ -82,7 +82,7 @@ export default function MathView(props: MathViewProps) {
         else {
             editor.update(() => {
                 const node = $getNodeByKey(props.nodeKey);
-                if($isMathNode(node)){
+                if ($isMathNode(node)) {
                     setValue(node.getContent());
                 }
             })
@@ -100,9 +100,9 @@ export default function MathView(props: MathViewProps) {
     }, [editor, props.nodeKey]);
 
     useEffect(() => {
-        const {body} = document;
-        function handleEscape(e: KeyboardEvent){
-            if(e.key === "Escape"){
+        const { body } = document;
+        function handleEscape(e: KeyboardEvent) {
+            if (e.key === "Escape") {
                 setOpen(false);
             }
         }
@@ -111,7 +111,7 @@ export default function MathView(props: MathViewProps) {
         return () => body.removeEventListener("keydown", handleEscape);
     }, []);
 
-    return <Popover placement="bottom" open={open} trigger="click" onOpenChange={handleOpenChange} 
+    return <Popover placement="bottom" open={open} trigger="click" onOpenChange={handleOpenChange}
         content={<MathEditor inputRef={ref} value={value} onValueChange={handleValueChange} />}>
         <MathRender content={props.content} inline={props.inline} />
     </Popover>

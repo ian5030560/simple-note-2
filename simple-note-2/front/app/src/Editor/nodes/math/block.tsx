@@ -5,7 +5,7 @@ import React from "react";
 import { Suspense } from "react";
 import MathNode from ".";
 
-const LazyMathView = React.lazy(() => import("./component"));
+const LazyMathView = React.lazy(() => import("./component/block"));
 
 type SerializedBlockMathNode = Spread<{ content: string }, SerializedLexicalNode>;
 

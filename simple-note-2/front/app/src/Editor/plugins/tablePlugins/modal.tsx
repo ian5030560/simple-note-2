@@ -18,8 +18,8 @@ export default function TableModalPlugin() {
     const [open, setOpen] = useState(false);
     const [node, setNode] = useState<LexicalNode>();
 
-    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, value }) => {
-        if (value === "table") {
+    useEffect(() => editor.registerCommand(PLUSMENU_SELECTED, ({ node, keyPath }) => {
+        if (keyPath[0] === "table") {
             setOpen(true);
             setNode(node);
         }

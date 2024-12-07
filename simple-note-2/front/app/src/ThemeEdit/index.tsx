@@ -5,9 +5,10 @@ import Preview from "./preview";
 import { defaultSeed, ThemeSwitchButton } from "../util/theme";
 import useAPI from "../util/api";
 import useUser from "../util/useUser";
-import { EyeFill, PencilSquare } from "react-bootstrap-icons";
 import styles from "../Welcome/navigateMenu.module.css";
 import classNames from "../util/classNames";
+import { EyeFilled } from "@ant-design/icons";
+import { PencilSquare } from "../util/icons";
 
 const ThemePage = () => {
     return <>
@@ -90,7 +91,7 @@ const Index = () => {
         },
         {
             key: "preview",
-            icon: <EyeFill />,
+            icon: <EyeFilled />,
             label: "預覽",
             onClick: () => setTabKey("preview"),
             active: tabKey === "preview"

@@ -3,11 +3,11 @@ import { useCallback, useRef, useState } from "react";
 import styles from "./setting.module.css";
 import useAPI from "../../util/api";
 import useUser, { DEFAULT_THEME_ID } from "../../util/useUser";
-import { BoxArrowInRight, Upload as BsUpload, PlusLg, XLg } from "react-bootstrap-icons";
-import { SyncOutlined } from "@ant-design/icons";
+import { CloseOutlined, PlusOutlined, SyncOutlined, UploadOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import ChangePasswordModal, { ChangePasswordData } from "./changePassword";
 import SignOutModal from "./signOut";
+import { BoxArrowInRight } from "../../util/icons";
 
 interface UploadProps { onUpload: (src: string) => void };
 const Upload = ({ onUpload }: UploadProps) => {
@@ -28,7 +28,7 @@ const Upload = ({ onUpload }: UploadProps) => {
             picture ? <Flex vertical gap={3}>
                 <Image src={picture} placeholder={<Skeleton.Image />} alt="載入圖片錯誤" style={{ maxWidth: 100, maxHeight: 100 }} />
                 <Button type="dashed" icon={<SyncOutlined />} block onClick={() => ref.current?.click()}>更換</Button>
-            </Flex> : <Empty imageStyle={{ width: 100, height: 100 }} description={<Button icon={<BsUpload />}
+            </Flex> : <Empty imageStyle={{ width: 100, height: 100 }} description={<Button icon={<UploadOutlined />}
                 block type="dashed" onClick={() => ref.current?.click()}>上傳</Button>} />
         }
         <input aria-label="file" type="file" accept="image/*" style={{ display: "none" }} ref={ref} onChange={handleChange} />
@@ -92,7 +92,7 @@ const SettingModal = (prop: SettingModalProp) => {
                 </Flex>
             </Flex>
             {
-                id !== DEFAULT_THEME_ID && <Button type="text" icon={<XLg />} onClick={(e) => {
+                id !== DEFAULT_THEME_ID && <Button type="text" icon={<CloseOutlined />} onClick={(e) => {
                     e.stopPropagation();
                     handleDelete(value as string, label as string)
                 }} />
@@ -166,7 +166,7 @@ const SettingModal = (prop: SettingModalProp) => {
     const dropDownRender: SelectProps["dropdownRender"] = useCallback((menu: React.ReactElement) => <>
         {menu}
         <Link to={"/theme"}>
-            <Button type="dashed" icon={<PlusLg size={24} />} block style={{ marginTop: 12 }} />
+            <Button type="dashed" icon={<PlusOutlined />} block style={{ marginTop: 12 }} />
         </Link>
     </>, []);
 

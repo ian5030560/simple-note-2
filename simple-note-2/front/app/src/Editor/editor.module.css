@@ -22,4 +22,5 @@
 .editorRoot{
     outline: none;
     cursor: text;
+    padding-top: 8px;
 }

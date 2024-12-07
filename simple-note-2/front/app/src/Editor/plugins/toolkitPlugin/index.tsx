@@ -1,6 +1,5 @@
 import { Flex } from "antd";
 import BreadCrumb from "./breadcrumb";
-import Comment from "./comment";
 import QuestionAI from "./questionAI";
 import SpeechToText from "./speechToText";
 import TableOfContent from "./tableOfContent";

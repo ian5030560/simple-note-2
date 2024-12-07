@@ -15,8 +15,7 @@ import AutoFocusPlugin from "./plugins/autoFocusPlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
-import ListMaxLevelPlugin from "./plugins/listMaxLevel";
-import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import ListMaxLevelPlugin from "./plugins/listPlugins/maxLevel";
 import LinkPlugin from "./plugins/linkPlugins";
 import FloatingEditorLinkPlugin from "./plugins/linkPlugins/floatingLinkEditor";
 import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
@@ -37,12 +36,12 @@ import ImageToTextPlugin from "./plugins/imageToTextPlugin";
 import VideoModalPlugin from "./plugins/videoModalPlugin";
 import items from "./items";
 import TableOfContentPlugin from "./plugins/tableOfContentPlugin";
-import MathModalPlugin from "./plugins/mathPlugins/modal";
+import MathModalPlugin from "./plugins/mathModalPlugin";
 import ErrorPlugin from "./plugins/errorPlugin";
 import ColumnActionPlugin from "./plugins/columnPlugins/action";
 import ColumnModalPlugin from "./plugins/columnPlugins/modal";
-import MathPlugin from "./plugins/mathPlugins";
 import mergeRefs from "merge-refs";
+import ListPlugin from "./plugins/listPlugins";
 
 function $createEmptyContent() {
     const root = $getRoot();
@@ -132,7 +131,6 @@ export default function Editor(props: EditorProps) {
                     <ImageToTextPlugin />
                     <TableOfContentPlugin />
                     <VideoModalPlugin insertFile={props.insertFile || readFileToDataURL} destroyFile={props.destroyFile || dummyFn} />
-                    <MathPlugin />
                     <MathModalPlugin />
                 </div>
             </div>

@@ -3,32 +3,32 @@ import OptionButtonGroup, { Option } from "./ui/optionButtonGroup"
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { $isRangeSelection, FORMAT_TEXT_COMMAND, TextFormatType } from "lexical"
 import useSelectionListener from "./useSelectionListener"
-import { CodeSlash, Subscript, Superscript, TypeBold, TypeItalic, TypeUnderline } from "react-bootstrap-icons"
+import { TypeBold, TypeItalic, TypeUnderline, CodeSlash, Subscript, Superscript } from "../../../util/icons"
 
 const options: Option[] = [
     {
         key: "bold",
-        icon: <TypeBold size={16} />
+        icon: <TypeBold />
     },
     {
         key: "italic",
-        icon: <TypeItalic size={16} />
+        icon: <TypeItalic />
     },
     {
         key: "underline",
-        icon: <TypeUnderline size={16} />
+        icon: <TypeUnderline />
     },
     {
         key: "code",
-        icon: <CodeSlash size={16} />,
+        icon: <CodeSlash />,
     },
     {
         key: "subscript",
-        icon: <Subscript size={16} />
+        icon: <Subscript />
     },
     {
         key: "superscript",
-        icon: <Superscript size={16} />
+        icon: <Superscript />
     }
 ]
 
