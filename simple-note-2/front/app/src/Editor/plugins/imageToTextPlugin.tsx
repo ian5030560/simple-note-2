@@ -160,12 +160,12 @@ export default function ImageToTextPlugin() {
         key: "camera",
         label: "照相",
         children: <Flex justify="center" align="center" style={{ position: "relative" }}>
-            <Webcam audio={false} width={500} height={400} ref={camRef}
-              style={{ transform: "scaleX(-1)" }} videoConstraints={contraints}
-              screenshotFormat="image/png" mirrored />
+          <Webcam audio={false} width={500} height={400} ref={camRef}
+            style={{ transform: "scaleX(-1)" }} videoConstraints={contraints}
+            screenshotFormat="image/png" mirrored />
           <div className={styles.cameraMask} ref={maskRef} />
-          <button title="trigger" className={styles.cameraButton} onClick={handleClick}>
-            <Fullscreen />
+          <button type="button" className={styles.cameraButton} onClick={handleClick}>
+            <Fullscreen style={{fontSize: 24}}/>
           </button>
         </Flex>
       },

@@ -97,7 +97,7 @@ class UpdateInfoView(APIView):
             
         if(innerData["theme"]):
             theme = innerData["theme"]
-            isDefaultTheme = not ("id" in theme) and not ("name" in theme)
+            isDefaultTheme = not theme["id"] and not theme["name"]
             if(isDefaultTheme):
                 UserPersonalInfo.update_user_theme_id_by_usernames(username, theme["id"])
             else:
