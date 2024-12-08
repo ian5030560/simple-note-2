@@ -1,6 +1,5 @@
 import { useLoaderData, useNavigate, useNavigation, useParams } from "react-router-dom";
 import { Button, Flex, notification, Skeleton, Spin } from "antd";
-import styles from "./index.module.css";
 import React, { Suspense, useCallback, useEffect, useState } from "react";
 import { EditorState, LexicalNode, SerializedEditorState } from "lexical";
 import { $isImageNode } from "./nodes/image";
@@ -13,7 +12,7 @@ import { NoteIndexedDB } from "../util/store";
 import useUser from "../util/useUser";
 
 function Loading() {
-    return <div className={styles.loading}>
+    return <div style={{ height: "100%", padding: 50, overflowY: "auto" }}>
         <Skeleton title paragraph={{ rows: 20 }} />
     </div>;
 }
@@ -74,11 +73,13 @@ export default () => {
     }, [api, note]);
 
     useEffect(() => {
+        if (id && host) return;
+
         const interval = setInterval(async () => {
 
             const db = new NoteIndexedDB();
             const result = await db.get(id!);
-
+            
             if (!result) {
                 return api.warning({
                     message: "儲存異常",
@@ -96,10 +97,12 @@ export default () => {
         }, 2500);
 
         return () => clearInterval(interval);
-    }, [api, handleSaveToServer, id, navigate, note, username]);
+    }, [api, handleSaveToServer, host, id, navigate, note, username]);
 
     useEffect(() => {
-        async function handleBeforeUnload(e: WindowEventMap["beforeunload"]) {
+        if(id && host) return;
+        
+        async function handleBeforeUnload(e: BeforeUnloadEvent) {
             const db = new NoteIndexedDB();
             const result = await db.get(id!);
 
@@ -115,15 +118,16 @@ export default () => {
         window.addEventListener("beforeunload", handleBeforeUnload);
 
         return window.removeEventListener("beforeunload", handleBeforeUnload);
-    }, [handleSaveToServer, id, username]);
+    }, [handleSaveToServer, host, id, username]);
 
     const insertFile = useCallback((f: File) => {
-        const node = find(id!);
+        const node = !(id && host) ? find(id!) : find(id + host, "multiple");
 
-        return file.add(username!, f, node!.key)
+        const user = id && host ? atob(host) : username!;
+        return file.add(user, f, node!.key)
             .catch(() => { throw new Error(`${f.name} is not uploaded successfully`); });
 
-    }, [file, find, id, username]);
+    }, [file, find, host, id, username]);
 
     const destroyFile = useCallback((node: LexicalNode) => {
         let url: string;
@@ -134,10 +138,11 @@ export default () => {
             throw new Error(`${node.__type} is not supported by deleteFile`);
         }
 
-        file.delete(username!, url, id!).then(ok => { if (!ok) throw new Error(); })
+        const user = id && host ? atob(host) : username!;
+        file.delete(user, url, id!).then(ok => { if (!ok) throw new Error(); })
             .catch(() => { throw new Error(`Your file: ${url} failed to be deleted`); });
 
-    }, [file, id, username]);
+    }, [file, host, id, username]);
 
     const handleError = useCallback((err: Error) => {
         api.error({
@@ -161,7 +166,7 @@ export default () => {
             {
                 navigation.state !== "loading" && <Editor initialEditorState={data !== false ? data : undefined} collab={collab}
                     room={collab ? `${id}/${host}` : undefined} username={username} onSave={handleSave}
-                    insertFile={insertFile} destroyFile={destroyFile} whenRaiseError={handleError} />
+                    insertFile={insertFile} destroyFile={destroyFile} onError={handleError} />
             }
         </Suspense>
         <LongWaiting delay={500} text="正在載入內容" />

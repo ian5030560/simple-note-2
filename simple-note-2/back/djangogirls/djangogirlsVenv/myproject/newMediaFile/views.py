@@ -47,24 +47,23 @@ class NewMediaFileView(APIView):
 
             username = data.get("username")  # 帳號名稱
             filename = data.get("filename")  # 文件名稱
-            print(request.FILES)
             content = request.FILES.get("content")  # 文件內容
             noteId = data.get("noteId")
 
             print(username, filename, content, noteId)
             content = content.read()
 
+            # 创建一个 SaveFile 实例，并指定保存文件的文件夹路径
+            saver = SaveFile('db_modules/fileTemp')
+            
             # db check if exist
             checkExistValue = UserFileData.check_file_name(username, noteId, filename)
             # if exist, change name
             if checkExistValue == True:
-                filename += "(1)"
+                filename = saver.renameAganistDumplication(filename)
             
             # db save info
             dbSaved = UserFileData.insert_file_name(username, noteId, filename)
-            
-            # 创建一个 SaveFile 实例，并指定保存文件的文件夹路径
-            saver = SaveFile('db_modules/fileTemp')
 
             # 保存一个新文件
             folderSaved = saver.saveNewFile(filename, content)
@@ -93,7 +92,6 @@ class NewMediaFileView(APIView):
         except json.JSONDecodeError:
             username = None
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
 def csrf(self, request):
     return JsonResponse({"csrfToken": get_token(request)})

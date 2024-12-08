@@ -1,4 +1,5 @@
 ﻿import os
+import re
 
 class SaveFile:
     def __init__(self, folder_path) -> None:
@@ -12,3 +13,19 @@ class SaveFile:
             file.write(content)
         print(f'File saved at {file_path}')
         return True
+    
+    def renameAganistDumplication(self, filename: str):
+        files = os.listdir(self.folder_path)
+        
+        sections = filename.split(".")[::-1]
+        name = sections[-1]
+        extension = ".".join(sections[0: -1][::-1])
+        
+        def filterFn(file: str):
+            return re.match(rf"{name}(\(\d\))?\.{extension}", file) is not None
+
+        filtered = list(filter(filterFn, files))
+        return f"{name}({len(filtered)}).{extension}"
+        
+        
+        

@@ -40,7 +40,7 @@ class JoinCollaborateView(APIView):
         try:
             data = json.loads(request.body)
             guestName = data.get("username")  # guest帳號名稱
-            masterName = data.get("masterName") # master帳號名稱
+            masterName = data.get("mastername") # master帳號名稱
             noteId = data.get("noteId") # noteTitleId
             url = data.get("url")  # 協作網址
 

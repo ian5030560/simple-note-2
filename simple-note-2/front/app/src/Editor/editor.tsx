@@ -45,6 +45,7 @@ import ListPlugin from "./plugins/listPlugins";
 
 function $createEmptyContent() {
     const root = $getRoot();
+    console.log(1);
     if (root.isEmpty()) {
         const p = $createParagraphNode();
         root.append(p);
@@ -72,7 +73,7 @@ interface EditorProps {
     insertFile?: (file: File) => string | Promise<string>;
     destroyFile?: (node: LexicalNode) => void;
     onSave?: (editorState: EditorState) => void;
-    whenRaiseError?: (err: Error, editor: LexicalEditor) => void;
+    onError?: (err: Error, editor: LexicalEditor) => void;
     editable?: boolean;
 }
 export default function Editor(props: EditorProps) {
@@ -85,14 +86,14 @@ export default function Editor(props: EditorProps) {
         <LexicalComposer
             initialConfig={{
                 namespace: 'Editor', theme: themes, nodes: nodes, editable: props.editable,
-                onError: props.whenRaiseError || dummyFn,
+                onError: props.onError || dummyFn,
                 /** @see https://lexical.dev/docs/collaboration/react */
                 editorState: props.collab ? null : !props.test ? !props.initialEditorState ? $createEmptyContent : props.initialEditorState : undefined,
             }}>
             {!props.test && !props.collab && <SavePlugin onSave={props.onSave || dummyFn} />}
             <ToolBarPlugin />
             <ToolKitPlugin />
-            <ErrorPlugin whenRaiseError={props.whenRaiseError || dummyFn} />
+            <ErrorPlugin whenRaiseError={props.onError || dummyFn} />
             {
                 props.test && props.collab && <CollaboratePlugin room="test" cursorsContainerRef={containerRef}
                     initialEditorState={$createEmptyContent} />
@@ -107,7 +108,7 @@ export default function Editor(props: EditorProps) {
                     <DraggablePlugin items={items} anchor={anchor} overlayContainer={overlayContainer} />
                     <AutoFocusPlugin />
                     <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-                    <HistoryPlugin />
+                    {!props.collab && <HistoryPlugin />}
                     <TabIndentationPlugin />
                     <LinkPlugin />
                     <ListMaxLevelPlugin maxLevel={5} />

@@ -7,7 +7,7 @@ sys.path.append("..db_modules")
 from .serializers import *
 from .models import SaveNote
 from db_modules import UserNoteData
-from rest_framework import status
+from rest_framework import status, permissions
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -29,7 +29,7 @@ class SaveNoteView(APIView):
         Serializer的raise_exception=False: 404,\n
         JSONDecodeError: 405.\n
     """
-
+    permission_classes = [permissions.AllowAny]
     serializer_class = SaveNoteSerializer
 
     def get(self, request, format=None):

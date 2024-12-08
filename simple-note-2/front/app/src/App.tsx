@@ -24,7 +24,7 @@ function editorLoader(args: LoaderFunctionArgs<any>) {
 
   return !collab ? contentLoader(args, username!) : collaborateLoader(args)
     .then(async (only) => {
-      if (only) return await contentLoader(args, decodeURI(host));
+      if (only) return await contentLoader(args, atob(host));
       return false;
     })
     .catch(() => {

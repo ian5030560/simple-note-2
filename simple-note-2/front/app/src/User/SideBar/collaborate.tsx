@@ -30,7 +30,7 @@ export default function CollaborateModal(props: CollaborateModalProps) {
     const requestCollaborate = useCallback(() => {
         if (!username) return;
 
-        const host = encodeURI(username);
+        const host = btoa(username);
         const url = `${id}/${host}`;
 
         collab.add(username, id!, url).then(ok => {
@@ -70,8 +70,7 @@ export default function CollaborateModal(props: CollaborateModalProps) {
 
     const handleDelete = useCallback(() => {
         if (!username) return;
-
-        const master = decodeURI(host!);
+        const master = atob(host!);
 
         collab.delete(username, id!, master).then(ok => {
             if (!ok) {

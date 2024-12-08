@@ -65,7 +65,10 @@ export function generateNoteForest(data: NoteTreeData[]) {
 function bindURL(nodes: NoteDataNode[], multiple: LoadTreeResult["multiple"], username: string) {
     for (let node of nodes) {
         bindURL(node.children, multiple, username);
-        node.url = multiple.find(mul => mul.noteId === (node.key + username))?.url;
+        node.url = multiple.find(mul => {
+            console.log(mul.noteId, node.key + username);
+            return mul.noteId === node.key;
+        })?.url;
     }
 }
 
@@ -95,10 +98,10 @@ export async function settingLoader() {
         }),
         loadTree(username).then(data => {
             const ones = generateNoteForest(data.one);
-            bindURL(ones, data.multiple, encodeURI(username));
+            bindURL(ones, data.multiple, btoa(username));
             const multiples: NoteDataNode[] = data.multiple.map(it => {
                 const [id, host] = it.url.split("/");
-                const title = `${decodeURI(host)}-${it.noteName}`;
+                const title = `${atob(host)}-${it.noteName}`;
                 return {
                     title: title, key: id + host, children: [],
                     url: it.url, parent: null
@@ -164,12 +167,10 @@ export async function contentLoader({ params }: LoaderFunctionArgs<string | null
 export async function collaborateLoader({ params }: LoaderFunctionArgs<boolean>) {
     const { collab: { join, people } } = utilizeAPI();
     const username = new Cookies().get("username");
-
     const { id, host } = params;
-    const master = decodeURI(host!);
 
     return await Promise.all([
-        join(username, `${id}/${host}`, master).then(ok => { if (!ok) throw new Error(); }),
+        join(username, `${id}/${host}`).then(ok => { if (!ok) throw new Error(); }),
         people(`${id}/${host}`).then(async data => {
             const { count } = data;
             return count === 0;

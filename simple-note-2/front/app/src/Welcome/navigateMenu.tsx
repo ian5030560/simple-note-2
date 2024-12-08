@@ -1,10 +1,10 @@
-import { Dropdown, Flex, Grid, List, MenuProps, theme } from "antd";
+import { Dropdown, Flex, Grid, MenuProps, theme } from "antd";
 import styles from "./navigateMenu.module.css";
 import { Link, useLocation } from "react-router-dom";
 import { FormOutlined, GithubOutlined } from "@ant-design/icons";
 import React, { forwardRef, useEffect, useRef } from "react";
 import classNames from "../util/classNames";
-import { PersonSquare, PersonFill, HouseDoorFill, PeopleFill, PersonCircle } from "../util/icons";
+import { PersonSquare, PersonFill, HouseDoorFill, PeopleFill, PersonCircle, List } from "../util/icons";
 
 const Navigate = (props: React.PropsWithChildren) => {
     return <ul className={styles.navMenu} tabIndex={0} role="menu">{props.children}</ul>;

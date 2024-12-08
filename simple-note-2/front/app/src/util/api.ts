@@ -112,7 +112,7 @@ export default function useAPI() {
       //   const access = getAccessToken();
       //   return fetch(API.Auth.signOut, { ...postSetup(access), body: JSON.stringify({ username }) });
       // },
-      forgetPassword: (username: string, email: string) => fetch(API.Auth.forgetPassword, { ...postSetup, body: JSON.stringify({ username, email }) }).then(res => res.ok)
+      forgetPassword: (username: string, email: string) => fetch(API.Auth.forgetPassword, { ...postSetup(), body: JSON.stringify({ username, email }) }).then(res => res.ok)
     },
 
     file: {
@@ -123,7 +123,7 @@ export default function useAPI() {
       },
       add: async (username: string, file: File, noteId: string) => {
         const res = await fetch(API.File.add, {
-          method: "POST", headers: {"user-agent": headers["user-agent"]},
+          method: "POST", headers: { "user-agent": headers["user-agent"] },
           body: createFormData({ username, filename: file.name, noteId, content: file })
         });
         if (!res.ok) throw new Error();
@@ -149,8 +149,7 @@ export default function useAPI() {
         return res.ok;
       },
       save: async (username: string, noteId: string, content: string, keepAlive?: boolean) => {
-        const access = getAccessToken();
-        const res = await fetch(API.Note.save, { ...postSetup(access), body: JSON.stringify({ username, noteId, content }), keepalive: keepAlive });
+        const res = await fetch(API.Note.save, { ...postSetup(), body: JSON.stringify({ username, noteId, content }), keepalive: keepAlive });
         return res.ok;
       },
       loadTree: async (username: string) => {
@@ -172,9 +171,14 @@ export default function useAPI() {
         const res = await fetch(API.Collaborate.delete, { ...postSetup(access), body: JSON.stringify({ username, noteId, masterName }) });
         return res.ok;
       },
-      join: async (username: string, url: string, masterName: string) => {
+      join: async (username: string, url: string) => {
         const access = getAccessToken();
-        const res = await fetch(API.Collaborate.join, { ...postSetup(access), body: JSON.stringify({ username, url, masterName }) });
+        const [id, host] = url.split("/");
+        console.log(id, atob(host));
+        const res = await fetch(API.Collaborate.join, {
+          ...postSetup(access),
+          body: JSON.stringify({ username, url, mastername: atob(host), noteId: id })
+        });
         return res.ok || res.status === 401;
       },
 
@@ -228,13 +232,6 @@ export default function useAPI() {
     },
 
     jwt: {
-      // register: () => fetch(API.JWT.register, {
-      //   ...postSetup(), headers: jwtHeaders,
-      //   body: JSON.stringify({ username: "user1", email: "user1@gmail.com", password: "testUser", password2: "testUser" })
-      // }).then(async res => {
-      //   if (!res.ok) throw new Error();
-      //   return await res.json() as Token;
-      // }),
       getToken: () => fetch(API.JWT.token, {
         ...postSetup(), headers: jwtHeaders,
         body: JSON.stringify({ username: "user1", password: "testuser" })

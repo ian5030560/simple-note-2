@@ -99,7 +99,7 @@ export default function useDirective(username: string) {
         const { title, url } = node;
         const [id, host] = url.split("/");
 
-        const master = decodeURI(host);
+        const master = atob(host);
         collab.delete(username, id, master).then(ok => {
             if (!ok) {
                 throw new Error();

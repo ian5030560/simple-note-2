@@ -1,5 +1,5 @@
 import { Tree, Button, Flex, Typography, ButtonProps } from "antd";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import useDirective from "./directive";
 import { Link, useParams } from "react-router-dom";
 import useNoteManager from "../../../util/useNoteManager";
@@ -15,10 +15,24 @@ const NoteTree = () => {
     const { nodes } = useNoteManager();
     const { username } = useUser();
     const { add, remove, contextHolder, cancelCollab } = useDirective(username!);
-    const { id } = useParams();
+    const { id, host } = useParams();
     const one = useMemo(() => nodes["one"], [nodes]);
     const multiple = useMemo(() => nodes["multiple"], [nodes]);
     const { note: { save } } = useAPI();
+
+    const handleSaveInNavigation = useCallback(async () => {
+        if(id && host) return;
+
+        const db = new NoteIndexedDB();
+        const result = await db.get(id!);
+
+        if (!result || result.uploaded) return;
+        save(username!, id!, JSON.stringify(result.content), true).then(ok => {
+            if (!ok) return;
+            const db = new NoteIndexedDB();
+            db.update({ id: id!, content: result.content, uploaded: true });
+        });
+    }, [host, id, save, username]);
 
     return <Flex vertical gap={5} style={{ flex: 1, overflowY: "auto" }}>
         <div>
@@ -32,18 +46,7 @@ const NoteTree = () => {
                     const first = one[0].key === data.key;
 
                     const to = data.url ? data.url : data.key as string;
-                    return <Link to={to} onClick={async () => {
-                        const db = new NoteIndexedDB();
-                        const result = await db.get(id!);
-
-                        if (!result || result.uploaded) return;
-                        save(username!, id!, JSON.stringify(result.content), true).then(ok => {
-                            if (!ok) return;
-                            const db = new NoteIndexedDB();
-                            db.update({ id: id!, content: result.content, uploaded: true });
-                        });
-
-                    }}>
+                    return <Link to={to} onClick={handleSaveInNavigation}>
                         <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3 }}>
                             <Typography.Text>{data.title as string}</Typography.Text>
                             <Flex gap={3}>
@@ -63,7 +66,6 @@ const NoteTree = () => {
                 <Tree treeData={multiple} blockNode selectable={false}
                     rootStyle={{ overflowY: "auto" }} defaultExpandAll
                     titleRender={(data) => {
-
                         return <Link to={data.url!}>
                             <Flex justify="space-between"
                                 style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>

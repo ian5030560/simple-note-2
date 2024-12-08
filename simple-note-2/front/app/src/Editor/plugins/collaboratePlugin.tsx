@@ -38,7 +38,7 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
         // }
 
         const doc = getDocFromMap(id, yjsMap);
-        const p = new WebsocketProvider("ws://localhost:4000", id, doc, { connect: true});
+        const p = new WebsocketProvider("ws://localhost:4000", id, doc, { connect: false });
         // provider.current = p;
 
         return p as unknown as Provider;
@@ -48,6 +48,6 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
         id={props.room} shouldBootstrap={true}
         providerFactory={providerFactory}
         cursorsContainerRef={props.cursorsContainerRef}
-        username={props.username} 
-        initialEditorState={props.initialEditorState}/>;
+        username={props.username}
+        initialEditorState={props.initialEditorState} />;
 };
