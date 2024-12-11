@@ -1,116 +1,72 @@
-from django.test import TestCase
+# from django.test import TestCase
+# from django.urls import reverse
+# from rest_framework.test import APIClient
+# from rest_framework import status
+# from breeze.models import Breeze
+# from breeze.serializers import BreezeSerializer
+# import json
 
-# Create your tests here.
+# class BreezeViewTestCase(TestCase):
+#     def setUp(self):
+#         self.client = APIClient()
+#         self.valid_data = {
+#             "text": "Sample text for testing"
+#         }
+#         self.invalid_data = "{"  # Malformed JSON
 
+#         # Create initial Breeze objects for GET method test
+#         Breeze.objects.create(breeze="Existing Breeze 1")
+#         Breeze.objects.create(breeze="Existing Breeze 2")
 
-# from transformers import BertTokenizer, GPT2LMHeadModel, TextGenerationPipeline
+#         self.ai_url = "http://192.168.196.106:8091"  # Replace with a mock or actual AI API
 
-# # 加載分詞器和模型
-# tokenizer = BertTokenizer.from_pretrained("uer/gpt2-distil-chinese-cluecorpussmall")
-# model = GPT2LMHeadModel.from_pretrained("uer/gpt2-distil-chinese-cluecorpussmall")
+#     def test_get_breeze(self):
+#         """Test GET method for retrieving Breeze objects."""
+#         response = self.client.get(reverse('breeze'))  # Replace 'breeze' with the correct URL name
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-# # 創建文本生成管道
-# text_generator = TextGenerationPipeline(
-#     model, 
-#     tokenizer, 
-#     device=0, 
-#     truncation=True,  # 明確設定截斷
-#     clean_up_tokenization_spaces=True  # 設置是否清理空格
-# )
+#         expected_data = [{"breeze": obj.breeze} for obj in Breeze.objects.all()]
+#         self.assertEqual(response.json(), expected_data)
 
-# # 用改善的設置生成文本
-# output = text_generator(
-#     "作業系統是電腦最基本的",  # 輸入文本
-#     max_new_tokens=10,  # 減小最大長度
-#     do_sample=True,  # 啟用採樣以增加多樣性
-#     repetition_penalty=1.5,  # 增大重複懲罰
-#     temperature=0.8,  # 降低溫度以獲得更集中的結果
-#     top_k=50,  # 限制前50個最有可能的詞
-#     top_p=0.95  # 使用核採樣，增強多樣性
-# )
+#     def test_post_breeze_valid_data(self):
+#         """Test POST method with valid data."""
+#         response = self.client.post(reverse('breeze'), data=json.dumps(self.valid_data), content_type="application/json")
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-# # 輸出結果
-# print(output)
+#         # Ensure data was saved correctly
+#         created_breeze = Breeze.objects.filter(breeze=self.valid_data["text"])
+#         self.assertTrue(created_breeze.exists())
 
-# 加載數據集
-from datasets import load_dataset
-# dataset = load_dataset("Heng666/Traditional_Chinese-aya_collection", "aya_dataset")
-dataset = load_dataset("lchakkei/OpenOrca-Traditional-Chinese")
-print(dataset["train"][0])  # 查看第0個樣本
+#     def test_post_breeze_invalid_json(self):
+#         """Test POST method with invalid JSON data."""
+#         response = self.client.post(reverse('breeze'), data=self.invalid_data, content_type="application/json")
+#         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
+#     def test_post_breeze_serializer_error(self):
+#         """Test POST method with data that fails serializer validation."""
+#         invalid_serializer_data = {
+#             "nonexistent_field": "This should fail validation"
+#         }
+#         response = self.client.post(reverse('breeze'), data=json.dumps(invalid_serializer_data), content_type="application/json")
+#         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-# 加載 GPT-2 分詞器與模型
-from transformers import BertTokenizer, GPT2LMHeadModel, GPT2Tokenizer
+#     def test_ai_integration(self):
+#         """Test AI API integration in POST method."""
+#         with self.assertLogs(level='DEBUG') as log:
+#             response = self.client.post(reverse('breeze'), data=json.dumps(self.valid_data), content_type="application/json")
+#             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-# 我們使用預訓練好的 GPT-2 模型和分詞器進行微調
-tokenizer = BertTokenizer.from_pretrained("uer/gpt2-distil-chinese-cluecorpussmall")
-model = GPT2LMHeadModel.from_pretrained("uer/gpt2-distil-chinese-cluecorpussmall")
+#             # Check logs for debug output
+#             self.assertTrue(any("Response status:" in message for message in log.output))
 
-# 定義一個用於分詞的函數，同時處理 question 和 response
-def tokenize_function(examples):
-    # 分詞 'question'
-    question = tokenizer(examples["question"], truncation=True, padding="max_length", max_length=128)
-    # 分詞 'response'
-    response = tokenizer(examples["response"], truncation=True, padding="max_length", max_length=128)
+#     def test_csrf_endpoint(self):
+#         """Test csrf endpoint."""
+#         response = self.client.get(reverse('csrf'))  # Replace 'csrf' with the correct URL name
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertIn("csrfToken", response.json())
 
-    # 將 question 和 response 的結果合併，作為輸出返回
-    return {
-        "input_ids": question["input_ids"],    # question 的 token ids
-        "attention_mask": question["attention_mask"],  # question 的注意力掩碼
-        "labels": response["input_ids"]  # 使用 response 的 token ids 作為標籤
-    }
-
-
-# 使用 map 函數對整個數據集進行 tokenization
-tokenized_datasets = dataset.map(tokenize_function, batched=True)
-
-# 設置訓練參數
-from transformers import Trainer, TrainingArguments
-
-training_args = TrainingArguments(
-    output_dir="./results",           # 輸出目錄，儲存模型和結果
-    overwrite_output_dir=True,        # 如果目錄存在，允許覆蓋
-    num_train_epochs=3,               # 訓練的輪數，3 輪訓練
-    per_device_train_batch_size=4,    # 每個設備（例如 GPU）的批次大小
-    save_steps=10_000,                # 每訓練 10,000 步保存一次模型
-    save_total_limit=2,               # 最多保存 2 個模型檔案
-    logging_dir="./logs",             # 日誌存放的目錄
-)
-
-# 定義 Trainer，這是 Hugging Face 用於簡化模型訓練的工具
-trainer = Trainer(
-    model=model,                      # 要訓練的模型
-    args=training_args,               # 訓練參數
-    train_dataset=tokenized_datasets["train"],  # 訓練數據集
-)
-
-# 開始訓練模型
-trainer.train()
-
-# 訓練完成後保存模型和分詞器
-model.save_pretrained("./fine_tuned_model")
-tokenizer.save_pretrained("./fine_tuned_model")
-
-# 測試模型的文本生成功能
-from transformers import TextGenerationPipeline
-from transformers import BertTokenizer, GPT2LMHeadModel, GPT2Tokenizer
-
-# 加載微調後的模型與分詞器
-fine_tuned_model = GPT2LMHeadModel.from_pretrained("./fine_tuned_model")
-fine_tuned_tokenizer = BertTokenizer.from_pretrained("./fine_tuned_model")
-
-# 創建文本生成的管道，方便直接生成文本
-text_generator = TextGenerationPipeline(fine_tuned_model, fine_tuned_tokenizer, device=0)
-
-output = text_generator(
-    "請問“問題：孔子在哪裡出生？",  # 輸入文本
-    max_new_tokens=100,  # 減小最大長度
-    do_sample=True,  # 啟用採樣以增加多樣性
-    repetition_penalty=1.5,  # 增大重複懲罰
-    temperature=0.8,  # 降低溫度以獲得更集中的結果
-    top_k=50,  # 限制前50個最有可能的詞
-    top_p=0.95  # 使用核採樣，增強多樣性
-)
-
-# 輸出結果
-print(output)
+#     def test_ping_endpoint(self):
+#         """Test ping endpoint."""
+#         response = self.client.get(reverse('ping'))  # Replace 'ping' with the correct URL name
+#         self.assertEqual(response.status_code, status.HTTP_200_OK)
+#         self.assertEqual(response.json(), {"result": "OK"})

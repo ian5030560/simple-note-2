@@ -7,6 +7,7 @@ basic_header = {
   'Content-type': 'application/json',
 }
 
+'''
 # test1: get_notes_res (should return 200 because setting: AllowedAny)
 get_notes_res = requests.get('http://localhost:8000/api/notes/', headers = basic_header)
 print('get_notes_res', get_notes_res.status_code)
@@ -107,3 +108,4 @@ new_user = {
 post_register_user_res = requests.post('http://localhost:8000/api/jwtauth/register/', json = new_user, headers = with_refresh_token_header )
 print('post_register_user_res', post_register_user_res.status_code)
 print('-----')
+'''

@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.middleware.csrf import get_token
 
+
 class DeleteCollaborateView(APIView):
     """
     取消協作: 將協作網址刪除(deleteCollaborate)\n
