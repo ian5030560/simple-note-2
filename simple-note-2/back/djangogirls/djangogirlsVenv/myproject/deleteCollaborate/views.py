@@ -25,7 +25,6 @@ class DeleteCollaborateView(APIView):
         200: 成功.\n
         400: 失敗.\n
     """
-
     def get(self, request, format=None):
         output = [
             {"deleteCollaborate": output.deleteCollaborate} for output in DeleteCollaborate.objects.all()
@@ -41,5 +40,6 @@ class DeleteCollaborateView(APIView):
         
         if isDelete:  # 若刪除成功
             return Response(status=status.HTTP_200_OK)
+        
         elif isDelete != True:  # 若刪除失敗
             return Response(status=status.HTTP_400_BAD_REQUEST)

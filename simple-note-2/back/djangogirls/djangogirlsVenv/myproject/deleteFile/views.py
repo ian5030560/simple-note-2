@@ -16,7 +16,6 @@ from rest_framework.decorators import permission_classes
 class DeleteFileView(APIView):
     """
     前端傳:\n
-
         帳號名(name: username, type: str)\n
         文件網址(name: url(新增文件所提供的網址), type: str)\n
         帳號名稱(noteTitleId, type: str)\n
