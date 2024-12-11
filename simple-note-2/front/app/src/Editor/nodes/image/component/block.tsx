@@ -1,9 +1,9 @@
 import { $getNodeByKey, ElementFormatType } from "lexical";
-import ImageView, { ImageViewProps } from "../component";
+import ImageView, { ImageViewProps } from ".";
 import styles from "./index.module.css";
 import { PicLeftOutlined, PicCenterOutlined, PicRightOutlined } from "@ant-design/icons";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { $isBlockImageNode } from "../block";
 import CheckOptionGroup from "./checkOptionGroup";
 import { Flex } from "antd";
@@ -20,6 +20,7 @@ const formats: { key: ElementFormatType, label: React.ReactNode }[] = [
 ]
 export default function BlockImageView({ format, ...props }: BlockImageViewProps) {
     const [editor] = useLexicalComposerContext();
+    const [hidden, setHidden] = useState(false);
 
     const handleChange = useCallback((value?: React.Key) => {
         if (!props.nodeKey) return;
@@ -41,10 +42,10 @@ export default function BlockImageView({ format, ...props }: BlockImageViewProps
     }, [editor, props.nodeKey]);
 
     return <div className={styles.imageContainer}>
-        <ImageView {...props} />
-        <Flex className={styles.imageOptionsContainer} gap={8}>
+        <ImageView {...props} onError={() => setHidden(true)} />
+        {!hidden && <Flex className={styles.imageOptionsContainer} gap={8}>
             <CheckOptionGroup value={format} items={formats} onChange={handleChange} />
-            <CloseButton onClick={handleClose}/>
-        </Flex>
+            <CloseButton onClick={handleClose} />
+        </Flex>}
     </div>
 }

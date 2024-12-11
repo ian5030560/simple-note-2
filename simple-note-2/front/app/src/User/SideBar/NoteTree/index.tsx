@@ -4,7 +4,7 @@ import useDirective from "./directive";
 import { Link, useParams } from "react-router-dom";
 import useNoteManager from "../../../util/useNoteManager";
 import useAPI from "../../../util/api";
-import { NoteIndexedDB } from "../../../util/store";
+import { SimpleNote2IndexedDB } from "../../../util/store";
 import useUser from "../../../util/useUser";
 import { CloseOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 
@@ -21,15 +21,15 @@ const NoteTree = () => {
     const { note: { save } } = useAPI();
 
     const handleSaveInNavigation = useCallback(async () => {
-        if(id && host) return;
+        if (id && host) return;
 
-        const db = new NoteIndexedDB();
+        const db = new SimpleNote2IndexedDB();
         const result = await db.get(id!);
 
         if (!result || result.uploaded) return;
         save(username!, id!, JSON.stringify(result.content), true).then(ok => {
             if (!ok) return;
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             db.update({ id: id!, content: result.content, uploaded: true });
         });
     }, [host, id, save, username]);
@@ -44,7 +44,6 @@ const NoteTree = () => {
                 rootStyle={{ overflowY: "auto" }} defaultExpandAll
                 titleRender={(data) => {
                     const first = one[0].key === data.key;
-
                     const to = data.url ? data.url : data.key as string;
                     return <Link to={to} onClick={handleSaveInNavigation}>
                         <Flex justify="space-between" style={{ paddingTop: 3, paddingBottom: 3 }}>
@@ -66,11 +65,13 @@ const NoteTree = () => {
                 <Tree treeData={multiple} blockNode selectable={false}
                     rootStyle={{ overflowY: "auto" }} defaultExpandAll
                     titleRender={(data) => {
+                        const [host] = data.key.split(" ").reverse();
+                        const isSelf = atob(host) === username;
                         return <Link to={data.url!}>
                             <Flex justify="space-between"
                                 style={{ paddingTop: 3, paddingBottom: 3, overflow: "hidden" }}>
                                 <Typography.Text>{data.title as string}</Typography.Text>
-                                <ToolButton icon={<CloseOutlined />} onClick={() => cancelCollab(data)} />
+                                {isSelf && <ToolButton icon={<CloseOutlined />} onClick={() => cancelCollab(data)} />}
                             </Flex>
                         </Link>
                     }} />

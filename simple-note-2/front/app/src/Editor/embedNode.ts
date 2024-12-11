@@ -1,7 +1,7 @@
-import {DecoratorBlockNode as LexicalDecoratorBlockNode} from "@lexical/react/LexicalDecoratorBlockNode";
+import {DecoratorBlockNode} from "@lexical/react/LexicalDecoratorBlockNode";
 import { EditorConfig } from "lexical";
 
-export default class DecoratorBlockNode extends LexicalDecoratorBlockNode {
+export default class EmbedBlockNode extends DecoratorBlockNode {
 
     protected getEmbedClass(config: EditorConfig){
         const embed = config.theme.embedBlock || {};

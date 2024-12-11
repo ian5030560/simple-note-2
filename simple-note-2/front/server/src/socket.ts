@@ -58,18 +58,13 @@ export default class Socket {
             this.roomStates.set(docName, {
                 state: UPLOAD.IDLE, interval: setInterval(() => {
                     this.uploadContent(ydoc, docName, user);
-                }, 120000)
+                }, 10000)
             });
         }
 
         ydoc.on("update", () => {
             const { interval } = this.roomStates.get(docName)!;
-            console.log(`${user} updating`);
             this.roomStates.set(docName, { state: UPLOAD.WAIT, interval });
-            setTimeout(() => {
-                console.log(`${user} ready`);
-                this.roomStates.set(docName, { state: UPLOAD.READY, interval });
-            }, 1000);
         });
 
 
@@ -82,6 +77,7 @@ export default class Socket {
             users.delete(user);
             if (users.size === 0) {
                 this.rooms.delete(docName);
+                this.roomStates.delete(docName);
             }
             else {
                 this.rooms.set(docName, users);
@@ -92,34 +88,34 @@ export default class Socket {
 
     private uploadContent(ydoc: Y.Doc, docName: string, username: string) {
         const { state, interval } = this.roomStates.get(docName)!;
-        if (state === UPLOAD.READY) {
-            // @ts-ignore
-            const lexicalJSON = headlessConvertYDocStateToLexicalJSON(nodes, Y.encodeStateAsUpdate(ydoc));
-            const content = JSON.stringify(lexicalJSON);
-            console.log(`${username} sending:\n${content}`);
+        if(state === UPLOAD.READY || state === UPLOAD.IDLE) return; 
+        // @ts-ignore
+        const lexicalJSON = headlessConvertYDocStateToLexicalJSON(nodes, Y.encodeStateAsUpdate(ydoc));
+        const content = JSON.stringify(lexicalJSON);
+        console.log(`${username} sending:\n${content}`);
 
-            const [id, master] = docName.split("/");
+        const [id, master] = docName.split("/");
+        this.roomStates.set(docName, {state: UPLOAD.READY, interval});
 
-            fetch("http://127.0.0.1:8000/note/save/", {
-                method: "POST",
-                body: JSON.stringify({
-                    username: Buffer.from(master, "base64").toString("base64"),
-                    noteId: id, content: content
-                }),
-                headers: {
-                    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-                    "content-type": "application/json",
-                }
-            }).then(() => {
-                console.log(`${username} sent successfully`);
-            }).catch(e => {
-                console.log(`${username} occur ${e}`);
-            }).finally(() => {
-                this.roomStates.set(docName, { state: UPLOAD.IDLE, interval: interval });
-            });
-        }
+        fetch("http://127.0.0.1:8000/note/save/", {
+            method: "POST",
+            body: JSON.stringify({
+                username: Buffer.from(master, "base64").toString("utf-8"),
+                noteId: id, content: content
+            }),
+            headers: {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+                "content-type": "application/json",
+            }
+        }).then(() => {
+            console.log(`${username} sent successfully`);
+        }).catch(e => {
+            console.log(`${username} occur ${e}`);
+        }).finally(() => {
+            this.roomStates.set(docName, { state: UPLOAD.IDLE, interval: interval });
+        });
     }
-    
+
     query(room: string) {
         return this.rooms.get(room);
     }

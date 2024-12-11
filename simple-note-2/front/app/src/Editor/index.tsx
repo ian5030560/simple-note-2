@@ -1,15 +1,15 @@
 import { useLoaderData, useNavigate, useNavigation, useParams } from "react-router-dom";
 import { Button, Flex, notification, Skeleton, Spin } from "antd";
-import React, { Suspense, useCallback, useEffect, useState } from "react";
+import React, { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { EditorState, LexicalNode, SerializedEditorState } from "lexical";
-import { $isImageNode } from "./nodes/image";
 import useAPI from "../util/api";
-import { $isVideoNode } from "./nodes/video";
-import { $isDocumentNode } from "./nodes/document";
 import { Typography } from "antd";
 import useNoteManager from "../util/useNoteManager";
-import { NoteIndexedDB } from "../util/store";
+import { SimpleNote2IndexedDB } from "../util/store";
 import useUser from "../util/useUser";
+import { $isImageNode } from "./nodes/image";
+import { $isVideoNode } from "./nodes/video";
+import { $isDocumentNode } from "./nodes/document";
 
 function Loading() {
     return <div style={{ height: "100%", padding: 50, overflowY: "auto" }}>
@@ -43,6 +43,9 @@ const LongWaiting = (props: LongWaitingProps) => {
     return waiting ? <Spin spinning fullscreen size="large" tip={props.text} /> : null;
 }
 
+enum SAVE{
+    WAIT, WATCH, SEND
+}
 export default () => {
     const data = useLoaderData() as string | null | false;
     const { id, host } = useParams();
@@ -53,8 +56,10 @@ export default () => {
     const { find, save } = useNoteManager();
     const [api, contextHolder] = notification.useNotification();
     const navigate = useNavigate();
+    const saveStateRef = useRef(SAVE.WAIT);
 
     const handleSaveToServer = useCallback((username: string, id: string, content: SerializedEditorState | null, keepAlive?: boolean) => {
+        saveStateRef.current = SAVE.SEND;
         note.save(username, id, JSON.stringify(content), keepAlive)
             .then(ok => { if (!ok) throw new Error(); })
             .catch(() => {
@@ -65,21 +70,23 @@ export default () => {
                         <Button type="primary" block onClick={() => handleSaveToServer(username, id, content, keepAlive)}>重新發送</Button>
                     </Flex>
                 })
-            });
+            }).finally(() => {
+                saveStateRef.current = SAVE.WAIT;
+            })
 
-        const db = new NoteIndexedDB();
+        const db = new SimpleNote2IndexedDB();
         db.update({ id, content, uploaded: true });
-
+        
     }, [api, note]);
 
     useEffect(() => {
-        if (id && host) return;
+        if (collab) return;
 
         const interval = setInterval(async () => {
 
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(id!);
-            
+
             if (!result) {
                 return api.warning({
                     message: "儲存異常",
@@ -97,13 +104,13 @@ export default () => {
         }, 2500);
 
         return () => clearInterval(interval);
-    }, [api, handleSaveToServer, host, id, navigate, note, username]);
+    }, [api, collab, handleSaveToServer, id, navigate, username]);
 
     useEffect(() => {
-        if(id && host) return;
-        
+        if (collab) return;
+
         async function handleBeforeUnload(e: BeforeUnloadEvent) {
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(id!);
 
             if (!result) return;
@@ -114,20 +121,31 @@ export default () => {
                 e.returnValue = true;
             }
         }
-
         window.addEventListener("beforeunload", handleBeforeUnload);
-
         return window.removeEventListener("beforeunload", handleBeforeUnload);
-    }, [handleSaveToServer, host, id, username]);
+    }, [collab, handleSaveToServer, id, username]);
 
-    const insertFile = useCallback((f: File) => {
-        const node = !(id && host) ? find(id!) : find(id + host, "multiple");
+    const insertFileInCollab = useCallback((f: File) => {
+        const node = find(`${id} ${host}`, "multiple");
 
-        const user = id && host ? atob(host) : username!;
-        return file.add(user, f, node!.key)
-            .catch(() => { throw new Error(`${f.name} is not uploaded successfully`); });
+        const [, ...key] = node!.key.split(" ").reverse();
+        const noteId = key.reverse().join("");
 
-    }, [file, find, host, id, username]);
+        return file.add(atob(host!), f, noteId).catch(() => {
+            throw new Error(`${f.name} is not uploaded successfully`)
+        });
+    }, [file, find, host, id]);
+
+    const insertFile = useCallback(async (f: File) => {
+        const node = find(id!);
+        const user = username!;
+        try {
+            return await file.add(user, f, node!.key);
+        } catch {
+            throw new Error(`${f.name} is not uploaded successfully`);
+        }
+
+    }, [file, find, id, username]);
 
     const destroyFile = useCallback((node: LexicalNode) => {
         let url: string;
@@ -137,8 +155,8 @@ export default () => {
         else {
             throw new Error(`${node.__type} is not supported by deleteFile`);
         }
-
         const user = id && host ? atob(host) : username!;
+
         file.delete(user, url, id!).then(ok => { if (!ok) throw new Error(); })
             .catch(() => { throw new Error(`Your file: ${url} failed to be deleted`); });
 
@@ -157,8 +175,10 @@ export default () => {
     }, [api]);
 
     const handleSave = useCallback(async (editorState: EditorState) => {
+        if(saveStateRef.current === SAVE.SEND) return;
         await save(id!, editorState);
         console.log("save in indexeddb");
+        saveStateRef.current = SAVE.WATCH;
     }, [id, save]);
 
     return <>
@@ -166,7 +186,8 @@ export default () => {
             {
                 navigation.state !== "loading" && <Editor initialEditorState={data !== false ? data : undefined} collab={collab}
                     room={collab ? `${id}/${host}` : undefined} username={username} onSave={handleSave}
-                    insertFile={insertFile} destroyFile={destroyFile} onError={handleError} />
+                    insertFile={collab ? insertFileInCollab : insertFile}
+                    destroyFile={destroyFile} onError={handleError} />
             }
         </Suspense>
         <LongWaiting delay={500} text="正在載入內容" />

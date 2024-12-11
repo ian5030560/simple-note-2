@@ -29,7 +29,7 @@ class SaveNoteView(APIView):
         Serializer的raise_exception=False: 404,\n
         JSONDecodeError: 405.\n
     """
-    permission_classes = [permissions.AllowAny]
+    # permission_classes = [permissions.AllowAny]
     serializer_class = SaveNoteSerializer
 
     def get(self, request, format=None):

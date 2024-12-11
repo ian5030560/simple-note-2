@@ -1,8 +1,8 @@
 import { SerializedDecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import { DOMConversionMap, DOMExportOutput, EditorConfig, ElementFormatType, LexicalEditor, LexicalNode, Spread } from "lexical";
 import React, { Suspense } from "react";
-import DecoratorBlockNode from "../decoratorBlockNode";
 import { Skeleton } from "antd";
+import EmbedBlockNode from "../../embedNode";
 
 export interface VideoNodeProp {
     width: number;
@@ -33,7 +33,7 @@ function $convertVideoElement(dom: HTMLElement) {
     return null;
 }
 
-export default class VideoNode extends DecoratorBlockNode {
+export default class VideoNode extends EmbedBlockNode {
 
     __width: number;
     __height: number;

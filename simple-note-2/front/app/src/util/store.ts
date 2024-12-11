@@ -6,7 +6,7 @@ export type NoteObject = {
     uploaded: boolean;
 };
 
-export class NoteIndexedDB {
+export class SimpleNote2IndexedDB {
 
     dbName = "simple-note-2-indexeddb";
     storeName = "Note";
@@ -60,27 +60,27 @@ export class NoteIndexedDB {
     }
 }
 
-export class ThemeLocalStorage{
-    private user = "theme-user-dark";
-    private official = "theme-official-dark";
+export class SimpleNote2LocalStorage{
+    private userDark = "simple-note-2-user-dark";
+    private officialDark = "simple-note-2-official-dark";
 
     getUserDark(){
-        return !!localStorage.getItem(this.user);
+        return localStorage.getItem(this.userDark) === "true";
     }
 
     setUserDark(value: boolean){
-        localStorage.setItem(this.user, value + "");
+        localStorage.setItem(this.userDark, value + "");
     }
 
     removeUserDark(){
-        localStorage.removeItem(this.user);
+        localStorage.removeItem(this.userDark);
     }
 
     getOfficialDark(){
-        return !!localStorage.getItem(this.official);
+        return localStorage.getItem(this.officialDark) === "true";
     }
 
     setOfficialDark(value: boolean){
-        localStorage.setItem(this.official, value + "");
+        localStorage.setItem(this.officialDark, value + "");
     }
 }

@@ -1,7 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LexicalCommand, createCommand } from "lexical";
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Button, Drawer, Flex, Input, Skeleton, theme, Typography } from "antd";
+import { Button, Drawer, Flex, Input, Skeleton, theme, Tooltip, Typography } from "antd";
 import { RobotOutlined, SendOutlined, UserOutlined } from "@ant-design/icons";
 import { uuid } from "../../../util/uuid";
 import useGemini from "./useGemini";
@@ -32,7 +32,7 @@ const Message = (props: MessageProps) => {
 //     return;
 // }
 export const TOGGLE_QUESTION_TO_AI: LexicalCommand<void> = createCommand();
-export default function AIQuestionPlugin(){
+export default function AIQuestionPlugin() {
 
     const [editor] = useLexicalComposerContext();
     const model = useGemini();
@@ -42,6 +42,7 @@ export default function AIQuestionPlugin(){
     const [loading, setLoading] = useState(false);
     const [input, setInput] = useState<string>("");
     const ref = useRef<HTMLDivElement>(null);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         return editor.registerCommand(TOGGLE_QUESTION_TO_AI, () => {
@@ -56,7 +57,7 @@ export default function AIQuestionPlugin(){
         if (!el) return;
 
         const observer = new MutationObserver(() => {
-            if(el) el.scrollTo(0, el.scrollHeight);
+            if (el) el.scrollTo(0, el.scrollHeight);
         });
         observer.observe(el, { childList: true });
 
@@ -75,10 +76,10 @@ export default function AIQuestionPlugin(){
         });
 
         if (content.trim().length > 0) {
-            setInput("");
             setLoading(true);
+            setError(false);
 
-            const id = uuid()
+            const id = uuid();
             setHistory(prev => prev.concat(
                 { id: uuid(), role: "user", content: content! },
                 { id: id, role: "model", content: "" }
@@ -91,14 +92,16 @@ export default function AIQuestionPlugin(){
                         const index = prev.findIndex(it => it.id === id);
                         prev[index].content = text;
                         return [...prev];
-                    })
-                    setLoading(false);
+                    });
+                    setInput("");
                 })
-                .catch(() => null);
+                .catch(() => setError(true))
+                .finally(() => setLoading(false));
         }
     }, [history, input, model]);
 
-    return <Drawer open={open} onClose={() => setOpen(false)} title="詢問AI" mask={false} maskClosable={false}>
+    return <Drawer open={open} onClose={() => setOpen(false)} title="詢問AI" mask={false}
+        maskClosable={false} destroyOnClose>
         <Flex vertical justify="space-between" style={{ height: "100%" }} gap={"small"}>
             <div ref={ref} style={{
                 flex: 1, overflow: "auto", display: "flex",
@@ -124,13 +127,18 @@ export default function AIQuestionPlugin(){
                     )
                 }
             </div>
-            <div style={{ position: "relative" }}>
-                <Input.TextArea style={{ resize: "none", overflow: "auto" }} value={input}
-                    onChange={(e) => setInput(e.target.value)} variant="filled" disabled={loading} />
-                <Button type="text" icon={<SendOutlined />} loading={loading}
-                    style={{ position: "absolute", right: 3, bottom: 3 }}
-                    onClick={handleClick} />
-            </div>
+            <Tooltip title="發生錯誤，請重新上傳" arrow={false} open={error}
+                trigger={["focus"]} placement="topLeft" color={token.colorError}>
+                <div style={{ position: "relative" }}>
+                    <Input.TextArea status={error ? "error" : undefined}
+                        style={{ resize: "none", overflow: "auto" }} value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        variant="filled" disabled={loading} />
+                    <Button type="text" icon={<SendOutlined />} loading={loading}
+                        style={{ position: "absolute", right: 3, bottom: 3 }}
+                        onClick={handleClick} />
+                </div>
+            </Tooltip>
         </Flex>
     </Drawer>;
 }
