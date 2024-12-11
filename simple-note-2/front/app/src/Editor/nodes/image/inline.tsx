@@ -2,7 +2,7 @@ import {
     EditorConfig, LexicalNode, NodeKey,
     SerializedLexicalNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput,
 } from "lexical";
-import React, { ReactNode, Suspense } from "react";
+import React, { Suspense } from "react";
 import { Spread } from "lexical/LexicalEditor";
 import { Skeleton } from "antd";
 import BasicImageNode from ".";
@@ -25,7 +25,7 @@ function $convertImageElement(domNode: Node): null | DOMConversionOutput {
 
 export type Float = "left" | "right";
 
-type SerializedImageNode = Spread<Omit<ImageViewProps & { float?: Float }, "key">, SerializedLexicalNode>;
+type SerializedImageNode = Spread<Omit<ImageViewProps & { float?: Float }, "key" | "onError">, SerializedLexicalNode>;
 
 
 export default class InlineImageNode extends BasicImageNode {
@@ -87,7 +87,7 @@ export default class InlineImageNode extends BasicImageNode {
         return true;
     }
 
-    decorate(): ReactNode {
+    decorate() {
         return <Suspense fallback={<Skeleton.Image active />}>
             <LazyImageView
                 src={this.__src}

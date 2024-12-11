@@ -64,6 +64,26 @@ async function readFileToDataURL(file: File): Promise<string> {
 
 const dummyFn = () => { };
 
+function $validateEditorState(editor: LexicalEditor, editorState: InitialEditorStateType) {
+    if (typeof editorState === "function") return editorState(editor);
+    else if (typeof editorState === "string") {
+        const parsed = editor.parseEditorState(editorState);
+        if (parsed.isEmpty()) {
+            editor.update(() => $createEmptyContent());
+        }
+        else {
+            editor.setEditorState(parsed);
+        }
+    }
+    else if(typeof editorState === "object"){
+        if (editorState!.isEmpty()) {
+            editor.update(() => $createEmptyContent());
+        }
+        else if(editorState !== null){
+            editor.setEditorState(editorState);
+        }
+    }
+}
 interface EditorProps {
     test?: boolean;
     collab?: boolean;
@@ -88,7 +108,9 @@ export default function Editor(props: EditorProps) {
                 namespace: 'Editor', theme: themes, nodes: nodes, editable: props.editable,
                 onError: props.onError || dummyFn,
                 /** @see https://lexical.dev/docs/collaboration/react */
-                editorState: props.collab ? null : !props.test ? !props.initialEditorState ? $createEmptyContent : props.initialEditorState : undefined,
+                editorState: props.collab ? null : !props.test ?
+                    !props.initialEditorState ? $createEmptyContent :
+                        (editor) => $validateEditorState(editor, props.initialEditorState!) : undefined,
             }}>
             {!props.test && !props.collab && <SavePlugin onSave={props.onSave || dummyFn} />}
             <ToolBarPlugin />

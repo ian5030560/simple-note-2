@@ -2,17 +2,17 @@ import CanvasNode from "./canvas";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import ColumnContainerNode from "./column/container";
 import ColumnItemNode from "./column/item";
-import DocumentNode from "./document";
-import ImageNode from "./image/block";
-import InlineImageNode from "./image/inline";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
-import VideoNode from "./video";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { MarkNode } from "@lexical/mark";
 import BlockMathNode from "./math/block";
 import InlineMathNode from "./math/inline";
+import InlineImageNode from "./image/inline";
+import VideoNode from "./video";
+import DocumentNode from "./document";
+import BlockImageNode from "./image/block";
 
 const nodes = [
     HeadingNode,
@@ -28,7 +28,7 @@ const nodes = [
     ColumnContainerNode,
     ColumnItemNode,
     DocumentNode,
-    ImageNode,
+    BlockImageNode,
     InlineImageNode,
     TableCellNode,
     TableRowNode,

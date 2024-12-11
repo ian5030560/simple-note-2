@@ -90,7 +90,7 @@ export default withPageTitle(function SignUp({ onChange }: AuthProp) {
     return <>
         <Form form={form} size="large" validateMessages={validateMessages} onFinish={handleFinished}
             labelWrap autoComplete="on" style={{ padding: "8px 16px" }}>
-            <Title style={{ textAlign: "center" }}>註冊</Title>
+            <Title level={2} style={{ textAlign: "center" }}>註冊</Title>
             <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
                 <Input placeholder="輸入你的帳號" />
             </Form.Item>

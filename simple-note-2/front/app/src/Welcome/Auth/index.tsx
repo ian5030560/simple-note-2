@@ -12,7 +12,7 @@ enum CURRENT {
 export default function Auth() {
   const [current, setCurrent] = useState(CURRENT.SIGNIN);
 
-  return <Flex justify="center" align="center" style={{height: "100%"}}>
+  return <Flex justify="center" align="center" style={{minHeight: "100%"}}>
     <div className={styles.authContainer}>
       {
         current === CURRENT.SIGNIN ?

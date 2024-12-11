@@ -1,7 +1,7 @@
 import { LoaderFunctionArgs } from "react-router-dom";
 import useNoteManager, { NoteDataNode } from "./util/useNoteManager";
 import utilizeAPI, { LoadTreeResult, NoteTreeData, Token } from "./util/api";
-import { NoteIndexedDB, ThemeLocalStorage } from "./util/store";
+import { SimpleNote2IndexedDB, SimpleNote2LocalStorage } from "./util/store";
 import useUser, { defaultThemeData } from "./util/useUser";
 import { Cookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
@@ -62,11 +62,10 @@ export function generateNoteForest(data: NoteTreeData[]) {
     return buildNoteDataTree(data, null);
 }
 
-function bindURL(nodes: NoteDataNode[], multiple: LoadTreeResult["multiple"], username: string) {
+function bindURL(nodes: NoteDataNode[], multiple: LoadTreeResult["multiple"]) {
     for (let node of nodes) {
-        bindURL(node.children, multiple, username);
+        bindURL(node.children, multiple);
         node.url = multiple.find(mul => {
-            console.log(mul.noteId, node.key + username);
             return mul.noteId === node.key;
         })?.url;
     }
@@ -79,7 +78,7 @@ export async function settingLoader() {
     return Promise.all([
         theme.getAll(username).then(async (themes) => {
             const { image, themeId, password } = await info.get(username);
-            const store = new ThemeLocalStorage();
+            const store = new SimpleNote2LocalStorage();
             const dark = store.getUserDark();
 
             useUser.setState(prev => {
@@ -98,12 +97,12 @@ export async function settingLoader() {
         }),
         loadTree(username).then(data => {
             const ones = generateNoteForest(data.one);
-            bindURL(ones, data.multiple, btoa(username));
+            bindURL(ones, data.multiple);
             const multiples: NoteDataNode[] = data.multiple.map(it => {
                 const [id, host] = it.url.split("/");
-                const title = `${atob(host)}-${it.noteName}`;
+                const title = `${atob(host)}的${it.noteName}`;
                 return {
-                    title: title, key: id + host, children: [],
+                    title: title, key: `${id} ${host}`, children: [],
                     url: it.url, parent: null
                 }
             });
@@ -127,13 +126,13 @@ async function getNote(username: string, id: string) {
 export async function contentLoader({ params }: LoaderFunctionArgs<string | null>, username: string) {
     const { id } = params;
     const { note: { save } } = utilizeAPI();
-    const db = new NoteIndexedDB();
+    const db = new SimpleNote2IndexedDB();
     const result = await db.get(id!);
-
+    
     if (!result) {
         const data = await getNote(username, id!);
 
-        const db = new NoteIndexedDB();
+        const db = new SimpleNote2IndexedDB();
         db.add({ id: id!, content: data ? JSON.parse(data) : null, uploaded: true });
 
         return data;
@@ -151,7 +150,7 @@ export async function contentLoader({ params }: LoaderFunctionArgs<string | null
                         throw new Error();
                     }
                     else {
-                        const db = new NoteIndexedDB();
+                        const db = new SimpleNote2IndexedDB();
                         db.update({ id: id!, content, uploaded: true });
                     }
                 }).catch(() => { throw new Error("405"); })

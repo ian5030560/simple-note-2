@@ -3,7 +3,7 @@ import {
     SerializedLexicalNode, DOMConversionMap, DOMConversionOutput, DOMExportOutput,
     ElementFormatType,
 } from "lexical";
-import React, { ReactNode, Suspense } from "react";
+import React, { Suspense } from "react";
 import { Spread } from "lexical/LexicalEditor";
 import { Skeleton } from "antd";
 import ImageNode from ".";
@@ -24,7 +24,7 @@ function $convertImageElement(domNode: Node): DOMConversionOutput | null {
     return { node };
 }
 
-type SerializedImageNode = Spread<Omit<BlockImageViewProps, "key">, SerializedLexicalNode>;
+type SerializedImageNode = Spread<Omit<BlockImageViewProps, "key" | "onError">, SerializedLexicalNode>;
 
 export default class BlockImageNode extends ImageNode {
 
@@ -83,7 +83,7 @@ export default class BlockImageNode extends ImageNode {
         return false;
     }
 
-    decorate(): ReactNode {
+    decorate() {
         return <Suspense fallback={<Skeleton.Image active />}>
             <LazyImageView
                 src={this.__src}

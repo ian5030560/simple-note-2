@@ -56,7 +56,7 @@ export default withPageTitle(function SignIn({ onChange }: AuthProp) {
     return <>
         <Form form={form} size="large" validateMessages={validateMessages} labelWrap autoComplete="on"
             onFinish={handleFinished} style={{ padding: "8px 16px" }}>
-            <Title style={{ textAlign: "center" }}>登入</Title>
+            <Title level={2} style={{ textAlign: "center" }}>登入</Title>
             <Form.Item label="帳號" name="username" rules={[{ required: true }]}>
                 <Input autoComplete="username" placeholder="輸入你的帳號"/>
             </Form.Item>

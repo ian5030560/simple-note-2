@@ -1,7 +1,7 @@
 import { TreeDataNode } from "antd";
 import { EditorState } from "lexical";
 import { create } from "zustand";
-import { NoteObject, NoteIndexedDB } from "./store";
+import { NoteObject, SimpleNote2IndexedDB } from "./store";
 
 export interface NoteDataNode extends TreeDataNode {
     key: string;
@@ -56,7 +56,7 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
                 resolve(data.key);
             }
             else {
-                const db = new NoteIndexedDB();
+                const db = new SimpleNote2IndexedDB();
                 db.add(note).then(resolve).catch(() => reject(new NoteStorageError("Failed to store in IndexedDB")));
             }
         });
@@ -80,7 +80,7 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
                 resolve(true);
             }
             else {
-                const db = new NoteIndexedDB();
+                const db = new SimpleNote2IndexedDB();
                 db.delete(key).then((req) => resolve(req === undefined)).catch(reject);
             }
         });
@@ -113,7 +113,7 @@ const createStore = create<NoteManagerState & NoteManagerAction>()((set, get) =>
         const node = findNode(get().nodes["one"], key);
         if(!node) throw new NoteStorageError(`Can't find the Node-${key}`);
         else{
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             db.update({content: content.toJSON(), uploaded: false, id: key});
         }
     }

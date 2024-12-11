@@ -7,7 +7,7 @@ export default function useGenimi() {
     useEffect(() => {
         if(!API_KEY) return;
         model.current = new GoogleGenerativeAI(API_KEY)
-            .getGenerativeModel({ model: "gemini-1.5-flash", tools: [{}] })
+            .getGenerativeModel({ model: "gemini-1.5-flash" })
     })
 
     return model.current;

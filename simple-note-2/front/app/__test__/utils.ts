@@ -1,12 +1,12 @@
 import { randomUUID } from "node:crypto";
 import useNoteManager, { NoteDataNode } from "../src/util/useNoteManager";
-import { NoteObject, NoteIndexedDB } from "../src/util/store";
+import { NoteObject, SimpleNote2IndexedDB } from "../src/util/store";
 
 export const uuid = () => randomUUID().split("-").join("-");
 
 export async function prepareNoteManager(data: { nodes: { one: NoteDataNode[], multiple: NoteDataNode[] } }) {
     useNoteManager.setState(prev => ({ ...prev, ...data }));
-    const db = new NoteIndexedDB();
+    const db = new SimpleNote2IndexedDB();
 
     const flatten = data.nodes.one.flat(Infinity);
     for (const node of flatten) {

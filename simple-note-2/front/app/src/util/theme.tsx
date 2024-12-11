@@ -2,6 +2,7 @@ import { AlertFilled, AlertOutlined } from "@ant-design/icons";
 import { ConfigProvider, FloatButton, ThemeConfig, theme as _theme } from "antd";
 import { useContext, useState } from "react";
 import { createContext } from "react";
+import { SimpleNote2LocalStorage } from "./store";
 
 export type ThemeSeed = {
     colorLightPrimary: string;
@@ -24,7 +25,7 @@ export const testSeed: ThemeSeed = {
     colorDarkNeutral: "#272727",
 }
 
-export default function theme(seed: ThemeSeed): (dark: boolean) => ThemeConfig{
+export default function theme(seed: ThemeSeed): (dark: boolean) => ThemeConfig {
     return (dark) => ({
         token: {
             colorPrimary: seed ? dark ? seed.colorDarkPrimary : seed.colorLightPrimary : undefined,
@@ -48,25 +49,28 @@ type ThemeConfigContextType = {
     dark: boolean;
     setDark: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const ThemeConfigContext = createContext<ThemeConfigContextType>({dark: false, setDark: () => {}});
-interface ThemeProviderProps extends React.PropsWithChildren{
+const ThemeConfigContext = createContext<ThemeConfigContextType>({ dark: false, setDark: () => { } });
+interface ThemeProviderProps extends React.PropsWithChildren {
     dark?: boolean;
     seed?: ThemeSeed;
 }
-export function ThemeProvider(props: ThemeProviderProps){
+export function OfficialThemeProvider(props: ThemeProviderProps) {
     const [dark, setDark] = useState(props.dark ?? false);
 
     return <ConfigProvider theme={theme(props.seed ?? defaultSeed)(dark)}>
-        <ThemeConfigContext.Provider value={{dark, setDark}}>
+        <ThemeConfigContext.Provider value={{ dark, setDark }}>
             {props.children}
         </ThemeConfigContext.Provider>
     </ConfigProvider>
 }
 
-export const useThemeConfig = () => useContext(ThemeConfigContext);
+const store = new SimpleNote2LocalStorage();
+export function OfficialDarkButton() {
+    const { dark, setDark } = useContext(ThemeConfigContext);
 
-export function ThemeSwitchButton(){
-    const {dark, setDark} = useThemeConfig();
-
-    return <BulbButton dark={dark} onClick={() => setDark(prev => !prev)}/>
+    return <BulbButton dark={dark} onClick={() => setDark(() => {
+        const prev = store.getOfficialDark();
+        store.setOfficialDark(!prev);
+        return !prev;
+    })} />
 }

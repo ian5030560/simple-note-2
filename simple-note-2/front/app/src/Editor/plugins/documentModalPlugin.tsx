@@ -3,13 +3,13 @@ import { $getNodeByKey, COMMAND_PRIORITY_CRITICAL, LexicalNode } from "lexical";
 import { useCallback, useEffect, useState } from "react";
 import { $insertNodeToNearestRoot } from "@lexical/utils";
 import { mergeRegister } from "@lexical/utils";
-import DocumentNode, { $isDocumentNode, $createDocumentNode } from "../nodes/document";
 import { useValidateNodeClasses } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import { RAISE_ERROR } from "./errorPlugin";
 import UploadModal from "../ui/uploadModal";
 import { uuid } from "../../util/uuid";
 import { FilePluginProps } from "../types";
+import DocumentNode, { $isDocumentNode, $createDocumentNode } from "../nodes/document";
 
 export default function DocumentModal(props: FilePluginProps) {
     const [editor] = useLexicalComposerContext();

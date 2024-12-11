@@ -13,10 +13,11 @@ export interface ImageViewProps {
     width: number | "inherit";
     height: number | "inherit";
     nodeKey?: NodeKey;
+    onError?: () => void;
 }
-export default function ImageView({ src, alt, height, width, nodeKey }: ImageViewProps) {
+export default function ImageView({ src, alt, height, width, nodeKey, onError }: ImageViewProps) {
     const [editor] = useLexicalComposerContext();
-    const imageRef = useRef<HTMLSpanElement>(null);
+    const spanRef = useRef<HTMLSpanElement>(null);
     const [isSelected, setSelected] = useLexicalNodeSelection(nodeKey!);
     const [error, setError] = useState(false);
 
@@ -31,41 +32,18 @@ export default function ImageView({ src, alt, height, width, nodeKey }: ImageVie
     }, [editor, nodeKey]);
 
     const handleClick = useCallback((e: MouseEvent) => {
-        if (imageRef.current?.contains(e.target as HTMLElement)) {
+        if (spanRef.current?.contains(e.target as HTMLElement)) {
             setSelected(!isSelected);
         }
         return false;
     }, [isSelected, setSelected]);
 
-    useEffect(() => {
-        const { current: image } = imageRef;
-        if (!image) return;
+    useEffect(() => editor.registerCommand(CLICK_COMMAND, handleClick, 1), [editor, handleClick]);
 
-        const handleLoad = () => setError(false);
-        const handleError = () => setError(true);
-
-        image.addEventListener("load", handleLoad);
-        image.addEventListener("error", handleError);
-
-        return () => {
-            image.removeEventListener("load", handleLoad);
-            image.removeEventListener("error", handleError);
-        }
-    }, []);
-
-    useEffect(() => {
-        return editor.registerCommand(CLICK_COMMAND, handleClick, 1);
-    }, [editor, handleClick]);
-
-    return <>
-        {
-            error ? <Image draggable={false} src={noImage} preview={false} alt={alt}
-                width={width} height={height} /> :
-                <Resizer onResize={handleResize} showHandle={isSelected}>
-                    <span ref={imageRef}>
-                        <Image preview={false} src={src} alt={alt} width={width} height={height} draggable={false} />
-                    </span>
-                </Resizer>
-        }
-    </>;
+    return <Resizer onResize={handleResize} showHandle={isSelected}>
+        <span ref={spanRef}>
+            <Image preview={false} src={!error ? src : noImage} alt={alt} width={width} height={height}
+                draggable={false} onError={() => { setError(true); onError?.(); }} />
+        </span>
+    </Resizer>;
 }

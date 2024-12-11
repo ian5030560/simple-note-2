@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import { createBrowserRouter, createRoutesFromElements, LoaderFunctionArgs, Outlet, Route, RouterProvider, ShouldRevalidateFunctionArgs } from "react-router-dom";
 import ThemePage from "./ThemeEdit";
 import { Cookies, CookiesProvider } from "react-cookie";
@@ -9,11 +9,11 @@ import Intro from "./Welcome/intro";
 import Auth from "./Welcome/Auth";
 import { EditorErrorBoundary, SettingErrorBoundary } from "./boundary";
 import UserLayout from "./User";
-import { ThemeProvider, ThemeSwitchButton } from "./util/theme";
+import { OfficialDarkButton, OfficialThemeProvider } from "./util/theme";
 import Editor from "./Editor";
 import { Public, Private } from "./route";
-import UserComponent from "./User/component";
 import withPageTitle from "./util/pageTitle";
+import { SimpleNote2LocalStorage } from "./util/store";
 
 function editorLoader(args: LoaderFunctionArgs<any>) {
   const { params } = args;
@@ -37,7 +37,7 @@ function shouldRevalidateFn({ currentParams: { id: oid }, nextParams: { id: nid 
   return oid !== nid;
 }
 
-const PlayGroundLayout = withPageTitle(() => <Suspense><Outlet /><ThemeSwitchButton /></Suspense>, "playground");
+const PlayGroundLayout = withPageTitle(() => <Suspense><Outlet /><OfficialDarkButton /></Suspense>, "playground");
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -60,22 +60,28 @@ const router = createBrowserRouter(
 
       <Route path="playground" element={<PlayGroundLayout />}>
         <Route index element={<EditorComponent test />} />
-        <Route path="collab" element={<EditorComponent test collab />} />
+        {/* <Route path="collab" element={<EditorComponent test collab />} /> */}
       </Route>
 
-      <Route path="user" element={<UserComponent>
+      {/* <Route path="user" element={<UserComponent>
         <EditorComponent />
         <ThemeSwitchButton />
-      </UserComponent>} />
+      </UserComponent>} /> */}
     </>
   )
 )
 
 
 export default function App(): React.JSX.Element {
+  
+  const dark = useMemo(() => {
+    const store = new SimpleNote2LocalStorage();
+    return store.getOfficialDark();
+  }, []);
+
   return <CookiesProvider defaultSetOptions={{ path: "/" }}>
-    <ThemeProvider>
+    <OfficialThemeProvider dark={dark}>
       <RouterProvider router={router} />
-    </ThemeProvider>
+    </OfficialThemeProvider>
   </CookiesProvider>
 }

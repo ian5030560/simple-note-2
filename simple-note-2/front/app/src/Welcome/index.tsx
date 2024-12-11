@@ -3,10 +3,10 @@ import { Outlet } from "react-router-dom";
 import Note from "../../public/notesbook.png";
 import NavigateMenu from "./navigateMenu";
 import styles from "./index.module.css";
-import { ThemeSwitchButton } from "../util/theme";
+import { OfficialDarkButton } from "../util/theme";
 
 
-const NoteImage: React.FC = () => <Image src={Note} alt="" width={64} height={64} preview={false} />
+const NoteImage = () => <Image src={Note} alt="" width={64} height={64} preview={false} />
 
 const Brand = () => {
     return <Flex align="center" gap="small">
@@ -22,7 +22,10 @@ const Container = (props: React.PropsWithChildren) => <Flex justify="center">
 export default function WelcomeLayout() {
     const { token } = theme.useToken();
 
-    return <Flex vertical style={{ height: "100%", backgroundColor: token.colorBgBase }}>
+    return <Flex vertical style={{
+        height: "100%", backgroundColor: token.colorBgBase,
+        padding: 8, boxSizing: "border-box"
+    }}>
         <Container>
             <Row align="middle" justify="space-between" wrap={false}>
                 <Col sm={20} md={12}><Brand /></Col>
@@ -36,7 +39,7 @@ export default function WelcomeLayout() {
         </div>
         <FloatButton.Group>
             <FloatButton.BackTop />
-            <ThemeSwitchButton />
+            <OfficialDarkButton />
         </FloatButton.Group>
     </Flex>
 }

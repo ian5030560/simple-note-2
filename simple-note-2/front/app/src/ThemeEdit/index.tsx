@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import SideBar, { ExportValues } from "./sideBar";
 import { Row, Col, theme, notification, Grid, Flex } from "antd";
 import Preview from "./preview";
-import { defaultSeed, ThemeSwitchButton } from "../util/theme";
+import { defaultSeed, OfficialDarkButton } from "../util/theme";
 import useAPI from "../util/api";
 import useUser from "../util/useUser";
 import styles from "../Welcome/navigateMenu.module.css";
@@ -13,7 +13,7 @@ import { PencilSquare } from "../util/icons";
 const ThemePage = () => {
     return <>
         <Index />
-        <ThemeSwitchButton />
+        <OfficialDarkButton />
     </>
 }
 

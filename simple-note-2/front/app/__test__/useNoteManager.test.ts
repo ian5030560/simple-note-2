@@ -6,7 +6,7 @@ import "fake-indexeddb";
 import { createHeadlessEditor } from "@lexical/headless";
 import { $createParagraphNode, $createTextNode, $getRoot, LexicalEditor } from "lexical";
 import { prepareNoteManager, uuid } from "./utils";
-import { NoteObject, NoteIndexedDB } from "../src/util/store";
+import { NoteObject, SimpleNote2IndexedDB } from "../src/util/store";
 
 function createNoteManagerHook() {
     const { result } = renderHook(() => useNoteManager());
@@ -30,7 +30,7 @@ describe("測試useNoteManager", () => {
             expect(hook.nodes["one"]).toContainEqual({ ...param, children: [], parent: null });
 
             const note: NoteObject = { id: param.key, content: null, uploaded: true };
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(note.id);
 
             expect(result).toEqual(note);
@@ -57,7 +57,7 @@ describe("測試useNoteManager", () => {
                 await hook.add(param, key2, "one");
             });
 
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(param.key);
 
             const note: NoteObject = { id: param.key, content: null, uploaded: true };
@@ -85,7 +85,7 @@ describe("測試useNoteManager", () => {
                 await hook.add(param, key1, "one");
             });
 
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(param.key);
 
             const note: NoteObject = { id: param.key, content: null, uploaded: true };
@@ -163,7 +163,7 @@ describe("測試useNoteManager", () => {
                 await hook.add(param, ids[5], "one");
             });
 
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(param.key);
 
             const note: NoteObject = { id: param.key, content: null, uploaded: true };
@@ -177,7 +177,7 @@ describe("測試useNoteManager", () => {
                 await hook.add(param, null, "multiple");
             });
 
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(param.key);
 
             expect(result).toBeUndefined();
@@ -192,7 +192,7 @@ describe("測試useNoteManager", () => {
                     await hook.add(param, null, "multiple");
                 });
 
-                const db = new NoteIndexedDB();
+                const db = new SimpleNote2IndexedDB();
                 const result = await db.get(param.key);
 
                 expect(result).toBeUndefined();
@@ -215,7 +215,7 @@ describe("測試useNoteManager", () => {
             await act(async () => await hook.remove(id, "one"));
             expect(hook.nodes["one"].length).toEqual(0);
 
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(id);
 
             expect(result).toBeUndefined();
@@ -244,7 +244,7 @@ describe("測試useNoteManager", () => {
             const nodeFind = await act(() => hook.find(ids[4], "one"));
             expect(nodeFind).toBeUndefined();
 
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(ids[4]);
 
             expect(result).toBeUndefined();
@@ -472,7 +472,7 @@ describe("測試useNoteManager", () => {
             const editorState = editor.getEditorState();
             await act(async () => await hook.save(ids[1], editorState));
             
-            const db = new NoteIndexedDB();
+            const db = new SimpleNote2IndexedDB();
             const result = await db.get(ids[1]);
             expect(result).toBeDefined();
 

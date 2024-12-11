@@ -3,8 +3,8 @@ import { filesize } from "filesize";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey } from "lexical";
-import { CloseButton } from "../../ui/button";
 import { FileEarmarkArrowUpFill } from "../../../util/icons";
+import { CloseButton } from "../../ui/button";
 
 const { Text } = Typography;
 interface DocumentProps {

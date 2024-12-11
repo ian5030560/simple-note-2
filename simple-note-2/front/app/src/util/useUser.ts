@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { defaultSeed, ThemeSeed } from "./theme";
 import { Cookies } from "react-cookie";
-import { NoteIndexedDB, ThemeLocalStorage } from "./store";
+import { SimpleNote2IndexedDB, SimpleNote2LocalStorage } from "./store";
 import { Token } from "./api";
 
 export class Password{
@@ -69,7 +69,7 @@ const store = create<UserAction & UserState>((set) => ({
         const cookies = new Cookies();
         cookies.remove("username", {path: "/"});
         cookies.remove("token", {path: "/"});
-        return new NoteIndexedDB().deleteAll();
+        return new SimpleNote2IndexedDB().deleteAll();
     },
     signUp: (token: Token) => {
         new Cookies().set("token", token);
@@ -82,9 +82,9 @@ const store = create<UserAction & UserState>((set) => ({
         return { themes: [...themes] };
     }),
     toggleDark: () => {
-        const store = new ThemeLocalStorage();
+        const store = new SimpleNote2LocalStorage();
         const prev = store.getUserDark();
-        store.setOfficialDark(!prev);
+        store.setUserDark(!prev);
         set({ dark: !prev });
     },
     deleteTheme: (id) => set(({ themes }) => {
