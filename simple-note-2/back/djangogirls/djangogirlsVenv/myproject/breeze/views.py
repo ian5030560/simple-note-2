@@ -4,14 +4,14 @@ import requests
 
 sys.path.append("..db_modules")
 
-from .serializers import *
 from .models import Breeze
 from rest_framework import status
-from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.middleware.csrf import get_token
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import permission_classes
 
+@permission_classes([AllowAny])
 class BreezeView(APIView):
     """
     前端傳:\n
@@ -19,13 +19,7 @@ class BreezeView(APIView):
 
     後端回傳:\n
         OK: 200.\n
-
-    其他例外:\n
-        Serializer的raise_exception=False: 404.\n
-        JSONDecodeError: 405.\n
     """
-
-    serializer_class = BreezeSerializer
 
     # 連接AI的API
     def ai(self, text):
@@ -71,37 +65,12 @@ class BreezeView(APIView):
         return Response(output)
 
     def post(self, request, format=None):
-        try:
-            data = json.loads(request.body)
-            text = data.get("text")  # 文字內容
-            
-            # AI對話
-            answer = self.ai(text)
-            
-            if answer:
-                return Response(answer, status=status.HTTP_200_OK)
-            
-            # serializer
-            serializer = BreezeSerializer(data=data)
-
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                print("serializer is valid")
-                return Response(serializer.data)
-
-            elif serializer.is_valid(raise_exception=False):
-                print("serializer is not valid", end="")
-                print(serializer.errors)
-                return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-
-        # Handle JSON decoding error
-        except json.JSONDecodeError:
-            text = None
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-    def csrf(self, request):
-        return JsonResponse({"csrfToken": get_token(request)})
-
-    def ping(self, request):
-        return JsonResponse({"result": "OK"})
+        # try:
+        data = json.loads(request.body)
+        text = data.get("text")  # 文字內容
+        
+        # AI對話
+        answer = self.ai(text)
+        
+        if answer:
+            return Response(answer, status=status.HTTP_200_OK)

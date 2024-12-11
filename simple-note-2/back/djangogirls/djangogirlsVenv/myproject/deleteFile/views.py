@@ -4,15 +4,15 @@ import json
 
 sys.path.append("..db_modules")
 
-from .serializers import *
 from .models import DeleteFile
 from db_modules import UserFileData
 from rest_framework import status
-from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.middleware.csrf import get_token
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import permission_classes
 
+@permission_classes([AllowAny])
 class DeleteFileView(APIView):
     """
     前端傳:\n
@@ -24,13 +24,7 @@ class DeleteFileView(APIView):
     後端回傳:\n
         200 if success.\n
         400 if failure.\n
-
-    其他例外:\n
-        Serializer的raise_exception=False: 404.\n
-        JSONDecodeError: 405.\n
     """
-
-    serializer_class = DeleteFileSerializer
 
     def get(self, request, format=None):
         output = [
@@ -39,54 +33,23 @@ class DeleteFileView(APIView):
         return Response("get")
 
     def post(self, request, format=None):
-        try:
-            data = json.loads(request.body)
-            username = data.get("username")  # 帳號名稱
-            noteTitleId = data.get("note_title_id")  # 帳號名稱
-            url = data.get("url")  # 要刪除的文件網址
+        data = json.loads(request.body)
+        username = data.get("username")  # 帳號名稱
+        noteTitleId = data.get("note_title_id")  # 帳號名稱
+        url = data.get("url")  # 要刪除的文件網址
 
-            # 刪除帳號名稱所屬文件
-            # 將網址前贅詞刪除，留下filename
-            url.replace("http://localhost:8000/viewMediaFile/", "")
+        if not username or not noteTitleId or not url:
+            return Response({"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # 2024/5/7 還沒寫
-            # 2024/5/14 還沒寫
-            # 2024/8/6 fin.
-            deleteFileValue = UserFileData.delete_file_name(
-                username, noteTitleId, url
-            )  # 呼叫資料庫的刪除方法
+        # 刪除帳號名稱所屬文件
+        # 將網址前贅詞刪除，留下filename
+        url.replace("http://localhost:8000/viewMediaFile/", "")
 
-            print(f"是否刪除{deleteFileValue}")
-            
-            if deleteFileValue:  # 若刪除成功
-                return Response(status=status.HTTP_200_OK)
+        # 呼叫資料庫的刪除方法
+        deleteFileValue = UserFileData.delete_file_name(username, noteTitleId, url)  
+        
+        if deleteFileValue is True:  # 若刪除成功
+            return Response(status=status.HTTP_200_OK)
 
-            elif deleteFileValue != True:  # 若刪除失敗
-                return Response(deleteFileValue, status=status.HTTP_400_BAD_REQUEST)
-
-            # serializer
-            serializer = DeleteFileSerializer(data=data)
-
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                print("serializer is valid")
-                return Response(serializer.data)
-
-            elif serializer.is_valid(raise_exception=False):
-                print("serializer is not valid", end="")
-                print(serializer.errors)
-                return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-
-        # Handle JSON decoding error
-        except json.JSONDecodeError:
-            username = None
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
-def csrf(self, request):
-    return JsonResponse({"csrfToken": get_token(request)})
-
-
-def ping(self, request):
-    return JsonResponse({"result": "OK"})
+        elif deleteFileValue != True:  # 若刪除失敗
+            return Response(deleteFileValue, status=status.HTTP_400_BAD_REQUEST)
