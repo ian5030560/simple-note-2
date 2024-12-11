@@ -60,13 +60,8 @@ const router = createBrowserRouter(
 
       <Route path="playground" element={<PlayGroundLayout />}>
         <Route index element={<EditorComponent test />} />
-        {/* <Route path="collab" element={<EditorComponent test collab />} /> */}
+        <Route path="collab" element={<EditorComponent test collab />} />
       </Route>
-
-      {/* <Route path="user" element={<UserComponent>
-        <EditorComponent />
-        <ThemeSwitchButton />
-      </UserComponent>} /> */}
     </>
   )
 )

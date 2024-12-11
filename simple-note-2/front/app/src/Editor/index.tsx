@@ -125,15 +125,17 @@ export default () => {
         return window.removeEventListener("beforeunload", handleBeforeUnload);
     }, [collab, handleSaveToServer, id, username]);
 
-    const insertFileInCollab = useCallback((f: File) => {
+    const insertFileInCollab = useCallback(async (f: File) => {
         const node = find(`${id} ${host}`, "multiple");
 
         const [, ...key] = node!.key.split(" ").reverse();
         const noteId = key.reverse().join("");
 
-        return file.add(atob(host!), f, noteId).catch(() => {
-            throw new Error(`${f.name} is not uploaded successfully`)
-        });
+        try {
+            return await file.add(atob(host!), f, noteId);
+        } catch {
+            throw new Error(`${f.name} is not uploaded successfully`);
+        }
     }, [file, find, host, id]);
 
     const insertFile = useCallback(async (f: File) => {

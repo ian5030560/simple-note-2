@@ -38,7 +38,7 @@ export default function CollaboratePlugin(props: CollabotatePluginProps) {
         // }
 
         const doc = getDocFromMap(id, yjsMap);
-        const p = new WebsocketProvider("ws://localhost:4000", id, doc, { connect: false });
+        const p = new WebsocketProvider(COLLAB, id, doc, { connect: false });
         // provider.current = p;
 
         return p as unknown as Provider;

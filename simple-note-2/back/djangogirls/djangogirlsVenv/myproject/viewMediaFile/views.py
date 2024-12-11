@@ -8,7 +8,7 @@ sys.path.append("..db_modules")
 from .serializers import *
 from .models import ViewMediaFile
 from db_modules import UserFileData
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.http import FileResponse
@@ -27,7 +27,7 @@ class ViewMediaFileView(APIView):
         serializer的raise_exception=False: 404,\n
         JSONDecodeError: 405.\n
     """
-
+    permission_classes = [permissions.AllowAny]
     serializer_class = ViewMediaFileSerializer
 
     def get(self, request, username, noteId, filename, format=None):

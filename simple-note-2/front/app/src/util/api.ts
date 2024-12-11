@@ -1,52 +1,49 @@
 import { Cookies } from "react-cookie";
 import { ThemeSeed } from "./theme";
 
-const BASE_URL = `http://localhost:8000`;
-
 const API = {
   Auth: {
-    signUp: `${BASE_URL}/register/`,
-    signIn: `${BASE_URL}/login/`,
-    forgetPassword: `${BASE_URL}/forgetPassword/`,
-    // signOut: `${BASE_URL}/logout/`,
+    signUp: `${BACK_END}/register/`,
+    signIn: `${BACK_END}/login/`,
+    forgetPassword: `${BACK_END}/forgetPassword/`,
+    // signOut: `${BACK_END}/logout/`,
   },
 
   File: {
-    add: `${BASE_URL}/media/new/`,
-    delete: `${BASE_URL}/media/delete/`,
+    add: `${BACK_END}/media/new/`,
+    delete: `${BACK_END}/media/delete/`,
   },
 
   Info: {
-    get: `${BASE_URL}/info/get/`,
-    update: `${BASE_URL}/info/update/`,
+    get: `${BACK_END}/info/get/`,
+    update: `${BACK_END}/info/update/`,
   },
 
   Note: {
-    get: `${BASE_URL}/note/get/`,
-    add: `${BASE_URL}/note/new/`,
-    delete: `${BASE_URL}/note/delete/`,
-    save: `${BASE_URL}/note/save/`,
-    loadTree: `${BASE_URL}/note/tree/`,
+    get: `${BACK_END}/note/get/`,
+    add: `${BACK_END}/note/new/`,
+    delete: `${BACK_END}/note/delete/`,
+    save: `${BACK_END}/note/save/`,
+    loadTree: `${BACK_END}/note/tree/`,
   },
 
   Theme: {
-    add: `${BASE_URL}/theme/new/`,
-    getAll: `${BASE_URL}/theme/get/`,
-    delete: `${BASE_URL}/theme/delete/`
+    add: `${BACK_END}/theme/new/`,
+    getAll: `${BACK_END}/theme/get/`,
+    delete: `${BACK_END}/theme/delete/`
   },
 
   Collaborate: {
-    add: `${BASE_URL}/collaborate/new/`,
-    delete: `${BASE_URL}/collaborate/delete/`,
-    join: `${BASE_URL}/collaborate/join/`,
-    people: `http://localhost:4000/room?`,
+    add: `${BACK_END}/collaborate/new/`,
+    delete: `${BACK_END}/collaborate/delete/`,
+    join: `${BACK_END}/collaborate/join/`,
+    people: `${FRONT_END}/room?`,
   },
 
-  AI: "ws://cf00-61-216-112-156.ngrok-free.app/ws/ai/",
+  AI: `${AI}/ws/ai/`,
   JWT: {
-    register: `${BASE_URL}/api/jwtauth/register/`, // 儲存使用者並返回tokens
-    token: `${BASE_URL}/api/jwtauth/token/`, // 確認使用者並返回新的一組tokens
-    refresh: `${BASE_URL}/api/jwtauth/refresh/`, // 使用 refresh token 更新 access token
+    token: `${BACK_END}/api/jwtauth/token/`, // 確認使用者並返回新的一組tokens
+    refresh: `${BACK_END}/api/jwtauth/refresh/`, // 使用 refresh token 更新 access token
   }
 }
 

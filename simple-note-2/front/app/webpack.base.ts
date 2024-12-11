@@ -1,0 +1,81 @@
+import { Configuration } from "webpack";
+import path from "path";
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
+import HtmlWebpackPlugin from "html-webpack-plugin";
+// const ReactRefreshTypeScript = require('react-refresh-typescript');
+
+export const BASE_PLUGINS = [
+    new HtmlWebpackPlugin({
+        template: path.resolve(__dirname, "public", "index.html"),
+        favicon: path.resolve(__dirname, "public", "notesbook.png")
+    }),
+    new MiniCssExtractPlugin({
+        filename: "css/[file].css"
+    }),
+];
+
+export const BASE_RULES = [
+    {
+        test: /\.css$/i,
+        exclude: /\.module\.css$/,
+        use: [
+            {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                    esModule: false,
+                },
+            },
+            "css-loader"
+        ],
+        sideEffects: true
+    },
+    {
+        test: /\.module\.css$/,
+        use: [
+            'style-loader',
+            {
+                loader: 'css-loader',
+                options: {
+                    modules: {
+                        mode: 'local',
+                        auto: true,
+                        localIdentName: '[name]_[local]_[hash:base64:5]',
+                        namedExport: false,
+                    },
+                    import: true,
+                }
+            },
+        ]
+    },
+    {
+        test: /\.(png|jpe?g|gif|mp4)$/i,
+        loader: 'file-loader',
+        options: {
+            name: '[path][name].[ext]',
+        },
+    },
+];
+
+const config: Configuration = {
+    entry: path.resolve(__dirname, "src/index.tsx"),
+    output: {
+        path: path.resolve(__dirname, "../server", "dist"),
+        filename: "bundle.js",
+        clean: true,
+        publicPath: "/",
+    },
+    resolve: {
+        extensions: [".ts", ".tsx", ".js"],
+    },
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin({
+            exclude: /node_modules/,
+            parallel: true,
+            include: "src",
+        })],
+    },
+};
+
+export default config;
