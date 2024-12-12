@@ -15,7 +15,7 @@ import { notification, Typography } from "antd";
 type Send = { message: string };
 type Recieve = { result: { message: string } };
 
-function sliceTextByCommon(s1: string, s2: string) {
+function sliceStartText(s1: string, s2: string) {
     const length = Math.max(s1.length, s2.length);
 
     let index = 0;
@@ -129,7 +129,7 @@ export default function AIPlaceholderPlugin() {
 
             if (!textContent) return;
             
-            element.setAttribute(AI_PLACEHOLDER, sliceTextByCommon(textContent, message));
+            element.setAttribute(AI_PLACEHOLDER, sliceStartText(textContent, message));
         }
         current.addEventListener("message", handleMessage);
 
@@ -145,7 +145,7 @@ export default function AIPlaceholderPlugin() {
 
             const selection = $getSelection();
             if ($isRangeSelection(selection)) {
-                const node = selection.focus.getNode();
+                const node = !selection.isBackward() ? selection.focus.getNode() : selection.anchor.getNode();
                 if ($isTextNode(node)) {
                     let parent = $findMatchingParent(node, p => $isParagraphNode(p) || $isHeadingNode(p));
                     if (parent !== null && node.getTextContent().trim().length > 0) {
@@ -193,8 +193,11 @@ export default function AIPlaceholderPlugin() {
         if (!element) return;
 
         function sendToServer(){
-            const textContent = getCurrentParagraph();
+            let textContent = getCurrentParagraph();
             if (!textContent) return;
+            if(textContent.length > 300){
+                textContent = textContent.slice(textContent.length - (textContent.length % 300));
+            }
             const message: Send = { message: textContent };
             current?.send(JSON.stringify(message));
             editor.dispatchCommand(ON_SEND_PLACEHOLDER, undefined);

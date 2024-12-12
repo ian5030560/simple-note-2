@@ -43,7 +43,9 @@ const NavigateMenuButton = (props: NavigateMenuButtonProps) => {
 
     return <li>
         <Dropdown menu={{ items: props.items }} trigger={["click"]} placement="bottomLeft">
-            <button type="button" style={{ color: token.colorText }} className={styles.navMenuButton}><List /></button>
+            <button type="button" style={{ color: token.colorText }} className={styles.navMenuButton}>
+                <List style={{ fontSize: 24 }} />
+            </button>
         </Dropdown>
     </li>
 }

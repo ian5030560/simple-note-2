@@ -13,7 +13,7 @@ const config: Configuration = {
         static: path.resolve(__dirname, "dist"),
         hot: true,
         open: true,
-        port: 3000,
+        port: 3001,
         historyApiFallback: true
     },
     cache: true,
