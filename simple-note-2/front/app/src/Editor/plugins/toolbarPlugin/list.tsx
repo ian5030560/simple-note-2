@@ -8,20 +8,21 @@ import {
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $isRangeSelection, LexicalCommand } from "lexical";
 import { $findMatchingParent } from "@lexical/utils";
-import { ListOl, ListUl, ListCheck } from "../../../util/icons";
+import { ListOl, ListUl, ListCheck } from "react-bootstrap-icons";
 
+const size = 16;
 const options: Option[] = [
     {
         key: "number",
-        icon: <ListOl />
+        icon: <ListOl size={size} />
     },
     {
         key: "bullet",
-        icon: <ListUl />
+        icon: <ListUl size={size} />
     },
     {
         key: "check",
-        icon: <ListCheck />
+        icon: <ListCheck size={size} />
     }
 ]
 

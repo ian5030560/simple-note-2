@@ -6,7 +6,7 @@ import { $cloneWithProperties, $createParagraphNode, $getNodeByKey, $getRoot, $g
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createColumnItemNode, $isColumnItemNode } from "../../nodes/column/item";
 import { $isColumnContainerNode } from "../../nodes/column/container";
-import { PencilSquare } from "../../../util/icons";
+import { PencilSquare } from "react-bootstrap-icons";
 
 type ColumnActionPluginProps = WithAnchorProps;
 export default function ColumnActionPlugin(props: ColumnActionPluginProps){

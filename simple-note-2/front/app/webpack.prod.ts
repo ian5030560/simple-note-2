@@ -16,29 +16,7 @@ const config: Configuration = {
         }),
     ],
     module: {
-        rules: [
-            ...BASE_RULES,
-            {
-                test: /\.(ts|js)x?$/,
-                include: path.resolve(__dirname, "src"),
-                exclude: /node_modules/,
-                use: [
-                    "thread-loader",
-                    { loader: 'babel-loader' },
-                    {
-                        loader: "ts-loader",
-                        options: {
-                            happyPackMode: true,
-                            configFile: "tsconfig.json",
-                            // getCustomTransformers: () => ({
-                            //     before: ReactRefreshTypeScript()
-                            // }),
-                            // transpileOnly: true,
-                        }
-                    }
-                ],
-            },
-        ]
+        rules: BASE_RULES()
     }
 }
 

@@ -33,34 +33,7 @@ const config: Configuration = {
         new ForkTsCheckerWebpackPlugin(),
     ],
     module: {
-        rules: [
-            ...BASE_RULES,
-            {
-                test: /\.(ts|js)x?$/,
-                include: path.resolve(__dirname, "src"),
-                exclude: /node_modules/,
-                use: [
-                    "thread-loader",
-                    {
-                        loader: 'babel-loader',
-                        options: {
-                            plugins: [require.resolve("react-refresh/babel")]
-                        }
-                    },
-                    {
-                        loader: "ts-loader",
-                        options: {
-                            happyPackMode: true,
-                            configFile: "tsconfig.json",
-                            // getCustomTransformers: () => ({
-                            //     before: ReactRefreshTypeScript()
-                            // }),
-                            // transpileOnly: true,
-                        }
-                    }
-                ],
-            },
-        ]
+        rules: BASE_RULES(true)
     }
 }
 

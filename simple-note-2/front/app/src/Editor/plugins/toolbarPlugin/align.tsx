@@ -5,20 +5,20 @@ import { FORMAT_ELEMENT_COMMAND, ElementFormatType, $isElementNode, $isRangeSele
 import { $isDecoratorBlockNode, DecoratorBlockNode } from "@lexical/react/LexicalDecoratorBlockNode";
 import { $findMatchingParent } from "@lexical/utils";
 import useSelectionListener from "./useSelectionListener";
-import { TextLeft, TextCenter, TextRight } from "../../../util/icons";
+import { AlignLeftOutlined, AlignCenterOutlined, AlignRightOutlined } from "@ant-design/icons";
 
 const options: Option[] = [
     {
         key: "left",
-        icon: <TextLeft />
+        icon: <AlignLeftOutlined />
     },
     {
         key: "center",
-        icon: <TextCenter />
+        icon: <AlignCenterOutlined />
     },
     {
         key: "right",
-        icon: <TextRight />
+        icon: <AlignRightOutlined />
     }
 ]
 

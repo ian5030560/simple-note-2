@@ -1,4 +1,4 @@
-import { Configuration } from "webpack";
+import { Configuration, RuleSetRule } from "webpack";
 import path from "path";
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import TerserPlugin from 'terser-webpack-plugin';
@@ -15,7 +15,7 @@ export const BASE_PLUGINS = [
     }),
 ];
 
-export const BASE_RULES = [
+export const BASE_RULES: (dev?: boolean) => RuleSetRule[] = (dev) => ([
     {
         test: /\.css$/i,
         exclude: /\.module\.css$/,
@@ -50,12 +50,37 @@ export const BASE_RULES = [
     },
     {
         test: /\.(png|jpe?g|gif|mp4)$/i,
-        loader: 'file-loader',
+        loader: "file-loader",
         options: {
             name: '[path][name].[ext]',
         },
     },
-];
+    {
+        test: /\.(ts|js)x?$/,
+        include: path.resolve(__dirname, "src"),
+        exclude: /node_modules/,
+        use: [
+            "thread-loader",
+            {
+                loader: 'babel-loader',
+                options: dev ? {
+                    plugins: [require.resolve("react-refresh/babel")]
+                } : undefined
+            },
+            {
+                loader: "ts-loader",
+                options: {
+                    happyPackMode: true,
+                    configFile: "tsconfig.json",
+                    // getCustomTransformers: () => ({
+                    //     before: ReactRefreshTypeScript()
+                    // }),
+                    // transpileOnly: true,
+                }
+            }
+        ],
+    },
+]);
 
 const config: Configuration = {
     entry: path.resolve(__dirname, "src/index.tsx"),

@@ -8,7 +8,7 @@ import { SwitchClickEventHandler } from "antd/es/switch";
 import { Color } from "antd/es/color-picker";
 import { Link } from "react-router-dom";
 import { UploadOutlined } from "@ant-design/icons";
-import { Arrow90degLeft } from "../util/icons";
+import { Arrow90degLeft } from "react-bootstrap-icons";
 
 const { Text, Title } = Typography;
 

@@ -9,7 +9,7 @@ import { $contains } from "../utils";
 import { PLUSMENU_SELECTED } from "./draggablePlugin/command";
 import Modal from "../ui/modal";
 import { UploadOutlined } from "@ant-design/icons";
-import { Fullscreen } from "../../util/icons";
+import { Fullscreen } from "react-bootstrap-icons";
 
 // const codes = require("../../../resource/tesseract.json").map((lang: { code: string, name: string }) => lang.code) as string[];
 const codes = ["eng", "chi_sim", "chi_tra", "jpn", "kor"];

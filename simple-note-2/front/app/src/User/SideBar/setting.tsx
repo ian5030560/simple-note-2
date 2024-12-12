@@ -7,7 +7,7 @@ import { CloseOutlined, PlusOutlined, SyncOutlined, UploadOutlined } from "@ant-
 import { Link } from "react-router-dom";
 import ChangePasswordModal, { ChangePasswordData } from "./changePassword";
 import SignOutModal from "./signOut";
-import { BoxArrowInRight } from "../../util/icons";
+import { BoxArrowInRight } from "react-bootstrap-icons";
 
 interface UploadProps { onUpload: (src: string) => void };
 const Upload = ({ onUpload }: UploadProps) => {

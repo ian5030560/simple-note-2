@@ -4,7 +4,7 @@ import {
     CheckSquare, CodeSquare, FileText, Icon123, Image, ImageAlt, ImageFill,
     LayoutThreeColumns, List, PaletteFill, Paragraph, Percent, PersonVideo, PlusSlashMinus,
     ThreeDotsVertical, Type, TypeH1, TypeH2, TypeH3, TypeH4, TypeH5, TypeH6
-} from "../util/icons";
+} from "react-bootstrap-icons";
 
 export default [
     { key: "paragraph", label: "段落", icon: <Paragraph /> },

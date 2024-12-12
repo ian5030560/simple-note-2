@@ -10,7 +10,7 @@ import PDFNode from '.';
 import 'react-pdf/dist/Page/TextLayer.css';
 import FloatBoard from '../../ui/floatBoard';
 import AlignableBlock from '../../ui/alignable';
-import { CaretLeftFill, CaretRightFill, ArrowClockwise } from '../../../util/icons';
+import { CaretLeftFill, CaretRightFill, ArrowClockwise } from 'react-bootstrap-icons';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.min.mjs',

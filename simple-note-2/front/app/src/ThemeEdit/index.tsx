@@ -8,7 +8,7 @@ import useUser from "../util/useUser";
 import styles from "../Welcome/navigateMenu.module.css";
 import classNames from "../util/classNames";
 import { EyeFilled } from "@ant-design/icons";
-import { PencilSquare } from "../util/icons";
+import { PencilSquare } from "react-bootstrap-icons";
 
 const ThemePage = () => {
     return <>

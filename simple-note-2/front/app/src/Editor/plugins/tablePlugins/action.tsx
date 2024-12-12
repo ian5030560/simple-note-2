@@ -11,7 +11,7 @@ import { $getSelection, $isRangeSelection, NodeKey, SELECTION_CHANGE_COMMAND } f
 import styles from "./action.module.css";
 import Action, { WithAnchorProps } from "../../ui/action";
 import { $findMatchingParent, mergeRegister } from "@lexical/utils";
-import { PencilSquare } from "../../../util/icons";
+import { PencilSquare } from "react-bootstrap-icons";
 
 type TableActionPluginProps = WithAnchorProps;
 export default function TableActionPlugin(props: TableActionPluginProps) {

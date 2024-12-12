@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import styles from "./table.module.css";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { INSERT_TABLE_COMMAND } from "@lexical/table";
-import { Grid3x3 } from "../../../util/icons";
+import { Grid3x3 } from "react-bootstrap-icons";
 
 interface TableDimensionProp {
     maxRows: number;

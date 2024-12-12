@@ -3,7 +3,7 @@ import { filesize } from "filesize";
 import React, { useCallback, useEffect, useState } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $getNodeByKey } from "lexical";
-import { FileEarmarkArrowUpFill } from "../../../util/icons";
+import { FileEarmarkArrowUpFill } from "react-bootstrap-icons";
 import { CloseButton } from "../../ui/button";
 
 const { Text } = Typography;

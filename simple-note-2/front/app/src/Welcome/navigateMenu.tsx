@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { FormOutlined, GithubOutlined } from "@ant-design/icons";
 import React, { forwardRef, useEffect, useRef } from "react";
 import classNames from "../util/classNames";
-import { PersonSquare, PersonFill, HouseDoorFill, PeopleFill, PersonCircle, List } from "../util/icons";
+import { PersonSquare, PersonFill, HouseDoorFill, PeopleFill, PersonCircle, List } from "react-bootstrap-icons";
 
 const Navigate = (props: React.PropsWithChildren) => {
     return <ul className={styles.navMenu} tabIndex={0} role="menu">{props.children}</ul>;
@@ -44,7 +44,7 @@ const NavigateMenuButton = (props: NavigateMenuButtonProps) => {
     return <li>
         <Dropdown menu={{ items: props.items }} trigger={["click"]} placement="bottomLeft">
             <button type="button" style={{ color: token.colorText }} className={styles.navMenuButton}>
-                <List style={{ fontSize: 24 }} />
+                <List size={24} />
             </button>
         </Dropdown>
     </li>
@@ -67,27 +67,28 @@ const { useBreakpoint } = Grid;
 const dropDownItemStyle: React.CSSProperties = {
     fontSize: 18, padding: "0.5em 1em"
 }
+const iconSize = 16;
 export default function NavigateMenu() {
     const { pathname } = useLocation();
     const { xl, lg, md } = useBreakpoint();
 
     const members: MenuProps["items"] = [
         {
-            key: "leader", icon: <PersonSquare />,
+            key: "leader", icon: <PersonSquare size={iconSize} />,
             label: <Link to="https://www.instagram.com/0z3.1415926/" target="_blank" rel="noopener noreferrer">
                 <span>林立山</span>
             </Link>,
             style: dropDownItemStyle,
         },
         {
-            key: "mate1", icon: <PersonFill />,
+            key: "mate1", icon: <PersonFill size={iconSize} />,
             label: <Link to="https://www.instagram.com/itsuki_f6/" target="_blank" rel="noopener noreferrer">
                 <span>蔡岳哲</span>
             </Link>,
             style: dropDownItemStyle,
         },
         {
-            key: "mate2", icon: <PersonFill />,
+            key: "mate2", icon: <PersonFill size={iconSize} />,
             label: <span>李泓逸</span>,
             style: dropDownItemStyle,
         }

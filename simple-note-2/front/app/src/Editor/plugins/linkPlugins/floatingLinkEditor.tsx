@@ -7,7 +7,7 @@ import Action, { WithAnchorProps } from "../../ui/action";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import styles from "./floatingLinkEditor.module.css";
 import { DeleteOutlined } from "@ant-design/icons";
-import { PencilSquare } from "../../../util/icons";
+import { PencilSquare } from "react-bootstrap-icons";
 
 type FloatingEditorLinkPluginProps = WithAnchorProps;
 export default function FloatingEditorLinkPlugin(props: FloatingEditorLinkPluginProps) {

@@ -2,7 +2,7 @@ import { Button, Input, Space, Tabs, TabsProps } from "antd";
 import Modal from "./modal";
 import { useMemo, useRef, useState } from "react";
 import { FileAddFilled, GlobalOutlined } from "@ant-design/icons";
-import { Upload } from "../../util/icons";
+import { Upload } from "react-bootstrap-icons";
 
 interface UploadModalProps {
     open?: boolean;
