@@ -19,7 +19,7 @@ type SignUpData = {
 }
 
 class SignUpError extends Error {
-    constructor(message) {
+    constructor(message: string) {
         super(message);
     }
 };
@@ -43,37 +43,38 @@ export default withPageTitle(function SignUp({ onChange }: AuthProp) {
             );
     }, [form, values]);
 
-    const handleFinished = ({ username, email, password }: SignUpData) => {
+    const handleFinished = async ({ username, email, password }: SignUpData) => {
         setState(STATE.LOADING);
 
-        getToken().then(tokens => {
+        try {
+            const tokens = await getToken();
+
             new Cookies().set("token", tokens);
-            signUp(username, password, email).then(async status => {
-                if (status > 300) {
-                    const map: { [key: number]: string } = {
-                        401: "username 重複",
-                        402: "email 重複",
-                        400: "註冊錯誤，請重新輸入",
-                    }
-                    throw new SignUpError(map[status] ?? "發生重大錯誤");
+            const status = await signUp(username, password, email);
+            if (status > 300) {
+                const map: { [key: number]: string } = {
+                    401: "username 重複",
+                    402: "email 重複",
+                    400: "註冊錯誤，請重新輸入",
+                }
+                throw new SignUpError(map[status] ?? "發生重大錯誤");
+            }
+            else {
+                const result = await note.add(username, uuid(), "我的筆記", null, null);
+                if (!result) {
+                    throw new SignUpError("發生重大錯誤");
                 }
                 else {
-                    const result = await note.add(username, uuid(), "我的筆記", null, null);
-                    if (!result) {
-                        throw new SignUpError("發生重大錯誤");
-                    }
-                    else {
-                        setState(STATE.SUCCESS);
-                        _signUp(tokens);
-                    }
+                    setState(STATE.SUCCESS);
+                    _signUp(tokens);
                 }
-            })
-        }).catch((e: Error) => {
-            new Cookies().remove("token", {path: "/"});
+            }
+        }
+        catch (e) {
+            new Cookies().remove("token", { path: "/" });
             setCause(() => e instanceof SignUpError ? e.message : "發生重大錯誤");
             setState(() => STATE.FAILURE);
-        });
-
+        }
     };
 
     const disabledConfirmRule: Rule = useCallback(() => ({
@@ -98,7 +99,7 @@ export default withPageTitle(function SignUp({ onChange }: AuthProp) {
                 <Input type="email" placeholder="輸入你的信箱" />
             </Form.Item>
             <Form.Item label="密碼" name="password" rules={[{ required: true, min: 8, max: 30, type: "string" }, disabledConfirmRule]}>
-                <Input.Password placeholder="輸入你的密碼" autoComplete="password"/>
+                <Input.Password placeholder="輸入你的密碼" autoComplete="password" />
             </Form.Item>
             <Form.Item label="確認密碼" name="confirm" dependencies={["password"]} rules={[{ required: true }, matchRule]}>
                 <Input.Password disabled={!confirm} autoComplete="confirm" placeholder="確認你的密碼" />

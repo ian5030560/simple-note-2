@@ -31,25 +31,26 @@ export default withPageTitle(function SignIn({ onChange }: AuthProp) {
             );
     }, [form, values]);
 
-    const handleFinished = useCallback(({ username, password }: SignInData) => {
+    const handleFinished = useCallback(async ({ username, password }: SignInData) => {
 
         setState(STATE.LOADING);
 
-        getToken().then(token => {
+        try{
+            const token = await getToken();
             new Cookies().set("token", token);
-            signIn(username, password).then(ok => {
-                if (!ok) {
-                    throw new Error();
-                }
-                else {
-                    _signIn(username);
-                    setState(STATE.SUCCESS);
-                }
-            });
-        }).catch(() => {
+            const ok = signIn(username, password);
+            if (!ok) {
+                throw new Error();
+            }
+            else {
+                _signIn(username);
+                setState(STATE.SUCCESS);
+            }
+        }
+        catch(_){
             new Cookies().remove("token", {path: "/"});
             setState(STATE.FAILURE);
-        });
+        }
 
     }, [_signIn, getToken, signIn]);
 
