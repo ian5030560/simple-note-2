@@ -143,12 +143,15 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "pydb.db"),
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'simplenote2db',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'host.docker.internal',  # Access host machine's MySQL from Docker
+        'PORT': '3306',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -192,9 +195,9 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
 
 CORS_ALLOW_CREDENTIALS = True
 
