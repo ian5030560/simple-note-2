@@ -55,7 +55,7 @@ const LogoBoard = () => {
     }}>
         {
             logos.map(logo => <Col key={logo.alt} span={24 / 3}>
-                <Image width={128} src={logo.src} alt={logo.alt} preview={false} />
+                <Image height={100} src={logo.src} alt={logo.alt} preview={false} />
             </Col>)
         }
     </Row>
