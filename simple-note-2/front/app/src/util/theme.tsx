@@ -1,5 +1,5 @@
 import { AlertFilled, AlertOutlined } from "@ant-design/icons";
-import { ConfigProvider, FloatButton, ThemeConfig, theme as _theme } from "antd";
+import { ConfigProvider, FloatButton, FloatButtonProps, ThemeConfig, theme as _theme } from "antd";
 import { useContext, useState } from "react";
 import { createContext } from "react";
 import { SimpleNote2LocalStorage } from "./store";
@@ -37,12 +37,12 @@ export default function theme(seed: ThemeSeed): (dark: boolean) => ThemeConfig {
 
 export const defaultTheme = theme(defaultSeed);
 
-export interface BulbButtonProp {
+export interface BulbButtonProp extends FloatButtonProps{
     dark?: boolean,
     onClick?: React.MouseEventHandler<HTMLElement>
 }
-export const BulbButton = (prop: BulbButtonProp) => {
-    return <FloatButton icon={!prop.dark ? <AlertFilled /> : <AlertOutlined />} onClick={prop.onClick} />
+export const BulbButton = ({dark, onClick, ...props}: BulbButtonProp) => {
+    return <FloatButton {...props} icon={!dark ? <AlertFilled /> : <AlertOutlined />} onClick={onClick} />
 }
 
 type ThemeConfigContextType = {

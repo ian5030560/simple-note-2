@@ -63,14 +63,12 @@ export default function AIPlaceholderPlugin() {
             const { current } = socket;
 
             function handleClose() {
-                console.log("client disconnect");
                 current.removeEventListener("open", handleOpen);
                 current.removeEventListener("error", handleError);
                 socket.current = undefined;
             }
 
             function handleOpen() {
-                console.log("client connect");
                 clearInterval(interval);
             }
 
@@ -115,7 +113,7 @@ export default function AIPlaceholderPlugin() {
     }, [editor, key]);
 
     useEffect(() => {
-        if (!socket.current || !open) return;
+        if (!open) return;
 
         const { current } = socket;
         function handleMessage({ data }: MessageEvent<string>) {
@@ -131,32 +129,35 @@ export default function AIPlaceholderPlugin() {
             
             element.setAttribute(AI_PLACEHOLDER, sliceStartText(textContent, message));
         }
-        current.addEventListener("message", handleMessage);
+        current?.addEventListener("message", handleMessage);
 
-        return () => {
-            current.removeEventListener("message", handleMessage);
-            current.close();
-        }
+        return () => current?.removeEventListener("message", handleMessage);
     }, [getCurrentParagraph, editor, key, open]);
+
+    const $handleSelectionChange = useCallback(() => {
+        if (!open) return;
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+            const node = !selection.isBackward() ? selection.focus.getNode() : selection.anchor.getNode();
+            if ($isTextNode(node)) {
+                let parent = $findMatchingParent(node, p => $isParagraphNode(p) || $isHeadingNode(p));
+                if (parent !== null && node.getTextContent().trim().length > 0) {
+                    setKey(node.getKey());
+                    return;
+                }
+            }
+        }
+        setKey(undefined);
+        return;
+    }, [open]);
 
     useEffect(() => mergeRegister(
         editor.registerCommand(SELECTION_CHANGE_COMMAND, () => {
-            if (!socket.current || !open) return false;
-
-            const selection = $getSelection();
-            if ($isRangeSelection(selection)) {
-                const node = !selection.isBackward() ? selection.focus.getNode() : selection.anchor.getNode();
-                if ($isTextNode(node)) {
-                    let parent = $findMatchingParent(node, p => $isParagraphNode(p) || $isHeadingNode(p));
-                    if (parent !== null && node.getTextContent().trim().length > 0) {
-                        setKey(node.getKey());
-                        return true;
-                    }
-                }
-            }
-            setKey(undefined);
+            $handleSelectionChange();
             return false;
         }, COMMAND_PRIORITY_HIGH),
+
+        editor.registerUpdateListener(() => $handleSelectionChange),
 
         editor.registerCommand(KEY_TAB_COMMAND, (e) => {
             if (!key || !open) return false;
@@ -182,7 +183,7 @@ export default function AIPlaceholderPlugin() {
             return false;
 
         }, COMMAND_PRIORITY_NORMAL),
-    ), [editor, key, open]);
+    ), [$handleSelectionChange, editor, key, open]);
 
     useEffect(() => {
         const root = editor.getRootElement();

@@ -47,7 +47,7 @@ export default withPageTitle(function SignIn({ onChange }: AuthProp) {
                 setState(STATE.SUCCESS);
             }
         }
-        catch(_){
+        catch{
             new Cookies().remove("token", {path: "/"});
             setState(STATE.FAILURE);
         }

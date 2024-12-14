@@ -4,6 +4,7 @@ import cors from "cors";
 import Socket from "./socket";
 import cookieParser from "cookie-parser";
 import path from "path";
+import { api } from "../asset/gemini.json";
 
 const app = express();
 app.use(cors());
@@ -28,6 +29,10 @@ app.get("/room", (req, res) => {
 
   data.count = data.count - (query.has(user) ? 1 : 0);
   return res.send(data);
+});
+
+app.get("/gemini", (_, res) => {
+  return res.send({ api });
 });
 
 app.get("*", (_, res) => {

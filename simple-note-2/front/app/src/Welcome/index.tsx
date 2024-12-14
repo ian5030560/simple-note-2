@@ -4,11 +4,13 @@ import Note from "../../public/notesbook.png";
 import NavigateMenu from "./navigateMenu";
 import styles from "./index.module.css";
 import { OfficialDarkButton } from "../util/theme";
+import { useRef } from "react";
 
 const Container = (props: React.PropsWithChildren) => <div className={styles.container}>{props.children}</div>;
 
 export default function WelcomeLayout() {
     const { token } = theme.useToken();
+    const targetRef = useRef<HTMLDivElement>(null);
 
     return <Flex vertical style={{ height: "100%", backgroundColor: token.colorBgBase, boxSizing: "border-box" }}>
         <Flex justify="center">
@@ -24,11 +26,11 @@ export default function WelcomeLayout() {
                 </Row>
             </Container>
         </Flex>
-        <div style={{ flex: 1, overflowY: "auto" }}>
+        <div ref={targetRef} style={{ flex: 1, overflowY: "auto" }}>
             <Outlet />
         </div>
         <FloatButton.Group>
-            <FloatButton.BackTop />
+            <FloatButton.BackTop target={() => targetRef.current || window}/>
             <OfficialDarkButton />
         </FloatButton.Group>
     </Flex>

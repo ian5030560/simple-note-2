@@ -40,7 +40,11 @@ const API = {
     people: `${FRONT_END}/room?`,
   },
 
-  AI: `${AI}/ws/ai/`,
+  AI: {
+    gemini: `${FRONT_END}/gemini`,
+    socket: `${AI}/ws/ai/`,
+  },
+
   JWT: {
     token: `${BACK_END}/api/jwtauth/token/`, // 確認使用者並返回新的一組tokens
     refresh: `${BACK_END}/api/jwtauth/refresh/`, // 使用 refresh token 更新 access token
@@ -105,10 +109,6 @@ export default function useAPI() {
     auth: {
       signIn: (username: string, password: string) => authFn(username, password, undefined, "sign-in").then(res => res.ok),
       signUp: (username: string, password: string, email: string) => authFn(username, password, email, "register").then(res => res.status),
-      // signOut: (username: string) => {
-      //   const access = getAccessToken();
-      //   return fetch(API.Auth.signOut, { ...postSetup(access), body: JSON.stringify({ username }) });
-      // },
       forgetPassword: (username: string, email: string) => fetch(API.Auth.forgetPassword, { ...postSetup(), body: JSON.stringify({ username, email }) }).then(res => res.ok)
     },
 
@@ -180,7 +180,11 @@ export default function useAPI() {
       },
 
       // 取得房間人數
-      people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({ id: room }), { method: "GET", headers }).then(async res => {
+      people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({ id: room }), {
+        method: "GET", headers: {
+          ...headers, "ngrok-skip-browser-warning": "69420",
+        }
+      }).then(async res => {
         if (!res.ok) throw new Error();
         return await res.json() as { count: number };
       })
@@ -225,7 +229,17 @@ export default function useAPI() {
     },
 
     ai: {
-      socket: () => new WebSocket(API.AI)
+      gemini: async () => {
+        const res = await fetch(API.AI.gemini, {
+          method: "GET", headers: {
+            ...headers, "ngrok-skip-browser-warning": "69420",
+          }
+        });
+        console.log(res);
+        if (!res.ok) throw new Error();
+        return await res.json() as { api: string };
+      },
+      socket: () => new WebSocket(API.AI.socket)
     },
 
     jwt: {

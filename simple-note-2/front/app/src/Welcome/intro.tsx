@@ -74,12 +74,12 @@ export default withPageTitle(function Intro() {
 
     return <Flex vertical align="center" gap={64}>
         <section style={{
-            backgroundColor: token.colorPrimary, width: "100%",
+            width: "100%", backgroundColor: token.colorFillSecondary,
             display: "flex", justifyContent: "center", padding: "64px 0px"
         }}>
             <div className={styles.container} style={{ textAlign: "center" }}>
-                <Typography.Title style={{ fontSize: 64, color: "whitesmoke" }}>Simple-note-2</Typography.Title>
-                <Typography.Paragraph style={{ fontSize: "larger", color: "whitesmoke" }}>
+                <Typography.Title style={{ fontSize: 64 }}>Simple-note-2</Typography.Title>
+                <Typography.Paragraph style={{ fontSize: "larger" }}>
                     提供多樣化的筆記工具、AI 輔助編輯功能，以及支援多人協作的環境，讓使用者能夠方便且靈活地進行筆記編輯
                 </Typography.Paragraph>
             </div>
