@@ -27,7 +27,7 @@ const config: Configuration = {
             BACK_END: JSON.stringify("http://localhost:8000"),
             FRONT_END: JSON.stringify("http://localhost:3000"),
             AI: JSON.stringify("ws://cf00-61-216-112-156.ngrok-free.app"),
-            COLLAB: JSON.stringify("ws://localhost:4000")
+            COLLAB: JSON.stringify("ws://localhost:3000")
         }),
         new ReactRefreshWebpackPlugin(),
         new ForkTsCheckerWebpackPlugin(),

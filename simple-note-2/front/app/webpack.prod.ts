@@ -10,9 +10,9 @@ const config: Configuration = {
         new DefinePlugin({
             'process.env': JSON.stringify(process.env),
             BACK_END: JSON.stringify("https://cf00-61-216-112-156.ngrok-free.app"),
-            FRONT_END: JSON.stringify("https://5f54-2a09-bac5-d58b-323-00-50-ac.ngrok-free.app"),
-            AI: JSON.stringify("ws://cf00-61-216-112-156.ngrok-free.app"),
-            COLLAB: JSON.stringify("wss://5f54-2a09-bac5-d58b-323-00-50-ac.ngrok-free.app")
+            FRONT_END: JSON.stringify("https://b995-2a09-bac5-d58c-323-00-50-ac.ngrok-free.app"),
+            AI: JSON.stringify("wss://cf00-61-216-112-156.ngrok-free.app"),
+            COLLAB: JSON.stringify("wss://b995-2a09-bac5-d58c-323-00-50-ac.ngrok-free.app")
         }),
     ],
     module: {

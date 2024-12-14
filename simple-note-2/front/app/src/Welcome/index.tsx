@@ -5,36 +5,26 @@ import NavigateMenu from "./navigateMenu";
 import styles from "./index.module.css";
 import { OfficialDarkButton } from "../util/theme";
 
-
-const NoteImage = () => <Image src={Note} alt="" width={64} height={64} preview={false} />
-
-const Brand = () => {
-    return <Flex align="center" gap="small">
-        <NoteImage />
-        <Typography.Title level={2} ellipsis>Simple-Note-2</Typography.Title>
-    </Flex>
-}
-
-const Container = (props: React.PropsWithChildren) => <Flex justify="center">
-    <div className={styles.container}>{props.children}</div>
-</Flex>;
+const Container = (props: React.PropsWithChildren) => <div className={styles.container}>{props.children}</div>;
 
 export default function WelcomeLayout() {
     const { token } = theme.useToken();
 
-    return <Flex vertical style={{
-        height: "100%", backgroundColor: token.colorBgBase,
-        padding: 8, boxSizing: "border-box"
-    }}>
-        <Container>
-            <Row align="middle" justify="space-between" wrap={false}>
-                <Col sm={20} md={12}><Brand /></Col>
-                <Col sm={4} md={12}>
-                    <Flex justify={"end"}><NavigateMenu /></Flex>
-                </Col>
-            </Row>
-        </Container>
-        <div style={{ flex: 1, overflow: "auto" }}>
+    return <Flex vertical style={{ height: "100%", backgroundColor: token.colorBgBase, boxSizing: "border-box" }}>
+        <Flex justify="center">
+            <Container>
+                <Row align="middle" justify="space-around">
+                    <Col lg={12} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <Image src={Note} alt="圖片" width={64} height={64} preview={false} />
+                        <Typography.Title level={1} style={{ flex: 1 }} ellipsis>Simple-note-2</Typography.Title>
+                    </Col>
+                    <Col lg={12} style={{ display: "flex", justifyContent: "end" }}>
+                        <NavigateMenu />
+                    </Col>
+                </Row>
+            </Container>
+        </Flex>
+        <div style={{ flex: 1, overflowY: "auto" }}>
             <Outlet />
         </div>
         <FloatButton.Group>

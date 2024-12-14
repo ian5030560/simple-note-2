@@ -38,7 +38,7 @@ export default withPageTitle(function SignIn({ onChange }: AuthProp) {
         try{
             const token = await getToken();
             new Cookies().set("token", token);
-            const ok = signIn(username, password);
+            const ok = await signIn(username, password);
             if (!ok) {
                 throw new Error();
             }

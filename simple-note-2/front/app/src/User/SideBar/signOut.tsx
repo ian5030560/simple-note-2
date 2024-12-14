@@ -13,14 +13,17 @@ export default function SignOutModal(props: SignOutModalProps) {
     const [api, contextholder] = notification.useNotification();
     const navigate = useNavigate();
 
-    const handleOk = useCallback(() => {
+    const handleOk = useCallback(async () => {
         props.onClose();
-        _signOut().then(res => {
-            if(res !== undefined) throw new Error();
-            return navigate("/");
-        }).catch(() => {
+
+        try {
+            const res = await _signOut();
+            if (res !== undefined) throw new Error();
+            navigate("/");
+        }
+        catch {
             api.error({ message: "登出發生錯誤，請重新登出", placement: "top" });
-        });
+        }
 
     }, [_signOut, api, navigate, props]);
 
