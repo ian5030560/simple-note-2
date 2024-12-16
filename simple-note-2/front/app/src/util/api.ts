@@ -67,7 +67,10 @@ const postSetup = (access?: Token["access"]): RequestInit => {
   }
   return {
     method: "POST",
-    headers: headers
+    headers: {
+      ...headers,
+      "ngrok-skip-browser-warning": "69420",
+    },
   };
 };
 
@@ -181,7 +184,7 @@ export default function useAPI() {
 
       // 取得房間人數
       people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({ id: room }), {
-        method: "GET", headers
+        method: "GET", headers: {...headers, "ngrok-skip-browser-warning": "69420"},
       }).then(async res => {
         if (!res.ok) throw new Error();
         return await res.json() as { count: number };
