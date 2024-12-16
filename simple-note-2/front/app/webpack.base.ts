@@ -49,7 +49,7 @@ export const BASE_RULES: (dev?: boolean) => RuleSetRule[] = (dev) => ([
         ]
     },
     {
-        test: /\.(png|jpe?g|gif|mp4)$/i,
+        test: /\.(png|jpe?g|gif|mp4|svg)$/i,
         loader: "file-loader",
         options: {
             name: '[path][name].[ext]',

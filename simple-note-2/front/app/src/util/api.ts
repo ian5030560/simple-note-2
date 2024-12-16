@@ -181,9 +181,7 @@ export default function useAPI() {
 
       // 取得房間人數
       people: (room: string) => fetch(API.Collaborate.people + new URLSearchParams({ id: room }), {
-        method: "GET", headers: {
-          ...headers, "ngrok-skip-browser-warning": "69420",
-        }
+        method: "GET", headers
       }).then(async res => {
         if (!res.ok) throw new Error();
         return await res.json() as { count: number };
@@ -230,12 +228,7 @@ export default function useAPI() {
 
     ai: {
       gemini: async () => {
-        const res = await fetch(API.AI.gemini, {
-          method: "GET", headers: {
-            ...headers, "ngrok-skip-browser-warning": "69420",
-          }
-        });
-        console.log(res);
+        const res = await fetch(API.AI.gemini, { headers: {...headers, "ngrok-skip-browser-warning": "69420"}, mode: "cors" });
         if (!res.ok) throw new Error();
         return await res.json() as { api: string };
       },

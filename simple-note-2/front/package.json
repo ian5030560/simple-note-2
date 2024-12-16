@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm-run-all --parallel start:app start:server",
+    "start": "npm-run-all --parallel start:",
     "start:app": "npm run start --prefix ./app",
-    "start:server": "npm run start --prefix ./server"
+    "start:server": "npm run start --prefix ./server",
+    "ngrok": "node ngrok.index.js",
+    "start:ngrok": "npm-run-all --parallel start:server ngrok"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +17,7 @@
     "simple-note-2": "file:"
   },
   "devDependencies": {
+    "@ngrok/ngrok": "^1.4.1",
     "npm-run-all": "^4.1.5"
   }
 }
