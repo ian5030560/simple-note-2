@@ -1,3 +1,4 @@
+'''
 import datetime
 from django.test import TestCase
 import requests
@@ -7,8 +8,9 @@ basic_header = {
   'Content-type': 'application/json',
 }
 
-'''
+
 # test1: get_notes_res (should return 200 because setting: AllowedAny)
+# changed, not allowedany so it's 403.
 get_notes_res = requests.get('http://localhost:8000/api/notes/', headers = basic_header)
 print('get_notes_res', get_notes_res.status_code)
 print('-----')
@@ -62,9 +64,10 @@ post_notes_res = requests.post('http://localhost:8000/api/notes/', json = user_p
 print('post_notes_res', post_notes_res.status_code)
 print('-----')
 
+# wait for 1 minute(setting can change for the token expiration)
 print('wait for more than 1 minute')
 import time
-time.sleep(60)
+time.sleep(60) # wait if need
 
 # test6: post_notes_res (should return 403 because access token expired)
 post_notes_res = requests.post('http://localhost:8000/api/notes/', json = user_params, headers = with_token_header)

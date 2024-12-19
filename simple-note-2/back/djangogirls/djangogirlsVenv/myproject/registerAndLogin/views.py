@@ -4,15 +4,15 @@ import json
 
 sys.path.append("..db_modules")
 
-from .serializers import *
 from .models import RegisterAndLogin
 from db_modules import UserPersonalInfo
 from rest_framework import status
-from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from django.middleware.csrf import get_token
+from rest_framework.permissions import AllowAny
+from rest_framework.decorators import permission_classes
 
+@permission_classes([AllowAny])
 class RegisterAndLoginView(APIView):
     """
     登入:\n
@@ -25,14 +25,10 @@ class RegisterAndLoginView(APIView):
             若username不重複:\n
                 若email重複, 不能註冊: 402\n
                 若email不重複, 可以註冊: 201\n
-    其他例外:\n
-        登入註冊例外: 403.\n
-        Serializer raise_exception=False: 404.\n
-        JSONDecodeError: 405.\n
+
+    輸入資料為空:\n
+        Response 403.\n
     """
-
-    serializer_class = RegisterAndLoginSerializer
-
     def get(self, request, format=None):
         output = [
             {"email": output.account, "password": output.password}
@@ -41,84 +37,57 @@ class RegisterAndLoginView(APIView):
         return Response("get")
 
     def post(self, request, format=None):
-        try:
-            data = json.loads(request.body)
-            email = data.get("email")
-            password = data.get("password")
-            username = data.get("username")
-            id = data.get("id")
-            
-            serializer = RegisterAndLoginSerializer(data=data)
-            
-            # hash password
-            import hashlib
-            addr = hashlib.sha256()
-            b_password = bytes(password, encoding='utf-8')
-            addr.update(b_password)
-            hash_hexdigest = addr.hexdigest()
+        data = json.loads(request.body)
+        email = data.get("email")
+        password = data.get("password")
+        username = data.get("username")
+        id = data.get("id")
 
-            if id == "sign-in":
-                if UserPersonalInfo.check_username_password(
-                    username, hash_hexdigest
-                ):  # 登入成功
-                    if UserPersonalInfo.update_user_login_status_by_usernames(
-                        username, 1
-                    ):
-                        return Response(status=status.HTTP_200_OK)
-                    else:
-                        return Response(status=status.HTTP_400_BAD_REQUEST)
+        if email is None or password is None or username is None:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+        
+        # hash password
+        import hashlib
+        addr = hashlib.sha256()
+        b_password = bytes(password, encoding='utf-8')
+        addr.update(b_password)
+        hash_hexdigest = addr.hexdigest()
 
-                else:  # 登入失敗
-                    return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if id == "sign-in":
+            if UserPersonalInfo.check_username_password(
+                username, hash_hexdigest
+            ):  # 登入成功
+                if UserPersonalInfo.update_user_login_status_by_usernames(
+                    username, 1
+                ):
+                    return Response(status=status.HTTP_200_OK)
+                else:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
 
-            elif id == "register":
-                check_username = UserPersonalInfo.check_username(username)
-                check_email = UserPersonalInfo.check_email(email)
+            else:  # 登入失敗
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-                if check_username:
-                    return Response(
-                        status=status.HTTP_401_UNAUTHORIZED
-                    )  # username重複，不能註冊
+        elif id == "register":
+            check_username = UserPersonalInfo.check_username(username)
+            check_email = UserPersonalInfo.check_email(email)
 
-                elif not check_username:  # username不重複
-                    if check_email:  # email重複，不能註冊
-                        return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
+            if check_username:
+                return Response(
+                    status=status.HTTP_401_UNAUTHORIZED
+                )  # username重複，不能註冊
 
-                    elif not check_email:  # email不重複，可以註冊
-                        print(
-                            "register:",
-                            UserPersonalInfo.insert_username_password_email(
-                                username, hash_hexdigest, email
-                            ),
-                        )
-                        return Response(status=status.HTTP_201_CREATED)
+            elif not check_username:  # username不重複
+                if check_email:  # email重複，不能註冊
+                    return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
 
-            else:  # exception其他例外
-                return Response("else exception", status=status.HTTP_403_FORBIDDEN)
+                elif not check_email:  # email不重複，可以註冊
+                    print(
+                        "register:",
+                        UserPersonalInfo.insert_username_password_email(
+                            username, hash_hexdigest, email
+                        ),
+                    )
+                    return Response(status=status.HTTP_201_CREATED)
 
-            # serializer
-            if serializer.is_valid(raise_exception=True):
-                serializer.save()
-                print("serializer is valid")
-                return Response(serializer.data)
-
-            elif serializer.is_valid(raise_exception=False):
-                print("serializer is not valid", end="")
-                print(serializer.errors)
-                return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
-
-        # Handle JSON decoding error
-        except json.JSONDecodeError:
-            email = None
-            password = None
-            username = None
-            id = None
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-
-def csrf(self, request):
-    return JsonResponse({"csrfToken": get_token(request)})
-
-
-def ping(self, request):
-    return JsonResponse({"result": "OK"})
+        else:  # exception其他例外
+            return Response("else exception", status=status.HTTP_403_FORBIDDEN)

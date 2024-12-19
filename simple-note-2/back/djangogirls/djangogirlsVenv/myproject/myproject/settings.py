@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     "registerAndLogin",
     "saveNote",
     "updateInfo",
-    "updateMediaFile",
     "viewMediaFile",
     "newCollaborate",
     "deleteCollaborate",
@@ -148,7 +147,7 @@ DATABASES = {
         'NAME': 'simplenote2db',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': 'host.docker.internal',  # Access host machine's MySQL from Docker
+        # 'HOST': 'host.docker.internal',  # Local開啟時註解這段
         'PORT': '3306',
     }
 }

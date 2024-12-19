@@ -29,7 +29,6 @@ PATHS = {
     ],
     'media': [
         'newMediaFile',
-        'updateMediaFile',
         'deleteFile',
         'viewMediaFile'
     ],
@@ -73,7 +72,6 @@ from forgetPassword.views import ForgetPasswordView
 from logout.views import LogoutView
 from saveNote.views import SaveNoteView
 from newMediaFile.views import NewMediaFileView
-from updateMediaFile.views import UpdateMediaFileView
 from deleteFile.views import DeleteFileView
 from viewMediaFile.views import ViewMediaFileView
 from getInfo.views import GetInfoView
@@ -116,7 +114,6 @@ note_patterns = [
 # Media
 media_patterns = [
     path('new/', NewMediaFileView.as_view(), name='media_new'),
-    path('update/', UpdateMediaFileView.as_view(), name='media_update'),
     path('delete/', DeleteFileView.as_view(), name='media_delete'),
     path('view/', ViewMediaFileView.as_view(), name='media_view'),
     path('<username>/', ViewMediaFileView.as_view(), name='media_view_user'),

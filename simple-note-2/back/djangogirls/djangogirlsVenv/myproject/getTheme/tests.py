@@ -7,9 +7,9 @@ import json
 class GetThemeViewTests(APITestCase):
     
     def setUp(self):
-        self.url = ("http://localhost:8000/note/get/") 
-        self.valid_username = "test_user"
-        self.invalid_username = "invalid_user"
+        self.url = ("http://localhost:8000/theme/get/") 
+        self.valid_username = "testuser"
+        self.invalid_username = "invaliduser"
 
     @patch("db_modules.UserPersonalInfo.check_username")
     @patch("db_modules.UserPersonalThemeData.check_all_theme_data")
@@ -21,8 +21,9 @@ class GetThemeViewTests(APITestCase):
         
         # Mock the check_all_theme_data function to return theme data
         mock_check_all_theme_data.return_value = [
-            (1, "Theme One", "#FFFFFF", "#AAAAAA", "#000000", "#333333"),
-            (2, "Theme Two", "#FF0000", "#00FF00", "#0000FF", "#FFFF00"),
+            (1, "light", "5", "5", "5", "5"),
+            (2, "green", "2", "3", "4", "5"),
+            (3, "blue", "1", "2", "3", "4"),
         ]
         
         data = {"username": self.valid_username}
@@ -32,22 +33,32 @@ class GetThemeViewTests(APITestCase):
         self.assertEqual(response.json(), [
             {
                 "id": 1,
-                "name": "Theme One",
+                "name": "light",
                 "data": {
-                    "colorLightPrimary": "#FFFFFF",
-                    "colorLightNeutral": "#AAAAAA",
-                    "colorDarkPrimary": "#000000",
-                    "colorDarkNeutral": "#333333",
+                    "colorLightPrimary": "5",
+                    "colorLightNeutral": "5",
+                    "colorDarkPrimary": "5",
+                    "colorDarkNeutral": "5",
                 }
             },
             {
                 "id": 2,
-                "name": "Theme Two",
+                "name": "green",
                 "data": {
-                    "colorLightPrimary": "#FF0000",
-                    "colorLightNeutral": "#00FF00",
-                    "colorDarkPrimary": "#0000FF",
-                    "colorDarkNeutral": "#FFFF00",
+                    "colorLightPrimary": "2",
+                    "colorLightNeutral": "3",
+                    "colorDarkPrimary": "4",
+                    "colorDarkNeutral": "5",
+                }
+            },
+            {
+                "id": 3,
+                "name": "blue",
+                "data": {
+                    "colorLightPrimary": "1",
+                    "colorLightNeutral": "2",
+                    "colorDarkPrimary": "3",
+                    "colorDarkNeutral": "4",
                 }
             },
         ])

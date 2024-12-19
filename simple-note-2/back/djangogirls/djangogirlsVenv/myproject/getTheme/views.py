@@ -23,6 +23,7 @@ class GetThemeReturnData(typing.TypedDict):
     id: int
     name: str
     data: ThemeData
+    
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import permission_classes
 
@@ -67,4 +68,4 @@ class GetThemeView(APIView):
         
         converted = list(map(convert, themes))
         
-        return JsonResponse(converted, safe=False)
+        return JsonResponse(converted, safe=False, status=200)

@@ -138,7 +138,7 @@ def check_content(usernames, note_title_id):
             session.query(User_Note_Data.content)
             .filter(
                 and_(
-                    User_Note_Data.user_id == user_id_query[0],
+                    User_Note_Data.user_id == user_id_query,
                     User_Note_Data.note_title_id == note_title_id,
                 )
             )
@@ -249,6 +249,9 @@ def check_user_all_notes(usernames_input):
         return result
 
     except SQLAlchemyError as e:
+        session.rollback()
+        return False
+    except:
         session.rollback()
         return False
     finally:
