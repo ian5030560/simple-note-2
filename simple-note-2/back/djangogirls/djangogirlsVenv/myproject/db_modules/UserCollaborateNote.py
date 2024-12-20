@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.exc import SQLAlchemyError
 from .UserNoteData import User_Note_Data, check_id
 from .Common import engine
+import typing
 
 Base = declarative_base()
         
@@ -105,7 +106,7 @@ def check_all_guest(note_master_input: str, note_title_id_input: str) -> list[tu
         session.close()
 
 # check all url by guest_name
-def check_url(note_guest_input: str) -> list[str] | False:
+def check_url(note_guest_input: str) -> typing.Union[list[str], False]:
     session = create_session()
     try:
         stmt = (
