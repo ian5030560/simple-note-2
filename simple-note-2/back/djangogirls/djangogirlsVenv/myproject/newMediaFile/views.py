@@ -63,7 +63,7 @@ class NewMediaFileView(APIView):
         folderSaved = saver.saveNewFile(filename, content)
     
         if dbSaved and folderSaved == True:
-            url = f"{request.scheme}://{request.get_host()}/media/{username}/{noteId}/{filename}"
+            url = f"https://cf00-61-216-112-156.ngrok-free.app/media/{username}/{noteId}/{filename}"
             return HttpResponse(url, status=200)
 
         elif dbSaved or folderSaved != True:
