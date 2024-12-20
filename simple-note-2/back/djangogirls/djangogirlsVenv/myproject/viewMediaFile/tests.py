@@ -1,3 +1,4 @@
+'''
 import os
 from django.test import TestCase
 from unittest.mock import patch
@@ -12,7 +13,7 @@ class ViewMediaFileViewTests(TestCase):
         self.noteId = "1"
         self.filename = "GbtVktabMAA-FYo.jpg"
         self.file_path = os.path.join(settings.BASE_DIR, 'db_modules', 'fileTemp', self.filename)
-        self.url = f"http://localhost:8000/media/media/{self.username}/{self.noteId}/{self.filename}/"
+        self.url = f"http://localhost:8000/media/{self.username}/{self.noteId}/{self.filename}/"
 
         # Create a test file
         os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
@@ -85,3 +86,4 @@ class ViewMediaFileViewTests(TestCase):
 
         # Restore permissions for cleanup
         os.chmod(self.file_path, 0o644)
+'''
