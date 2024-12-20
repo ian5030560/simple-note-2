@@ -97,7 +97,7 @@ export default class Socket {
         const [id, master] = docName.split("/");
         this.roomStates.set(docName, {state: UPLOAD.READY, interval});
 
-        fetch("http://127.0.0.1:8000/note/save/", {
+        fetch("https://cf00-61-216-112-156.ngrok-free.app/note/save/", {
             method: "POST",
             body: JSON.stringify({
                 username: Buffer.from(master, "base64").toString("utf-8"),

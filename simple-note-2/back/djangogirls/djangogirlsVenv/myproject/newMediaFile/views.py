@@ -8,7 +8,7 @@ from .models import NewMediaFile  # 新建檔案改這個
 from db_modules import UserFileData  # 資料庫來的檔案
 from db_modules.SaveFile import SaveFile  # 資料庫來的檔案
 from rest_framework import status
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -37,7 +37,7 @@ class NewMediaFileView(APIView):
         ]
         return Response("get")
 
-    def post(self, request, format=None):
+    def post(self, request: HttpRequest, format=None):
         data = request.POST
         username = data.get("username")  # 帳號名稱
         filename = data.get("filename")  # 文件名稱
@@ -63,7 +63,7 @@ class NewMediaFileView(APIView):
         folderSaved = saver.saveNewFile(filename, content)
         
         if dbSaved and folderSaved == True:
-            url = f"http://localhost:8000/media/{username}/{noteId}/{filename}"
+            url = f"{request.get_host()}/media/{username}/{noteId}/{filename}"
             return HttpResponse(url, status=200)
 
         elif dbSaved or folderSaved != True:

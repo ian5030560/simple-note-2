@@ -105,7 +105,7 @@ def check_all_guest(note_master_input: str, note_title_id_input: str) -> list[tu
         session.close()
 
 # check all url by guest_name
-def check_url(note_guest_input):
+def check_url(note_guest_input: str) -> list[str] | False:
     session = create_session()
     try:
         stmt = (

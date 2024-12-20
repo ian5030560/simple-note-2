@@ -110,7 +110,6 @@ const SettingModal = (prop: SettingModalProp) => {
             id: id === DEFAULT_THEME_ID ? null : id,
             name: id === DEFAULT_THEME_ID ? null : name,
         }
-        console.log(theme);
         info.update(username, { theme }).then(ok => {
             if (!ok) throw new Error();
             notifyAPI.success({ message: "更新成功", description: "主題更新成功" });

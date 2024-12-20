@@ -6,10 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm-run-all --parallel start:",
-    "start:app": "npm run start --prefix ./app",
-    "start:server": "npm run start --prefix ./server",
-    "ngrok": "node ngrok.index.js",
-    "start:ngrok": "npm-run-all --parallel start:server ngrok"
+    "start:app": "npm run start --prefix ./app"
   },
   "author": "",
   "license": "ISC",

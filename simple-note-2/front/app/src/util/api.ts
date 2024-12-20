@@ -69,8 +69,9 @@ const postSetup = (access?: Token["access"]): RequestInit => {
     method: "POST",
     headers: {
       ...headers,
-      "ngrok-skip-browser-warning": "69420",
+      // "ngrok-skip-browser-warning": "69420",
     },
+    mode: "cors"
   };
 };
 
