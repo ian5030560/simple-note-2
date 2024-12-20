@@ -61,7 +61,6 @@ class NewMediaFileView(APIView):
         
         # 保存一个新文件
         folderSaved = saver.saveNewFile(filename, content)
-        request.get_full_path_info
     
         if dbSaved and folderSaved == True:
             url = f"{request.scheme}://{request.get_host()}/media/{username}/{noteId}/{filename}"
