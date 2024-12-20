@@ -58,12 +58,12 @@ class NewMediaFileView(APIView):
         
         # db save info
         dbSaved = UserFileData.insert_file_name(username, noteId, filename)
-
+        
         # 保存一个新文件
         folderSaved = saver.saveNewFile(filename, content)
-        
+        request.get_full_path_info
         if dbSaved and folderSaved == True:
-            url = f"{request.get_host()}/media/{username}/{noteId}/{filename}"
+            url = request.build_absolute_uri(f"/media/{username}/{noteId}/{filename}")
             return HttpResponse(url, status=200)
 
         elif dbSaved or folderSaved != True:
