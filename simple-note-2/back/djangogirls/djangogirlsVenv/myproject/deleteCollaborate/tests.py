@@ -34,7 +34,7 @@ class DeleteCollaborateViewTestCase(APITestCase):
         mock_delete_all_data.return_value = False
 
         response = self.client.post(self.url, data=json.dumps(self.valid_payload), content_type="application/json")
-        print("response",response)
+        # print("response",response)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         mock_delete_all_data.assert_called_once_with(
             self.valid_payload['masterName'],

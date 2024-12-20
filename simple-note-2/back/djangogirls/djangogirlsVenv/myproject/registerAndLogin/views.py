@@ -81,12 +81,12 @@ class RegisterAndLoginView(APIView):
                     return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
 
                 elif not check_email:  # email不重複，可以註冊
-                    print(
-                        "register:",
-                        UserPersonalInfo.insert_username_password_email(
-                            username, hash_hexdigest, email
-                        ),
-                    )
+                    # print(
+                    #     "register:",
+                    #     UserPersonalInfo.insert_username_password_email(
+                    #         username, hash_hexdigest, email
+                    #     ),
+                    # )
                     return Response(status=status.HTTP_201_CREATED)
 
         else:  # exception其他例外
