@@ -51,12 +51,9 @@ class RegisterAndLoginView(APIView):
         hash_hexdigest = addr.hexdigest()
 
         if id == "sign-in":
-            if UserPersonalInfo.check_username_password(
-                username, hash_hexdigest
-            ):  # 登入成功
-                if UserPersonalInfo.update_user_login_status_by_usernames(
-                    username, 1
-                ):
+            if UserPersonalInfo.check_username_password(username, hash_hexdigest):  # 登入成功
+                
+                if UserPersonalInfo.update_user_login_status_by_usernames(username, 1):
                     return Response(status=status.HTTP_200_OK)
                 else:
                     return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -73,9 +70,7 @@ class RegisterAndLoginView(APIView):
             check_email = UserPersonalInfo.check_email(email)
 
             if check_username:
-                return Response(
-                    status=status.HTTP_401_UNAUTHORIZED
-                )  # username重複，不能註冊
+                return Response(status=status.HTTP_401_UNAUTHORIZED)  # username重複，不能註冊
 
             elif not check_username:  # username不重複
                 if check_email:  # email重複，不能註冊
