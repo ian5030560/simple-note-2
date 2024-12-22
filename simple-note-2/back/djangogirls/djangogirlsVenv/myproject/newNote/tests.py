@@ -34,7 +34,7 @@ class NewNoteViewTest(APITestCase):
     @patch("db_modules.UserNoteData.insert_user_id_note_name")  # 模擬插入筆記名稱的資料庫操作
     @patch("db_modules.UserSubNoteData.insert_data")  # 模擬插入子筆記的資料庫操作
     def test_post_invalid_note_data(self, mock_insert_subnote, mock_insert_note):
-        """測試POST請求使用無效的筆記資料"""
+        """測試POST模擬筆記插入失敗"""
         mock_insert_note.return_value = False  # 模擬筆記插入失敗
         mock_insert_subnote.return_value = True  # 模擬子筆記插入成功
 
@@ -49,7 +49,7 @@ class NewNoteViewTest(APITestCase):
     @patch("db_modules.UserNoteData.insert_user_id_note_name")  # 模擬插入筆記名稱的資料庫操作
     @patch("db_modules.UserSubNoteData.insert_data")  # 模擬插入子筆記的資料庫操作
     def test_post_invalid_subnote_data(self, mock_insert_subnote, mock_insert_note):
-        """測試POST請求使用無效的子筆記資料"""
+        """測試POST模擬子筆記插入失敗"""
         mock_insert_note.return_value = True  # 模擬筆記插入成功
         mock_insert_subnote.return_value = False  # 模擬子筆記插入失敗
 
@@ -64,7 +64,7 @@ class NewNoteViewTest(APITestCase):
     @patch("db_modules.UserNoteData.insert_user_id_note_name")  # 模擬插入筆記名稱的資料庫操作
     @patch("db_modules.UserSubNoteData.insert_data")  # 模擬插入子筆記的資料庫操作
     def test_post_invalid_data(self, mock_insert_subnote, mock_insert_note):
-        """測試POST請求使用無效的筆記資料和子筆記資料"""
+        """測試POST模擬筆記、子筆記插入失敗"""
         mock_insert_note.return_value = False  # 模擬筆記插入失敗
         mock_insert_subnote.return_value = False  # 模擬子筆記插入失敗
 
