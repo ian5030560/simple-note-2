@@ -42,7 +42,7 @@ class NewNoteView(APIView):
         parentId = data.get("parentId")  # 父筆記名稱
         silblingId = data.get("silblingId")  # 兄弟筆記名稱
         
-        if username is None or noteId is None or notename is None or parentId is None or silblingId is None: 
+        if username is None or noteId is None or notename is None: 
             return Response(status=status.HTTP_401_UNAUTHORIZED)
         
         # 透過username, notename, noteId來新增資料

@@ -42,9 +42,6 @@ class RegisterAndLoginView(APIView):
         password = data.get("password")
         username = data.get("username")
         id = data.get("id")
-
-        if email is None or password is None or username is None:
-            return Response(status=status.HTTP_403_FORBIDDEN)
         
         # hash password
         import hashlib
@@ -68,6 +65,10 @@ class RegisterAndLoginView(APIView):
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
 
         elif id == "register":
+            
+            if email is None or password is None or username is None:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            
             check_username = UserPersonalInfo.check_username(username)
             check_email = UserPersonalInfo.check_email(email)
 
