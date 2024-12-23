@@ -39,7 +39,7 @@ class NewMediaFileViewTest(APITestCase):
         self.assertEqual(response.status_code, 200)
         
         # 檢查回應內容中是否包含文件URL
-        self.assertIn("http://localhost:8000/media/", response.content.decode())
+        self.assertIn("http://testserver/media/", response.content.decode())
         
         # 確認mock的方法被正確調用
         mock_check_file_name.assert_called_once_with(
@@ -61,7 +61,7 @@ class NewMediaFileViewTest(APITestCase):
         
         # 模擬檔案名稱已經存在，將重命名
         mock_check_file_name.return_value = True  # 檔案已存在
-        mock_rename_against_duplication.return_value = "testfile_1.txt"  # 重命名後的檔案名稱
+        mock_rename_against_duplication.return_value = "testfile(1).txt"  # 重命名後的檔案名稱
 
         with patch("db_modules.UserFileData.insert_file_name") as mock_insert_file_name, \
              patch("db_modules.SaveFile.SaveFile.saveNewFile") as mock_save_new_file:
@@ -83,7 +83,7 @@ class NewMediaFileViewTest(APITestCase):
             self.assertEqual(response.status_code, 200)
             
             # 檢查回應內容中是否包含文件URL
-            self.assertIn("http://localhost:8000/media/", response.content.decode())
+            self.assertIn("http://testserver/media/", response.content.decode())
             
             # 確認mock的方法被正確調用
             mock_check_file_name.assert_called_once()  # 確認檢查文件名稱方法被調用一次

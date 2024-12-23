@@ -46,6 +46,8 @@ class RegisterAndLoginView(APIView):
         # hash password
         import hashlib
         addr = hashlib.sha256()
+        if password == None:
+            return Response(status=status.HTTP_403_FORBIDDEN)
         b_password = bytes(password, encoding='utf-8')
         addr.update(b_password)
         hash_hexdigest = addr.hexdigest()

@@ -1,89 +1,98 @@
-'''
-import os
-from django.test import TestCase
-from unittest.mock import patch
+'''from django.test import TestCase
 from django.conf import settings
+from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
+import os
+import shutil
 
-class ViewMediaFileViewTests(TestCase):
+class TestViewMediaFileView(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.username = "testuser"
-        self.noteId = "1"
-        self.filename = "GbtVktabMAA-FYo.jpg"
-        self.file_path = os.path.join(settings.BASE_DIR, 'db_modules', 'fileTemp', self.filename)
-        self.url = f"http://localhost:8000/media/{self.username}/{self.noteId}/{self.filename}/"
+        self.note_id = "1"
+        self.filename = "testfile.txt"
 
-        # Create a test file
-        os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
-        with open(self.file_path, "wb") as f:
-            f.write(b"Test file content")
+        # Setup mock file path
+        self.file_temp_dir = os.path.join(settings.BASE_DIR, 'db_modules', 'fileTemp')
+        os.makedirs(self.file_temp_dir, exist_ok=True)
+        
+        self.file_path = os.path.join(self.file_temp_dir, self.filename)
+        
+        # Create a mock file
+        with open(self.file_path, 'rb') as f:
+            f.close()  # Close the file before deleting
+            os.remove(self.file_path)
+
+
+        # Mock `UserFileData.check_file_name` method
+        from unittest.mock import patch
+        self.check_file_name_patch = patch('db_modules.UserFileData.check_file_name', return_value=True)
+        self.mock_check_file_name = self.check_file_name_patch.start()
 
     def tearDown(self):
-        # Clean up the test file
-        if os.path.exists(self.file_path):
-            os.remove(self.file_path)
-    @patch("db_modules.UserFileData.check_file_name")
-    def test_file_retrieval_success(self, mock_check_file_name):
-        mock_check_file_name.return_value = True
+        # Cleanup the mock file and directory
+        if os.path.exists(self.file_temp_dir):
+            shutil.rmtree(self.file_temp_dir)
 
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.get("Content-Type"), "image/jpg")
-        self.assertEqual(response.content, b"Test file content")
+        # Stop the mock
+        self.check_file_name_patch.stop()
 
-    @patch("db_modules.UserFileData.check_file_name")
-    def test_file_not_found_filesystem(self, mock_check_file_name):
-        mock_check_file_name.return_value = True
+    def test_file_found_and_returned(self):
+        """Test that the file is found and returned with correct MIME type."""
+        url = reverse('media_view_file', kwargs={
+            'username': self.username,
+            'noteId': self.note_id,
+            'filename': self.filename
+        })
 
-        # Remove test file to simulate file not found
-        if os.path.exists(self.file_path):
-            os.remove(self.file_path)
-
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        self.assertIn("error", response.json())
-
-    @patch("db_modules.UserFileData.check_file_name")
-    def test_file_not_found_database(self, mock_check_file_name):
-        mock_check_file_name.return_value = False
-
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn("error", response.json())
-
-    @patch("db_modules.UserFileData.check_file_name")
-    def test_file_unknown_mime_type(self, mock_check_file_name):
-        mock_check_file_name.return_value = True
-
-        # Create a test file with an unknown extension
-        unknown_file = os.path.join(settings.BASE_DIR, 'db_modules', 'fileTemp', "unknownfile.unknown")
-        with open(unknown_file, "wb") as f:
-            f.write(b"Test content for unknown type")
-        
-        url = f"/api/media/{self.username}/{self.noteId}/unknownfile.unknown/"
         response = self.client.get(url)
-
+        
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.get("Content-Type"), "application/octet-stream")
-        self.assertEqual(response.content, b"Test content for unknown type")
+        self.assertEqual(response["Content-Type"], "text/plain")
+        self.assertEqual(response.content.decode(), "This is a test file.")
 
-        # Cleanup
-        if os.path.exists(unknown_file):
-            os.remove(unknown_file)
+    def test_file_not_found(self):
+        """Test that a 404 error is returned if the file does not exist."""
+        url = reverse('media_view_file', kwargs={
+            'username': self.username,
+            'noteId': self.note_id,
+            'filename': "nonexistentfile.txt"
+        })
 
-    @patch("db_modules.UserFileData.check_file_name")
-    def test_internal_server_error(self, mock_check_file_name):
-        mock_check_file_name.return_value = True
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data["error"], "File not found")
 
-        # Simulate error by removing read permissions
-        os.chmod(self.file_path, 0o000)
+    def test_invalid_check_file_name(self):
+        """Test that a 400 error is returned if check_file_name fails."""
+        self.mock_check_file_name.return_value = False
 
-        response = self.client.get(self.url)
-        self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
-        self.assertIn("error", response.json())
+        url = reverse('media_view_file', kwargs={
+            'username': self.username,
+            'noteId': self.note_id,
+            'filename': self.filename
+        })
 
-        # Restore permissions for cleanup
-        os.chmod(self.file_path, 0o644)
+        response = self.client.get(url)
+        
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data["error"], "File not found")
+
+    def test_server_error(self):
+        """Test that a 500 error is returned if an exception occurs while opening the file."""
+        with open(self.file_path, 'rb') as f:
+            os.remove(self.file_path)  # Simulate a file deletion before response
+
+            url = reverse('media_view_file', kwargs={
+                'username': self.username,
+                'noteId': self.note_id,
+                'filename': self.filename
+            })
+
+            response = self.client.get(url)
+
+            self.assertEqual(response.status_code, status.HTTP_500_INTERNAL_SERVER_ERROR)
+            self.assertIn("error", response.data)
 '''
