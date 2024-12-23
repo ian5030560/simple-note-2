@@ -1,16 +1,17 @@
-# views.py
-import sys
+"""載入筆記樹: 載入使用者所有的筆記樹(loadNoteTree)"""
+
 import json
+import sys
+
+from rest_framework import status
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 sys.path.append("..db_modules")
-
-from .models import NewTheme
 from db_modules import UserPersonalThemeData
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework.decorators import permission_classes
+
 
 @permission_classes([AllowAny])
 class NewThemeView(APIView):
@@ -22,15 +23,17 @@ class NewThemeView(APIView):
     後端回傳:\n
         200 if success.\n
         Sqlite error, 400 if failure.\n
-    
+
     輸入資料為空:\n
         Response 401.\n
     """
-    def get(self, request, format=None):
-        output = [{"newTheme": output.newTheme} for output in NewTheme.objects.all()]
+
+    def get(self):
+        """Get 方法"""
         return Response("get")
 
-    def post(self, request, format=None):
+    def post(self, request):
+        """Post 方法"""
         data = json.loads(request.body)
         username = data.get("username")  # 帳號名稱
         theme = data.get("theme")  # 主題資訊
@@ -38,22 +41,28 @@ class NewThemeView(APIView):
         if username is None or theme is None:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
 
-        themeName = theme.get("name") #主題名稱
-        themeData = theme.get("data") #主題內容
+        theme_name = theme.get("name")  # 主題名稱
+        theme_data = theme.get("data")  # 主題內容
 
-        if themeName is None or themeData is None:
+        if theme_name is None or theme_data is None:
             return Response(status=status.HTTP_402_PAYMENT_REQUIRED)
 
-        colorLightPrimary = themeData.get("colorLightPrimary")
-        colorLightNeutral = themeData.get("colorLightNeutral")
-        colorDarkPrimary = themeData.get("colorDarkPrimary")
-        colorDarkNeutral = themeData.get("colorDarkNeutral")
+        color_light_pimary = theme_data.get("colorLightPrimary")
+        color_light_neutral = theme_data.get("colorLightNeutral")
+        color_dark_primary = theme_data.get("colorDarkPrimary")
+        color_dark_neutral = theme_data.get("colorDarkNeutral")
 
-        addTheme = UserPersonalThemeData.insert_themeData_by_usernames(username, themeName, colorLightPrimary, colorLightNeutral, colorDarkPrimary, colorDarkNeutral)
-        
-        if addTheme:  # 新增主題成功
+        add_theme = UserPersonalThemeData.insert_themeData_by_usernames(
+            username,
+            theme_name,
+            color_light_pimary,
+            color_light_neutral,
+            color_dark_primary,
+            color_dark_neutral,
+        )
+
+        if add_theme:  # 新增主題成功
             return Response(status=status.HTTP_200_OK)
-        
-        elif addTheme != True:  # error
 
-            return Response(addTheme, status=status.HTTP_400_BAD_REQUEST)
+        # error
+        return Response(add_theme, status=status.HTTP_400_BAD_REQUEST)

@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     "getInfo",
     "getNote",
     "getTheme",
-    "logout",
     "loadNoteTree",
     "newMediaFile",
     "newNote",
@@ -147,7 +146,7 @@ DATABASES = {
         'NAME': 'simplenote2db',
         'USER': 'root',
         'PASSWORD': 'root',
-        'HOST': 'host.docker.internal',  # Local開啟時註解這段
+        # 'HOST': 'host.docker.internal',  # Local開啟時註解這段
         'PORT': '3306',
     }
 }

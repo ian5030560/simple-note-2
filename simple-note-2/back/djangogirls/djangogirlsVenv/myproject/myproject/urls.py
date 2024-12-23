@@ -35,7 +35,6 @@ PATHS = {
     'user': [
         'registerAndLogin',
         'forgetPassword',
-        'logout',
         'getInfo',
         'updateInfo'
     ],
@@ -69,7 +68,6 @@ from django.urls import path, include, re_path
 from django.contrib import admin
 from registerAndLogin.views import RegisterAndLoginView
 from forgetPassword.views import ForgetPasswordView
-from logout.views import LogoutView
 from saveNote.views import SaveNoteView
 from newMediaFile.views import NewMediaFileView
 from deleteFile.views import DeleteFileView
@@ -159,7 +157,6 @@ urlpatterns = [
     # Authentication and user management
     path('register/', RegisterAndLoginView.as_view(), name='register'),
     path('login/', RegisterAndLoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
     path('forget-password/', ForgetPasswordView.as_view(), name='forget_password'),
     
     # AI features

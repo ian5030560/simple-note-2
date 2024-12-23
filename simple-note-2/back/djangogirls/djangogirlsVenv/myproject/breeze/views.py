@@ -1,15 +1,14 @@
-import sys
+"""Breeze AI API"""
+
 import json
+
 import requests
-
-sys.path.append("..db_modules")
-
-from .models import Breeze
 from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 
 @permission_classes([AllowAny])
 class BreezeView(APIView):
@@ -19,16 +18,15 @@ class BreezeView(APIView):
 
     後端回傳:\n
         OK: 200.\n
+        error: 404.\n
     """
 
     # 連接AI的API
     def ai(self, text):
+        """AI 主邏輯"""
         try:
             url = "http://192.168.196.106:8091"  # ZeroTier IP for AI API
-            post_text = {
-                "title": "",
-                "content": text
-            }
+            post_text = {"title": "", "content": text}
             headers = {
                 "Content-Type": "application/json",
             }
@@ -60,17 +58,19 @@ class BreezeView(APIView):
             print(f"Request exception occurred: {str(e)}")
             return f"ai post error: {str(e)}"
 
-    def get(self, request, format=None):
-        output = [{"breeze": obj.breeze} for obj in Breeze.objects.all()]
-        return Response(output)
+    def get(self):
+        """get方法"""
+        return Response("get")
 
-    def post(self, request, format=None):
-        # try:
+    def post(self, request):
+        """Post方法"""
         data = json.loads(request.body)
         text = data.get("text")  # 文字內容
-        
+
         # AI對話
         answer = self.ai(text)
-        
+
         if answer:
             return Response(answer, status=status.HTTP_200_OK)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)

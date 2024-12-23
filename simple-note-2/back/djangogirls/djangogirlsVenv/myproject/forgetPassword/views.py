@@ -1,22 +1,21 @@
-# views.py
-import sys
+"""忘記密碼: 寄送email(forgetPassword)"""
+
 import json
+import sys
 
-sys.path.append("..db_modules")
-
-from .models import ForgetPassword
-from db_modules import UserPersonalInfo
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-
+from django.conf import settings
 # email用
 from django.core.mail import EmailMessage
-from django.conf import settings
 from django.template.loader import render_to_string
-
-from rest_framework.permissions import AllowAny
+from rest_framework import status
 from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+sys.path.append("..db_modules")
+from db_modules import UserPersonalInfo
+
 
 @permission_classes([AllowAny])
 class ForgetPasswordView(APIView):
@@ -26,23 +25,24 @@ class ForgetPasswordView(APIView):
        Error: 400.\n
     """
 
-    def get(self, request, format=None):
-        output = [
-            {"forgetPassword": output.forgetPassword}
-            for output in ForgetPassword.objects.all()
-        ]
+    def get(self):
+        """Get 方法"""
         return Response("get")
 
-    def post(self, request, format=None):
+    def post(self, request):
+        """Post 方法"""
         data = json.loads(request.body)
         email = data.get("email")
         username = data.get("username")
 
         if not email or not username:
-            return Response({"error": "Missing email or username"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Missing email or username"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         password = UserPersonalInfo.search_password(email)  # from DB get password
-        
+
         if password:
             # 電子郵件內容
             email_template = render_to_string(
@@ -60,6 +60,5 @@ class ForgetPasswordView(APIView):
 
             if email.send():
                 return Response(status=status.HTTP_200_OK)
-            
-        elif password == False:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(status=status.HTTP_400_BAD_REQUEST)
