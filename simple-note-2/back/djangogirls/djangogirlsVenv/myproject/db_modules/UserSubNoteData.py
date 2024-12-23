@@ -1,16 +1,29 @@
-from sqlalchemy import and_, create_engine, delete, exists, insert, select, update
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column
-from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
-from sqlalchemy.orm import sessionmaker ,scoped_session
+import base64
+import os
 
-from .UserNoteData import User_Note_Data
+from sqlalchemy import (
+    BLOB,
+    DATETIME,
+    TEXT,
+    Column,
+    Integer,
+    String,
+    and_,
+    create_engine,
+    delete,
+    exists,
+    insert,
+    select,
+    update,
+)
 
 # from .UserPersonalInfo import User_Personal_Info
 from sqlalchemy.exc import SQLAlchemyError
-import os
-import base64
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 from .Common import engine
+from .UserNoteData import User_Note_Data
 
 Base = declarative_base()
 # engine_url = os.environ.get("env")
@@ -28,17 +41,15 @@ class User_SubNote_Data(Base):
     sibling_id = Column(String(128))
 
 
-
-
 # def create_session():
 #     Session = sessionmaker(bind=engine)
 #     session = Session()
-    # return session
-    
+# return session
+
+
 def create_session():
     Session = scoped_session(sessionmaker(bind=engine))
     return Session
-
 
 
 def insert_data(id_input, parent_id_input, sibling_id_input):
@@ -209,6 +220,7 @@ def recursive_delete(id_input):
     session.execute(stmt)
     session.commit()
 
+
 def delete_orphaned_user_note_data(session):
     session = create_session()
     try:
@@ -220,13 +232,16 @@ def delete_orphaned_user_note_data(session):
 
         if ids_to_delete:
             # 刪除這些 note_title_id 對應的所有 User_Note_Data 表中的列
-            stmt_delete = delete(User_Note_Data).where(User_Note_Data.note_title_id.in_(ids_to_delete))
+            stmt_delete = delete(User_Note_Data).where(
+                User_Note_Data.note_title_id.in_(ids_to_delete)
+            )
             session.execute(stmt_delete)
             session.commit()
     except SQLAlchemyError as e:
         session.rollback()
         print(e)
-        
+
+
 # Delete data by own id
 def delete_data(id_input):
     session = create_session()
@@ -247,8 +262,8 @@ def delete_data(id_input):
 
             stmt = delete(User_SubNote_Data).where(User_SubNote_Data.id == id_input)
             session.execute(stmt)
-            
-            # Delete user_note_data's note_title_id if it's not in user_subNote_data 
+
+            # Delete user_note_data's note_title_id if it's not in user_subNote_data
             delete_orphaned_user_note_data(session)
 
             session.commit()

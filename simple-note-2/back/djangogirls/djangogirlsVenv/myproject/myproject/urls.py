@@ -20,146 +20,124 @@ from pathlib import Path
 
 # Group related paths
 PATHS = {
-    'note': [
-        'getNote',
-        'newNote',
-        'deleteNote',
-        'saveNote',
-        'loadNoteTree'
-    ],
-    'media': [
-        'newMediaFile',
-        'deleteFile',
-        'viewMediaFile'
-    ],
-    'user': [
-        'registerAndLogin',
-        'forgetPassword',
-        'getInfo',
-        'updateInfo'
-    ],
-    'collaboration': [
-        'newCollaborate',
-        'deleteCollaborate',
-        'joinCollaborate'
-    ],
-    'theme': [
-        'newTheme',
-        'getTheme',
-        'deleteTheme'
-    ],
-    'ai': [
-        'aiSocket',
-        'breeze'
-    ],
-    'core': [
-        'myapp'
-    ]
+    "note": ["getNote", "newNote", "deleteNote", "saveNote", "loadNoteTree"],
+    "media": ["newMediaFile", "deleteFile", "viewMediaFile"],
+    "user": ["registerAndLogin", "forgetPassword", "getInfo", "updateInfo"],
+    "collaboration": ["newCollaborate", "deleteCollaborate", "joinCollaborate"],
+    "theme": ["newTheme", "getTheme", "deleteTheme"],
+    "ai": ["aiSocket", "breeze"],
+    "core": ["myapp"],
 }
 
 # Add paths using list comprehension
-base_dir = Path('..')
-[sys.path.append(str(base_dir / path)) 
- for category, paths in PATHS.items() 
- for path in paths]
+base_dir = Path("..")
+[
+    sys.path.append(str(base_dir / path))
+    for category, paths in PATHS.items()
+    for path in paths
+]
+
+from aiSocket import views as AISocket
+from breeze.views import BreezeView
+from deleteCollaborate.views import DeleteCollaborateView
+from deleteFile.views import DeleteFileView
+from deleteNote.views import DeleteNoteView
+from deleteTheme.views import DeleteThemeView
+from django.contrib import admin
 
 # new url import here
-from django.urls import path, include, re_path
-from django.contrib import admin
-from registerAndLogin.views import RegisterAndLoginView
+from django.urls import include, path, re_path
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 from forgetPassword.views import ForgetPasswordView
-from saveNote.views import SaveNoteView
-from newMediaFile.views import NewMediaFileView
-from deleteFile.views import DeleteFileView
-from viewMediaFile.views import ViewMediaFileView
 from getInfo.views import GetInfoView
-from updateInfo.views import UpdateInfoView
-from newTheme.views import NewThemeView
-from breeze.views import BreezeView
-from newNote.views import NewNoteView
-from deleteNote.views import DeleteNoteView
-from saveNote.views import SaveNoteView
 from getNote.views import GetNoteView
+from getTheme.views import GetThemeView
+from joinCollaborate.views import JoinCollaborateView
 from loadNoteTree.views import LoadNoteTreeView
 from newCollaborate.views import NewCollaborateView
-from deleteCollaborate.views import DeleteCollaborateView
-from joinCollaborate.views import JoinCollaborateView
-from getTheme.views import GetThemeView
-from deleteTheme.views import DeleteThemeView
-from aiSocket import views as AISocket
-
-from drf_yasg.views import get_schema_view
-from drf_yasg import openapi
+from newMediaFile.views import NewMediaFileView
+from newNote.views import NewNoteView
+from newTheme.views import NewThemeView
+from registerAndLogin.views import RegisterAndLoginView
+from saveNote.views import SaveNoteView
+from updateInfo.views import UpdateInfoView
+from viewMediaFile.views import ViewMediaFileView
 
 schema_view = get_schema_view(
-  openapi.Info(
-  title='Notes API',
-  default_version='v1.0.0',
-  description='',
-  )
+    openapi.Info(
+        title="Notes API",
+        default_version="v1.0.0",
+        description="",
+    )
 )
 
 # Group related URL patterns
 # User note data
 note_patterns = [
-    path('new/', NewNoteView.as_view(), name='note_new'),
-    path('get/', GetNoteView.as_view(), name='note_get'),
-    path('delete/', DeleteNoteView.as_view(), name='note_delete'),
-    path('save/', SaveNoteView.as_view(), name='note_save'),
-    path('tree/', LoadNoteTreeView.as_view(), name='note_tree'),
+    path("new/", NewNoteView.as_view(), name="note_new"),
+    path("get/", GetNoteView.as_view(), name="note_get"),
+    path("delete/", DeleteNoteView.as_view(), name="note_delete"),
+    path("save/", SaveNoteView.as_view(), name="note_save"),
+    path("tree/", LoadNoteTreeView.as_view(), name="note_tree"),
 ]
 
 # Media
 media_patterns = [
-    path('new/', NewMediaFileView.as_view(), name='media_new'),
-    path('delete/', DeleteFileView.as_view(), name='media_delete'),
-    path('view/', ViewMediaFileView.as_view(), name='media_view'),
-    path('<username>/', ViewMediaFileView.as_view(), name='media_view_user'),
-    path('<username>/<noteId>/', ViewMediaFileView.as_view(), name='media_view_note'),
-    path('<username>/<noteId>/<filename>/', ViewMediaFileView.as_view(), name='media_view_file'),
+    path("new/", NewMediaFileView.as_view(), name="media_new"),
+    path("delete/", DeleteFileView.as_view(), name="media_delete"),
+    path("view/", ViewMediaFileView.as_view(), name="media_view"),
+    path("<username>/", ViewMediaFileView.as_view(), name="media_view_user"),
+    path("<username>/<noteId>/", ViewMediaFileView.as_view(), name="media_view_note"),
+    path(
+        "<username>/<noteId>/<filename>/",
+        ViewMediaFileView.as_view(),
+        name="media_view_file",
+    ),
 ]
 
 # User collaborate
 collaborate_patterns = [
-    path('new/', NewCollaborateView.as_view(), name='collaborate_new'),
-    path('delete/', DeleteCollaborateView.as_view(), name='collaborate_delete'),
-    path('join/', JoinCollaborateView.as_view(), name='collaborate_join'),
+    path("new/", NewCollaborateView.as_view(), name="collaborate_new"),
+    path("delete/", DeleteCollaborateView.as_view(), name="collaborate_delete"),
+    path("join/", JoinCollaborateView.as_view(), name="collaborate_join"),
 ]
 
 # User theme
 theme_patterns = [
-    path('new/', NewThemeView.as_view(), name='theme_new'),
-    path('get/', GetThemeView.as_view(), name='theme_get'),
-    path('delete/', DeleteThemeView.as_view(), name='theme_delete'),
+    path("new/", NewThemeView.as_view(), name="theme_new"),
+    path("get/", GetThemeView.as_view(), name="theme_get"),
+    path("delete/", DeleteThemeView.as_view(), name="theme_delete"),
 ]
 
 # User info
 info_patterns = [
-    path('get/', GetInfoView.as_view(), name='info_get'),
-    path('update/', UpdateInfoView.as_view(), name='info_update'),
+    path("get/", GetInfoView.as_view(), name="info_get"),
+    path("update/", UpdateInfoView.as_view(), name="info_update"),
 ]
 
 # Main URL patterns
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('auth/', include('rest_framework.urls')),
-    path('api/jwtauth/', include('jwtauth.urls'), name='jwtauth'),
-    path('api/docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api/', include('notes.urls')),
-    
+    path("admin/", admin.site.urls),
+    path("auth/", include("rest_framework.urls")),
+    path("api/jwtauth/", include("jwtauth.urls"), name="jwtauth"),
+    path(
+        "api/docs/",
+        schema_view.with_ui("swagger", cache_timeout=0),
+        name="schema-swagger-ui",
+    ),
+    path("api/", include("notes.urls")),
     # Group related endpoints under their respective prefixes
-    path('note/', include(note_patterns)),
-    path('media/', include(media_patterns)),
-    path('collaborate/', include(collaborate_patterns)),
-    path('theme/', include(theme_patterns)),
-    path('info/', include(info_patterns)),
-    
+    path("note/", include(note_patterns)),
+    path("media/", include(media_patterns)),
+    path("collaborate/", include(collaborate_patterns)),
+    path("theme/", include(theme_patterns)),
+    path("info/", include(info_patterns)),
     # Authentication and user management
-    path('register/', RegisterAndLoginView.as_view(), name='register'),
-    path('login/', RegisterAndLoginView.as_view(), name='login'),
-    path('forget-password/', ForgetPasswordView.as_view(), name='forget_password'),
-    
+    path("register/", RegisterAndLoginView.as_view(), name="register"),
+    path("login/", RegisterAndLoginView.as_view(), name="login"),
+    path("forget-password/", ForgetPasswordView.as_view(), name="forget_password"),
     # AI features
-    path('breeze/', BreezeView.as_view(), name='breeze'),
-    path('ai-socket/', AISocket.aiReturn, name='ai_return'),
+    path("breeze/", BreezeView.as_view(), name="breeze"),
+    path("ai-socket/", AISocket.aiReturn, name="ai_return"),
 ]

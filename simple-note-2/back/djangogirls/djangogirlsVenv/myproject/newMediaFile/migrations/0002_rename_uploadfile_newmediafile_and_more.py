@@ -6,17 +6,17 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newMediaFile', '0001_initial'),
+        ("newMediaFile", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='UploadFile',
-            new_name='NewMediaFile',
+            old_name="UploadFile",
+            new_name="NewMediaFile",
         ),
         migrations.RenameField(
-            model_name='newmediafile',
-            old_name='upload_file',
-            new_name='newMediaFile',
+            model_name="newmediafile",
+            old_name="upload_file",
+            new_name="newMediaFile",
         ),
     ]

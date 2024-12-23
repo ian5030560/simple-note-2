@@ -1,12 +1,25 @@
-from sqlalchemy import create_engine, insert, update, delete
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column
-from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
-from sqlalchemy.orm import sessionmaker,scoped_session
-from pprint import pprint
-from sqlalchemy.exc import SQLAlchemyError
 import os
+from pprint import pprint
+
+from sqlalchemy import (
+    BLOB,
+    BOOLEAN,
+    DATETIME,
+    TEXT,
+    Column,
+    Integer,
+    String,
+    create_engine,
+    delete,
+    insert,
+    update,
+)
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 from .Common import engine
+
 Base = declarative_base()
 # engine_url = os.environ.get("env")
 # # engine_url = "mysql+pymysql://root@localhost/simplenote2db"
@@ -48,12 +61,12 @@ class User_Personal_Info(Base):
 # def create_session():
 #     Session = sessionmaker(bind=engine)
 #     session = Session()
-    # return session
-    
+# return session
+
+
 def create_session():
     Session = scoped_session(sessionmaker(bind=engine))
     return Session
-
 
 
 # 檢查此組使用者名稱和密碼是否存在
@@ -72,10 +85,10 @@ def check_username_password(username, password):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        print (str(e))
+        print(str(e))
         return False
     finally:
-        session.close()    
+        session.close()
 
 
 # 檢查是否有相同的使用者名稱
@@ -90,10 +103,10 @@ def check_username(username):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        print (str(e))
+        print(str(e))
         return False
     finally:
-        session.close()    
+        session.close()
 
 
 # 檢查是否有相同的email
@@ -108,10 +121,10 @@ def check_email(user_email):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        print (str(e))
+        print(str(e))
         return False
     finally:
-        session.close()    
+        session.close()
 
 
 # 給username檢查login_status
@@ -126,10 +139,10 @@ def check_status(username):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        print (str(e))
+        print(str(e))
         return False
     finally:
-        session.close()    
+        session.close()
 
 
 # check User_Personal_Info by usernames
@@ -151,17 +164,18 @@ def check_user_personal_info(usernames):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        print (str(e))
+        print(str(e))
         return False
     finally:
-        session.close()    
-
+        session.close()
 
 
 # check profile photo by username
 def check_profile_photo_by_username(usernames_input):
     session = create_session()
-    result = session.query(User_Personal_Info).filter_by(usernames=usernames_input).first()
+    result = (
+        session.query(User_Personal_Info).filter_by(usernames=usernames_input).first()
+    )
     try:
         if result:
             return result.profile_photo
@@ -170,10 +184,10 @@ def check_profile_photo_by_username(usernames_input):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        print (str(e))
+        print(str(e))
         return False
     finally:
-        session.close()    
+        session.close()
 
 
 # 給user_email查password
@@ -188,10 +202,11 @@ def search_password(email):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        print (str(e))
+        print(str(e))
         return False
     finally:
         session.close()
+
 
 # 插入username,password,user_email到資料庫
 def insert_username_password_email(username, password, email):
@@ -218,8 +233,8 @@ def insert_profile_photo_by_username(usernames_input, profile_photo_input):
         print(e)
         return False
     finally:
-        session.close()   
-    
+        session.close()
+
 
 # update_profile_photo_by_username
 def update_profile_photo_by_username(usernames_input, profile_photo_input):
@@ -239,7 +254,7 @@ def update_profile_photo_by_username(usernames_input, profile_photo_input):
         session.rollback()
         return False
     finally:
-        session.close()   
+        session.close()
 
 
 # update_user_email_by_username
@@ -259,7 +274,9 @@ def update_user_email_by_username(usernames_input, user_email_input):
         session.rollback()
         return str(e)
     finally:
-        session.close()   
+        session.close()
+
+
 # 給username更新user_password
 def update_user_password_by_usernames(usernames_input, user_password_input):
     session = create_session()
@@ -279,8 +296,11 @@ def update_user_password_by_usernames(usernames_input, user_password_input):
     finally:
         session.close()
 
+
 # 給username更新theme_id
-def update_user_theme_id_by_usernames(usernames_input:str, theme_id_input :str | None) -> bool:
+def update_user_theme_id_by_usernames(
+    usernames_input: str, theme_id_input: str | None
+) -> bool:
     session = create_session()
     stmt = (
         update(User_Personal_Info)
@@ -296,7 +316,8 @@ def update_user_theme_id_by_usernames(usernames_input:str, theme_id_input :str |
         session.rollback()
         return str(e)
     finally:
-        session.close()           
+        session.close()
+
 
 # 給username更新login_status
 def update_user_login_status_by_usernames(usernames_input, login_status_input):
@@ -315,8 +336,7 @@ def update_user_login_status_by_usernames(usernames_input, login_status_input):
         session.rollback()
         return str(e)
     finally:
-        session.close()       
-        
+        session.close()
 
 
 # 給username去change login_status
@@ -340,7 +360,7 @@ def change_login_status(username):
         session.rollback()
         return str(e)
     finally:
-        session.close()    
+        session.close()
 
 
 # print(check_profile_photo_by_username("user01"))

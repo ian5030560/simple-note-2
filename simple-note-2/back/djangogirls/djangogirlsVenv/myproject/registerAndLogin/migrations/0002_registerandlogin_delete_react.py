@@ -6,19 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registerAndLogin', '0001_initial'),
+        ("registerAndLogin", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RegisterAndLogin',
+            name="RegisterAndLogin",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('account', models.CharField(max_length=100)),
-                ('password', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("account", models.CharField(max_length=100)),
+                ("password", models.CharField(max_length=100)),
             ],
         ),
         migrations.DeleteModel(
-            name='React',
+            name="React",
         ),
     ]

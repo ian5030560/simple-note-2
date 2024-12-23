@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newTheme', '0001_initial'),
+        ("newTheme", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='NewTheme',
+            name="NewTheme",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('newTheme', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("newTheme", models.CharField(max_length=100)),
             ],
         ),
         migrations.DeleteModel(
-            name='AddTheme',
+            name="AddTheme",
         ),
     ]

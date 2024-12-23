@@ -7,16 +7,23 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='React',
+            name="React",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('employee', models.CharField(max_length=30)),
-                ('department', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("employee", models.CharField(max_length=30)),
+                ("department", models.CharField(max_length=200)),
             ],
         ),
     ]

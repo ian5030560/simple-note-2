@@ -11,23 +11,27 @@ import os
 
 from django.core.asgi import get_asgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myproject.settings")
 
 application = get_asgi_application()
 
 
-from channels.routing import ProtocolTypeRouter, URLRouter
-from channels.auth import AuthMiddlewareStack
-from django.urls import path
 from aiSocket.consumers import AIConsumer
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.urls import path
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myproject.settings")
 
-application = ProtocolTypeRouter({
-    'http': get_asgi_application(),
-    'websocket': AuthMiddlewareStack(
-        URLRouter([
-            path('ws/ai/', AIConsumer.as_asgi()),
-        ])
-    ),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": get_asgi_application(),
+        "websocket": AuthMiddlewareStack(
+            URLRouter(
+                [
+                    path("ws/ai/", AIConsumer.as_asgi()),
+                ]
+            )
+        ),
+    }
+)

@@ -6,17 +6,17 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('saveNote', '0001_initial'),
+        ("saveNote", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='UploadFile',
-            new_name='SaveNote',
+            old_name="UploadFile",
+            new_name="SaveNote",
         ),
         migrations.RenameField(
-            model_name='savenote',
-            old_name='upload_file',
-            new_name='saveNote',
+            model_name="savenote",
+            old_name="upload_file",
+            new_name="saveNote",
         ),
     ]

@@ -12,13 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-import sys
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
-print(BASE_DIR)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -42,7 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
-    'drf_yasg',
+    "drf_yasg",
     "corsheaders",
     "deleteFile",
     "deleteNote",
@@ -64,7 +61,7 @@ INSTALLED_APPS = [
     "deleteCollaborate",
     "joinCollaborate",
     "channels",
-    'notes',
+    "notes",
     "jwtauth",
 ]
 
@@ -81,36 +78,36 @@ MIDDLEWARE = [
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES":
-        ["rest_framework.permissions.IsAuthenticated"], # 修改权限为认证过才能访问 
-    'DEFAULT_PARSER_CLASSES':[
-        'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser'
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated"
+    ],  # 修改权限为认证过才能访问
+    "DEFAULT_PARSER_CLASSES": [
+        "rest_framework.parsers.JSONParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.MultiPartParser",
     ],
-    "DEFAULT_AUTHENTICATION_CLASSES":  #驗證
-    [                               
-        "rest_framework.authentication.SessionAuthentication",        # Session驗證
+    "DEFAULT_AUTHENTICATION_CLASSES": [  # 驗證
+        "rest_framework.authentication.SessionAuthentication",  # Session驗證
         "rest_framework_simplejwt.authentication.JWTAuthentication",  # JWT驗證
     ],
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema", # swagger
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",  # swagger
 }
 
 SWAGGER_SETTINGS = {
-  'DEFAULT_MODEL_RENDERING': 'example',
-  'SHOW_COMMON_EXTENSIONS': False,
-  'DISPLAY_OPERATION_ID': False,
-  'USE_SESSION_AUTH': True,
+    "DEFAULT_MODEL_RENDERING": "example",
+    "SHOW_COMMON_EXTENSIONS": False,
+    "DISPLAY_OPERATION_ID": False,
+    "USE_SESSION_AUTH": True,
 }
 
 from datetime import timedelta
 
 # JWT的access token(1天)與refresh token(預設為24小時)長度
 SIMPLE_JWT = {
-  'ACCESS_TOKEN_LIFETIME': timedelta(days = 1),
-  'REFRESH_TOKEN_LIFETIME': timedelta(days = 1),
-  'SIGNING_KEY': SECRET_KEY,
-  'AUTH_HEADER_TYPES': ('Bearer',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -141,13 +138,13 @@ WSGI_APPLICATION = "myproject.wsgi.application"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'simplenote2db',
-        'USER': 'root',
-        'PASSWORD': 'root',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "simplenote2db",
+        "USER": "root",
+        "PASSWORD": "root",
         # 'HOST': 'host.docker.internal',  # Local開啟時註解這段
-        'PORT': '3306',
+        "PORT": "3306",
     }
 }
 
@@ -218,6 +215,7 @@ EMAIL_PORT = 587  # TLS通訊埠號
 EMAIL_USE_TLS = True  # 開啟TLS(傳輸層安全性)
 EMAIL_HOST_USER = "s2mplenote.nknu@gmail.com"  # 寄件者電子郵件
 from . import password
+
 EMAIL_HOST_PASSWORD = password.EMAIL_HOST_PASSWORD  # Gmail應用程式的密碼
 
 # socket setting

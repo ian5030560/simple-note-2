@@ -1,12 +1,17 @@
 import json
+
 from channels.testing import WebsocketCommunicator
 from django.test import TestCase
+
 from myproject.asgi import application  # Replace with your actual ASGI application path
+
 
 class AIConsumerTestCase(TestCase):
     async def test_websocket_connection(self):
         """Test WebSocket connection."""
-        communicator = WebsocketCommunicator(application, "/ws/ai/")  # Replace with your WebSocket route
+        communicator = WebsocketCommunicator(
+            application, "/ws/ai/"
+        )  # Replace with your WebSocket route
         connected, subprotocol = await communicator.connect()
         self.assertTrue(connected)
 
@@ -14,7 +19,9 @@ class AIConsumerTestCase(TestCase):
 
     async def test_websocket_message_handling(self):
         """Test WebSocket message handling and AI response."""
-        communicator = WebsocketCommunicator(application, "/ws/ai/")  # Replace with your WebSocket route
+        communicator = WebsocketCommunicator(
+            application, "/ws/ai/"
+        )  # Replace with your WebSocket route
         await communicator.connect()
 
         # Send a message to the WebSocket
@@ -44,7 +51,9 @@ class AIConsumerTestCase(TestCase):
 
     async def test_ai_api_integration(self):
         """Test integration with AI API."""
-        communicator = WebsocketCommunicator(application, "/ws/ai/")  # Replace with your WebSocket route
+        communicator = WebsocketCommunicator(
+            application, "/ws/ai/"
+        )  # Replace with your WebSocket route
         await communicator.connect()
 
         # Mock AI API response (you can use libraries like aioresponses for this in real tests)
@@ -54,7 +63,10 @@ class AIConsumerTestCase(TestCase):
         async def mock_send_ai_request(*args, **kwargs):
             return expected_result
 
-        from aiSocket.consumers import AIConsumer  # Replace with your actual consumer path
+        from aiSocket.consumers import (
+            AIConsumer,
+        )  # Replace with your actual consumer path
+
         AIConsumer.send_ai_request = mock_send_ai_request
 
         # Send a message to the WebSocket

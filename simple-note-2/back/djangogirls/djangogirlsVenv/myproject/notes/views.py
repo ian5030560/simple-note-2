@@ -10,6 +10,7 @@ from .serializers import NoteSerializer
 
 class NoteViewSet(viewsets.ModelViewSet):
     """Note View 權限 Set。"""
+
     serializer_class = NoteSerializer
     permission_classess = [IsAuthenticated]
 

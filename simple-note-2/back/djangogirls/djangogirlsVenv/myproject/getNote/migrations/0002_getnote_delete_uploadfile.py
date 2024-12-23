@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('getNote', '0001_initial'),
+        ("getNote", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='GetNote',
+            name="GetNote",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('getNote', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("getNote", models.CharField(max_length=100)),
             ],
         ),
         migrations.DeleteModel(
-            name='UploadFile',
+            name="UploadFile",
         ),
     ]

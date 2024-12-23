@@ -1,7 +1,9 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
-from unittest.mock import patch
 import json
+from unittest.mock import patch
+
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 
 class NewThemeViewTest(APITestCase):
     def setUp(self):
@@ -16,12 +18,14 @@ class NewThemeViewTest(APITestCase):
                     "colorLightPrimary": "#FFFFFF",  # 輕色主色
                     "colorLightNeutral": "#F5F5F5",  # 輕色中性色
                     "colorDarkPrimary": "#000000",  # 深色主色
-                    "colorDarkNeutral": "#1A1A1A"  # 深色中性色
-                }
-            }
+                    "colorDarkNeutral": "#1A1A1A",  # 深色中性色
+                },
+            },
         }
 
-    @patch("db_modules.UserPersonalThemeData.insert_themeData_by_usernames")  # 模擬插入主題資料的資料庫操作
+    @patch(
+        "db_modules.UserPersonalThemeData.insert_themeData_by_usernames"
+    )  # 模擬插入主題資料的資料庫操作
     def test_post_valid_data(self, mock_insert_theme):
         """測試POST請求使用有效的資料"""
         mock_insert_theme.return_value = True  # 模擬插入主題資料成功
@@ -32,9 +36,13 @@ class NewThemeViewTest(APITestCase):
             data=json.dumps(self.valid_payload),  # 使用有效資料
             content_type="application/json",  # 設置內容類型為JSON
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)  # 檢查回應狀態碼是否為200
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK
+        )  # 檢查回應狀態碼是否為200
 
-    @patch("db_modules.UserPersonalThemeData.insert_themeData_by_usernames")  # 模擬插入主題資料的資料庫操作
+    @patch(
+        "db_modules.UserPersonalThemeData.insert_themeData_by_usernames"
+    )  # 模擬插入主題資料的資料庫操作
     def test_post_invalid_theme_data(self, mock_insert_theme):
         """測試POST請求使用無效的主題資料"""
         mock_insert_theme.return_value = False  # 模擬插入主題資料失敗
@@ -45,15 +53,15 @@ class NewThemeViewTest(APITestCase):
             data=json.dumps(self.valid_payload),  # 使用有效資料
             content_type="application/json",  # 設置內容類型為JSON
         )
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)  # 檢查回應狀態碼是否為400
+        self.assertEqual(
+            response.status_code, status.HTTP_400_BAD_REQUEST
+        )  # 檢查回應狀態碼是否為400
 
     def test_post_missing_fields(self):
         """測試POST請求缺少必要欄位"""
         invalid_payload = {
             "username": "testuser",  # 缺少theme中的數據
-            "theme": {
-                "name": "Dark"  # 缺少主題的數據部分
-            }
+            "theme": {"name": "Dark"},  # 缺少主題的數據部分
         }
 
         # 發送POST請求
@@ -62,7 +70,9 @@ class NewThemeViewTest(APITestCase):
             data=json.dumps(invalid_payload),  # 發送缺少欄位的資料
             content_type="application/json",  # 設置內容類型為JSON
         )
-        self.assertEqual(response.status_code, status.HTTP_402_PAYMENT_REQUIRED)  # 檢查回應狀態碼是否為402
+        self.assertEqual(
+            response.status_code, status.HTTP_402_PAYMENT_REQUIRED
+        )  # 檢查回應狀態碼是否為402
 
     def test_post_empty_payload(self):
         """測試POST請求使用空的請求資料"""
@@ -72,4 +82,6 @@ class NewThemeViewTest(APITestCase):
             data=json.dumps({}),  # 空的請求資料
             content_type="application/json",  # 設置內容類型為JSON
         )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)  # 檢查回應狀態碼是否為401
+        self.assertEqual(
+            response.status_code, status.HTTP_401_UNAUTHORIZED
+        )  # 檢查回應狀態碼是否為401

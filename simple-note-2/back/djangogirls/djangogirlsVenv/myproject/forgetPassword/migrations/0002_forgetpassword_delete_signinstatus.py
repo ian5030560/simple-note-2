@@ -6,18 +6,26 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('forgetPassword', '0001_initial'),
+        ("forgetPassword", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ForgetPassword',
+            name="ForgetPassword",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('forgetPassword', models.CharField(max_length=100)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("forgetPassword", models.CharField(max_length=100)),
             ],
         ),
         migrations.DeleteModel(
-            name='SigninStatus',
+            name="SigninStatus",
         ),
     ]

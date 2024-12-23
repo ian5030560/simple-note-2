@@ -1,12 +1,25 @@
-from sqlalchemy import create_engine, update, and_, insert, delete
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column
-from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
-from sqlalchemy.orm import sessionmaker , scoped_session
-from .UserPersonalInfo import User_Personal_Info
-from sqlalchemy.exc import SQLAlchemyError
 import datetime
+
+from sqlalchemy import (
+    BLOB,
+    DATETIME,
+    TEXT,
+    Column,
+    Integer,
+    String,
+    and_,
+    create_engine,
+    delete,
+    insert,
+    update,
+)
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
+
 from .Common import engine
+from .UserPersonalInfo import User_Personal_Info
+
 # from dotenv import load_dotenv
 # # 加載 .env 文件中的環境變數
 # load_dotenv()
@@ -49,13 +62,12 @@ class User_Note_Data(Base):
 # def create_session():
 #     Session = sessionmaker(bind=engine)
 #     session = Session()
-    # return session
-    
+# return session
+
+
 def create_session():
     Session = scoped_session(sessionmaker(bind=engine))
     return Session
-
-
 
 
 # 給usernames,note_title_id update content
@@ -83,7 +95,7 @@ def update_content(usernames, note_title_id, content):
     except SQLAlchemyError as e:
         # 回朔防止資料庫損壞
         session.rollback()
-        print (str(e))
+        print(str(e))
         return False
     finally:
         session.close()
@@ -151,7 +163,8 @@ def check_content(usernames, note_title_id):
     finally:
         session.close()
 
-#Check id by usernames and note_title_id
+
+# Check id by usernames and note_title_id
 def check_id(usernames, note_title_id):
     session = create_session()
     user_id_query = (
@@ -177,7 +190,8 @@ def check_id(usernames, note_title_id):
     finally:
         session.close()
 
-#check note_name by note_id
+
+# check note_name by note_id
 def check_note_name_by_note_id(note_id_input):
     session = create_session()
     try:
@@ -194,7 +208,8 @@ def check_note_name_by_note_id(note_id_input):
     finally:
         session.close()
 
-#check note_name by note_id
+
+# check note_name by note_id
 def check_note_name_by_note_id(note_id_input):
     session = create_session()
     try:
@@ -211,7 +226,8 @@ def check_note_name_by_note_id(note_id_input):
     finally:
         session.close()
 
-#check note_title_id by note_id
+
+# check note_title_id by note_id
 def check_note_title_id_by_note_id(note_id_input):
     session = create_session()
     try:
@@ -226,8 +242,7 @@ def check_note_title_id_by_note_id(note_id_input):
         session.rollback()
         return False
     finally:
-        session.close()                 
-
+        session.close()
 
 
 # check all user's notes
@@ -309,7 +324,7 @@ def delete_note_by_usernames_note_title_id(usernames, note_title_id):
         # stmt1 = delete(User_SubNote_Data).where(User_SubNote_Data.parent_id == note_title_id)
         # session.execute(stmt1)
         # session.commit()
-        
+
         stmt2 = delete(User_Note_Data).where(
             and_(
                 User_Note_Data.user_id == user_id_query[0],
@@ -350,5 +365,3 @@ def delete_note_by_usernames_note_name(usernames, note_name):
         return str(e)
     finally:
         session.close()
-
-

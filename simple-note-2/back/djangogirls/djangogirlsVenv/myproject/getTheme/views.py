@@ -1,15 +1,15 @@
 """取得主題: 取得使用者筆記主題資訊(getTheme)"""
 
 import json
-import typing
 import sys
+import typing
 
 from django.http import JsonResponse
 from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 sys.path.append("..db_modules")
 from db_modules import UserPersonalInfo, UserPersonalThemeData
@@ -17,6 +17,7 @@ from db_modules import UserPersonalInfo, UserPersonalThemeData
 
 class ThemeData(typing.TypedDict):
     """Theme Data"""
+
     colorLightPrimary: str
     colorLightNeutral: str
     colorDarkPrimary: str
@@ -25,6 +26,7 @@ class ThemeData(typing.TypedDict):
 
 class GetThemeReturnData(typing.TypedDict):
     """Theme Return Data"""
+
     id: int
     name: str
     data: ThemeData

@@ -1,7 +1,9 @@
-from rest_framework.test import APITestCase
-from rest_framework import status
-from unittest.mock import patch
 import json
+from unittest.mock import patch
+
+from rest_framework import status
+from rest_framework.test import APITestCase
+
 
 class SaveNoteViewTest(APITestCase):
     def setUp(self):
@@ -11,12 +13,12 @@ class SaveNoteViewTest(APITestCase):
         self.valid_payload = {
             "username": "testuser",  # 用戶名
             "noteId": "1",  # 筆記ID
-            "content": "This is a test note."  # 筆記內容
+            "content": "This is a test note.",  # 筆記內容
         }
         # 測試用的無效資料，缺少筆記內容
         self.invalid_payload_missing_fields = {
             "username": "testuser",  # 用戶名
-            "noteId": "1"  # 筆記ID
+            "noteId": "1",  # 筆記ID
             # 缺少 "content"
         }
 
@@ -31,7 +33,9 @@ class SaveNoteViewTest(APITestCase):
             data=json.dumps(self.valid_payload),  # 使用有效資料
             content_type="application/json",  # 設置內容類型為JSON
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)  # 檢查回應狀態碼是否為200
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK
+        )  # 檢查回應狀態碼是否為200
 
     def test_save_note_missing_fields(self):
         """測試儲存筆記時缺少必要欄位"""
@@ -41,7 +45,9 @@ class SaveNoteViewTest(APITestCase):
             data=json.dumps(self.invalid_payload_missing_fields),  # 發送缺少欄位的資料
             content_type="application/json",  # 設置內容類型為JSON
         )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)  # 檢查回應狀態碼是否為401
+        self.assertEqual(
+            response.status_code, status.HTTP_401_UNAUTHORIZED
+        )  # 檢查回應狀態碼是否為401
 
     def test_save_note_empty_payload(self):
         """測試儲存筆記時請求資料為空"""
@@ -51,4 +57,6 @@ class SaveNoteViewTest(APITestCase):
             data=json.dumps({}),  # 空的請求資料
             content_type="application/json",  # 設置內容類型為JSON
         )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)  # 檢查回應狀態碼是否為401
+        self.assertEqual(
+            response.status_code, status.HTTP_401_UNAUTHORIZED
+        )  # 檢查回應狀態碼是否為401

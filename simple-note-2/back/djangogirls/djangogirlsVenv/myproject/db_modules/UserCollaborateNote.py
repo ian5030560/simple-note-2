@@ -1,15 +1,29 @@
-from sqlalchemy import create_engine, exists, update, and_, insert, delete
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column
-from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB
-from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.exc import SQLAlchemyError
-from .UserNoteData import User_Note_Data, check_id
-from .Common import engine
 import typing
 
+from sqlalchemy import (
+    BLOB,
+    DATETIME,
+    TEXT,
+    Column,
+    Integer,
+    String,
+    and_,
+    create_engine,
+    delete,
+    exists,
+    insert,
+    update,
+)
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+from .Common import engine
+from .UserNoteData import User_Note_Data, check_id
+
 Base = declarative_base()
-        
+
+
 class User_Collaborate_Note(Base):
     __tablename__ = "User_Collaborate_Note"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -54,8 +68,14 @@ def create_session():
 #     finally:
 #         session.close()
 
+
 # Insert new data by master_name, note_title_id, guest_name, url
-def insert_newData(note_master_input: str, note_title_id_input: str, note_guest_input: str, url_input: str) -> bool:
+def insert_newData(
+    note_master_input: str,
+    note_title_id_input: str,
+    note_guest_input: str,
+    url_input: str,
+) -> bool:
     session = create_session()
     new_note_id = check_id(note_master_input, note_title_id_input)
     try:
@@ -80,7 +100,9 @@ def insert_newData(note_master_input: str, note_title_id_input: str, note_guest_
 
 
 # Check all guest by master_name, note_title_id
-def check_all_guest(note_master_input: str, note_title_id_input: str) -> list[tuple[str]] | None:
+def check_all_guest(
+    note_master_input: str, note_title_id_input: str
+) -> list[tuple[str]] | None:
     session = create_session()
     note_id_query = check_id(note_master_input, note_title_id_input)
     try:
@@ -105,6 +127,7 @@ def check_all_guest(note_master_input: str, note_title_id_input: str) -> list[tu
     finally:
         session.close()
 
+
 # check all url by guest_name
 def check_url(note_guest_input: str) -> typing.Union[list[str], False]:
     session = create_session()
@@ -123,6 +146,7 @@ def check_url(note_guest_input: str) -> typing.Union[list[str], False]:
     finally:
         session.close()
 
+
 # check all noteID by guest_name
 def check_all_noteID_by_guest(note_guest_input):
     session = create_session()
@@ -140,31 +164,34 @@ def check_all_noteID_by_guest(note_guest_input):
         return False
     finally:
         session.close()
-    
+
 
 def get_note_url(guest_name: str, note_title_id: str):
     session = create_session()
-    
+
     try:
         note_id = (
             session.query(User_Note_Data)
-            .filter_by(note_title_id = note_title_id)
-            .one().id
+            .filter_by(note_title_id=note_title_id)
+            .one()
+            .id
         )
-        
+
         url = (
             session.query(User_Collaborate_Note)
-            .filter_by(note_guest = guest_name, note_id = note_id)
-            .one().url
+            .filter_by(note_guest=guest_name, note_id=note_id)
+            .one()
+            .url
         )
         return url
-    
+
     except SQLAlchemyError as e:
         session.rollback()
         # print(e)
         return False
     finally:
         session.close()
+
 
 # Check if it is a collaborative note by note_master_input, note_title_id_input
 def check_collaborativeNote_exist(note_master_input, note_title_id_input):
@@ -217,7 +244,8 @@ def delete_one_data(note_master_input, note_title_id_input, note_guest_input):
         return str(e)
     finally:
         session.close()
-        
+
+
 # Delete all row by note_master_input,note_title_id_input
 def delete_all_data(note_master_input, note_title_id_input):
     session = create_session()

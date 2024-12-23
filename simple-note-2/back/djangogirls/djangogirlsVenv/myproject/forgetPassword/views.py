@@ -4,6 +4,7 @@ import json
 import sys
 
 from django.conf import settings
+
 # email用
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string

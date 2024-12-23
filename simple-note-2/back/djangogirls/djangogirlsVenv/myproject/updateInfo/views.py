@@ -2,8 +2,8 @@
 
 import hashlib
 import json
-import typing
 import sys
+import typing
 
 from django.http import HttpRequest
 from rest_framework import status

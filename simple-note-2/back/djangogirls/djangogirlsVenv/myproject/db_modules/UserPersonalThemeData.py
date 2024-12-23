@@ -1,11 +1,24 @@
-from sqlalchemy import and_, create_engine, insert, update, delete
-from sqlalchemy import Column
-from sqlalchemy import Integer, String, DATETIME, TEXT, BLOB, BOOLEAN
-from sqlalchemy.orm import sessionmaker, scoped_session, declarative_base
-from .UserPersonalInfo import User_Personal_Info
-from sqlalchemy.exc import SQLAlchemyError
 import os
+
+from sqlalchemy import (
+    BLOB,
+    BOOLEAN,
+    DATETIME,
+    TEXT,
+    Column,
+    Integer,
+    String,
+    and_,
+    create_engine,
+    delete,
+    insert,
+    update,
+)
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
+
 from .Common import engine
+from .UserPersonalInfo import User_Personal_Info
 
 Base = declarative_base()
 # engine_url = os.environ.get("env")
@@ -62,7 +75,9 @@ def check_theme_name(
 
 
 # Return all theme data by username
-def check_all_theme_data(usernames_input) -> list[tuple[int, str, str, str, str, str, str]]:
+def check_all_theme_data(
+    usernames_input,
+) -> list[tuple[int, str, str, str, str, str, str]]:
     session = create_session()
     try:
         # 查詢 user_id
@@ -79,7 +94,7 @@ def check_all_theme_data(usernames_input) -> list[tuple[int, str, str, str, str,
         # 查詢與 user_id 對應的所有主題資料
         result = (
             session.query(
-                User_Personal_Theme_Data.id, 
+                User_Personal_Theme_Data.id,
                 User_Personal_Theme_Data.theme_name,
                 User_Personal_Theme_Data.color_light_primary,
                 User_Personal_Theme_Data.color_light_base_bg,
@@ -91,7 +106,7 @@ def check_all_theme_data(usernames_input) -> list[tuple[int, str, str, str, str,
         )
         return result  # 返回主題資料列表
     except SQLAlchemyError as e:
-        #print(e)
+        # print(e)
         return False
     finally:
         # 確保 session 被正確關閉
@@ -256,4 +271,4 @@ def insert_themeData_by_usernames(
         session.close()
 
 
-#print(delete_one_theme_data("3"))
+# print(delete_one_theme_data("3"))
