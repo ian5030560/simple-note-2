@@ -141,6 +141,7 @@ export default function useAPI() {
       },
       add: async (username: string, noteId: string, notename: string, parentId: string | null, silblingId: string | null) => {
         const access = getAccessToken();
+        console.log(access);
         const res = await fetch(API.Note.add, { ...postSetup(access), body: JSON.stringify({ username, noteId, notename, parentId, silblingId }) });
         return res.ok;
       },

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm-run-all --parallel start:",
+    "start": "npm-run-all --parallel start:app",
     "start:app": "npm run start --prefix ./app"
   },
   "author": "",

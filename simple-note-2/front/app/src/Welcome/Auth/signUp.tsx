@@ -48,7 +48,7 @@ export default withPageTitle(function SignUp({ onChange }: AuthProp) {
 
         try {
             const tokens = await getToken();
-
+            console.log(tokens);
             new Cookies().set("token", tokens);
             const status = await signUp(username, password, email);
             if (status > 300) {
